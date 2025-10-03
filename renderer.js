@@ -242,7 +242,7 @@ function renderBeats() {
       playBeat(beat.path, beat.name);
     });
 
-    // Drag events for moving to packs (internal)
+    // Drag events for moving to packs (internal) and external drag
     beatEl.addEventListener('dragstart', (e) => {
       // For internal drag to packs
       draggedBeat = {
@@ -251,13 +251,15 @@ function renderBeats() {
         file: beat.file // Include file object for browser mode
       };
       e.target.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'copy';
 
-      // For external drag to desktop/Chrome
+      // For external drag to desktop/Chrome/Filmora
       if (isElectron) {
-        ipcRenderer.send('ondragstart', beat.path);
+        // Use file:// protocol for Electron drag out
+        e.dataTransfer.setData('text/uri-list', 'file:///' + beat.path.replace(/\\/g, '/'));
+        e.dataTransfer.setData('text/plain', beat.path);
       } else if (beat.file) {
         // Browser mode - add file to drag
-        e.dataTransfer.effectAllowed = 'copy';
         e.dataTransfer.items.add(beat.file);
       }
     });
@@ -372,8 +374,10 @@ function createPackBeatElement(beat, packId) {
   // Drag events for external apps (desktop, Chrome, etc.)
   beatItemEl.addEventListener('dragstart', (e) => {
     if (isElectron) {
-      // Use Electron's native drag feature to drag file out
-      ipcRenderer.send('ondragstart', beat.path);
+      // Use file:// protocol for Electron drag out
+      e.dataTransfer.effectAllowed = 'copy';
+      e.dataTransfer.setData('text/uri-list', 'file:///' + beat.path.replace(/\\/g, '/'));
+      e.dataTransfer.setData('text/plain', beat.path);
     } else {
       // Browser mode - MUST get file from cache since beat.file is lost after render
       const fileObj = fileObjectsCache.get(beat.path);
