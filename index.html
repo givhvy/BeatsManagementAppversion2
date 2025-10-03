@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beats Management</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Left Panel - All Beats -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <h2>All Beats</h2>
+        <button id="select-folder-btn" class="btn-primary">Select Folder</button>
+      </div>
+      <div class="folder-path" id="folder-path">No folder selected</div>
+      <div class="beats-list" id="beats-list">
+        <!-- Beats will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Right Panel - Packs -->
+    <div class="right-panel">
+      <div class="panel-header">
+        <h2>Packs</h2>
+        <button id="create-pack-btn" class="btn-primary">+ Create Pack</button>
+      </div>
+      <div class="packs-container" id="packs-container">
+        <!-- Packs will be created here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Player -->
+  <div class="audio-player" id="audio-player">
+    <div class="player-info">
+      <div class="now-playing" id="now-playing">No track playing</div>
+    </div>
+    <div class="player-controls">
+      <button id="play-pause-btn" class="control-btn" disabled>
+        <span id="play-icon">▶</span>
+      </button>
+    </div>
+    <div class="player-progress">
+      <span class="time" id="current-time">0:00</span>
+      <input type="range" id="progress-bar" min="0" max="100" value="0" disabled>
+      <span class="time" id="duration-time">0:00</span>
+    </div>
+    <div class="player-volume">
+      <span>🔊</span>
+      <input type="range" id="volume-slider" min="0" max="100" value="70">
+    </div>
+  </div>
+
+  <audio id="audio-element"></audio>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
