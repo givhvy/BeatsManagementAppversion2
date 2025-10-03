@@ -4,7 +4,8 @@
   "description": "Local beats management application",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "serve": "npx http-server -p 8080 -c-1"
   },
   "keywords": ["beats", "music", "management"],
   "author": "",

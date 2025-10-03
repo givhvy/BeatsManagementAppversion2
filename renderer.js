@@ -6,6 +6,7 @@ const ipcRenderer = isElectron ? require('electron').ipcRenderer : null;
 let currentFolder = null;
 let allBeats = [];
 let packs = [];
+let fileObjectsCache = new Map(); // Cache file objects by path
 
 // DOM Elements
 const selectFolderBtn = document.getElementById('select-folder-btn');
@@ -185,11 +186,16 @@ async function selectFolder() {
         const audioExtensions = ['.mp3', '.wav', '.flac', '.m4a', '.aac', '.ogg'];
         allBeats = files
           .filter(file => audioExtensions.some(ext => file.name.toLowerCase().endsWith(ext)))
-          .map(file => ({
-            name: file.name,
-            path: URL.createObjectURL(file),
-            file: file // Store file object for drag
-          }));
+          .map(file => {
+            const blobUrl = URL.createObjectURL(file);
+            // Cache file object
+            fileObjectsCache.set(blobUrl, file);
+            return {
+              name: file.name,
+              path: blobUrl,
+              file: file // Store file object for drag
+            };
+          });
 
         renderBeats();
         await saveData();
@@ -236,8 +242,25 @@ function renderBeats() {
       playBeat(beat.path, beat.name);
     });
 
-    // Drag events
-    beatEl.addEventListener('dragstart', handleDragStart);
+    // Drag events for moving to packs (internal)
+    beatEl.addEventListener('dragstart', (e) => {
+      // For internal drag to packs
+      draggedBeat = {
+        name: beat.name,
+        path: beat.path,
+        file: beat.file // Include file object for browser mode
+      };
+      e.target.classList.add('dragging');
+
+      // For external drag to desktop/Chrome
+      if (isElectron) {
+        ipcRenderer.send('ondragstart', beat.path);
+      } else if (beat.file) {
+        // Browser mode - add file to drag
+        e.dataTransfer.effectAllowed = 'copy';
+        e.dataTransfer.items.add(beat.file);
+      }
+    });
     beatEl.addEventListener('dragend', handleDragEnd);
   });
 }
@@ -346,31 +369,23 @@ function createPackBeatElement(beat, packId) {
     playBeat(beat.path, beat.name);
   });
 
-  // Drag events for external apps
+  // Drag events for external apps (desktop, Chrome, etc.)
   beatItemEl.addEventListener('dragstart', (e) => {
-    e.dataTransfer.effectAllowed = 'copy';
-
     if (isElectron) {
-      // Use Electron's native drag feature
+      // Use Electron's native drag feature to drag file out
       ipcRenderer.send('ondragstart', beat.path);
     } else {
-      // Browser mode - use DataTransfer API
-      console.log('Dragging beat:', beat.name, beat.path);
+      // Browser mode - MUST get file from cache since beat.file is lost after render
+      const fileObj = fileObjectsCache.get(beat.path);
+      if (fileObj) {
+        e.dataTransfer.effectAllowed = 'copy';
+        // Just add file, don't set DownloadURL (same as All Beats)
+        e.dataTransfer.items.add(fileObj);
 
-      // Try to set file data
-      if (beat.file) {
-        const dt = e.dataTransfer;
-        dt.effectAllowed = 'copy';
-
-        // Set download URL
-        dt.setData('DownloadURL', `audio/mp3:${beat.name}:${beat.path}`);
-        dt.setData('text/plain', beat.path);
-        dt.setData('text/uri-list', beat.path);
-
-        console.log('DataTransfer set:', {
-          types: dt.types,
-          effectAllowed: dt.effectAllowed
-        });
+        console.log('✓ Dragging pack beat:', beat.name, 'Type:', fileObj.type);
+      } else {
+        console.error('✗ File object not found in cache for:', beat.name, 'Path:', beat.path);
+        console.log('Cache keys:', Array.from(fileObjectsCache.keys()));
       }
     }
   });
@@ -434,7 +449,19 @@ function handleDrop(e, packId) {
   // Check if beat already exists in this pack
   const beatExists = pack.beats.some(b => b.path === draggedBeat.path);
   if (!beatExists) {
-    pack.beats.push({ ...draggedBeat });
+    // Keep the file object for browser mode drag-out
+    const newBeat = {
+      name: draggedBeat.name,
+      path: draggedBeat.path,
+      file: draggedBeat.file // Keep file object for drag out
+    };
+
+    // Make sure file object is in cache
+    if (draggedBeat.file && !isElectron) {
+      fileObjectsCache.set(draggedBeat.path, draggedBeat.file);
+    }
+
+    pack.beats.push(newBeat);
     renderPacks();
     saveData();
   }
