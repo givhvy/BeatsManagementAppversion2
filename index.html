@@ -12,22 +12,46 @@
     <div class="left-panel">
       <div class="panel-header">
         <h2>All Beats</h2>
-        <button id="select-folder-btn" class="btn-primary">Select Folder</button>
+        <div style="display: flex; gap: 8px;">
+          <button id="refresh-beats-btn" class="btn-secondary">Refresh</button>
+          <button id="select-folder-btn" class="btn-primary">Select Folder</button>
+        </div>
       </div>
       <div class="folder-path" id="folder-path">No folder selected</div>
+      <div class="filter-container">
+        <input type="text" id="filter-input" placeholder="Filter by number (e.g., 1, 2, 3...)" class="filter-input">
+      </div>
       <div class="beats-list" id="beats-list">
         <!-- Beats will be loaded here -->
       </div>
     </div>
 
-    <!-- Right Panel - Packs -->
-    <div class="right-panel">
+    <!-- Middle Panel - Packs Grid -->
+    <div class="middle-panel" id="middle-panel">
       <div class="panel-header">
         <h2>Packs</h2>
-        <button id="create-pack-btn" class="btn-primary">+ Create Pack</button>
+        <div style="display: flex; gap: 8px;">
+          <button id="database-info-btn" class="btn-secondary" title="Database Info">💾</button>
+          <button id="create-pack-btn" class="btn-primary">+ Create Pack</button>
+        </div>
       </div>
-      <div class="packs-container" id="packs-container">
-        <!-- Packs will be created here -->
+      <div class="packs-grid" id="packs-grid">
+        <!-- Pack cards will be created here -->
+      </div>
+    </div>
+
+    <!-- Right Panel - Pack Details -->
+    <div class="right-panel" id="right-panel" style="display: none;">
+      <div class="panel-header">
+        <button id="back-to-packs-btn" class="btn-back">← Back</button>
+        <input type="text" id="pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
+        <button id="delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+      </div>
+      <div class="pack-detail-info">
+        <div class="pack-detail-count" id="pack-detail-count">0 beats</div>
+      </div>
+      <div class="pack-detail-beats" id="pack-detail-beats">
+        <!-- Pack beats will be shown here -->
       </div>
     </div>
   </div>
@@ -54,6 +78,33 @@
   </div>
 
   <audio id="audio-element"></audio>
+
+  <!-- Database Info Modal -->
+  <div id="database-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Database Information</h3>
+        <button id="close-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Database Location:</label>
+          <div class="db-path" id="db-path-display">Loading...</div>
+          <button id="copy-path-btn" class="btn-secondary" style="margin-top: 10px;">Copy Path</button>
+        </div>
+        <div class="info-section" style="margin-top: 20px;">
+          <label>Backup & Sync:</label>
+          <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
+            Export your database to back it up or transfer to another device.
+          </p>
+          <div style="display: flex; gap: 10px;">
+            <button id="export-db-btn" class="btn-primary">Export Database</button>
+            <button id="import-db-btn" class="btn-secondary">Import Database</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="renderer.js"></script>
 </body>

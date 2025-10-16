@@ -5,12 +5,32 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "serve": "npx http-server -p 8080 -c-1"
+    "serve": "npx http-server -p 8080 -c-1",
+    "build": "electron-builder --win portable"
   },
-  "keywords": ["beats", "music", "management"],
-  "author": "",
+  "keywords": [
+    "beats",
+    "music",
+    "management"
+  ],
+  "author": "givhvy",
   "license": "MIT",
+  "build": {
+    "appId": "com.givhvy.beatsmanagement",
+    "productName": "Beats Management",
+    "win": {
+      "target": "portable",
+      "icon": "build/icon.ico"
+    },
+    "files": [
+      "**/*",
+      "!**/*.vbs",
+      "!build/**/*",
+      "!dist/**/*"
+    ]
+  },
   "devDependencies": {
-    "electron": "^28.0.0"
+    "electron": "^28.0.0",
+    "electron-builder": "^26.0.12"
   }
 }

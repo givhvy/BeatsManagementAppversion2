@@ -10,10 +10,30 @@ let fileObjectsCache = new Map(); // Cache file objects by path
 
 // DOM Elements
 const selectFolderBtn = document.getElementById('select-folder-btn');
+const refreshBeatsBtn = document.getElementById('refresh-beats-btn');
 const createPackBtn = document.getElementById('create-pack-btn');
 const folderPathEl = document.getElementById('folder-path');
 const beatsListEl = document.getElementById('beats-list');
-const packsContainerEl = document.getElementById('packs-container');
+const packsGridEl = document.getElementById('packs-grid');
+const filterInput = document.getElementById('filter-input');
+const databaseInfoBtn = document.getElementById('database-info-btn');
+const databaseModal = document.getElementById('database-modal');
+const closeModalBtn = document.getElementById('close-modal-btn');
+const dbPathDisplay = document.getElementById('db-path-display');
+const copyPathBtn = document.getElementById('copy-path-btn');
+const exportDbBtn = document.getElementById('export-db-btn');
+const importDbBtn = document.getElementById('import-db-btn');
+
+// Pack detail panel elements
+const middlePanelEl = document.getElementById('middle-panel');
+const rightPanelEl = document.getElementById('right-panel');
+const backToPacksBtn = document.getElementById('back-to-packs-btn');
+const packDetailTitleEl = document.getElementById('pack-detail-title');
+const packDetailCountEl = document.getElementById('pack-detail-count');
+const packDetailBeatsEl = document.getElementById('pack-detail-beats');
+const deleteCurrentPackBtn = document.getElementById('delete-current-pack-btn');
+
+let currentPackId = null;
 
 // Audio Player Elements
 const audioElement = document.getElementById('audio-element');
@@ -65,10 +85,90 @@ async function init() {
 
   // Event listeners
   selectFolderBtn.addEventListener('click', selectFolder);
+  refreshBeatsBtn.addEventListener('click', refreshBeats);
   createPackBtn.addEventListener('click', createPack);
+  filterInput.addEventListener('input', renderBeats);
+  backToPacksBtn.addEventListener('click', showPacksGrid);
+  deleteCurrentPackBtn.addEventListener('click', deleteCurrentPack);
+
+  // Database modal listeners
+  databaseInfoBtn.addEventListener('click', showDatabaseInfo);
+  closeModalBtn.addEventListener('click', closeDatabaseModal);
+  copyPathBtn.addEventListener('click', copyDatabasePath);
+  exportDbBtn.addEventListener('click', exportDatabase);
+  importDbBtn.addEventListener('click', importDatabase);
+
+  // Close modal when clicking outside
+  databaseModal.addEventListener('click', (e) => {
+    if (e.target === databaseModal) {
+      closeDatabaseModal();
+    }
+  });
+
+  packDetailTitleEl.addEventListener('input', (e) => {
+    if (currentPackId) {
+      const pack = packs.find(p => p.id === currentPackId);
+      if (pack) {
+        pack.name = e.target.value;
+        renderPacks();
+        saveData();
+      }
+    }
+  });
 
   // Audio player event listeners
   setupAudioPlayer();
+}
+
+function showPacksGrid() {
+  currentPackId = null;
+  middlePanelEl.style.display = 'flex';
+  rightPanelEl.style.display = 'none';
+}
+
+function showPackDetail(packId) {
+  currentPackId = packId;
+  const pack = packs.find(p => p.id === packId);
+  if (!pack) return;
+
+  middlePanelEl.style.display = 'none';
+  rightPanelEl.style.display = 'flex';
+
+  packDetailTitleEl.value = pack.name;
+  packDetailCountEl.textContent = `${pack.beats.length} beats`;
+
+  renderPackDetailBeats();
+}
+
+function renderPackDetailBeats() {
+  packDetailBeatsEl.innerHTML = '';
+
+  const pack = packs.find(p => p.id === currentPackId);
+  if (!pack) return;
+
+  if (pack.beats.length === 0) {
+    packDetailBeatsEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No beats in this pack yet. Drag beats from the left panel to add them.</div>';
+    return;
+  }
+
+  pack.beats.forEach((beat, index) => {
+    const beatItemEl = createPackBeatElement(beat, currentPackId, index);
+    packDetailBeatsEl.appendChild(beatItemEl);
+  });
+
+  // Add drag over events to the detail beats container
+  packDetailBeatsEl.addEventListener('dragover', handleDragOver);
+  packDetailBeatsEl.addEventListener('dragleave', handleDragLeave);
+  packDetailBeatsEl.addEventListener('drop', (e) => handleDrop(e, currentPackId));
+}
+
+function deleteCurrentPack() {
+  if (currentPackId && confirm('Are you sure you want to delete this pack?')) {
+    packs = packs.filter(p => p.id !== currentPackId);
+    showPacksGrid();
+    renderPacks();
+    saveData();
+  }
 }
 
 function setupAudioPlayer() {
@@ -213,6 +313,47 @@ async function loadBeats(folderPath) {
   }
 }
 
+async function refreshBeats() {
+  if (!currentFolder) {
+    alert('Please select a folder first');
+    return;
+  }
+
+  if (isElectron) {
+    // Reload beats from the current folder
+    await loadBeats(currentFolder);
+  } else {
+    // Browser mode - need to reselect files
+    alert('In browser mode, please use "Select Folder" to reload files');
+  }
+}
+
+function extractNumber(filename) {
+  // Extract number from filename (e.g., "1.mp3" -> 1, "Beat 2.wav" -> 2)
+  const match = filename.match(/(\d+)/);
+  return match ? parseInt(match[0]) : null;
+}
+
+function sortBeatsByNumber(beats) {
+  // Sort beats by number in descending order (high to low)
+  return beats.slice().sort((a, b) => {
+    const numA = extractNumber(a.name);
+    const numB = extractNumber(b.name);
+
+    // If both have numbers, sort by number (descending)
+    if (numA !== null && numB !== null) {
+      return numB - numA;
+    }
+
+    // If only one has a number, put the one with number first
+    if (numA !== null) return -1;
+    if (numB !== null) return 1;
+
+    // If neither has a number, sort alphabetically
+    return a.name.localeCompare(b.name);
+  });
+}
+
 function renderBeats() {
   beatsListEl.innerHTML = '';
 
@@ -221,7 +362,27 @@ function renderBeats() {
     return;
   }
 
-  allBeats.forEach(beat => {
+  // Get filter value
+  const filterValue = filterInput.value.trim();
+
+  // Filter beats by number if filter is provided
+  let filteredBeats = allBeats;
+  if (filterValue) {
+    filteredBeats = allBeats.filter(beat => {
+      const num = extractNumber(beat.name);
+      return num !== null && num.toString() === filterValue;
+    });
+  }
+
+  // Sort filtered beats by number (high to low)
+  const sortedBeats = sortBeatsByNumber(filteredBeats);
+
+  if (sortedBeats.length === 0) {
+    beatsListEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No beats match the filter</div>';
+    return;
+  }
+
+  sortedBeats.forEach(beat => {
     const beatEl = document.createElement('div');
     beatEl.className = 'beat-item';
     beatEl.draggable = true;
@@ -271,7 +432,8 @@ function createPack() {
   const pack = {
     id: Date.now().toString(),
     name: 'New Pack',
-    beats: []
+    beats: [],
+    thumbnail: null // Add thumbnail field
   };
 
   packs.push(pack);
@@ -280,78 +442,98 @@ function createPack() {
 }
 
 function renderPacks() {
-  packsContainerEl.innerHTML = '';
+  packsGridEl.innerHTML = '';
 
   if (packs.length === 0) {
-    packsContainerEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No packs yet. Create one to organize your beats!</div>';
+    packsGridEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">No packs yet. Create one to organize your beats!</div>';
     return;
   }
 
   packs.forEach(pack => {
-    const packEl = createPackElement(pack);
-    packsContainerEl.appendChild(packEl);
+    const packCardEl = createPackCard(pack);
+    packsGridEl.appendChild(packCardEl);
   });
 }
 
-function createPackElement(pack) {
-  const packEl = document.createElement('div');
-  packEl.className = 'pack';
-  packEl.dataset.packId = pack.id;
+function createPackCard(pack) {
+  const packCardEl = document.createElement('div');
+  packCardEl.className = 'pack-card';
+  packCardEl.dataset.packId = pack.id;
 
-  // Pack header
-  const headerEl = document.createElement('div');
-  headerEl.className = 'pack-header';
+  // Pack image/thumbnail
+  const imageEl = document.createElement('div');
+  imageEl.className = 'pack-card-image';
 
-  const titleEl = document.createElement('input');
-  titleEl.type = 'text';
-  titleEl.className = 'pack-title';
-  titleEl.value = pack.name;
-  titleEl.addEventListener('input', (e) => {
-    pack.name = e.target.value;
-    saveData();
+  // Show thumbnail image if available, otherwise show default icon
+  if (pack.thumbnail) {
+    const img = document.createElement('img');
+    img.src = pack.thumbnail;
+    img.alt = pack.name;
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'cover';
+    imageEl.appendChild(img);
+  } else {
+    imageEl.innerHTML = '🎵';
+  }
+
+  // Beat count badge on image
+  const countBadge = document.createElement('div');
+  countBadge.className = 'pack-card-count';
+  countBadge.textContent = pack.beats.length;
+  imageEl.appendChild(countBadge);
+
+  // Add thumbnail button overlay
+  const thumbnailBtn = document.createElement('button');
+  thumbnailBtn.className = 'pack-thumbnail-btn';
+  thumbnailBtn.innerHTML = '📷';
+  thumbnailBtn.title = 'Change thumbnail';
+  thumbnailBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Don't trigger pack detail view
+    selectThumbnail(pack.id);
   });
+  imageEl.appendChild(thumbnailBtn);
 
-  const countEl = document.createElement('span');
-  countEl.className = 'pack-count';
-  countEl.textContent = `${pack.beats.length} beats`;
+  // Pack info
+  const infoEl = document.createElement('div');
+  infoEl.className = 'pack-card-info';
 
-  const deleteBtn = document.createElement('button');
-  deleteBtn.className = 'delete-pack-btn';
-  deleteBtn.textContent = 'Delete';
-  deleteBtn.addEventListener('click', () => deletePack(pack.id));
+  const titleEl = document.createElement('div');
+  titleEl.className = 'pack-card-title';
+  titleEl.textContent = pack.name;
 
-  headerEl.appendChild(titleEl);
-  headerEl.appendChild(countEl);
-  headerEl.appendChild(deleteBtn);
+  const subtitleEl = document.createElement('div');
+  subtitleEl.className = 'pack-card-subtitle';
+  subtitleEl.textContent = pack.beats.length === 1 ? '1 beat' : `${pack.beats.length} beats`;
 
-  // Pack beats container
-  const beatsEl = document.createElement('div');
-  beatsEl.className = 'pack-beats';
-  beatsEl.dataset.packId = pack.id;
+  infoEl.appendChild(titleEl);
+  infoEl.appendChild(subtitleEl);
 
-  // Add existing beats
-  pack.beats.forEach(beat => {
-    const beatItemEl = createPackBeatElement(beat, pack.id);
-    beatsEl.appendChild(beatItemEl);
-  });
+  packCardEl.appendChild(imageEl);
+  packCardEl.appendChild(infoEl);
+
+  // Click to open pack detail
+  packCardEl.addEventListener('click', () => showPackDetail(pack.id));
 
   // Drop zone events
-  beatsEl.addEventListener('dragover', handleDragOver);
-  beatsEl.addEventListener('dragleave', handleDragLeave);
-  beatsEl.addEventListener('drop', (e) => handleDrop(e, pack.id));
+  packCardEl.addEventListener('dragover', handleDragOver);
+  packCardEl.addEventListener('dragleave', handleDragLeave);
+  packCardEl.addEventListener('drop', (e) => handleDrop(e, pack.id));
 
-  packEl.appendChild(headerEl);
-  packEl.appendChild(beatsEl);
-
-  return packEl;
+  return packCardEl;
 }
 
-function createPackBeatElement(beat, packId) {
+function createPackBeatElement(beat, packId, index) {
   const beatItemEl = document.createElement('div');
   beatItemEl.className = 'pack-beat-item';
   beatItemEl.dataset.beatPath = beat.path;
   beatItemEl.dataset.beatName = beat.name;
   beatItemEl.draggable = true;
+
+  // Add number badge
+  const numberBadge = document.createElement('div');
+  numberBadge.className = 'beat-number-badge';
+  numberBadge.textContent = index + 1;
 
   const nameEl = document.createElement('span');
   nameEl.textContent = beat.name;
@@ -394,22 +576,25 @@ function createPackBeatElement(beat, packId) {
     }
   });
 
+  beatItemEl.appendChild(numberBadge);
   beatItemEl.appendChild(nameEl);
   beatItemEl.appendChild(removeBtn);
 
   return beatItemEl;
 }
 
-function deletePack(packId) {
-  packs = packs.filter(p => p.id !== packId);
-  renderPacks();
-  saveData();
-}
-
 function removeBeatFromPack(packId, beatPath) {
   const pack = packs.find(p => p.id === packId);
   if (pack) {
     pack.beats = pack.beats.filter(b => b.path !== beatPath);
+
+    // Update UI based on current view
+    if (currentPackId === packId) {
+      // Update detail view
+      packDetailCountEl.textContent = `${pack.beats.length} beats`;
+      renderPackDetailBeats();
+    }
+
     renderPacks();
     saveData();
   }
@@ -466,11 +651,155 @@ function handleDrop(e, packId) {
     }
 
     pack.beats.push(newBeat);
+
+    // Update UI based on current view
+    if (currentPackId === packId) {
+      // Update detail view
+      packDetailCountEl.textContent = `${pack.beats.length} beats`;
+      renderPackDetailBeats();
+    }
+
     renderPacks();
     saveData();
   }
 
   draggedBeat = null;
+}
+
+// Function to select thumbnail image for a pack
+async function selectThumbnail(packId) {
+  const pack = packs.find(p => p.id === packId);
+  if (!pack) return;
+
+  if (isElectron) {
+    // Electron mode - use IPC to show native file picker
+    const imagePath = await ipcRenderer.invoke('select-image');
+    if (imagePath) {
+      // Use file:// protocol for local file path
+      pack.thumbnail = 'file:///' + imagePath.replace(/\\/g, '/');
+      renderPacks();
+      saveData();
+    }
+  } else {
+    // Browser mode - use file input
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          pack.thumbnail = event.target.result; // Base64 data URL
+          renderPacks();
+          saveData();
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    input.click();
+  }
+}
+
+// Database modal functions
+async function showDatabaseInfo() {
+  databaseModal.style.display = 'flex';
+
+  if (isElectron) {
+    const dbPath = await ipcRenderer.invoke('get-database-path');
+    dbPathDisplay.textContent = dbPath;
+  } else {
+    dbPathDisplay.textContent = 'Browser Mode: Data stored in localStorage';
+    copyPathBtn.style.display = 'none';
+    exportDbBtn.textContent = 'Export as JSON';
+    importDbBtn.textContent = 'Import JSON';
+  }
+}
+
+function closeDatabaseModal() {
+  databaseModal.style.display = 'none';
+}
+
+async function copyDatabasePath() {
+  if (isElectron) {
+    const dbPath = await ipcRenderer.invoke('get-database-path');
+    navigator.clipboard.writeText(dbPath);
+
+    // Visual feedback
+    const originalText = copyPathBtn.textContent;
+    copyPathBtn.textContent = 'Copied!';
+    copyPathBtn.style.backgroundColor = '#00aa00';
+    setTimeout(() => {
+      copyPathBtn.textContent = originalText;
+      copyPathBtn.style.backgroundColor = '';
+    }, 2000);
+  }
+}
+
+async function exportDatabase() {
+  if (isElectron) {
+    const result = await ipcRenderer.invoke('export-database');
+    if (result.success) {
+      alert(`Database exported successfully to:\n${result.path}`);
+    } else {
+      alert(`Export failed: ${result.error}`);
+    }
+  } else {
+    // Browser mode - download as JSON
+    const data = localStorage.getItem('beats-data');
+    if (!data) {
+      alert('No data to export');
+      return;
+    }
+
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'beats-data-backup.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    alert('Database exported successfully!');
+  }
+}
+
+async function importDatabase() {
+  if (isElectron) {
+    const result = await ipcRenderer.invoke('import-database');
+    if (result.success) {
+      alert(`Database imported successfully from:\n${result.path}\n\nReloading application...`);
+      location.reload();
+    } else if (result.error !== 'Import cancelled') {
+      alert(`Import failed: ${result.error}`);
+    }
+  } else {
+    // Browser mode - upload JSON file
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'application/json';
+
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            localStorage.setItem('beats-data', JSON.stringify(data));
+            alert('Database imported successfully!\n\nReloading application...');
+            location.reload();
+          } catch (error) {
+            alert(`Import failed: Invalid JSON file`);
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+
+    input.click();
+  }
 }
 
 async function saveData() {

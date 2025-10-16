@@ -43,6 +43,20 @@ ipcMain.handle('select-folder', async () => {
   return null;
 });
 
+ipcMain.handle('select-image', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile'],
+    filters: [
+      { name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'] }
+    ]
+  });
+
+  if (!result.canceled && result.filePaths.length > 0) {
+    return result.filePaths[0];
+  }
+  return null;
+});
+
 ipcMain.handle('read-beats-folder', async (event, folderPath) => {
   try {
     const files = fs.readdirSync(folderPath);
@@ -75,6 +89,7 @@ ipcMain.handle('save-data', async (event, data) => {
 
 ipcMain.handle('load-data', async () => {
   const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
+  console.log('📂 Database file location:', dataPath);
   try {
     if (fs.existsSync(dataPath)) {
       const data = fs.readFileSync(dataPath, 'utf8');
@@ -85,6 +100,65 @@ ipcMain.handle('load-data', async () => {
     console.error('Error loading data:', error);
     return null;
   }
+});
+
+ipcMain.handle('get-database-path', async () => {
+  return path.join(app.getPath('userData'), 'beats-data.json');
+});
+
+ipcMain.handle('export-database', async () => {
+  const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
+
+  if (!fs.existsSync(dataPath)) {
+    return { success: false, error: 'No database found to export' };
+  }
+
+  const result = await dialog.showSaveDialog(mainWindow, {
+    defaultPath: 'beats-data-backup.json',
+    filters: [
+      { name: 'JSON', extensions: ['json'] }
+    ]
+  });
+
+  if (!result.canceled && result.filePath) {
+    try {
+      fs.copyFileSync(dataPath, result.filePath);
+      return { success: true, path: result.filePath };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  return { success: false, error: 'Export cancelled' };
+});
+
+ipcMain.handle('import-database', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile'],
+    filters: [
+      { name: 'JSON', extensions: ['json'] }
+    ]
+  });
+
+  if (!result.canceled && result.filePaths.length > 0) {
+    try {
+      const importPath = result.filePaths[0];
+      const data = fs.readFileSync(importPath, 'utf8');
+
+      // Validate JSON
+      JSON.parse(data);
+
+      // Copy to database location
+      const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
+      fs.writeFileSync(dataPath, data);
+
+      return { success: true, path: importPath };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  return { success: false, error: 'Import cancelled' };
 });
 
 ipcMain.on('ondragstart', (event, filePath) => {
