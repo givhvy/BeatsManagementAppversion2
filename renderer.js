@@ -25,6 +25,11 @@ const copyPathBtn = document.getElementById('copy-path-btn');
 const exportDbBtn = document.getElementById('export-db-btn');
 const importDbBtn = document.getElementById('import-db-btn');
 
+// Context menu elements
+const beatContextMenu = document.getElementById('beat-context-menu');
+const markLastUsedBtn = document.getElementById('mark-last-used');
+const unmarkLastUsedBtn = document.getElementById('unmark-last-used');
+
 // Pack detail panel elements
 const middlePanelEl = document.getElementById('middle-panel');
 const rightPanelEl = document.getElementById('right-panel');
@@ -35,6 +40,9 @@ const packDetailBeatsEl = document.getElementById('pack-detail-beats');
 const deleteCurrentPackBtn = document.getElementById('delete-current-pack-btn');
 
 let currentPackId = null;
+
+// Context menu state
+let contextMenuTarget = null; // Stores {packId, beatPath}
 
 // Audio Player Elements
 const audioElement = document.getElementById('audio-element');
@@ -117,6 +125,31 @@ async function init() {
         saveData();
       }
     }
+  });
+
+  // Context menu event listeners
+  markLastUsedBtn.addEventListener('click', () => {
+    if (contextMenuTarget) {
+      markBeatAsLastUsed(contextMenuTarget.packId, contextMenuTarget.beatPath);
+    }
+    hideContextMenu();
+  });
+
+  unmarkLastUsedBtn.addEventListener('click', () => {
+    if (contextMenuTarget) {
+      unmarkBeatAsLastUsed(contextMenuTarget.packId, contextMenuTarget.beatPath);
+    }
+    hideContextMenu();
+  });
+
+  // Hide context menu when clicking anywhere
+  document.addEventListener('click', () => {
+    hideContextMenu();
+  });
+
+  // Prevent context menu from closing when clicking inside it
+  beatContextMenu.addEventListener('click', (e) => {
+    e.stopPropagation();
   });
 
   // Audio player event listeners
@@ -642,10 +675,24 @@ function createPackBeatElement(beat, packId, index) {
   numberBadge.className = 'beat-number-badge';
   numberBadge.textContent = index + 1;
 
+  // Container for name and badges
+  const contentContainer = document.createElement('div');
+  contentContainer.className = 'beat-content-container';
+
   const nameEl = document.createElement('span');
   // Remove file extension from display name
   const displayName = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
   nameEl.textContent = displayName;
+
+  contentContainer.appendChild(nameEl);
+
+  // Add "Last Used" badge if marked
+  if (beat.lastUsed) {
+    const lastUsedBadge = document.createElement('span');
+    lastUsedBadge.className = 'last-used-badge';
+    lastUsedBadge.textContent = 'Last Used';
+    contentContainer.appendChild(lastUsedBadge);
+  }
 
   const removeBtn = document.createElement('button');
   removeBtn.className = 'remove-beat-btn';
@@ -685,11 +732,70 @@ function createPackBeatElement(beat, packId, index) {
     }
   });
 
+  // Right-click context menu
+  beatItemEl.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    showContextMenu(e.clientX, e.clientY, packId, beat.path, beat.lastUsed);
+  });
+
   beatItemEl.appendChild(numberBadge);
-  beatItemEl.appendChild(nameEl);
+  beatItemEl.appendChild(contentContainer);
   beatItemEl.appendChild(removeBtn);
 
   return beatItemEl;
+}
+
+// Context menu functions
+function showContextMenu(x, y, packId, beatPath, isLastUsed) {
+  contextMenuTarget = { packId, beatPath };
+
+  // Show/hide menu items based on current state
+  if (isLastUsed) {
+    markLastUsedBtn.style.display = 'none';
+    unmarkLastUsedBtn.style.display = 'block';
+  } else {
+    markLastUsedBtn.style.display = 'block';
+    unmarkLastUsedBtn.style.display = 'none';
+  }
+
+  beatContextMenu.style.display = 'block';
+  beatContextMenu.style.left = `${x}px`;
+  beatContextMenu.style.top = `${y}px`;
+}
+
+function hideContextMenu() {
+  beatContextMenu.style.display = 'none';
+  contextMenuTarget = null;
+}
+
+function markBeatAsLastUsed(packId, beatPath) {
+  const pack = packs.find(p => p.id === packId);
+  if (pack) {
+    // First, remove lastUsed from all beats in this pack
+    pack.beats.forEach(b => {
+      b.lastUsed = false;
+    });
+
+    // Then mark the selected beat as last used
+    const beat = pack.beats.find(b => b.path === beatPath);
+    if (beat) {
+      beat.lastUsed = true;
+      renderPackDetailBeats();
+      saveData();
+    }
+  }
+}
+
+function unmarkBeatAsLastUsed(packId, beatPath) {
+  const pack = packs.find(p => p.id === packId);
+  if (pack) {
+    const beat = pack.beats.find(b => b.path === beatPath);
+    if (beat) {
+      beat.lastUsed = false;
+      renderPackDetailBeats();
+      saveData();
+    }
+  }
 }
 
 function removeBeatFromPack(packId, beatPath) {

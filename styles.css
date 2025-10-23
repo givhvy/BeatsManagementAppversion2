@@ -396,13 +396,6 @@ body {
   flex-shrink: 0;
 }
 
-.pack-beat-item > span {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .pack-beat-item:hover {
   background-color: #4a4a4a;
 }
@@ -424,6 +417,55 @@ body {
 
 .remove-beat-btn:hover {
   opacity: 1;
+}
+
+.beat-content-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.beat-content-container > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.last-used-badge {
+  background-color: #ff9500;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Context Menu */
+.context-menu {
+  position: fixed;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  min-width: 180px;
+  padding: 4px 0;
+}
+
+.context-menu-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #fff;
+  transition: background-color 0.15s;
+}
+
+.context-menu-item:hover {
+  background-color: #0066ff;
 }
 
 /* Audio Player */
