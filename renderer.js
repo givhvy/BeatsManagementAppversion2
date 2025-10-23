@@ -113,6 +113,7 @@ async function init() {
       if (pack) {
         pack.name = e.target.value;
         renderPacks();
+        renderBeats(); // Update beats list to reflect new pack name in tags
         saveData();
       }
     }
@@ -169,6 +170,7 @@ function deleteCurrentPack() {
     packs = packs.filter(p => p.id !== currentPackId);
     showPacksGrid();
     renderPacks();
+    renderBeats(); // Update beats list to remove deleted pack tags
     saveData();
   }
 }
@@ -681,6 +683,7 @@ function removeBeatFromPack(packId, beatPath) {
     }
 
     renderPacks();
+    renderBeats(); // Update beats list to remove pack tags
     saveData();
   }
 }
@@ -745,6 +748,7 @@ function handleDrop(e, packId) {
     }
 
     renderPacks();
+    renderBeats(); // Update beats list to show new pack tags
     saveData();
   }
 
