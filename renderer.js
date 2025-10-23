@@ -16,6 +16,7 @@ const folderPathEl = document.getElementById('folder-path');
 const beatsListEl = document.getElementById('beats-list');
 const packsGridEl = document.getElementById('packs-grid');
 const filterInput = document.getElementById('filter-input');
+const packFilterInput = document.getElementById('pack-filter-input');
 const databaseInfoBtn = document.getElementById('database-info-btn');
 const databaseModal = document.getElementById('database-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
@@ -88,6 +89,7 @@ async function init() {
   refreshBeatsBtn.addEventListener('click', refreshBeats);
   createPackBtn.addEventListener('click', createPack);
   filterInput.addEventListener('input', renderBeats);
+  packFilterInput.addEventListener('input', renderPacks);
   backToPacksBtn.addEventListener('click', showPacksGrid);
   deleteCurrentPackBtn.addEventListener('click', deleteCurrentPack);
 
@@ -228,7 +230,9 @@ function playBeat(beatPath, beatName) {
   currentBeat = { path: beatPath, name: beatName };
   audioElement.src = beatPath;
   audioElement.play();
-  nowPlayingEl.textContent = beatName;
+  // Remove file extension from display name
+  const displayName = beatName.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+  nowPlayingEl.textContent = displayName;
   playPauseBtn.disabled = false;
   updatePlayingState();
 }
@@ -354,6 +358,18 @@ function sortBeatsByNumber(beats) {
   });
 }
 
+// Helper function to find which packs contain a beat
+function getPacksForBeat(beatPath) {
+  return packs.filter(pack =>
+    pack.beats.some(b => b.path === beatPath)
+  );
+}
+
+// Helper function to format pack name as tag (returns full pack name)
+function formatPackTag(packName) {
+  return packName;
+}
+
 function renderBeats() {
   beatsListEl.innerHTML = '';
 
@@ -389,11 +405,35 @@ function renderBeats() {
     beatEl.dataset.beatPath = beat.path;
     beatEl.dataset.beatName = beat.name;
 
+    // Create container for beat name and tags
+    const beatContentEl = document.createElement('div');
+    beatContentEl.className = 'beat-content';
+
     const beatNameEl = document.createElement('div');
     beatNameEl.className = 'beat-name';
-    beatNameEl.textContent = beat.name;
+    // Remove file extension from display name
+    const displayName = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+    beatNameEl.textContent = displayName;
 
-    beatEl.appendChild(beatNameEl);
+    beatContentEl.appendChild(beatNameEl);
+
+    // Find packs containing this beat and add tags
+    const containingPacks = getPacksForBeat(beat.path);
+    if (containingPacks.length > 0) {
+      const tagsContainer = document.createElement('div');
+      tagsContainer.className = 'beat-tags';
+
+      containingPacks.forEach(pack => {
+        const tag = document.createElement('span');
+        tag.className = 'pack-tag';
+        tag.textContent = formatPackTag(pack.name);
+        tagsContainer.appendChild(tag);
+      });
+
+      beatContentEl.appendChild(tagsContainer);
+    }
+
+    beatEl.appendChild(beatContentEl);
     beatsListEl.appendChild(beatEl);
 
     // Click to play
@@ -441,6 +481,27 @@ function createPack() {
   saveData();
 }
 
+// Helper function to extract pack number from name (e.g., "C2 - Boom Bap" -> 2)
+function extractPackNumber(packName) {
+  const match = packName.match(/[cC]?(\d+)/);
+  return match ? parseInt(match[1]) : null;
+}
+
+// Helper function to sort packs by number (ascending order)
+function sortPacksByNumber(packs) {
+  return packs.slice().sort((a, b) => {
+    const numA = extractPackNumber(a.name);
+    const numB = extractPackNumber(b.name);
+
+    if (numA !== null && numB !== null) {
+      return numA - numB; // Ascending order (C1, C2, C3...)
+    }
+    if (numA !== null) return -1;
+    if (numB !== null) return 1;
+    return a.name.localeCompare(b.name);
+  });
+}
+
 function renderPacks() {
   packsGridEl.innerHTML = '';
 
@@ -449,7 +510,29 @@ function renderPacks() {
     return;
   }
 
-  packs.forEach(pack => {
+  // Get filter value
+  const filterValue = packFilterInput.value.trim().toLowerCase();
+
+  // Filter packs by number if filter is provided
+  let filteredPacks = packs;
+  if (filterValue) {
+    filteredPacks = packs.filter(pack => {
+      const num = extractPackNumber(pack.name);
+      // Support both "C2" and "2" formats
+      const filterNum = extractPackNumber(filterValue);
+      return num !== null && num === filterNum;
+    });
+  }
+
+  // Sort filtered packs by number (ascending order)
+  const sortedPacks = sortPacksByNumber(filteredPacks);
+
+  if (sortedPacks.length === 0) {
+    packsGridEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">No packs match the filter</div>';
+    return;
+  }
+
+  sortedPacks.forEach(pack => {
     const packCardEl = createPackCard(pack);
     packsGridEl.appendChild(packCardEl);
   });
@@ -536,7 +619,9 @@ function createPackBeatElement(beat, packId, index) {
   numberBadge.textContent = index + 1;
 
   const nameEl = document.createElement('span');
-  nameEl.textContent = beat.name;
+  // Remove file extension from display name
+  const displayName = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+  nameEl.textContent = displayName;
 
   const removeBtn = document.createElement('button');
   removeBtn.className = 'remove-beat-btn';

@@ -154,8 +154,30 @@ body {
   cursor: grabbing;
 }
 
+.beat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .beat-name {
   font-size: 14px;
+  font-weight: 500;
+}
+
+.beat-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.pack-tag {
+  display: inline-block;
+  background-color: #0066ff;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
   font-weight: 500;
 }
 
