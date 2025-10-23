@@ -276,6 +276,36 @@ body {
   color: #999;
 }
 
+.pack-progress-container {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pack-progress-bar {
+  flex: 1;
+  height: 6px;
+  background-color: #333;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.pack-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0066ff, #00aaff);
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+.pack-progress-text {
+  font-size: 11px;
+  color: #999;
+  font-weight: 500;
+  min-width: 35px;
+  text-align: right;
+}
+
 /* Pack Detail Panel */
 .btn-back {
   background-color: transparent;

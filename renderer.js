@@ -591,8 +591,30 @@ function createPackCard(pack) {
   subtitleEl.className = 'pack-card-subtitle';
   subtitleEl.textContent = pack.beats.length === 1 ? '1 beat' : `${pack.beats.length} beats`;
 
+  // Progress bar (goal: 40 beats)
+  const progressContainer = document.createElement('div');
+  progressContainer.className = 'pack-progress-container';
+
+  const progressBar = document.createElement('div');
+  progressBar.className = 'pack-progress-bar';
+
+  const progressFill = document.createElement('div');
+  progressFill.className = 'pack-progress-fill';
+  const progressPercent = Math.min((pack.beats.length / 40) * 100, 100);
+  progressFill.style.width = `${progressPercent}%`;
+
+  progressBar.appendChild(progressFill);
+
+  const progressText = document.createElement('div');
+  progressText.className = 'pack-progress-text';
+  progressText.textContent = `${pack.beats.length}/40`;
+
+  progressContainer.appendChild(progressBar);
+  progressContainer.appendChild(progressText);
+
   infoEl.appendChild(titleEl);
   infoEl.appendChild(subtitleEl);
+  infoEl.appendChild(progressContainer);
 
   packCardEl.appendChild(imageEl);
   packCardEl.appendChild(infoEl);
