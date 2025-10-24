@@ -39,6 +39,10 @@ const packDetailCountEl = document.getElementById('pack-detail-count');
 const packDetailBeatsEl = document.getElementById('pack-detail-beats');
 const deleteCurrentPackBtn = document.getElementById('delete-current-pack-btn');
 
+// Total beats elements
+const totalBeatsCountEl = document.getElementById('total-beats-count');
+const totalBeatsProgressFillEl = document.getElementById('total-beats-progress-fill');
+
 let currentPackId = null;
 
 // Context menu state
@@ -537,8 +541,24 @@ function sortPacksByNumber(packs) {
   });
 }
 
+function updateTotalBeatsCounter() {
+  // Calculate total beats across all packs
+  const totalBeats = packs.reduce((sum, pack) => sum + pack.beats.length, 0);
+  const goal = 20000;
+  const percentage = Math.min((totalBeats / goal) * 100, 100);
+
+  // Update text
+  totalBeatsCountEl.textContent = `${totalBeats}/${goal}`;
+
+  // Update progress bar
+  totalBeatsProgressFillEl.style.width = `${percentage}%`;
+}
+
 function renderPacks() {
   packsGridEl.innerHTML = '';
+
+  // Update total beats counter
+  updateTotalBeatsCounter();
 
   if (packs.length === 0) {
     packsGridEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">No packs yet. Create one to organize your beats!</div>';
