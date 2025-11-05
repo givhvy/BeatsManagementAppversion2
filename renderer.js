@@ -1000,6 +1000,22 @@ function createPack() {
   saveData();
 }
 
+// Helper function to format timestamp as time ago
+function formatTimeAgo(timestamp) {
+  const now = Date.now();
+  const diff = now - timestamp;
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `${days}d ago`;
+  if (hours > 0) return `${hours}h ago`;
+  if (minutes > 0) return `${minutes}m ago`;
+  return 'just now';
+}
+
 // Helper function to extract pack number from name (e.g., "C2 - Boom Bap" -> 2)
 function extractPackNumber(packName) {
   const match = packName.match(/[cC]?(\d+)/);
@@ -1166,6 +1182,14 @@ function createPackCard(pack) {
   infoEl.appendChild(titleEl);
   infoEl.appendChild(subtitleEl);
   infoEl.appendChild(progressContainer);
+
+  // Last used display
+  if (pack.lastUsed) {
+    const lastUsedEl = document.createElement('div');
+    lastUsedEl.style.cssText = 'font-size: 11px; color: #888; margin-top: 6px;';
+    lastUsedEl.textContent = `Last used: ${formatTimeAgo(pack.lastUsed)}`;
+    infoEl.appendChild(lastUsedEl);
+  }
 
   packCardEl.appendChild(imageEl);
   packCardEl.appendChild(infoEl);
@@ -1385,6 +1409,9 @@ function handleDrop(e, packId) {
     }
 
     pack.beats.push(newBeat);
+
+    // Update last used timestamp
+    pack.lastUsed = Date.now();
 
     // Update UI based on current view
     if (currentPackId === packId) {
