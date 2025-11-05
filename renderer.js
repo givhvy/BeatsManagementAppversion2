@@ -57,10 +57,16 @@ const folderPathEl = document.getElementById('folder-path');
 const beatsListEl = document.getElementById('beats-list');
 const packsGridEl = document.getElementById('packs-grid');
 const filterInput = document.getElementById('filter-input');
+const filterContainer = document.getElementById('filter-container');
 const packFilterInput = document.getElementById('pack-filter-input');
 const tabButtons = document.querySelectorAll('.tab-btn');
 const breadcrumbContainer = document.getElementById('breadcrumb-container');
 const breadcrumbEl = document.getElementById('breadcrumb');
+
+// Resize handle elements
+const resizeHandle = document.getElementById('resize-handle');
+const leftPanel = document.querySelector('.left-panel');
+
 const databaseInfoBtn = document.getElementById('database-info-btn');
 const databaseModal = document.getElementById('database-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
@@ -313,6 +319,44 @@ async function init() {
   if (isElectron) {
     await loadChannelData();
   }
+
+  // Setup resize functionality
+  setupResizeHandle();
+}
+
+// Resize handle functionality
+function setupResizeHandle() {
+  let isResizing = false;
+  let startX = 0;
+  let startWidth = 0;
+
+  resizeHandle.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    startX = e.clientX;
+    startWidth = leftPanel.offsetWidth;
+
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+
+    const deltaX = e.clientX - startX;
+    const newWidth = startWidth + deltaX;
+
+    // Apply min/max width constraints (250px - 800px)
+    const constrainedWidth = Math.max(250, Math.min(800, newWidth));
+    leftPanel.style.width = `${constrainedWidth}px`;
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isResizing) {
+      isResizing = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+  });
 }
 
 function showPacksGrid() {
@@ -529,6 +573,13 @@ function updateFolderDisplay() {
     updateChannelStats();
   } else {
     channelManagementEl.style.display = 'none';
+  }
+
+  // Hide filter for "untagged" (Tagged Beats) tab
+  if (currentFolderType === 'untagged') {
+    filterContainer.style.display = 'none';
+  } else {
+    filterContainer.style.display = 'block';
   }
 }
 
