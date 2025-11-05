@@ -247,11 +247,14 @@ ipcMain.handle('add-email', async (event, emailData) => {
       fs.writeFileSync(emailFilePath, '', 'utf8');
     }
 
-    // Append new email:password to file
-    const newLine = `${emailData.email}:${emailData.password}\n`;
+    // Append new email:password:recovery to file
+    const recovery = emailData.recovery || '';
+    const newLine = recovery
+      ? `${emailData.email}:${emailData.password}:${recovery}\n`
+      : `${emailData.email}:${emailData.password}\n`;
     fs.appendFileSync(emailFilePath, newLine, 'utf8');
 
-    console.log(`✅ Added new email: ${emailData.email}`);
+    console.log(`✅ Added new email: ${emailData.email}${recovery ? ' with recovery' : ''}`);
     return { success: true, error: null };
   } catch (error) {
     console.error('Error adding email:', error);

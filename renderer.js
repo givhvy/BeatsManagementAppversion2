@@ -112,6 +112,7 @@ const addEmailModal = document.getElementById('add-email-modal');
 const closeAddEmailModalBtn = document.getElementById('close-add-email-modal-btn');
 const newEmailInput = document.getElementById('new-email-input');
 const newPasswordInput = document.getElementById('new-password-input');
+const newRecoveryInput = document.getElementById('new-recovery-input');
 const confirmAddEmailBtn = document.getElementById('confirm-add-email-btn');
 const cancelAddEmailBtn = document.getElementById('cancel-add-email-btn');
 
@@ -279,6 +280,39 @@ async function init() {
   addEmailModal.addEventListener('click', (e) => {
     if (e.target === addEmailModal) {
       closeAddEmailModal();
+    }
+  });
+
+  // Smart paste detection for email input
+  newEmailInput.addEventListener('paste', (e) => {
+    const pastedText = e.clipboardData.getData('text');
+
+    // Try to parse format: email[TAB]password|recovery
+    if (pastedText.includes('\t')) {
+      e.preventDefault(); // Prevent default paste
+
+      const parts = pastedText.split('\t');
+      if (parts.length >= 2) {
+        const email = parts[0].trim();
+        const passwordAndRecovery = parts[1].trim();
+
+        // Split password and recovery email
+        let password = passwordAndRecovery;
+        let recovery = '';
+
+        if (passwordAndRecovery.includes('|')) {
+          const subParts = passwordAndRecovery.split('|');
+          password = subParts[0].trim();
+          recovery = subParts[1] ? subParts[1].trim() : '';
+        }
+
+        // Auto-fill all three fields
+        newEmailInput.value = email;
+        newPasswordInput.value = password;
+        newRecoveryInput.value = recovery;
+
+        console.log('✅ Smart paste detected and parsed:', { email, password, recovery });
+      }
     }
   });
 
@@ -1487,6 +1521,7 @@ function showAddEmailModal() {
   // Clear previous inputs
   newEmailInput.value = '';
   newPasswordInput.value = '';
+  newRecoveryInput.value = '';
   addEmailModal.style.display = 'flex';
 }
 
@@ -1497,6 +1532,7 @@ function closeAddEmailModal() {
 async function addNewEmail() {
   const email = newEmailInput.value.trim();
   const password = newPasswordInput.value.trim();
+  const recovery = newRecoveryInput.value.trim();
 
   if (!email) {
     alert('Please enter an email address');
@@ -1517,7 +1553,7 @@ async function addNewEmail() {
 
   // Add email via IPC
   if (isElectron) {
-    const result = await ipcRenderer.invoke('add-email', { email, password });
+    const result = await ipcRenderer.invoke('add-email', { email, password, recovery });
     if (result.success) {
       alert('✅ Email added successfully!');
       closeAddEmailModal();

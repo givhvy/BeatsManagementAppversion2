@@ -201,15 +201,22 @@
       <div class="modal-body">
         <div class="info-section">
           <label>Email:</label>
-          <input type="email" id="new-email-input" placeholder="example@gmail.com" class="modal-input">
+          <input type="text" id="new-email-input" placeholder="example@gmail.com" class="modal-input">
+          <p style="font-size: 11px; color: #666; margin-top: 5px; margin-bottom: 0;">
+            💡 Tip: Paste full format: <code>email[TAB]password|recovery</code>
+          </p>
         </div>
         <div class="info-section" style="margin-top: 15px;">
           <label>Password:</label>
           <input type="text" id="new-password-input" placeholder="Enter password" class="modal-input">
         </div>
         <div class="info-section" style="margin-top: 15px;">
+          <label>Recovery Email (optional):</label>
+          <input type="text" id="new-recovery-input" placeholder="recovery@gmail.com" class="modal-input">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
           <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
-            This email and password will be saved to email.txt file and used for creating new channels.
+            Saved as: <code>email:password:recovery</code> in email.txt file
           </p>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
