@@ -396,7 +396,8 @@ function renderPackEmailInfo() {
         <div style="font-weight: bold; color: #f59e0b; font-size: 14px; margin-bottom: 10px;">⚠️ No Email Assigned</div>
         <div style="font-size: 12px; color: #999; margin-bottom: 10px;">Add an email account for this pack:</div>
         <input type="text" id="pack-email-input" placeholder="email@example.com" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 8px; font-size: 13px;">
-        <input type="text" id="pack-password-input" placeholder="password" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 10px; font-size: 13px;">
+        <input type="text" id="pack-password-input" placeholder="password" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 8px; font-size: 13px;">
+        <input type="text" id="pack-recovery-input" placeholder="recovery email (optional)" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 10px; font-size: 13px;">
         <button id="save-pack-email-btn" class="btn-primary" style="width: 100%; padding: 8px;">Save Email</button>
       </div>
     `;
@@ -405,11 +406,13 @@ function renderPackEmailInfo() {
     const saveBtn = document.getElementById('save-pack-email-btn');
     const emailInput = document.getElementById('pack-email-input');
     const passwordInput = document.getElementById('pack-password-input');
+    const recoveryInput = document.getElementById('pack-recovery-input');
 
     if (saveBtn) {
       saveBtn.addEventListener('click', async () => {
         const email = emailInput.value.trim();
         const password = passwordInput.value.trim();
+        const recovery = recoveryInput.value.trim();
 
         if (!email || !password) {
           alert('Please enter both email and password');
@@ -426,15 +429,16 @@ function renderPackEmailInfo() {
         // Update pack
         pack.email = email;
         pack.password = password;
-        pack.description = `${email}:${password}`;
+        pack.description = recovery ? `${email}:${password}:${recovery}` : `${email}:${password}`;
 
         // Mark email as used in emails array
         const emailObj = emails.find(e => e.email === email);
         if (emailObj) {
           emailObj.used = true;
+          if (recovery) emailObj.recovery = recovery;
         } else {
           // Add to emails array if not exists
-          emails.push({ email, password, used: true, recovery: '' });
+          emails.push({ email, password, used: true, recovery: recovery || '' });
         }
 
         await saveData();
