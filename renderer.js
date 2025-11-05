@@ -1501,21 +1501,25 @@ async function addNewEmail() {
   }
 
   // Parse multiple lines
-  const lines = bulkText.split('\n').filter(line => line.trim());
+  const lines = bulkText.split('\n');
   const emailsToAdd = [];
 
-  for (const line of lines) {
-    const trimmedLine = line.trim();
+  for (let line of lines) {
+    // Remove quotes from start and end FIRST
+    line = line.trim();
+    if (line.startsWith('"')) line = line.substring(1);
+    if (line.endsWith('"')) line = line.substring(0, line.length - 1);
+    line = line.trim(); // Trim again after removing quotes
 
-    // Skip empty lines and lines that look like quotes
-    if (!trimmedLine || trimmedLine === '"') continue;
+    // Skip empty lines
+    if (!line) continue;
 
     // Parse format: email[TAB]password|recovery
-    if (trimmedLine.includes('\t')) {
-      const parts = trimmedLine.split('\t');
+    if (line.includes('\t')) {
+      const parts = line.split('\t').filter(p => p.trim()); // Filter out empty parts
       if (parts.length >= 2) {
-        const email = parts[0].trim().replace(/^"/, '').replace(/"$/, ''); // Remove quotes
-        const passwordAndRecovery = parts[1].trim();
+        const email = parts[parts.length - 2].trim(); // Second to last (email)
+        const passwordAndRecovery = parts[parts.length - 1].trim(); // Last part (password|recovery)
 
         // Split password and recovery email
         let password = passwordAndRecovery;
@@ -1524,17 +1528,22 @@ async function addNewEmail() {
         if (passwordAndRecovery.includes('|')) {
           const subParts = passwordAndRecovery.split('|');
           password = subParts[0].trim();
-          recovery = subParts[1] ? subParts[1].trim().replace(/^"/, '').replace(/"$/, '') : '';
+          recovery = subParts[1] ? subParts[1].trim() : '';
         }
 
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (emailRegex.test(email) && password) {
           emailsToAdd.push({ email, password, recovery });
+          console.log('✅ Parsed:', email);
         } else {
-          console.warn('Skipping invalid line:', trimmedLine);
+          console.warn('⚠️ Skipping invalid line:', line);
         }
+      } else {
+        console.warn('⚠️ Not enough parts in line:', line);
       }
+    } else {
+      console.warn('⚠️ No TAB found in line:', line);
     }
   }
 
