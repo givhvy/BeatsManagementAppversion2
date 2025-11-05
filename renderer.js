@@ -82,6 +82,7 @@ const rightPanelEl = document.getElementById('right-panel');
 const backToPacksBtn = document.getElementById('back-to-packs-btn');
 const packDetailTitleEl = document.getElementById('pack-detail-title');
 const packDetailCountEl = document.getElementById('pack-detail-count');
+const packEmailInfoEl = document.getElementById('pack-email-info');
 const packDetailBeatsEl = document.getElementById('pack-detail-beats');
 const deleteCurrentPackBtn = document.getElementById('delete-current-pack-btn');
 const toggleHidePackBtn = document.getElementById('toggle-hide-pack-btn');
@@ -337,6 +338,7 @@ function showPackDetail(packId) {
   // Update hide/unhide button text based on pack status
   toggleHidePackBtn.textContent = pack.hidden ? 'Unhide Pack' : 'Hide Pack';
 
+  renderPackEmailInfo();
   renderPackDetailBeats();
 }
 
@@ -360,6 +362,87 @@ function renderPackDetailBeats() {
   packDetailBeatsEl.addEventListener('dragover', handleDragOver);
   packDetailBeatsEl.addEventListener('dragleave', handleDragLeave);
   packDetailBeatsEl.addEventListener('drop', (e) => handleDrop(e, currentPackId));
+}
+
+function renderPackEmailInfo() {
+  const pack = packs.find(p => p.id === currentPackId);
+  if (!pack) return;
+
+  packEmailInfoEl.innerHTML = '';
+
+  const hasEmail = pack.email && pack.email !== 'No email available yet';
+
+  if (hasEmail) {
+    // Show existing email/password
+    packEmailInfoEl.innerHTML = `
+      <div style="margin-bottom: 10px;">
+        <div style="font-weight: bold; color: #3b82f6; font-size: 14px; margin-bottom: 8px;">📧 Account Information</div>
+        <div style="font-size: 13px; color: #ddd; margin-bottom: 5px;">
+          <span style="color: #999;">Email:</span> <span style="font-family: monospace;">${pack.email}</span>
+        </div>
+        <div style="font-size: 13px; color: #ddd; margin-bottom: 5px;">
+          <span style="color: #999;">Password:</span> <span style="font-family: monospace;">${pack.password || 'N/A'}</span>
+        </div>
+        ${pack.description && pack.description.includes(':') ? `
+        <div style="font-size: 11px; color: #666; margin-top: 5px;">
+          <span style="color: #888;">Recovery:</span> ${pack.description.split(':')[2] || 'N/A'}
+        </div>` : ''}
+      </div>
+    `;
+  } else {
+    // Show form to add email/password
+    packEmailInfoEl.innerHTML = `
+      <div>
+        <div style="font-weight: bold; color: #f59e0b; font-size: 14px; margin-bottom: 10px;">⚠️ No Email Assigned</div>
+        <div style="font-size: 12px; color: #999; margin-bottom: 10px;">Add an email account for this pack:</div>
+        <input type="text" id="pack-email-input" placeholder="email@example.com" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 8px; font-size: 13px;">
+        <input type="text" id="pack-password-input" placeholder="password" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 10px; font-size: 13px;">
+        <button id="save-pack-email-btn" class="btn-primary" style="width: 100%; padding: 8px;">Save Email</button>
+      </div>
+    `;
+
+    // Add event listener for save button
+    const saveBtn = document.getElementById('save-pack-email-btn');
+    const emailInput = document.getElementById('pack-email-input');
+    const passwordInput = document.getElementById('pack-password-input');
+
+    if (saveBtn) {
+      saveBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        if (!email || !password) {
+          alert('Please enter both email and password');
+          return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          alert('Please enter a valid email address');
+          return;
+        }
+
+        // Update pack
+        pack.email = email;
+        pack.password = password;
+        pack.description = `${email}:${password}`;
+
+        // Mark email as used in emails array
+        const emailObj = emails.find(e => e.email === email);
+        if (emailObj) {
+          emailObj.used = true;
+        } else {
+          // Add to emails array if not exists
+          emails.push({ email, password, used: true, recovery: '' });
+        }
+
+        await saveData();
+        renderPackEmailInfo(); // Re-render
+        alert('✅ Email saved successfully!');
+      });
+    }
+  }
 }
 
 function deleteCurrentPack() {
@@ -1021,7 +1104,7 @@ function createPackCard(pack) {
   } else {
     // Auto-generate text-based thumbnail with pack name
     const textThumb = document.createElement('div');
-    textThumb.style.cssText = 'width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 48px; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);';
+    textThumb.style.cssText = 'width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); font-size: 48px; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);';
     textThumb.textContent = pack.name;
     imageEl.appendChild(textThumb);
   }
