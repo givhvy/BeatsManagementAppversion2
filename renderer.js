@@ -63,10 +63,6 @@ const tabButtons = document.querySelectorAll('.tab-btn');
 const breadcrumbContainer = document.getElementById('breadcrumb-container');
 const breadcrumbEl = document.getElementById('breadcrumb');
 
-// Resize handle elements
-const resizeHandle = document.getElementById('resize-handle');
-const leftPanel = document.querySelector('.left-panel');
-
 const databaseInfoBtn = document.getElementById('database-info-btn');
 const databaseModal = document.getElementById('database-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
@@ -319,44 +315,6 @@ async function init() {
   if (isElectron) {
     await loadChannelData();
   }
-
-  // Setup resize functionality
-  setupResizeHandle();
-}
-
-// Resize handle functionality
-function setupResizeHandle() {
-  let isResizing = false;
-  let startX = 0;
-  let startWidth = 0;
-
-  resizeHandle.addEventListener('mousedown', (e) => {
-    isResizing = true;
-    startX = e.clientX;
-    startWidth = leftPanel.offsetWidth;
-
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isResizing) return;
-
-    const deltaX = e.clientX - startX;
-    const newWidth = startWidth + deltaX;
-
-    // Apply min/max width constraints (250px - 800px)
-    const constrainedWidth = Math.max(250, Math.min(800, newWidth));
-    leftPanel.style.width = `${constrainedWidth}px`;
-  });
-
-  document.addEventListener('mouseup', () => {
-    if (isResizing) {
-      isResizing = false;
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
-    }
-  });
 }
 
 function showPacksGrid() {
@@ -571,8 +529,20 @@ function updateFolderDisplay() {
   if (currentFolderType === 'untagged') {
     channelManagementEl.style.display = 'block';
     updateChannelStats();
+
+    // Show channel management buttons in header
+    createChannelsBtn.style.display = 'inline-block';
+    autoAddChannelBtn.style.display = 'inline-block';
+    addEmailBtn.style.display = 'inline-block';
+    viewEmailsBtn.style.display = 'inline-block';
   } else {
     channelManagementEl.style.display = 'none';
+
+    // Hide channel management buttons in header
+    createChannelsBtn.style.display = 'none';
+    autoAddChannelBtn.style.display = 'none';
+    addEmailBtn.style.display = 'none';
+    viewEmailsBtn.style.display = 'none';
   }
 
   // Hide filter for "untagged" (Tagged Beats) tab
@@ -1039,8 +1009,8 @@ function createPackCard(pack) {
   const imageEl = document.createElement('div');
   imageEl.className = 'pack-card-image';
 
-  // Show thumbnail image if available, otherwise show default icon
-  if (pack.thumbnail) {
+  // Show thumbnail image if available, otherwise show auto-generated text thumbnail
+  if (pack.thumbnail && pack.thumbnail !== 'auto') {
     const img = document.createElement('img');
     img.src = pack.thumbnail;
     img.alt = pack.name;
@@ -1049,7 +1019,11 @@ function createPackCard(pack) {
     img.style.objectFit = 'cover';
     imageEl.appendChild(img);
   } else {
-    imageEl.innerHTML = '🎵';
+    // Auto-generate text-based thumbnail with pack name
+    const textThumb = document.createElement('div');
+    textThumb.style.cssText = 'width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 48px; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);';
+    textThumb.textContent = pack.name;
+    imageEl.appendChild(textThumb);
   }
 
   // Beat count badge on image

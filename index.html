@@ -26,12 +26,6 @@
       <div class="folder-path" id="folder-path">No folder selected</div>
       <!-- Channel Management (only visible in Tagged Beats tab) -->
       <div class="channel-management" id="channel-management" style="display: none;">
-        <div class="channel-controls">
-          <button id="create-channels-btn" class="btn-primary" style="width: 100%;">Create Channels</button>
-          <button id="auto-add-channel-btn" class="btn-secondary" style="width: 100%; margin-top: 8px;">Auto Add Channel</button>
-          <button id="add-email-btn" class="btn-secondary" style="width: 100%; margin-top: 8px;">+ Add Email</button>
-          <button id="view-emails-btn" class="btn-secondary" style="width: 100%; margin-top: 8px;">📧 View Emails</button>
-        </div>
         <div class="channel-stats" id="channel-stats">
           <div class="stat-item">
             <span class="stat-label">Total Channels:</span>
@@ -59,14 +53,17 @@
       </div>
     </div>
 
-    <!-- Resize Handle -->
-    <div id="resize-handle" class="resize-handle"></div>
-
     <!-- Middle Panel - Packs Grid -->
     <div class="middle-panel" id="middle-panel">
       <div class="panel-header">
         <h2 id="packs-header-title">Packs</h2>
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <!-- Channel management buttons (only visible in Tagged Beats tab) -->
+          <button id="create-channels-btn" class="btn-primary" style="display: none;">Create Channels</button>
+          <button id="auto-add-channel-btn" class="btn-secondary" style="display: none;">Auto Add</button>
+          <button id="add-email-btn" class="btn-secondary" style="display: none;">+ Email</button>
+          <button id="view-emails-btn" class="btn-secondary" style="display: none;">📧 Emails</button>
+
           <button id="toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs">👁️ Hidden</button>
           <button id="database-info-btn" class="btn-secondary" title="Database Info">💾</button>
           <button id="create-pack-btn" class="btn-primary">+ Create Pack</button>

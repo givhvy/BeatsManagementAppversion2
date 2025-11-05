@@ -901,27 +901,3 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
-}
-
-/* Resize Handle */
-.resize-handle {
-  width: 5px;
-  background-color: #333;
-  cursor: col-resize;
-  flex-shrink: 0;
-  transition: background-color 0.2s;
-  position: relative;
-}
-
-.resize-handle:hover {
-  background-color: #4a90e2;
-}
-
-.resize-handle:active {
-  background-color: #0066ff;
-}
-
-.left-panel {
-  min-width: 250px;
-  max-width: 800px;
-}
