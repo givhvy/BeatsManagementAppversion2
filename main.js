@@ -239,6 +239,26 @@ ipcMain.handle('load-emails', async () => {
   }
 });
 
+ipcMain.handle('add-email', async (event, emailData) => {
+  const emailFilePath = 'F:\\PlaygroundTest\\BeatsManagement\\email.txt';
+  try {
+    // Create file if it doesn't exist
+    if (!fs.existsSync(emailFilePath)) {
+      fs.writeFileSync(emailFilePath, '', 'utf8');
+    }
+
+    // Append new email:password to file
+    const newLine = `${emailData.email}:${emailData.password}\n`;
+    fs.appendFileSync(emailFilePath, newLine, 'utf8');
+
+    console.log(`✅ Added new email: ${emailData.email}`);
+    return { success: true, error: null };
+  } catch (error) {
+    console.error('Error adding email:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Get all page folders from tagged directory
 ipcMain.handle('get-page-folders', async () => {
   const taggedPath = 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged';

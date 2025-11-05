@@ -96,6 +96,7 @@ const totalBeatsProgressFillEl = document.getElementById('total-beats-progress-f
 const channelManagementEl = document.getElementById('channel-management');
 const createChannelsBtn = document.getElementById('create-channels-btn');
 const autoAddChannelBtn = document.getElementById('auto-add-channel-btn');
+const addEmailBtn = document.getElementById('add-email-btn');
 const totalChannelsEl = document.getElementById('total-channels');
 const availableEmailsEl = document.getElementById('available-emails');
 const usedFoldersEl = document.getElementById('used-folders');
@@ -105,6 +106,14 @@ const numChannelsInput = document.getElementById('num-channels-input');
 const beatsPerChannelInput = document.getElementById('beats-per-channel-input');
 const confirmCreateChannelsBtn = document.getElementById('confirm-create-channels-btn');
 const cancelCreateChannelsBtn = document.getElementById('cancel-create-channels-btn');
+
+// Add email modal elements
+const addEmailModal = document.getElementById('add-email-modal');
+const closeAddEmailModalBtn = document.getElementById('close-add-email-modal-btn');
+const newEmailInput = document.getElementById('new-email-input');
+const newPasswordInput = document.getElementById('new-password-input');
+const confirmAddEmailBtn = document.getElementById('confirm-add-email-btn');
+const cancelAddEmailBtn = document.getElementById('cancel-add-email-btn');
 
 let currentPackId = null;
 let showingHiddenPacks = false; // Track if viewing hidden or active packs
@@ -257,6 +266,19 @@ async function init() {
   createChannelsModal.addEventListener('click', (e) => {
     if (e.target === createChannelsModal) {
       closeCreateChannelsModal();
+    }
+  });
+
+  // Add email modal listeners
+  addEmailBtn.addEventListener('click', showAddEmailModal);
+  closeAddEmailModalBtn.addEventListener('click', closeAddEmailModal);
+  cancelAddEmailBtn.addEventListener('click', closeAddEmailModal);
+  confirmAddEmailBtn.addEventListener('click', addNewEmail);
+
+  // Close add email modal when clicking outside
+  addEmailModal.addEventListener('click', (e) => {
+    if (e.target === addEmailModal) {
+      closeAddEmailModal();
     }
   });
 
@@ -1459,6 +1481,53 @@ function showCreateChannelsModal() {
 
 function closeCreateChannelsModal() {
   createChannelsModal.style.display = 'none';
+}
+
+function showAddEmailModal() {
+  // Clear previous inputs
+  newEmailInput.value = '';
+  newPasswordInput.value = '';
+  addEmailModal.style.display = 'flex';
+}
+
+function closeAddEmailModal() {
+  addEmailModal.style.display = 'none';
+}
+
+async function addNewEmail() {
+  const email = newEmailInput.value.trim();
+  const password = newPasswordInput.value.trim();
+
+  if (!email) {
+    alert('Please enter an email address');
+    return;
+  }
+
+  if (!password) {
+    alert('Please enter a password');
+    return;
+  }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert('Please enter a valid email address');
+    return;
+  }
+
+  // Add email via IPC
+  if (isElectron) {
+    const result = await ipcRenderer.invoke('add-email', { email, password });
+    if (result.success) {
+      alert('✅ Email added successfully!');
+      closeAddEmailModal();
+
+      // Reload emails to update the list
+      await loadChannelData();
+    } else {
+      alert(`❌ Failed to add email: ${result.error}`);
+    }
+  }
 }
 
 async function createChannels() {

@@ -29,6 +29,7 @@
         <div class="channel-controls">
           <button id="create-channels-btn" class="btn-primary" style="width: 100%;">Create Channels</button>
           <button id="auto-add-channel-btn" class="btn-secondary" style="width: 100%; margin-top: 8px;">Auto Add Channel</button>
+          <button id="add-email-btn" class="btn-secondary" style="width: 100%; margin-top: 8px;">+ Add Email</button>
         </div>
         <div class="channel-stats" id="channel-stats">
           <div class="stat-item">
@@ -185,6 +186,35 @@
         <div style="display: flex; gap: 10px; margin-top: 20px;">
           <button id="confirm-create-channels-btn" class="btn-primary">Create</button>
           <button id="cancel-create-channels-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Email Modal -->
+  <div id="add-email-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Email Account</h3>
+        <button id="close-add-email-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Email:</label>
+          <input type="email" id="new-email-input" placeholder="example@gmail.com" class="modal-input">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Password:</label>
+          <input type="text" id="new-password-input" placeholder="Enter password" class="modal-input">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
+            This email and password will be saved to email.txt file and used for creating new channels.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button id="confirm-add-email-btn" class="btn-primary">Add Email</button>
+          <button id="cancel-add-email-btn" class="btn-secondary">Cancel</button>
         </div>
       </div>
     </div>
