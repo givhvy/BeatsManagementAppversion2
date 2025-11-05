@@ -60,8 +60,9 @@
     <!-- Middle Panel - Packs Grid -->
     <div class="middle-panel" id="middle-panel">
       <div class="panel-header">
-        <h2>Packs</h2>
+        <h2 id="packs-header-title">Packs</h2>
         <div style="display: flex; gap: 8px;">
+          <button id="toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs">👁️ Hidden</button>
           <button id="database-info-btn" class="btn-secondary" title="Database Info">💾</button>
           <button id="create-pack-btn" class="btn-primary">+ Create Pack</button>
         </div>
@@ -89,7 +90,10 @@
       <div class="panel-header">
         <button id="back-to-packs-btn" class="btn-back">← Back</button>
         <input type="text" id="pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
-        <button id="delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+        <div style="display: flex; gap: 8px;">
+          <button id="toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
+          <button id="delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+        </div>
       </div>
       <div class="pack-detail-info">
         <div class="pack-detail-count" id="pack-detail-count">0 beats</div>

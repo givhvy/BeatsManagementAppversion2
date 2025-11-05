@@ -82,6 +82,11 @@ const packDetailTitleEl = document.getElementById('pack-detail-title');
 const packDetailCountEl = document.getElementById('pack-detail-count');
 const packDetailBeatsEl = document.getElementById('pack-detail-beats');
 const deleteCurrentPackBtn = document.getElementById('delete-current-pack-btn');
+const toggleHidePackBtn = document.getElementById('toggle-hide-pack-btn');
+
+// Hidden packs view elements
+const toggleHiddenViewBtn = document.getElementById('toggle-hidden-view-btn');
+const packsHeaderTitle = document.getElementById('packs-header-title');
 
 // Total beats elements
 const totalBeatsCountEl = document.getElementById('total-beats-count');
@@ -102,6 +107,7 @@ const confirmCreateChannelsBtn = document.getElementById('confirm-create-channel
 const cancelCreateChannelsBtn = document.getElementById('cancel-create-channels-btn');
 
 let currentPackId = null;
+let showingHiddenPacks = false; // Track if viewing hidden or active packs
 
 // Context menu state
 let contextMenuTarget = null; // Stores {packId, beatPath}
@@ -175,6 +181,8 @@ async function init() {
   packFilterInput.addEventListener('input', renderPacks);
   backToPacksBtn.addEventListener('click', showPacksGrid);
   deleteCurrentPackBtn.addEventListener('click', deleteCurrentPack);
+  toggleHidePackBtn.addEventListener('click', toggleCurrentPackHidden);
+  toggleHiddenViewBtn.addEventListener('click', toggleHiddenPacksView);
 
   // Tab button listeners
   tabButtons.forEach(btn => {
@@ -275,6 +283,9 @@ function showPackDetail(packId) {
   packDetailTitleEl.value = pack.name;
   packDetailCountEl.textContent = `${pack.beats.length} beats`;
 
+  // Update hide/unhide button text based on pack status
+  toggleHidePackBtn.textContent = pack.hidden ? 'Unhide Pack' : 'Hide Pack';
+
   renderPackDetailBeats();
 }
 
@@ -308,6 +319,47 @@ function deleteCurrentPack() {
     renderBeats(); // Update beats list to remove deleted pack tags
     saveData();
   }
+}
+
+function toggleCurrentPackHidden() {
+  if (!currentPackId) return;
+
+  const pack = packs.find(p => p.id === currentPackId);
+  if (!pack) return;
+
+  // Toggle hidden status
+  pack.hidden = !pack.hidden;
+
+  // Update button text
+  toggleHidePackBtn.textContent = pack.hidden ? 'Unhide Pack' : 'Hide Pack';
+
+  // Save and update UI
+  saveData();
+
+  // If we just hid a pack and we're viewing active packs, or unhid a pack while viewing hidden packs,
+  // go back to packs grid as the pack won't be visible in current view
+  if ((pack.hidden && !showingHiddenPacks) || (!pack.hidden && showingHiddenPacks)) {
+    showPacksGrid();
+    renderPacks();
+  }
+}
+
+function toggleHiddenPacksView() {
+  showingHiddenPacks = !showingHiddenPacks;
+
+  // Update UI
+  if (showingHiddenPacks) {
+    toggleHiddenViewBtn.innerHTML = '👁️ Active';
+    toggleHiddenViewBtn.title = 'View Active Packs';
+    packsHeaderTitle.textContent = 'Hidden Packs';
+  } else {
+    toggleHiddenViewBtn.innerHTML = '👁️ Hidden';
+    toggleHiddenViewBtn.title = 'View Hidden Packs';
+    packsHeaderTitle.textContent = 'Packs';
+  }
+
+  // Re-render packs with new filter
+  renderPacks();
 }
 
 function setupAudioPlayer() {
@@ -841,13 +893,19 @@ function renderPacks() {
     return;
   }
 
+  // Filter by hidden status based on view mode
+  let visiblePacks = packs.filter(pack => {
+    const isHidden = pack.hidden === true;
+    return showingHiddenPacks ? isHidden : !isHidden;
+  });
+
   // Get filter value
   const filterValue = packFilterInput.value.trim().toLowerCase();
 
   // Filter packs by number if filter is provided
-  let filteredPacks = packs;
+  let filteredPacks = visiblePacks;
   if (filterValue) {
-    filteredPacks = packs.filter(pack => {
+    filteredPacks = visiblePacks.filter(pack => {
       const num = extractPackNumber(pack.name);
       // Support both "C2" and "2" formats
       const filterNum = extractPackNumber(filterValue);
@@ -859,7 +917,10 @@ function renderPacks() {
   const sortedPacks = sortPacksByNumber(filteredPacks);
 
   if (sortedPacks.length === 0) {
-    packsGridEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">No packs match the filter</div>';
+    const message = showingHiddenPacks
+      ? 'No hidden packs yet'
+      : (filterValue ? 'No packs match the filter' : 'No active packs');
+    packsGridEl.innerHTML = `<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">${message}</div>`;
     return;
   }
 

@@ -211,33 +211,27 @@ ipcMain.on('ondragstart', (event, filePath) => {
 
 // Email management handlers
 ipcMain.handle('load-emails', async () => {
-  const emailsPath = 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\emails';
+  const emailFilePath = 'F:\\PlaygroundTest\\BeatsManagement\\email.txt';
   try {
-    // Check if emails directory exists
-    if (!fs.existsSync(emailsPath)) {
-      return { emails: [], error: 'Emails folder not found' };
+    // Check if email file exists
+    if (!fs.existsSync(emailFilePath)) {
+      return { emails: [], error: 'Email file not found at F:\\PlaygroundTest\\BeatsManagement\\email.txt' };
     }
 
-    // Read all text files in the emails directory
-    const files = fs.readdirSync(emailsPath);
+    // Read email file content
+    const content = fs.readFileSync(emailFilePath, 'utf8');
     const emails = [];
 
-    for (const file of files) {
-      if (file.endsWith('.txt')) {
-        const filePath = path.join(emailsPath, file);
-        const content = fs.readFileSync(filePath, 'utf8');
-
-        // Parse emails from file (format: email:password per line)
-        const lines = content.split('\n').filter(line => line.trim());
-        for (const line of lines) {
-          const [email, password] = line.trim().split(':');
-          if (email && password) {
-            emails.push({ email, password, used: false });
-          }
-        }
+    // Parse emails from file (format: email:password per line)
+    const lines = content.split('\n').filter(line => line.trim());
+    for (const line of lines) {
+      const [email, password] = line.trim().split(':');
+      if (email && password) {
+        emails.push({ email, password, used: false });
       }
     }
 
+    console.log(`✅ Loaded ${emails.length} emails from email.txt`);
     return { emails, error: null };
   } catch (error) {
     console.error('Error loading emails:', error);
