@@ -24,6 +24,27 @@
         <button class="tab-btn" data-folder-type="untagged">Tagged Beats</button>
       </div>
       <div class="folder-path" id="folder-path">No folder selected</div>
+      <!-- Channel Management (only visible in Tagged Beats tab) -->
+      <div class="channel-management" id="channel-management" style="display: none;">
+        <div class="channel-controls">
+          <button id="create-channels-btn" class="btn-primary" style="width: 100%;">Create Channels</button>
+          <button id="auto-add-channel-btn" class="btn-secondary" style="width: 100%; margin-top: 8px;">Auto Add Channel</button>
+        </div>
+        <div class="channel-stats" id="channel-stats">
+          <div class="stat-item">
+            <span class="stat-label">Total Channels:</span>
+            <span class="stat-value" id="total-channels">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Available Emails:</span>
+            <span class="stat-value" id="available-emails">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Used Folders:</span>
+            <span class="stat-value" id="used-folders">0</span>
+          </div>
+        </div>
+      </div>
       <!-- Breadcrumb navigation for tagged/untagged -->
       <div class="breadcrumb-container" id="breadcrumb-container" style="display: none;">
         <div class="breadcrumb" id="breadcrumb"></div>
@@ -133,6 +154,36 @@
   <div id="beat-context-menu" class="context-menu" style="display: none;">
     <div class="context-menu-item" id="mark-last-used">Mark as Last Used</div>
     <div class="context-menu-item" id="unmark-last-used">Remove Last Used</div>
+  </div>
+
+  <!-- Create Channels Modal -->
+  <div id="create-channels-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create Channels</h3>
+        <button id="close-channels-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Number of Channels:</label>
+          <input type="number" id="num-channels-input" min="1" value="1" class="modal-input">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Beats per Channel:</label>
+          <input type="number" id="beats-per-channel-input" min="1" value="40" class="modal-input">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
+            This will automatically create channels (C[Number]) and assign random beats from available page folders.
+            Each page folder contains 20 beats. Folders will be tagged with channel names.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button id="confirm-create-channels-btn" class="btn-primary">Create</button>
+          <button id="cancel-create-channels-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="renderer.js"></script>

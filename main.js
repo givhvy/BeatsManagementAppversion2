@@ -208,3 +208,59 @@ ipcMain.on('ondragstart', (event, filePath) => {
     console.error('Error starting drag:', error);
   }
 });
+
+// Email management handlers
+ipcMain.handle('load-emails', async () => {
+  const emailsPath = 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\emails';
+  try {
+    // Check if emails directory exists
+    if (!fs.existsSync(emailsPath)) {
+      return { emails: [], error: 'Emails folder not found' };
+    }
+
+    // Read all text files in the emails directory
+    const files = fs.readdirSync(emailsPath);
+    const emails = [];
+
+    for (const file of files) {
+      if (file.endsWith('.txt')) {
+        const filePath = path.join(emailsPath, file);
+        const content = fs.readFileSync(filePath, 'utf8');
+
+        // Parse emails from file (format: email:password per line)
+        const lines = content.split('\n').filter(line => line.trim());
+        for (const line of lines) {
+          const [email, password] = line.trim().split(':');
+          if (email && password) {
+            emails.push({ email, password, used: false });
+          }
+        }
+      }
+    }
+
+    return { emails, error: null };
+  } catch (error) {
+    console.error('Error loading emails:', error);
+    return { emails: [], error: error.message };
+  }
+});
+
+// Get all page folders from tagged directory
+ipcMain.handle('get-page-folders', async () => {
+  const taggedPath = 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged';
+  try {
+    const items = fs.readdirSync(taggedPath, { withFileTypes: true });
+    const pageFolders = items
+      .filter(item => item.isDirectory() && item.name.startsWith('page-'))
+      .map(item => ({
+        name: item.name,
+        path: path.join(taggedPath, item.name),
+        tags: [] // Will store channel tags
+      }));
+
+    return pageFolders;
+  } catch (error) {
+    console.error('Error reading page folders:', error);
+    return [];
+  }
+});

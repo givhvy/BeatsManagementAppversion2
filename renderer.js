@@ -22,6 +22,12 @@ let currentFolderType = 'all'; // 'all', 'tagged', or 'untagged'
 let packs = [];
 let fileObjectsCache = new Map(); // Cache file objects by path
 
+// Channel management state
+let emails = []; // List of {email, password, used}
+let channels = []; // List of created channels
+let pageFolders = []; // List of page folders with tags
+let folderTags = {}; // Map folder paths to channel tags
+
 // Helper function to get current folder
 function getCurrentFolder() {
   return folders[currentFolderType].currentPath || folders[currentFolderType].path;
@@ -80,6 +86,20 @@ const deleteCurrentPackBtn = document.getElementById('delete-current-pack-btn');
 // Total beats elements
 const totalBeatsCountEl = document.getElementById('total-beats-count');
 const totalBeatsProgressFillEl = document.getElementById('total-beats-progress-fill');
+
+// Channel management elements
+const channelManagementEl = document.getElementById('channel-management');
+const createChannelsBtn = document.getElementById('create-channels-btn');
+const autoAddChannelBtn = document.getElementById('auto-add-channel-btn');
+const totalChannelsEl = document.getElementById('total-channels');
+const availableEmailsEl = document.getElementById('available-emails');
+const usedFoldersEl = document.getElementById('used-folders');
+const createChannelsModal = document.getElementById('create-channels-modal');
+const closeChannelsModalBtn = document.getElementById('close-channels-modal-btn');
+const numChannelsInput = document.getElementById('num-channels-input');
+const beatsPerChannelInput = document.getElementById('beats-per-channel-input');
+const confirmCreateChannelsBtn = document.getElementById('confirm-create-channels-btn');
+const cancelCreateChannelsBtn = document.getElementById('cancel-create-channels-btn');
 
 let currentPackId = null;
 
@@ -217,6 +237,25 @@ async function init() {
 
   // Audio player event listeners
   setupAudioPlayer();
+
+  // Channel management listeners
+  createChannelsBtn.addEventListener('click', showCreateChannelsModal);
+  autoAddChannelBtn.addEventListener('click', autoAddChannel);
+  closeChannelsModalBtn.addEventListener('click', closeCreateChannelsModal);
+  cancelCreateChannelsBtn.addEventListener('click', closeCreateChannelsModal);
+  confirmCreateChannelsBtn.addEventListener('click', createChannels);
+
+  // Close channel modal when clicking outside
+  createChannelsModal.addEventListener('click', (e) => {
+    if (e.target === createChannelsModal) {
+      closeCreateChannelsModal();
+    }
+  });
+
+  // Load emails and page folders for channel management
+  if (isElectron) {
+    await loadChannelData();
+  }
 }
 
 function showPacksGrid() {
@@ -381,6 +420,14 @@ function updateFolderDisplay() {
     renderBreadcrumb();
   } else {
     breadcrumbContainer.style.display = 'none';
+  }
+
+  // Show channel management only for "untagged" (Tagged Beats) tab
+  if (currentFolderType === 'untagged') {
+    channelManagementEl.style.display = 'block';
+    updateChannelStats();
+  } else {
+    channelManagementEl.style.display = 'none';
   }
 }
 
@@ -664,16 +711,34 @@ function renderBeats() {
 
     // Find packs containing this beat and add tags
     const containingPacks = getPacksForBeat(beat.path);
-    if (containingPacks.length > 0) {
+
+    // Also check if this beat's folder is tagged with a channel (for Tagged Beats tab)
+    let folderChannelTag = null;
+    if (currentFolderType === 'untagged') {
+      // Get parent folder of this beat
+      const beatFolder = beat.path.substring(0, beat.path.lastIndexOf('\\'));
+      folderChannelTag = folderTags[beatFolder];
+    }
+
+    if (containingPacks.length > 0 || folderChannelTag) {
       const tagsContainer = document.createElement('div');
       tagsContainer.className = 'beat-tags';
 
+      // Add pack tags
       containingPacks.forEach(pack => {
         const tag = document.createElement('span');
         tag.className = 'pack-tag';
         tag.textContent = formatPackTag(pack.name);
         tagsContainer.appendChild(tag);
       });
+
+      // Add folder channel tag if exists
+      if (folderChannelTag) {
+        const tag = document.createElement('span');
+        tag.className = 'pack-tag';
+        tag.textContent = folderChannelTag;
+        tagsContainer.appendChild(tag);
+      }
 
       beatContentEl.appendChild(tagsContainer);
     }
@@ -1249,7 +1314,10 @@ async function saveData() {
   const data = {
     folders,
     currentFolderType,
-    packs
+    packs,
+    emails,
+    channels,
+    folderTags
   };
 
   if (isElectron) {
@@ -1268,7 +1336,207 @@ async function saveData() {
     localStorage.setItem('beats-data', JSON.stringify({
       folders,
       currentFolderType,
-      packs: packsToSave
+      packs: packsToSave,
+      emails,
+      channels,
+      folderTags
     }));
+  }
+}
+
+// ===== Channel Management Functions =====
+
+async function loadChannelData() {
+  // Load emails
+  const emailsResult = await ipcRenderer.invoke('load-emails');
+  if (emailsResult.error) {
+    console.warn('Email loading warning:', emailsResult.error);
+  }
+
+  // Load saved channel data
+  const savedData = await ipcRenderer.invoke('load-data');
+  if (savedData) {
+    emails = savedData.emails || [];
+    channels = savedData.channels || [];
+    folderTags = savedData.folderTags || {};
+  }
+
+  // Merge newly loaded emails with saved ones, updating used status
+  if (emailsResult.emails && emailsResult.emails.length > 0) {
+    emailsResult.emails.forEach(newEmail => {
+      const existing = emails.find(e => e.email === newEmail.email);
+      if (!existing) {
+        emails.push(newEmail);
+      }
+    });
+  }
+
+  // Load page folders
+  pageFolders = await ipcRenderer.invoke('get-page-folders');
+
+  updateChannelStats();
+}
+
+function updateChannelStats() {
+  const unusedEmails = emails.filter(e => !e.used).length;
+  const usedFolderCount = Object.keys(folderTags).length;
+
+  totalChannelsEl.textContent = channels.length;
+  availableEmailsEl.textContent = unusedEmails;
+  usedFoldersEl.textContent = usedFolderCount;
+}
+
+function showCreateChannelsModal() {
+  createChannelsModal.style.display = 'flex';
+}
+
+function closeCreateChannelsModal() {
+  createChannelsModal.style.display = 'none';
+}
+
+async function createChannels() {
+  const numChannels = parseInt(numChannelsInput.value);
+  const beatsPerChannel = parseInt(beatsPerChannelInput.value);
+
+  if (!numChannels || numChannels < 1) {
+    alert('Please enter a valid number of channels');
+    return;
+  }
+
+  if (!beatsPerChannel || beatsPerChannel < 1) {
+    alert('Please enter a valid number of beats per channel');
+    return;
+  }
+
+  // Calculate required folders (assuming 20 beats per folder)
+  const foldersNeeded = Math.ceil(beatsPerChannel / 20);
+
+  // Get available page folders (not yet tagged)
+  const availableFolders = pageFolders.filter(folder => !folderTags[folder.path]);
+
+  if (availableFolders.length < numChannels * foldersNeeded) {
+    alert(`Not enough available folders! You need ${numChannels * foldersNeeded} folders, but only ${availableFolders.length} are available.`);
+    return;
+  }
+
+  // Get available emails
+  const unusedEmails = emails.filter(e => !e.used);
+  if (unusedEmails.length < numChannels) {
+    alert(`Not enough available emails! You need ${numChannels} emails, but only ${unusedEmails.length} are available.`);
+    return;
+  }
+
+  // Create channels
+  for (let i = 0; i < numChannels; i++) {
+    await createSingleChannel(beatsPerChannel, foldersNeeded);
+  }
+
+  closeCreateChannelsModal();
+  renderPacks();
+  renderBeats(); // Update beats list to show new channel tags
+  await saveData();
+}
+
+async function createSingleChannel(beatsPerChannel, foldersNeeded) {
+  // Find next channel number
+  const existingNumbers = channels.map(ch => {
+    const match = ch.name.match(/C(\d+)/);
+    return match ? parseInt(match[1]) : 0;
+  });
+  const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+  const channelName = `C${nextNumber}`;
+
+  // Get next unused email
+  const email = emails.find(e => !e.used);
+  if (!email) return;
+
+  email.used = true;
+
+  // Get available folders
+  const availableFolders = pageFolders.filter(folder => !folderTags[folder.path]);
+  const selectedFolders = availableFolders.slice(0, foldersNeeded);
+
+  // Tag folders with channel name
+  selectedFolders.forEach(folder => {
+    folderTags[folder.path] = channelName;
+  });
+
+  // Get all beats from selected folders
+  const allBeats = [];
+  for (const folder of selectedFolders) {
+    const folderBeats = await ipcRenderer.invoke('read-beats-folder', folder.path);
+    allBeats.push(...folderBeats);
+  }
+
+  // Take the exact number of beats needed (or all if less)
+  const beatsToAdd = allBeats.slice(0, beatsPerChannel);
+
+  // Create pack/channel
+  const channel = {
+    id: Date.now().toString() + Math.random(),
+    name: channelName,
+    beats: beatsToAdd,
+    email: email.email,
+    password: email.password,
+    description: `${email.email}:${email.password}`,
+    folders: selectedFolders.map(f => f.name)
+  };
+
+  channels.push(channel);
+  packs.push(channel); // Add to packs so it shows in the grid
+}
+
+async function autoAddChannel() {
+  const beatsPerChannel = 40; // Default
+  const foldersNeeded = Math.ceil(beatsPerChannel / 20);
+
+  // Check if we have available resources
+  const availableFolders = pageFolders.filter(folder => !folderTags[folder.path]);
+  const unusedEmails = emails.filter(e => !e.used);
+
+  if (availableFolders.length < foldersNeeded) {
+    alert(`Not enough available folders! You need ${foldersNeeded} folders, but only ${availableFolders.length} are available.`);
+    return;
+  }
+
+  if (unusedEmails.length < 1) {
+    alert('No available emails! Please add more emails to the emails folder.');
+    return;
+  }
+
+  await createSingleChannel(beatsPerChannel, foldersNeeded);
+
+  renderPacks();
+  renderBeats(); // Update beats list to show new channel tags
+  updateChannelStats();
+  await saveData();
+
+  alert(`Channel created successfully! Check the Packs section.`);
+}
+
+// Update renderBeats to show folder tags
+const originalRenderBeats = renderBeats;
+renderBeats = function() {
+  // Call original render
+  originalRenderBeats.call(this);
+
+  // Add folder tags to folders in the untagged (Tagged Beats) tab
+  if (currentFolderType === 'untagged') {
+    const folderEls = document.querySelectorAll('.folder-item');
+    folderEls.forEach(folderEl => {
+      const folderName = folderEl.querySelector('.folder-name');
+      if (folderName) {
+        // Try to find this folder in our tags
+        const folderPath = Object.keys(folderTags).find(path => path.includes(folderName.textContent));
+        if (folderPath && folderTags[folderPath]) {
+          // Add tag
+          const tagEl = document.createElement('span');
+          tagEl.className = 'pack-tag';
+          tagEl.style.marginLeft = '8px';
+          tagEl.textContent = folderTags[folderPath];
+          folderEl.appendChild(tagEl);
+        }
+      }
+    });
   }
 }
