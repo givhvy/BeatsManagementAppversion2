@@ -110,9 +110,7 @@ const cancelCreateChannelsBtn = document.getElementById('cancel-create-channels-
 // Add email modal elements
 const addEmailModal = document.getElementById('add-email-modal');
 const closeAddEmailModalBtn = document.getElementById('close-add-email-modal-btn');
-const newEmailInput = document.getElementById('new-email-input');
-const newPasswordInput = document.getElementById('new-password-input');
-const newRecoveryInput = document.getElementById('new-recovery-input');
+const bulkEmailInput = document.getElementById('bulk-email-input');
 const confirmAddEmailBtn = document.getElementById('confirm-add-email-btn');
 const cancelAddEmailBtn = document.getElementById('cancel-add-email-btn');
 
@@ -280,39 +278,6 @@ async function init() {
   addEmailModal.addEventListener('click', (e) => {
     if (e.target === addEmailModal) {
       closeAddEmailModal();
-    }
-  });
-
-  // Smart paste detection for email input
-  newEmailInput.addEventListener('paste', (e) => {
-    const pastedText = e.clipboardData.getData('text');
-
-    // Try to parse format: email[TAB]password|recovery
-    if (pastedText.includes('\t')) {
-      e.preventDefault(); // Prevent default paste
-
-      const parts = pastedText.split('\t');
-      if (parts.length >= 2) {
-        const email = parts[0].trim();
-        const passwordAndRecovery = parts[1].trim();
-
-        // Split password and recovery email
-        let password = passwordAndRecovery;
-        let recovery = '';
-
-        if (passwordAndRecovery.includes('|')) {
-          const subParts = passwordAndRecovery.split('|');
-          password = subParts[0].trim();
-          recovery = subParts[1] ? subParts[1].trim() : '';
-        }
-
-        // Auto-fill all three fields
-        newEmailInput.value = email;
-        newPasswordInput.value = password;
-        newRecoveryInput.value = recovery;
-
-        console.log('✅ Smart paste detected and parsed:', { email, password, recovery });
-      }
     }
   });
 
@@ -1519,9 +1484,7 @@ function closeCreateChannelsModal() {
 
 function showAddEmailModal() {
   // Clear previous inputs
-  newEmailInput.value = '';
-  newPasswordInput.value = '';
-  newRecoveryInput.value = '';
+  bulkEmailInput.value = '';
   addEmailModal.style.display = 'flex';
 }
 
@@ -1530,38 +1493,67 @@ function closeAddEmailModal() {
 }
 
 async function addNewEmail() {
-  const email = newEmailInput.value.trim();
-  const password = newPasswordInput.value.trim();
-  const recovery = newRecoveryInput.value.trim();
+  const bulkText = bulkEmailInput.value.trim();
 
-  if (!email) {
-    alert('Please enter an email address');
+  if (!bulkText) {
+    alert('Please paste at least one email line');
     return;
   }
 
-  if (!password) {
-    alert('Please enter a password');
+  // Parse multiple lines
+  const lines = bulkText.split('\n').filter(line => line.trim());
+  const emailsToAdd = [];
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+
+    // Skip empty lines and lines that look like quotes
+    if (!trimmedLine || trimmedLine === '"') continue;
+
+    // Parse format: email[TAB]password|recovery
+    if (trimmedLine.includes('\t')) {
+      const parts = trimmedLine.split('\t');
+      if (parts.length >= 2) {
+        const email = parts[0].trim().replace(/^"/, '').replace(/"$/, ''); // Remove quotes
+        const passwordAndRecovery = parts[1].trim();
+
+        // Split password and recovery email
+        let password = passwordAndRecovery;
+        let recovery = '';
+
+        if (passwordAndRecovery.includes('|')) {
+          const subParts = passwordAndRecovery.split('|');
+          password = subParts[0].trim();
+          recovery = subParts[1] ? subParts[1].trim().replace(/^"/, '').replace(/"$/, '') : '';
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(email) && password) {
+          emailsToAdd.push({ email, password, recovery });
+        } else {
+          console.warn('Skipping invalid line:', trimmedLine);
+        }
+      }
+    }
+  }
+
+  if (emailsToAdd.length === 0) {
+    alert('No valid emails found. Format should be: email[TAB]password|recovery');
     return;
   }
 
-  // Validate email format
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    alert('Please enter a valid email address');
-    return;
-  }
-
-  // Add email via IPC
+  // Add all emails via IPC
   if (isElectron) {
-    const result = await ipcRenderer.invoke('add-email', { email, password, recovery });
+    const result = await ipcRenderer.invoke('add-emails-bulk', emailsToAdd);
     if (result.success) {
-      alert('✅ Email added successfully!');
+      alert(`✅ Successfully added ${result.count} email(s)!`);
       closeAddEmailModal();
 
       // Reload emails to update the list
       await loadChannelData();
     } else {
-      alert(`❌ Failed to add email: ${result.error}`);
+      alert(`❌ Failed to add emails: ${result.error}`);
     }
   }
 }

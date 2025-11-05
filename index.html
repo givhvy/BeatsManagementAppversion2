@@ -195,24 +195,19 @@
   <div id="add-email-modal" class="modal" style="display: none;">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Add Email Account</h3>
+        <h3>Add Email Accounts</h3>
         <button id="close-add-email-modal-btn" class="close-btn">×</button>
       </div>
       <div class="modal-body">
         <div class="info-section">
-          <label>Email:</label>
-          <input type="text" id="new-email-input" placeholder="example@gmail.com" class="modal-input">
+          <label>Bulk Add (paste multiple lines):</label>
+          <textarea id="bulk-email-input" placeholder="Paste one or more lines in format:
+email@gmail.com[TAB]password|recovery@gmail.com
+email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8" style="font-family: monospace; font-size: 12px; resize: vertical;"></textarea>
           <p style="font-size: 11px; color: #666; margin-top: 5px; margin-bottom: 0;">
-            💡 Tip: Paste full format: <code>email[TAB]password|recovery</code>
+            💡 Format: <code>email[TAB]password|recovery</code> (one per line)<br>
+            Recovery email is optional. You can paste 1 or many emails at once.
           </p>
-        </div>
-        <div class="info-section" style="margin-top: 15px;">
-          <label>Password:</label>
-          <input type="text" id="new-password-input" placeholder="Enter password" class="modal-input">
-        </div>
-        <div class="info-section" style="margin-top: 15px;">
-          <label>Recovery Email (optional):</label>
-          <input type="text" id="new-recovery-input" placeholder="recovery@gmail.com" class="modal-input">
         </div>
         <div class="info-section" style="margin-top: 15px;">
           <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
@@ -220,7 +215,7 @@
           </p>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 20px;">
-          <button id="confirm-add-email-btn" class="btn-primary">Add Email</button>
+          <button id="confirm-add-email-btn" class="btn-primary">Add Email(s)</button>
           <button id="cancel-add-email-btn" class="btn-secondary">Cancel</button>
         </div>
       </div>

@@ -262,6 +262,34 @@ ipcMain.handle('add-email', async (event, emailData) => {
   }
 });
 
+ipcMain.handle('add-emails-bulk', async (event, emailsArray) => {
+  const emailFilePath = 'F:\\PlaygroundTest\\BeatsManagement\\email.txt';
+  try {
+    // Create file if it doesn't exist
+    if (!fs.existsSync(emailFilePath)) {
+      fs.writeFileSync(emailFilePath, '', 'utf8');
+    }
+
+    // Build all lines
+    const lines = emailsArray.map(emailData => {
+      const recovery = emailData.recovery || '';
+      return recovery
+        ? `${emailData.email}:${emailData.password}:${recovery}`
+        : `${emailData.email}:${emailData.password}`;
+    });
+
+    // Append all lines at once
+    const bulkContent = lines.join('\n') + '\n';
+    fs.appendFileSync(emailFilePath, bulkContent, 'utf8');
+
+    console.log(`✅ Added ${emailsArray.length} emails in bulk`);
+    return { success: true, count: emailsArray.length, error: null };
+  } catch (error) {
+    console.error('Error adding emails in bulk:', error);
+    return { success: false, count: 0, error: error.message };
+  }
+});
+
 // Get all page folders from tagged directory
 ipcMain.handle('get-page-folders', async () => {
   const taggedPath = 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged';
