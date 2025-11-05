@@ -30,6 +30,7 @@
           <button id="create-channels-btn" class="btn-primary" style="width: 100%;">Create Channels</button>
           <button id="auto-add-channel-btn" class="btn-secondary" style="width: 100%; margin-top: 8px;">Auto Add Channel</button>
           <button id="add-email-btn" class="btn-secondary" style="width: 100%; margin-top: 8px;">+ Add Email</button>
+          <button id="view-emails-btn" class="btn-secondary" style="width: 100%; margin-top: 8px;">📧 View Emails</button>
         </div>
         <div class="channel-stats" id="channel-stats">
           <div class="stat-item">
@@ -217,6 +218,28 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
         <div style="display: flex; gap: 10px; margin-top: 20px;">
           <button id="confirm-add-email-btn" class="btn-primary">Add Email(s)</button>
           <button id="cancel-add-email-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Emails Modal -->
+  <div id="view-emails-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3>Email Accounts</h3>
+        <button id="close-view-emails-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button id="filter-all-emails-btn" class="btn-secondary" style="flex: 1;">All (<span id="count-all">0</span>)</button>
+            <button id="filter-available-emails-btn" class="btn-secondary" style="flex: 1;">Available (<span id="count-available">0</span>)</button>
+            <button id="filter-used-emails-btn" class="btn-secondary" style="flex: 1;">Used (<span id="count-used">0</span>)</button>
+          </div>
+          <div id="emails-list-container" style="max-height: 400px; overflow-y: auto; border: 1px solid #333; border-radius: 4px; padding: 10px;">
+            <!-- Email items will be loaded here -->
+          </div>
         </div>
       </div>
     </div>

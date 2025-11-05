@@ -114,6 +114,20 @@ const bulkEmailInput = document.getElementById('bulk-email-input');
 const confirmAddEmailBtn = document.getElementById('confirm-add-email-btn');
 const cancelAddEmailBtn = document.getElementById('cancel-add-email-btn');
 
+// View emails modal elements
+const viewEmailsBtn = document.getElementById('view-emails-btn');
+const viewEmailsModal = document.getElementById('view-emails-modal');
+const closeViewEmailsModalBtn = document.getElementById('close-view-emails-modal-btn');
+const emailsListContainer = document.getElementById('emails-list-container');
+const filterAllEmailsBtn = document.getElementById('filter-all-emails-btn');
+const filterAvailableEmailsBtn = document.getElementById('filter-available-emails-btn');
+const filterUsedEmailsBtn = document.getElementById('filter-used-emails-btn');
+const countAllEl = document.getElementById('count-all');
+const countAvailableEl = document.getElementById('count-available');
+const countUsedEl = document.getElementById('count-used');
+
+let currentEmailFilter = 'all'; // 'all', 'available', 'used'
+
 let currentPackId = null;
 let showingHiddenPacks = false; // Track if viewing hidden or active packs
 
@@ -278,6 +292,20 @@ async function init() {
   addEmailModal.addEventListener('click', (e) => {
     if (e.target === addEmailModal) {
       closeAddEmailModal();
+    }
+  });
+
+  // View emails modal listeners
+  viewEmailsBtn.addEventListener('click', showViewEmailsModal);
+  closeViewEmailsModalBtn.addEventListener('click', closeViewEmailsModal);
+  filterAllEmailsBtn.addEventListener('click', () => filterEmails('all'));
+  filterAvailableEmailsBtn.addEventListener('click', () => filterEmails('available'));
+  filterUsedEmailsBtn.addEventListener('click', () => filterEmails('used'));
+
+  // Close view emails modal when clicking outside
+  viewEmailsModal.addEventListener('click', (e) => {
+    if (e.target === viewEmailsModal) {
+      closeViewEmailsModal();
     }
   });
 
@@ -1490,6 +1518,84 @@ function showAddEmailModal() {
 
 function closeAddEmailModal() {
   addEmailModal.style.display = 'none';
+}
+
+function showViewEmailsModal() {
+  currentEmailFilter = 'all';
+  renderEmailsList();
+  viewEmailsModal.style.display = 'flex';
+}
+
+function closeViewEmailsModal() {
+  viewEmailsModal.style.display = 'none';
+}
+
+function filterEmails(filter) {
+  currentEmailFilter = filter;
+  renderEmailsList();
+
+  // Update button active states
+  filterAllEmailsBtn.style.backgroundColor = filter === 'all' ? '#4a90e2' : '';
+  filterAvailableEmailsBtn.style.backgroundColor = filter === 'available' ? '#4a90e2' : '';
+  filterUsedEmailsBtn.style.backgroundColor = filter === 'used' ? '#4a90e2' : '';
+}
+
+function renderEmailsList() {
+  emailsListContainer.innerHTML = '';
+
+  if (!emails || emails.length === 0) {
+    emailsListContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No emails found. Click "+ Add Email" to add some.</div>';
+    countAllEl.textContent = '0';
+    countAvailableEl.textContent = '0';
+    countUsedEl.textContent = '0';
+    return;
+  }
+
+  // Calculate counts
+  const totalCount = emails.length;
+  const usedCount = emails.filter(e => e.used).length;
+  const availableCount = totalCount - usedCount;
+
+  // Update count badges
+  countAllEl.textContent = totalCount;
+  countAvailableEl.textContent = availableCount;
+  countUsedEl.textContent = usedCount;
+
+  // Filter emails based on current filter
+  let filteredEmails = emails;
+  if (currentEmailFilter === 'available') {
+    filteredEmails = emails.filter(e => !e.used);
+  } else if (currentEmailFilter === 'used') {
+    filteredEmails = emails.filter(e => e.used);
+  }
+
+  if (filteredEmails.length === 0) {
+    emailsListContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No emails in this category.</div>';
+    return;
+  }
+
+  // Render email items
+  filteredEmails.forEach((emailObj, index) => {
+    const emailItem = document.createElement('div');
+    emailItem.style.cssText = 'padding: 12px; margin-bottom: 8px; background: #2a2a2a; border-radius: 4px; border-left: 4px solid ' + (emailObj.used ? '#e74c3c' : '#27ae60');
+
+    const statusBadge = emailObj.used
+      ? '<span style="background: #e74c3c; color: white; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;">USED</span>'
+      : '<span style="background: #27ae60; color: white; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;">AVAILABLE</span>';
+
+    emailItem.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+        <div style="font-weight: bold; color: #4a90e2;">${emailObj.email}</div>
+        ${statusBadge}
+      </div>
+      <div style="font-size: 12px; color: #999; font-family: monospace;">
+        Password: <span style="color: #ddd;">${emailObj.password}</span>
+      </div>
+      ${emailObj.recovery ? `<div style="font-size: 12px; color: #999; margin-top: 3px;">Recovery: <span style="color: #ddd;">${emailObj.recovery}</span></div>` : ''}
+    `;
+
+    emailsListContainer.appendChild(emailItem);
+  });
 }
 
 async function addNewEmail() {

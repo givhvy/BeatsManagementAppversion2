@@ -222,12 +222,18 @@ ipcMain.handle('load-emails', async () => {
     const content = fs.readFileSync(emailFilePath, 'utf8');
     const emails = [];
 
-    // Parse emails from file (format: email:password per line)
+    // Parse emails from file (format: email:password:recovery per line)
     const lines = content.split('\n').filter(line => line.trim());
     for (const line of lines) {
-      const [email, password] = line.trim().split(':');
-      if (email && password) {
-        emails.push({ email, password, used: false });
+      const parts = line.trim().split(':');
+      if (parts.length >= 2) {
+        const email = parts[0];
+        const password = parts[1];
+        const recovery = parts[2] || ''; // Optional recovery email
+
+        if (email && password) {
+          emails.push({ email, password, recovery, used: false });
+        }
       }
     }
 
