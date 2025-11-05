@@ -831,6 +831,11 @@ function renderPacks() {
   // Update total beats counter
   updateTotalBeatsCounter();
 
+  // Update channel stats
+  if (currentFolderType === 'untagged') {
+    updateChannelStats();
+  }
+
   if (packs.length === 0) {
     packsGridEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">No packs yet. Create one to organize your beats!</div>';
     return;
@@ -1381,7 +1386,8 @@ function updateChannelStats() {
   const unusedEmails = emails.filter(e => !e.used).length;
   const usedFolderCount = Object.keys(folderTags).length;
 
-  totalChannelsEl.textContent = channels.length;
+  // Total Channels = total number of all packs
+  totalChannelsEl.textContent = packs.length;
   availableEmailsEl.textContent = unusedEmails;
   usedFoldersEl.textContent = usedFolderCount;
 }
@@ -1419,14 +1425,7 @@ async function createChannels() {
     return;
   }
 
-  // Get available emails
-  const unusedEmails = emails.filter(e => !e.used);
-  if (unusedEmails.length < numChannels) {
-    alert(`Not enough available emails! You need ${numChannels} emails, but only ${unusedEmails.length} are available.`);
-    return;
-  }
-
-  // Create channels
+  // Create channels (no need to check for emails - will use "No email available yet" if none)
   for (let i = 0; i < numChannels; i++) {
     await createSingleChannel(beatsPerChannel, foldersNeeded);
   }
@@ -1446,11 +1445,16 @@ async function createSingleChannel(beatsPerChannel, foldersNeeded) {
   const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
   const channelName = `C${nextNumber}`;
 
-  // Get next unused email
+  // Get next unused email (if available)
   const email = emails.find(e => !e.used);
-  if (!email) return;
+  let emailAddress = 'No email available yet';
+  let password = '';
 
-  email.used = true;
+  if (email) {
+    email.used = true;
+    emailAddress = email.email;
+    password = email.password;
+  }
 
   // Get available folders
   const availableFolders = pageFolders.filter(folder => !folderTags[folder.path]);
@@ -1476,9 +1480,9 @@ async function createSingleChannel(beatsPerChannel, foldersNeeded) {
     id: Date.now().toString() + Math.random(),
     name: channelName,
     beats: beatsToAdd,
-    email: email.email,
-    password: email.password,
-    description: `${email.email}:${email.password}`,
+    email: emailAddress,
+    password: password,
+    description: password ? `${emailAddress}:${password}` : emailAddress,
     folders: selectedFolders.map(f => f.name)
   };
 
@@ -1492,15 +1496,9 @@ async function autoAddChannel() {
 
   // Check if we have available resources
   const availableFolders = pageFolders.filter(folder => !folderTags[folder.path]);
-  const unusedEmails = emails.filter(e => !e.used);
 
   if (availableFolders.length < foldersNeeded) {
     alert(`Not enough available folders! You need ${foldersNeeded} folders, but only ${availableFolders.length} are available.`);
-    return;
-  }
-
-  if (unusedEmails.length < 1) {
-    alert('No available emails! Please add more emails to the emails folder.');
     return;
   }
 
