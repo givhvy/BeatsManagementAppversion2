@@ -54,6 +54,77 @@ body {
   font-weight: 600;
 }
 
+/* Tab Buttons */
+.tabs-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.tab-btn {
+  flex: 1;
+  background-color: #2a2a2a;
+  color: #999;
+  border: 1px solid #404040;
+  padding: 10px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  background-color: #333;
+  border-color: #555;
+  color: #fff;
+}
+
+.tab-btn.active {
+  background-color: #0066ff;
+  color: white;
+  border-color: #0066ff;
+}
+
+/* Breadcrumb Navigation */
+.breadcrumb-container {
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  background-color: #2a2a2a;
+  border-radius: 6px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #999;
+  flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+  color: #0066ff;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.breadcrumb-item:hover {
+  color: #0052cc;
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  color: #666;
+  user-select: none;
+}
+
+.breadcrumb-current {
+  color: #fff;
+  cursor: default;
+}
+
 .btn-primary {
   background-color: #0066ff;
   color: white;
@@ -186,6 +257,36 @@ body {
 
 .beat-item:hover {
   background-color: #404040;
+}
+
+/* Folder item style */
+.folder-item {
+  background-color: #2a2a2a;
+  padding: 12px 15px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  user-select: none;
+  border: 1px solid #404040;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.folder-item:hover {
+  background-color: #333;
+  border-color: #555;
+}
+
+.folder-icon {
+  font-size: 18px;
+}
+
+.folder-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #0066ff;
 }
 
 .beat-item.playing {

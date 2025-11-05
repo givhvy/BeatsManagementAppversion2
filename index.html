@@ -17,7 +17,17 @@
           <button id="select-folder-btn" class="btn-primary">Select Folder</button>
         </div>
       </div>
+      <!-- Tab Buttons -->
+      <div class="tabs-container">
+        <button class="tab-btn active" data-folder-type="all">All Beats</button>
+        <button class="tab-btn" data-folder-type="tagged">Untagged Beats</button>
+        <button class="tab-btn" data-folder-type="untagged">Tagged Beats</button>
+      </div>
       <div class="folder-path" id="folder-path">No folder selected</div>
+      <!-- Breadcrumb navigation for tagged/untagged -->
+      <div class="breadcrumb-container" id="breadcrumb-container" style="display: none;">
+        <div class="breadcrumb" id="breadcrumb"></div>
+      </div>
       <div class="filter-container">
         <input type="text" id="filter-input" placeholder="Filter by number (e.g., 1, 2, 3...)" class="filter-input">
       </div>

@@ -3,10 +3,45 @@ const isElectron = typeof require !== 'undefined' && typeof require('electron') 
 const ipcRenderer = isElectron ? require('electron').ipcRenderer : null;
 
 // State
-let currentFolder = null;
-let allBeats = [];
+let folders = {
+  all: { path: 'D:\\Beats', beats: [], basePath: 'D:\\Beats', currentPath: 'D:\\Beats' },
+  tagged: {
+    path: 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\songs',
+    beats: [],
+    basePath: 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\songs',
+    currentPath: 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\songs'
+  },
+  untagged: {
+    path: 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged',
+    beats: [],
+    basePath: 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged',
+    currentPath: 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged'
+  }
+};
+let currentFolderType = 'all'; // 'all', 'tagged', or 'untagged'
 let packs = [];
 let fileObjectsCache = new Map(); // Cache file objects by path
+
+// Helper function to get current folder
+function getCurrentFolder() {
+  return folders[currentFolderType].currentPath || folders[currentFolderType].path;
+}
+
+function getBasePath() {
+  return folders[currentFolderType].basePath || folders[currentFolderType].path;
+}
+
+function getCurrentBeats() {
+  return folders[currentFolderType].beats;
+}
+
+function setCurrentBeats(beats) {
+  folders[currentFolderType].beats = beats;
+}
+
+function setCurrentPath(path) {
+  folders[currentFolderType].currentPath = path;
+}
 
 // DOM Elements
 const selectFolderBtn = document.getElementById('select-folder-btn');
@@ -17,6 +52,9 @@ const beatsListEl = document.getElementById('beats-list');
 const packsGridEl = document.getElementById('packs-grid');
 const filterInput = document.getElementById('filter-input');
 const packFilterInput = document.getElementById('pack-filter-input');
+const tabButtons = document.querySelectorAll('.tab-btn');
+const breadcrumbContainer = document.getElementById('breadcrumb-container');
+const breadcrumbEl = document.getElementById('breadcrumb');
 const databaseInfoBtn = document.getElementById('database-info-btn');
 const databaseModal = document.getElementById('database-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
@@ -70,28 +108,41 @@ async function init() {
   if (isElectron) {
     const savedData = await ipcRenderer.invoke('load-data');
     if (savedData) {
-      currentFolder = savedData.currentFolder;
+      // Load folders if available, otherwise use defaults
+      if (savedData.folders) {
+        folders = savedData.folders;
+      }
+      if (savedData.currentFolderType) {
+        currentFolderType = savedData.currentFolderType;
+      }
       packs = savedData.packs || [];
 
-      if (currentFolder) {
-        folderPathEl.textContent = currentFolder;
-        await loadBeats(currentFolder);
-      }
+      // Update UI for current folder
+      updateFolderDisplay();
+
+      // Load beats for current folder
+      await loadBeats(getCurrentFolder());
 
       renderPacks();
+    } else {
+      // First time - load default folder
+      updateFolderDisplay();
+      await loadBeats(getCurrentFolder());
     }
   } else {
     // Browser mode - load from localStorage
     const savedData = localStorage.getItem('beats-data');
     if (savedData) {
       const data = JSON.parse(savedData);
-      currentFolder = data.currentFolder;
+      if (data.folders) {
+        folders = data.folders;
+      }
+      if (data.currentFolderType) {
+        currentFolderType = data.currentFolderType;
+      }
       packs = data.packs || [];
 
-      if (currentFolder) {
-        folderPathEl.textContent = currentFolder;
-      }
-
+      updateFolderDisplay();
       renderPacks();
     }
   }
@@ -104,6 +155,14 @@ async function init() {
   packFilterInput.addEventListener('input', renderPacks);
   backToPacksBtn.addEventListener('click', showPacksGrid);
   deleteCurrentPackBtn.addEventListener('click', deleteCurrentPack);
+
+  // Tab button listeners
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const folderType = btn.getAttribute('data-folder-type');
+      switchFolder(folderType);
+    });
+  });
 
   // Database modal listeners
   databaseInfoBtn.addEventListener('click', showDatabaseInfo);
@@ -303,11 +362,121 @@ function updatePlayingState() {
   }
 }
 
+// Update folder display based on current folder type
+function updateFolderDisplay() {
+  folderPathEl.textContent = getCurrentFolder();
+
+  // Update active tab button
+  tabButtons.forEach(btn => {
+    if (btn.getAttribute('data-folder-type') === currentFolderType) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+
+  // Show/hide breadcrumb for tagged/untagged only
+  if (currentFolderType === 'tagged' || currentFolderType === 'untagged') {
+    breadcrumbContainer.style.display = 'block';
+    renderBreadcrumb();
+  } else {
+    breadcrumbContainer.style.display = 'none';
+  }
+}
+
+// Render breadcrumb navigation
+function renderBreadcrumb() {
+  const basePath = getBasePath();
+  const currentPath = getCurrentFolder();
+
+  breadcrumbEl.innerHTML = '';
+
+  // Get path segments relative to base path
+  const relativePath = currentPath.replace(basePath, '').replace(/^[\\\/]/, '');
+  const segments = relativePath ? relativePath.split(/[\\\/]/) : [];
+
+  // Add root (base folder name)
+  const basePathSegments = basePath.split(/[\\\/]/);
+  const baseName = basePathSegments[basePathSegments.length - 1];
+
+  const rootItem = document.createElement('span');
+  rootItem.className = segments.length === 0 ? 'breadcrumb-current' : 'breadcrumb-item';
+  rootItem.textContent = baseName;
+  if (segments.length > 0) {
+    rootItem.onclick = () => navigateToPath(basePath);
+  }
+  breadcrumbEl.appendChild(rootItem);
+
+  // Add subsequent path segments
+  let builtPath = basePath;
+  segments.forEach((segment, index) => {
+    const separator = document.createElement('span');
+    separator.className = 'breadcrumb-separator';
+    separator.textContent = ' › ';
+    breadcrumbEl.appendChild(separator);
+
+    builtPath += `\\${segment}`;
+    const item = document.createElement('span');
+    item.className = index === segments.length - 1 ? 'breadcrumb-current' : 'breadcrumb-item';
+    item.textContent = segment;
+
+    if (index < segments.length - 1) {
+      const pathToNavigate = builtPath;
+      item.onclick = () => navigateToPath(pathToNavigate);
+    }
+
+    breadcrumbEl.appendChild(item);
+  });
+}
+
+// Navigate to a specific path in breadcrumb
+async function navigateToPath(targetPath) {
+  setCurrentPath(targetPath);
+  await loadFolderContents(targetPath);
+  updateFolderDisplay();
+  await saveData();
+}
+
+// Switch between different folder types
+async function switchFolder(folderType) {
+  if (folderType === currentFolderType) return;
+
+  currentFolderType = folderType;
+
+  // Reset to base path when switching tabs
+  const basePath = getBasePath();
+  setCurrentPath(basePath);
+
+  updateFolderDisplay();
+
+  // Load beats/folders based on type
+  if (folderType === 'tagged' || folderType === 'untagged') {
+    await loadFolderContents(getCurrentFolder());
+  } else {
+    await loadBeats(getCurrentFolder());
+  }
+
+  // Save the current folder type
+  await saveData();
+}
+
+// Load folder contents (folders + beats) for tagged/untagged tabs
+async function loadFolderContents(folderPath) {
+  if (isElectron) {
+    const { folders: subFolders, beats } = await ipcRenderer.invoke('read-folder-contents', folderPath);
+
+    // Store both folders and beats
+    const allItems = [...subFolders, ...beats];
+    setCurrentBeats(allItems);
+    renderBeats();
+  }
+}
+
 async function selectFolder() {
   if (isElectron) {
     const folderPath = await ipcRenderer.invoke('select-folder');
     if (folderPath) {
-      currentFolder = folderPath;
+      folders[currentFolderType].path = folderPath;
       folderPathEl.textContent = folderPath;
       await loadBeats(folderPath);
       await saveData();
@@ -323,11 +492,11 @@ async function selectFolder() {
     input.onchange = async (e) => {
       const files = Array.from(e.target.files);
       if (files.length > 0) {
-        currentFolder = 'Selected Files';
+        folders[currentFolderType].path = 'Selected Files';
         folderPathEl.textContent = `${files.length} audio files selected`;
 
         const audioExtensions = ['.mp3', '.wav', '.flac', '.m4a', '.aac', '.ogg'];
-        allBeats = files
+        const beats = files
           .filter(file => audioExtensions.some(ext => file.name.toLowerCase().endsWith(ext)))
           .map(file => {
             const blobUrl = URL.createObjectURL(file);
@@ -340,6 +509,7 @@ async function selectFolder() {
             };
           });
 
+        setCurrentBeats(beats);
         renderBeats();
         await saveData();
       }
@@ -351,12 +521,14 @@ async function selectFolder() {
 
 async function loadBeats(folderPath) {
   if (isElectron) {
-    allBeats = await ipcRenderer.invoke('read-beats-folder', folderPath);
+    const beats = await ipcRenderer.invoke('read-beats-folder', folderPath);
+    setCurrentBeats(beats);
     renderBeats();
   }
 }
 
 async function refreshBeats() {
+  const currentFolder = getCurrentFolder();
   if (!currentFolder) {
     alert('Please select a folder first');
     return;
@@ -412,7 +584,9 @@ function formatPackTag(packName) {
 function renderBeats() {
   beatsListEl.innerHTML = '';
 
-  if (allBeats.length === 0) {
+  const allItems = getCurrentBeats();
+
+  if (allItems.length === 0) {
     beatsListEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No beats found in this folder</div>';
     return;
   }
@@ -420,23 +594,55 @@ function renderBeats() {
   // Get filter value
   const filterValue = filterInput.value.trim();
 
+  // Separate folders and beats
+  const folders = allItems.filter(item => item.type === 'folder');
+  let beats = allItems.filter(item => item.type === 'beat' || !item.type);
+
   // Filter beats by number if filter is provided
-  let filteredBeats = allBeats;
   if (filterValue) {
-    filteredBeats = allBeats.filter(beat => {
+    beats = beats.filter(beat => {
       const num = extractNumber(beat.name);
       return num !== null && num.toString() === filterValue;
     });
   }
 
-  // Sort filtered beats by number (high to low)
-  const sortedBeats = sortBeatsByNumber(filteredBeats);
+  // Sort beats by number (high to low)
+  const sortedBeats = sortBeatsByNumber(beats);
 
-  if (sortedBeats.length === 0) {
-    beatsListEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No beats match the filter</div>';
+  // Render folders first (for tagged/untagged tabs)
+  if (currentFolderType === 'tagged' || currentFolderType === 'untagged') {
+    folders.forEach(folder => {
+      const folderEl = document.createElement('div');
+      folderEl.className = 'folder-item';
+
+      const iconEl = document.createElement('span');
+      iconEl.className = 'folder-icon';
+      iconEl.textContent = '📁';
+
+      const nameEl = document.createElement('div');
+      nameEl.className = 'folder-name';
+      nameEl.textContent = folder.name;
+
+      folderEl.appendChild(iconEl);
+      folderEl.appendChild(nameEl);
+      beatsListEl.appendChild(folderEl);
+
+      // Click to navigate into folder
+      folderEl.addEventListener('click', async () => {
+        setCurrentPath(folder.path);
+        await loadFolderContents(folder.path);
+        updateFolderDisplay();
+        await saveData();
+      });
+    });
+  }
+
+  if (sortedBeats.length === 0 && folders.length === 0) {
+    beatsListEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No items match the filter</div>';
     return;
   }
 
+  // Render beats
   sortedBeats.forEach(beat => {
     const beatEl = document.createElement('div');
     beatEl.className = 'beat-item';
@@ -1041,7 +1247,8 @@ async function importDatabase() {
 
 async function saveData() {
   const data = {
-    currentFolder,
+    folders,
+    currentFolderType,
     packs
   };
 
@@ -1059,7 +1266,8 @@ async function saveData() {
     }));
 
     localStorage.setItem('beats-data', JSON.stringify({
-      currentFolder,
+      folders,
+      currentFolderType,
       packs: packsToSave
     }));
   }

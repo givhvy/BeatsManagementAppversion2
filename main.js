@@ -76,6 +76,39 @@ ipcMain.handle('read-beats-folder', async (event, folderPath) => {
   }
 });
 
+// Read folder contents with both folders and beats
+ipcMain.handle('read-folder-contents', async (event, folderPath) => {
+  try {
+    const items = fs.readdirSync(folderPath, { withFileTypes: true });
+    const audioExtensions = ['.mp3', '.wav', '.flac', '.m4a', '.aac', '.ogg'];
+
+    const folders = [];
+    const beats = [];
+
+    items.forEach(item => {
+      const fullPath = path.join(folderPath, item.name);
+      if (item.isDirectory()) {
+        folders.push({
+          name: item.name,
+          path: fullPath,
+          type: 'folder'
+        });
+      } else if (audioExtensions.includes(path.extname(item.name).toLowerCase())) {
+        beats.push({
+          name: item.name,
+          path: fullPath,
+          type: 'beat'
+        });
+      }
+    });
+
+    return { folders, beats };
+  } catch (error) {
+    console.error('Error reading folder contents:', error);
+    return { folders: [], beats: [] };
+  }
+});
+
 ipcMain.handle('save-data', async (event, data) => {
   const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
   try {
