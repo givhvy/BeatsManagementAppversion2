@@ -6,27 +6,10 @@
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background-color: #000000;
+  background-color: #1a1a1a;
   color: #ffffff;
   overflow: hidden;
   position: relative;
-}
-
-/* Gradient background effects */
-body::before {
-  content: "";
-  position: fixed;
-  top: -140px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 620px;
-  height: 520px;
-  border-radius: 50%;
-  background: radial-gradient(60% 60% at 50% 50%, rgba(99,102,241,0.5) 0%, rgba(56,189,248,0.35) 45%, rgba(59,130,246,0.15) 100%);
-  filter: blur(80px);
-  opacity: 0.4;
-  pointer-events: none;
-  z-index: 0;
 }
 
 .container {
@@ -557,34 +540,53 @@ body::before {
 
 /* Pack Detail Panel */
 .btn-back {
-  background-color: transparent;
-  color: #0066ff;
-  border: 1px solid #0066ff;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(56,189,248,0.1);
+  color: rgba(56,189,248,0.9);
+  border: 1px solid rgba(56,189,248,0.3);
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 20px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s;
+  font-family: 'Geist', 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
 }
 
 .btn-back:hover {
-  background-color: #0066ff;
+  background: linear-gradient(135deg, rgba(56,189,248,0.8) 0%, rgba(59,130,246,0.8) 100%);
   color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+  transform: translateX(-2px);
 }
 
 .btn-danger {
-  background-color: #ff3b30;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,59,48,0.9);
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: 20px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 500;
+  font-family: 'Geist', 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255,59,48,0.3);
 }
 
 .btn-danger:hover {
-  background-color: #cc0000;
+  background: rgba(204,0,0,0.9);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255,59,48,0.4);
 }
 
 .pack-detail-title {
@@ -608,19 +610,34 @@ body::before {
 
 .resize-handle {
   width: 5px;
-  background-color: #333;
+  background: rgba(255, 255, 255, 0.05);
   cursor: ew-resize;
   flex-shrink: 0;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.resize-handle::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(56,189,248,0.3), rgba(59,130,246,0.3));
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .resize-handle:hover {
-  background-color: #0066ff;
+  background: rgba(59,130,246,0.2);
+}
+
+.resize-handle:hover::after {
+  opacity: 1;
 }
 
 .pack-detail-beats {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -645,37 +662,62 @@ body::before {
 }
 
 .pack-email-info {
-  padding: 15px;
-  background: #2a2a2a;
-  border-radius: 8px;
-  border-left: 4px solid #3b82f6;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  font-family: 'Geist', 'Inter', sans-serif;
+}
+
+.pack-email-info::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  background: linear-gradient(225deg, rgba(56,189,248,0.0) 0%, rgba(56,189,248,0.3) 50%, rgba(56,189,248,0.0) 100%);
+  pointer-events: none;
 }
 
 .pack-detail-info {
   padding: 15px 0;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   margin-bottom: 15px;
 }
 
 .pack-detail-count {
   font-size: 14px;
-  color: #999;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: 'Geist', 'Inter', sans-serif;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 8px;
 }
 
 .pack-beat-item {
-  background-color: #404040;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 10px 12px;
-  border-radius: 4px;
+  border-radius: 12px;
   font-size: 13px;
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
 }
 
 .beat-number-badge {
-  background-color: #0066ff;
+  background: linear-gradient(135deg, rgba(56,189,248,0.9) 0%, rgba(59,130,246,0.9) 100%);
   color: white;
   font-size: 11px;
   font-weight: 600;
@@ -686,14 +728,19 @@ body::before {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.3);
 }
 
 .pack-beat-item:hover {
-  background-color: #4a4a4a;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateX(2px);
 }
 
 .pack-beat-item.playing {
-  background-color: #0066ff;
+  background: linear-gradient(135deg, rgba(56,189,248,0.2) 0%, rgba(59,130,246,0.2) 100%);
+  border-color: rgba(59,130,246,0.5);
+  box-shadow: 0 4px 12px rgba(59,130,246,0.2);
 }
 
 .remove-beat-btn {
