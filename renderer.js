@@ -57,10 +57,12 @@ const folderPathEl = document.getElementById('folder-path');
 const beatsListEl = document.getElementById('beats-list');
 const packsGridEl = document.getElementById('packs-grid');
 const filterInput = document.getElementById('filter-input');
+const filterContainer = document.getElementById('filter-container');
 const packFilterInput = document.getElementById('pack-filter-input');
 const tabButtons = document.querySelectorAll('.tab-btn');
 const breadcrumbContainer = document.getElementById('breadcrumb-container');
 const breadcrumbEl = document.getElementById('breadcrumb');
+
 const databaseInfoBtn = document.getElementById('database-info-btn');
 const databaseModal = document.getElementById('database-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
@@ -77,9 +79,12 @@ const unmarkLastUsedBtn = document.getElementById('unmark-last-used');
 // Pack detail panel elements
 const middlePanelEl = document.getElementById('middle-panel');
 const rightPanelEl = document.getElementById('right-panel');
+const packDetailRightPanel = document.getElementById('pack-detail-right-panel');
+const resizeHandle = document.getElementById('resize-handle');
 const backToPacksBtn = document.getElementById('back-to-packs-btn');
 const packDetailTitleEl = document.getElementById('pack-detail-title');
 const packDetailCountEl = document.getElementById('pack-detail-count');
+const packEmailInfoEl = document.getElementById('pack-email-info');
 const packDetailBeatsEl = document.getElementById('pack-detail-beats');
 const deleteCurrentPackBtn = document.getElementById('delete-current-pack-btn');
 const toggleHidePackBtn = document.getElementById('toggle-hide-pack-btn');
@@ -96,6 +101,7 @@ const totalBeatsProgressFillEl = document.getElementById('total-beats-progress-f
 const channelManagementEl = document.getElementById('channel-management');
 const createChannelsBtn = document.getElementById('create-channels-btn');
 const autoAddChannelBtn = document.getElementById('auto-add-channel-btn');
+const addEmailBtn = document.getElementById('add-email-btn');
 const totalChannelsEl = document.getElementById('total-channels');
 const availableEmailsEl = document.getElementById('available-emails');
 const usedFoldersEl = document.getElementById('used-folders');
@@ -105,6 +111,27 @@ const numChannelsInput = document.getElementById('num-channels-input');
 const beatsPerChannelInput = document.getElementById('beats-per-channel-input');
 const confirmCreateChannelsBtn = document.getElementById('confirm-create-channels-btn');
 const cancelCreateChannelsBtn = document.getElementById('cancel-create-channels-btn');
+
+// Add email modal elements
+const addEmailModal = document.getElementById('add-email-modal');
+const closeAddEmailModalBtn = document.getElementById('close-add-email-modal-btn');
+const bulkEmailInput = document.getElementById('bulk-email-input');
+const confirmAddEmailBtn = document.getElementById('confirm-add-email-btn');
+const cancelAddEmailBtn = document.getElementById('cancel-add-email-btn');
+
+// View emails modal elements
+const viewEmailsBtn = document.getElementById('view-emails-btn');
+const viewEmailsModal = document.getElementById('view-emails-modal');
+const closeViewEmailsModalBtn = document.getElementById('close-view-emails-modal-btn');
+const emailsListContainer = document.getElementById('emails-list-container');
+const filterAllEmailsBtn = document.getElementById('filter-all-emails-btn');
+const filterAvailableEmailsBtn = document.getElementById('filter-available-emails-btn');
+const filterUsedEmailsBtn = document.getElementById('filter-used-emails-btn');
+const countAllEl = document.getElementById('count-all');
+const countAvailableEl = document.getElementById('count-available');
+const countUsedEl = document.getElementById('count-used');
+
+let currentEmailFilter = 'all'; // 'all', 'available', 'used'
 
 let currentPackId = null;
 let showingHiddenPacks = false; // Track if viewing hidden or active packs
@@ -125,6 +152,40 @@ const volumeSlider = document.getElementById('volume-slider');
 // Audio State
 let currentBeat = null;
 let isPlaying = false;
+
+// Resize functionality
+let isResizing = false;
+let startX = 0;
+let startWidth = 0;
+
+if (resizeHandle && packDetailRightPanel) {
+  resizeHandle.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    startX = e.clientX;
+    startWidth = packDetailRightPanel.offsetWidth;
+    document.body.style.cursor = 'ew-resize';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+
+    const diff = startX - e.clientX;
+    // Allow resizing from 250px to 80% of window width
+    const maxWidth = window.innerWidth * 0.8;
+    const newWidth = Math.max(250, Math.min(maxWidth, startWidth + diff));
+    packDetailRightPanel.style.width = `${newWidth}px`;
+    packDetailRightPanel.style.minWidth = `${newWidth}px`;
+    packDetailRightPanel.style.maxWidth = `${newWidth}px`;
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isResizing) {
+      isResizing = false;
+      document.body.style.cursor = '';
+    }
+  });
+}
 
 // Initialize
 init();
@@ -260,6 +321,33 @@ async function init() {
     }
   });
 
+  // Add email modal listeners
+  addEmailBtn.addEventListener('click', showAddEmailModal);
+  closeAddEmailModalBtn.addEventListener('click', closeAddEmailModal);
+  cancelAddEmailBtn.addEventListener('click', closeAddEmailModal);
+  confirmAddEmailBtn.addEventListener('click', addNewEmail);
+
+  // Close add email modal when clicking outside
+  addEmailModal.addEventListener('click', (e) => {
+    if (e.target === addEmailModal) {
+      closeAddEmailModal();
+    }
+  });
+
+  // View emails modal listeners
+  viewEmailsBtn.addEventListener('click', showViewEmailsModal);
+  closeViewEmailsModalBtn.addEventListener('click', closeViewEmailsModal);
+  filterAllEmailsBtn.addEventListener('click', () => filterEmails('all'));
+  filterAvailableEmailsBtn.addEventListener('click', () => filterEmails('available'));
+  filterUsedEmailsBtn.addEventListener('click', () => filterEmails('used'));
+
+  // Close view emails modal when clicking outside
+  viewEmailsModal.addEventListener('click', (e) => {
+    if (e.target === viewEmailsModal) {
+      closeViewEmailsModal();
+    }
+  });
+
   // Load emails and page folders for channel management
   if (isElectron) {
     await loadChannelData();
@@ -281,11 +369,11 @@ function showPackDetail(packId) {
   rightPanelEl.style.display = 'flex';
 
   packDetailTitleEl.value = pack.name;
-  packDetailCountEl.textContent = `${pack.beats.length} beats`;
 
   // Update hide/unhide button text based on pack status
   toggleHidePackBtn.textContent = pack.hidden ? 'Unhide Pack' : 'Hide Pack';
 
+  renderPackEmailInfo();
   renderPackDetailBeats();
 }
 
@@ -295,8 +383,18 @@ function renderPackDetailBeats() {
   const pack = packs.find(p => p.id === currentPackId);
   if (!pack) return;
 
+  // Add beat count at the top
+  const beatCountEl = document.createElement('div');
+  beatCountEl.className = 'pack-detail-count';
+  beatCountEl.id = 'pack-detail-count';
+  beatCountEl.textContent = `${pack.beats.length} beats`;
+  packDetailBeatsEl.appendChild(beatCountEl);
+
   if (pack.beats.length === 0) {
-    packDetailBeatsEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No beats in this pack yet. Drag beats from the left panel to add them.</div>';
+    const emptyMessageEl = document.createElement('div');
+    emptyMessageEl.style.cssText = 'padding: 20px; text-align: center; color: #999;';
+    emptyMessageEl.textContent = 'No beats in this pack yet. Drag beats from the left panel to add them.';
+    packDetailBeatsEl.appendChild(emptyMessageEl);
     return;
   }
 
@@ -309,6 +407,91 @@ function renderPackDetailBeats() {
   packDetailBeatsEl.addEventListener('dragover', handleDragOver);
   packDetailBeatsEl.addEventListener('dragleave', handleDragLeave);
   packDetailBeatsEl.addEventListener('drop', (e) => handleDrop(e, currentPackId));
+}
+
+function renderPackEmailInfo() {
+  const pack = packs.find(p => p.id === currentPackId);
+  if (!pack) return;
+
+  packEmailInfoEl.innerHTML = '';
+
+  const hasEmail = pack.email && pack.email !== 'No email available yet';
+
+  if (hasEmail) {
+    // Show existing email/password
+    packEmailInfoEl.innerHTML = `
+      <div style="margin-bottom: 10px;">
+        <div style="font-weight: bold; color: #3b82f6; font-size: 14px; margin-bottom: 8px;">📧 Account Information</div>
+        <div style="font-size: 13px; color: #ddd; margin-bottom: 5px;">
+          <span style="color: #999;">Email:</span> <span style="font-family: monospace;">${pack.email}</span>
+        </div>
+        <div style="font-size: 13px; color: #ddd; margin-bottom: 5px;">
+          <span style="color: #999;">Password:</span> <span style="font-family: monospace;">${pack.password || 'N/A'}</span>
+        </div>
+        ${pack.description && pack.description.includes(':') ? `
+        <div style="font-size: 11px; color: #666; margin-top: 5px;">
+          <span style="color: #888;">Recovery:</span> ${pack.description.split(':')[2] || 'N/A'}
+        </div>` : ''}
+      </div>
+    `;
+  } else {
+    // Show form to add email/password
+    packEmailInfoEl.innerHTML = `
+      <div>
+        <div style="font-weight: bold; color: #f59e0b; font-size: 14px; margin-bottom: 10px;">⚠️ No Email Assigned</div>
+        <div style="font-size: 12px; color: #999; margin-bottom: 10px;">Add an email account for this pack:</div>
+        <input type="text" id="pack-email-input" placeholder="email@example.com" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 8px; font-size: 13px;">
+        <input type="text" id="pack-password-input" placeholder="password" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 8px; font-size: 13px;">
+        <input type="text" id="pack-recovery-input" placeholder="recovery email (optional)" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 10px; font-size: 13px;">
+        <button id="save-pack-email-btn" class="btn-primary" style="width: 100%; padding: 8px;">Save Email</button>
+      </div>
+    `;
+
+    // Add event listener for save button
+    const saveBtn = document.getElementById('save-pack-email-btn');
+    const emailInput = document.getElementById('pack-email-input');
+    const passwordInput = document.getElementById('pack-password-input');
+    const recoveryInput = document.getElementById('pack-recovery-input');
+
+    if (saveBtn) {
+      saveBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        const recovery = recoveryInput.value.trim();
+
+        if (!email || !password) {
+          alert('Please enter both email and password');
+          return;
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          alert('Please enter a valid email address');
+          return;
+        }
+
+        // Update pack
+        pack.email = email;
+        pack.password = password;
+        pack.description = recovery ? `${email}:${password}:${recovery}` : `${email}:${password}`;
+
+        // Mark email as used in emails array
+        const emailObj = emails.find(e => e.email === email);
+        if (emailObj) {
+          emailObj.used = true;
+          if (recovery) emailObj.recovery = recovery;
+        } else {
+          // Add to emails array if not exists
+          emails.push({ email, password, used: true, recovery: recovery || '' });
+        }
+
+        await saveData();
+        renderPackEmailInfo(); // Re-render
+        alert('✅ Email saved successfully!');
+      });
+    }
+  }
 }
 
 function deleteCurrentPack() {
@@ -478,8 +661,27 @@ function updateFolderDisplay() {
   if (currentFolderType === 'untagged') {
     channelManagementEl.style.display = 'block';
     updateChannelStats();
+
+    // Show channel management buttons in header
+    createChannelsBtn.style.display = 'inline-block';
+    autoAddChannelBtn.style.display = 'inline-block';
+    addEmailBtn.style.display = 'inline-block';
+    viewEmailsBtn.style.display = 'inline-block';
   } else {
     channelManagementEl.style.display = 'none';
+
+    // Hide channel management buttons in header
+    createChannelsBtn.style.display = 'none';
+    autoAddChannelBtn.style.display = 'none';
+    addEmailBtn.style.display = 'none';
+    viewEmailsBtn.style.display = 'none';
+  }
+
+  // Hide filter for "untagged" (Tagged Beats) tab
+  if (currentFolderType === 'untagged') {
+    filterContainer.style.display = 'none';
+  } else {
+    filterContainer.style.display = 'block';
   }
 }
 
@@ -843,6 +1045,22 @@ function createPack() {
   saveData();
 }
 
+// Helper function to format timestamp as time ago
+function formatTimeAgo(timestamp) {
+  const now = Date.now();
+  const diff = now - timestamp;
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `${days}d ago`;
+  if (hours > 0) return `${hours}h ago`;
+  if (minutes > 0) return `${minutes}m ago`;
+  return 'just now';
+}
+
 // Helper function to extract pack number from name (e.g., "C2 - Boom Bap" -> 2)
 function extractPackNumber(packName) {
   const match = packName.match(/[cC]?(\d+)/);
@@ -924,13 +1142,13 @@ function renderPacks() {
     return;
   }
 
-  sortedPacks.forEach(pack => {
-    const packCardEl = createPackCard(pack);
+  sortedPacks.forEach((pack, index) => {
+    const packCardEl = createPackCard(pack, index + 1);
     packsGridEl.appendChild(packCardEl);
   });
 }
 
-function createPackCard(pack) {
+function createPackCard(pack, orderNumber) {
   const packCardEl = document.createElement('div');
   packCardEl.className = 'pack-card';
   packCardEl.dataset.packId = pack.id;
@@ -939,8 +1157,8 @@ function createPackCard(pack) {
   const imageEl = document.createElement('div');
   imageEl.className = 'pack-card-image';
 
-  // Show thumbnail image if available, otherwise show default icon
-  if (pack.thumbnail) {
+  // Show thumbnail image if available, otherwise show auto-generated text thumbnail
+  if (pack.thumbnail && pack.thumbnail !== 'auto') {
     const img = document.createElement('img');
     img.src = pack.thumbnail;
     img.alt = pack.name;
@@ -949,7 +1167,11 @@ function createPackCard(pack) {
     img.style.objectFit = 'cover';
     imageEl.appendChild(img);
   } else {
-    imageEl.innerHTML = '🎵';
+    // Auto-generate text-based thumbnail with pack name
+    const textThumb = document.createElement('div');
+    textThumb.style.cssText = 'width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); font-size: 48px; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);';
+    textThumb.textContent = pack.name;
+    imageEl.appendChild(textThumb);
   }
 
   // Beat count badge on image
@@ -957,6 +1179,14 @@ function createPackCard(pack) {
   countBadge.className = 'pack-card-count';
   countBadge.textContent = pack.beats.length;
   imageEl.appendChild(countBadge);
+
+  // Order number badge on image (top left)
+  if (orderNumber) {
+    const orderBadge = document.createElement('div');
+    orderBadge.className = 'pack-card-order';
+    orderBadge.textContent = `#${orderNumber}`;
+    imageEl.appendChild(orderBadge);
+  }
 
   // Add thumbnail button overlay
   const thumbnailBtn = document.createElement('button');
@@ -980,6 +1210,16 @@ function createPackCard(pack) {
   const subtitleEl = document.createElement('div');
   subtitleEl.className = 'pack-card-subtitle';
   subtitleEl.textContent = pack.beats.length === 1 ? '1 beat' : `${pack.beats.length} beats`;
+
+  // Last used beat info
+  const lastUsedBeat = pack.beats.find(beat => beat.lastUsed);
+  if (lastUsedBeat) {
+    const lastUsedIndex = pack.beats.indexOf(lastUsedBeat);
+    const lastUsedEl = document.createElement('div');
+    lastUsedEl.className = 'pack-card-last-used';
+    lastUsedEl.innerHTML = `<span style="color: #ff9500;">Last Used:</span> #${lastUsedIndex + 1}`;
+    infoEl.appendChild(lastUsedEl);
+  }
 
   // Progress bar (goal: 40 beats)
   const progressContainer = document.createElement('div');
@@ -1005,6 +1245,14 @@ function createPackCard(pack) {
   infoEl.appendChild(titleEl);
   infoEl.appendChild(subtitleEl);
   infoEl.appendChild(progressContainer);
+
+  // Last used display
+  if (pack.lastUsed) {
+    const lastUsedEl = document.createElement('div');
+    lastUsedEl.style.cssText = 'font-size: 11px; color: #888; margin-top: 6px;';
+    lastUsedEl.textContent = `Last used: ${formatTimeAgo(pack.lastUsed)}`;
+    infoEl.appendChild(lastUsedEl);
+  }
 
   packCardEl.appendChild(imageEl);
   packCardEl.appendChild(infoEl);
@@ -1224,6 +1472,9 @@ function handleDrop(e, packId) {
     }
 
     pack.beats.push(newBeat);
+
+    // Update last used timestamp
+    pack.lastUsed = Date.now();
 
     // Update UI based on current view
     if (currentPackId === packId) {
@@ -1459,6 +1710,169 @@ function showCreateChannelsModal() {
 
 function closeCreateChannelsModal() {
   createChannelsModal.style.display = 'none';
+}
+
+function showAddEmailModal() {
+  // Clear previous inputs
+  bulkEmailInput.value = '';
+  addEmailModal.style.display = 'flex';
+}
+
+function closeAddEmailModal() {
+  addEmailModal.style.display = 'none';
+}
+
+function showViewEmailsModal() {
+  currentEmailFilter = 'all';
+  renderEmailsList();
+  viewEmailsModal.style.display = 'flex';
+}
+
+function closeViewEmailsModal() {
+  viewEmailsModal.style.display = 'none';
+}
+
+function filterEmails(filter) {
+  currentEmailFilter = filter;
+  renderEmailsList();
+
+  // Update button active states
+  filterAllEmailsBtn.style.backgroundColor = filter === 'all' ? '#4a90e2' : '';
+  filterAvailableEmailsBtn.style.backgroundColor = filter === 'available' ? '#4a90e2' : '';
+  filterUsedEmailsBtn.style.backgroundColor = filter === 'used' ? '#4a90e2' : '';
+}
+
+function renderEmailsList() {
+  emailsListContainer.innerHTML = '';
+
+  if (!emails || emails.length === 0) {
+    emailsListContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No emails found. Click "+ Add Email" to add some.</div>';
+    countAllEl.textContent = '0';
+    countAvailableEl.textContent = '0';
+    countUsedEl.textContent = '0';
+    return;
+  }
+
+  // Calculate counts
+  const totalCount = emails.length;
+  const usedCount = emails.filter(e => e.used).length;
+  const availableCount = totalCount - usedCount;
+
+  // Update count badges
+  countAllEl.textContent = totalCount;
+  countAvailableEl.textContent = availableCount;
+  countUsedEl.textContent = usedCount;
+
+  // Filter emails based on current filter
+  let filteredEmails = emails;
+  if (currentEmailFilter === 'available') {
+    filteredEmails = emails.filter(e => !e.used);
+  } else if (currentEmailFilter === 'used') {
+    filteredEmails = emails.filter(e => e.used);
+  }
+
+  if (filteredEmails.length === 0) {
+    emailsListContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No emails in this category.</div>';
+    return;
+  }
+
+  // Render email items
+  filteredEmails.forEach((emailObj, index) => {
+    const emailItem = document.createElement('div');
+    emailItem.style.cssText = 'padding: 12px; margin-bottom: 8px; background: #2a2a2a; border-radius: 4px; border-left: 4px solid ' + (emailObj.used ? '#e74c3c' : '#27ae60');
+
+    const statusBadge = emailObj.used
+      ? '<span style="background: #e74c3c; color: white; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;">USED</span>'
+      : '<span style="background: #27ae60; color: white; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: bold;">AVAILABLE</span>';
+
+    emailItem.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+        <div style="font-weight: bold; color: #4a90e2;">${emailObj.email}</div>
+        ${statusBadge}
+      </div>
+      <div style="font-size: 12px; color: #999; font-family: monospace;">
+        Password: <span style="color: #ddd;">${emailObj.password}</span>
+      </div>
+      ${emailObj.recovery ? `<div style="font-size: 12px; color: #999; margin-top: 3px;">Recovery: <span style="color: #ddd;">${emailObj.recovery}</span></div>` : ''}
+    `;
+
+    emailsListContainer.appendChild(emailItem);
+  });
+}
+
+async function addNewEmail() {
+  const bulkText = bulkEmailInput.value.trim();
+
+  if (!bulkText) {
+    alert('Please paste at least one email line');
+    return;
+  }
+
+  // Parse multiple lines
+  const lines = bulkText.split('\n');
+  const emailsToAdd = [];
+
+  for (let line of lines) {
+    // Remove quotes from start and end FIRST
+    line = line.trim();
+    if (line.startsWith('"')) line = line.substring(1);
+    if (line.endsWith('"')) line = line.substring(0, line.length - 1);
+    line = line.trim(); // Trim again after removing quotes
+
+    // Skip empty lines
+    if (!line) continue;
+
+    // Parse format: email[TAB]password|recovery
+    if (line.includes('\t')) {
+      const parts = line.split('\t').filter(p => p.trim()); // Filter out empty parts
+      if (parts.length >= 2) {
+        const email = parts[parts.length - 2].trim(); // Second to last (email)
+        const passwordAndRecovery = parts[parts.length - 1].trim(); // Last part (password|recovery)
+
+        // Split password and recovery email
+        let password = passwordAndRecovery;
+        let recovery = '';
+
+        if (passwordAndRecovery.includes('|')) {
+          const subParts = passwordAndRecovery.split('|');
+          password = subParts[0].trim();
+          recovery = subParts[1] ? subParts[1].trim() : '';
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailRegex.test(email) && password) {
+          emailsToAdd.push({ email, password, recovery });
+          console.log('✅ Parsed:', email);
+        } else {
+          console.warn('⚠️ Skipping invalid line:', line);
+        }
+      } else {
+        console.warn('⚠️ Not enough parts in line:', line);
+      }
+    } else {
+      console.warn('⚠️ No TAB found in line:', line);
+    }
+  }
+
+  if (emailsToAdd.length === 0) {
+    alert('No valid emails found. Format should be: email[TAB]password|recovery');
+    return;
+  }
+
+  // Add all emails via IPC
+  if (isElectron) {
+    const result = await ipcRenderer.invoke('add-emails-bulk', emailsToAdd);
+    if (result.success) {
+      alert(`✅ Successfully added ${result.count} email(s)!`);
+      closeAddEmailModal();
+
+      // Reload emails to update the list
+      await loadChannelData();
+    } else {
+      alert(`❌ Failed to add emails: ${result.error}`);
+    }
+  }
 }
 
 async function createChannels() {

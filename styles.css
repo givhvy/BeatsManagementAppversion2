@@ -34,12 +34,12 @@ body {
 }
 
 .right-panel {
-  width: 500px;
+  flex: 1;
   display: flex;
   flex-direction: column;
   padding: 20px;
   border-left: 1px solid #333;
-  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .panel-header {
@@ -377,6 +377,18 @@ body {
   font-weight: 600;
 }
 
+.pack-card-order {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(0, 102, 255, 0.9);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .pack-thumbnail-btn {
   position: absolute;
   top: 10px;
@@ -418,6 +430,16 @@ body {
 .pack-card-subtitle {
   font-size: 12px;
   color: #999;
+}
+
+.pack-card-last-used {
+  font-size: 11px;
+  color: #ddd;
+  margin-top: 5px;
+  padding: 4px 8px;
+  background-color: #1a1a1a;
+  border-radius: 4px;
+  border-left: 2px solid #ff9500;
 }
 
 .pack-progress-container {
@@ -494,15 +516,23 @@ body {
   text-align: center;
 }
 
-.pack-detail-info {
-  padding: 15px 0;
-  border-bottom: 1px solid #333;
-  margin-bottom: 15px;
+.pack-detail-content {
+  flex: 1;
+  display: flex;
+  gap: 0;
+  overflow: hidden;
 }
 
-.pack-detail-count {
-  font-size: 14px;
-  color: #999;
+.resize-handle {
+  width: 5px;
+  background-color: #333;
+  cursor: ew-resize;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+}
+
+.resize-handle:hover {
+  background-color: #0066ff;
 }
 
 .pack-detail-beats {
@@ -512,6 +542,41 @@ body {
   flex-direction: column;
   gap: 8px;
   padding: 5px 0;
+  min-width: 0;
+}
+
+.pack-detail-right {
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-shrink: 0;
+}
+
+.pack-email-info * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.pack-email-info {
+  padding: 15px;
+  background: #2a2a2a;
+  border-radius: 8px;
+  border-left: 4px solid #3b82f6;
+}
+
+.pack-detail-info {
+  padding: 15px 0;
+  border-bottom: 1px solid #333;
+  margin-bottom: 15px;
+}
+
+.pack-detail-count {
+  font-size: 14px;
+  color: #999;
 }
 
 .pack-beat-item {

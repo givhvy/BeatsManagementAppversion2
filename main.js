@@ -222,12 +222,18 @@ ipcMain.handle('load-emails', async () => {
     const content = fs.readFileSync(emailFilePath, 'utf8');
     const emails = [];
 
-    // Parse emails from file (format: email:password per line)
+    // Parse emails from file (format: email:password:recovery per line)
     const lines = content.split('\n').filter(line => line.trim());
     for (const line of lines) {
-      const [email, password] = line.trim().split(':');
-      if (email && password) {
-        emails.push({ email, password, used: false });
+      const parts = line.trim().split(':');
+      if (parts.length >= 2) {
+        const email = parts[0];
+        const password = parts[1];
+        const recovery = parts[2] || ''; // Optional recovery email
+
+        if (email && password) {
+          emails.push({ email, password, recovery, used: false });
+        }
       }
     }
 
@@ -236,6 +242,57 @@ ipcMain.handle('load-emails', async () => {
   } catch (error) {
     console.error('Error loading emails:', error);
     return { emails: [], error: error.message };
+  }
+});
+
+ipcMain.handle('add-email', async (event, emailData) => {
+  const emailFilePath = 'F:\\PlaygroundTest\\BeatsManagement\\email.txt';
+  try {
+    // Create file if it doesn't exist
+    if (!fs.existsSync(emailFilePath)) {
+      fs.writeFileSync(emailFilePath, '', 'utf8');
+    }
+
+    // Append new email:password:recovery to file
+    const recovery = emailData.recovery || '';
+    const newLine = recovery
+      ? `${emailData.email}:${emailData.password}:${recovery}\n`
+      : `${emailData.email}:${emailData.password}\n`;
+    fs.appendFileSync(emailFilePath, newLine, 'utf8');
+
+    console.log(`✅ Added new email: ${emailData.email}${recovery ? ' with recovery' : ''}`);
+    return { success: true, error: null };
+  } catch (error) {
+    console.error('Error adding email:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('add-emails-bulk', async (event, emailsArray) => {
+  const emailFilePath = 'F:\\PlaygroundTest\\BeatsManagement\\email.txt';
+  try {
+    // Create file if it doesn't exist
+    if (!fs.existsSync(emailFilePath)) {
+      fs.writeFileSync(emailFilePath, '', 'utf8');
+    }
+
+    // Build all lines
+    const lines = emailsArray.map(emailData => {
+      const recovery = emailData.recovery || '';
+      return recovery
+        ? `${emailData.email}:${emailData.password}:${recovery}`
+        : `${emailData.email}:${emailData.password}`;
+    });
+
+    // Append all lines at once
+    const bulkContent = lines.join('\n') + '\n';
+    fs.appendFileSync(emailFilePath, bulkContent, 'utf8');
+
+    console.log(`✅ Added ${emailsArray.length} emails in bulk`);
+    return { success: true, count: emailsArray.length, error: null };
+  } catch (error) {
+    console.error('Error adding emails in bulk:', error);
+    return { success: false, count: 0, error: error.message };
   }
 });
 
