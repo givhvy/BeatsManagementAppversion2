@@ -79,6 +79,8 @@ const unmarkLastUsedBtn = document.getElementById('unmark-last-used');
 // Pack detail panel elements
 const middlePanelEl = document.getElementById('middle-panel');
 const rightPanelEl = document.getElementById('right-panel');
+const packDetailRightPanel = document.getElementById('pack-detail-right-panel');
+const resizeHandle = document.getElementById('resize-handle');
 const backToPacksBtn = document.getElementById('back-to-packs-btn');
 const packDetailTitleEl = document.getElementById('pack-detail-title');
 const packDetailCountEl = document.getElementById('pack-detail-count');
@@ -150,6 +152,40 @@ const volumeSlider = document.getElementById('volume-slider');
 // Audio State
 let currentBeat = null;
 let isPlaying = false;
+
+// Resize functionality
+let isResizing = false;
+let startX = 0;
+let startWidth = 0;
+
+if (resizeHandle && packDetailRightPanel) {
+  resizeHandle.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    startX = e.clientX;
+    startWidth = packDetailRightPanel.offsetWidth;
+    document.body.style.cursor = 'ew-resize';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+
+    const diff = startX - e.clientX;
+    // Allow resizing from 250px to 80% of window width
+    const maxWidth = window.innerWidth * 0.8;
+    const newWidth = Math.max(250, Math.min(maxWidth, startWidth + diff));
+    packDetailRightPanel.style.width = `${newWidth}px`;
+    packDetailRightPanel.style.minWidth = `${newWidth}px`;
+    packDetailRightPanel.style.maxWidth = `${newWidth}px`;
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isResizing) {
+      isResizing = false;
+      document.body.style.cursor = '';
+    }
+  });
+}
 
 // Initialize
 init();
@@ -333,7 +369,6 @@ function showPackDetail(packId) {
   rightPanelEl.style.display = 'flex';
 
   packDetailTitleEl.value = pack.name;
-  packDetailCountEl.textContent = `${pack.beats.length} beats`;
 
   // Update hide/unhide button text based on pack status
   toggleHidePackBtn.textContent = pack.hidden ? 'Unhide Pack' : 'Hide Pack';
@@ -348,8 +383,18 @@ function renderPackDetailBeats() {
   const pack = packs.find(p => p.id === currentPackId);
   if (!pack) return;
 
+  // Add beat count at the top
+  const beatCountEl = document.createElement('div');
+  beatCountEl.className = 'pack-detail-count';
+  beatCountEl.id = 'pack-detail-count';
+  beatCountEl.textContent = `${pack.beats.length} beats`;
+  packDetailBeatsEl.appendChild(beatCountEl);
+
   if (pack.beats.length === 0) {
-    packDetailBeatsEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999;">No beats in this pack yet. Drag beats from the left panel to add them.</div>';
+    const emptyMessageEl = document.createElement('div');
+    emptyMessageEl.style.cssText = 'padding: 20px; text-align: center; color: #999;';
+    emptyMessageEl.textContent = 'No beats in this pack yet. Drag beats from the left panel to add them.';
+    packDetailBeatsEl.appendChild(emptyMessageEl);
     return;
   }
 
@@ -1097,13 +1142,13 @@ function renderPacks() {
     return;
   }
 
-  sortedPacks.forEach(pack => {
-    const packCardEl = createPackCard(pack);
+  sortedPacks.forEach((pack, index) => {
+    const packCardEl = createPackCard(pack, index + 1);
     packsGridEl.appendChild(packCardEl);
   });
 }
 
-function createPackCard(pack) {
+function createPackCard(pack, orderNumber) {
   const packCardEl = document.createElement('div');
   packCardEl.className = 'pack-card';
   packCardEl.dataset.packId = pack.id;
@@ -1135,6 +1180,14 @@ function createPackCard(pack) {
   countBadge.textContent = pack.beats.length;
   imageEl.appendChild(countBadge);
 
+  // Order number badge on image (top left)
+  if (orderNumber) {
+    const orderBadge = document.createElement('div');
+    orderBadge.className = 'pack-card-order';
+    orderBadge.textContent = `#${orderNumber}`;
+    imageEl.appendChild(orderBadge);
+  }
+
   // Add thumbnail button overlay
   const thumbnailBtn = document.createElement('button');
   thumbnailBtn.className = 'pack-thumbnail-btn';
@@ -1157,6 +1210,16 @@ function createPackCard(pack) {
   const subtitleEl = document.createElement('div');
   subtitleEl.className = 'pack-card-subtitle';
   subtitleEl.textContent = pack.beats.length === 1 ? '1 beat' : `${pack.beats.length} beats`;
+
+  // Last used beat info
+  const lastUsedBeat = pack.beats.find(beat => beat.lastUsed);
+  if (lastUsedBeat) {
+    const lastUsedIndex = pack.beats.indexOf(lastUsedBeat);
+    const lastUsedEl = document.createElement('div');
+    lastUsedEl.className = 'pack-card-last-used';
+    lastUsedEl.innerHTML = `<span style="color: #ff9500;">Last Used:</span> #${lastUsedIndex + 1}`;
+    infoEl.appendChild(lastUsedEl);
+  }
 
   // Progress bar (goal: 40 beats)
   const progressContainer = document.createElement('div');
