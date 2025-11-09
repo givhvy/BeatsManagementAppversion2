@@ -335,3 +335,41 @@ ipcMain.handle('get-page-folders', async () => {
     return [];
   }
 });
+
+// Handle drag multiple files to external apps (beat + image)
+ipcMain.on('drag-files-start', (event, filePaths) => {
+  if (!filePaths || filePaths.length === 0) return;
+
+  // Use first file as icon (audio or image)
+  const iconPath = filePaths[0];
+  let icon;
+
+  try {
+    // Try to create icon from image if available
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
+    const hasImage = filePaths.some(p => imageExtensions.includes(path.extname(p).toLowerCase()));
+
+    if (hasImage) {
+      const imagePath = filePaths.find(p => imageExtensions.includes(path.extname(p).toLowerCase()));
+      icon = nativeImage.createFromPath(imagePath);
+      icon = icon.resize({ width: 64, height: 64 });
+    } else {
+      icon = nativeImage.createEmpty();
+    }
+  } catch (error) {
+    icon = nativeImage.createEmpty();
+  }
+
+  // Drag single file or multiple files
+  if (filePaths.length === 1) {
+    event.sender.startDrag({
+      file: filePaths[0],
+      icon: icon
+    });
+  } else {
+    event.sender.startDrag({
+      files: filePaths,
+      icon: icon
+    });
+  }
+});

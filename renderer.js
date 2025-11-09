@@ -702,11 +702,16 @@ function playBeat(beatPath, beatName) {
   if (imagePath) {
     beatImagePreview.style.display = 'block';
     beatImageDisplay.src = 'file://' + imagePath;
+    beatImageDisplay.dataset.imagePath = imagePath;
 
     // Set up drag-and-drop for image
     beatImageDisplay.ondragstart = (e) => {
-      e.dataTransfer.effectAllowed = 'copy';
-      e.dataTransfer.setData('DownloadURL', `image/png:${beatName.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '.png')}:file://${imagePath}`);
+      e.preventDefault();
+
+      if (isElectron) {
+        // Use Electron's native drag for files
+        ipcRenderer.send('drag-files-start', [imagePath]);
+      }
     };
   } else {
     beatImagePreview.style.display = 'none';
@@ -1152,9 +1157,19 @@ function renderBeats() {
 
       // For external drag to desktop/Chrome/Filmora
       if (isElectron) {
-        // Use file:// protocol for Electron drag out
-        e.dataTransfer.setData('text/uri-list', 'file:///' + beat.path.replace(/\\/g, '/'));
-        e.dataTransfer.setData('text/plain', beat.path);
+        e.preventDefault();
+
+        // Check if beat has associated image
+        const imagePath = beatImages[beat.path];
+        const filesToDrag = [beat.path];
+
+        if (imagePath) {
+          // Add image to drag if it exists
+          filesToDrag.push(imagePath);
+        }
+
+        // Use Electron's native drag for multiple files
+        ipcRenderer.send('drag-files-start', filesToDrag);
       } else if (beat.file) {
         // Browser mode - add file to drag
         e.dataTransfer.items.add(beat.file);
@@ -1449,10 +1464,19 @@ function createPackBeatElement(beat, packId, index) {
   // Drag events for external apps (desktop, Chrome, etc.)
   beatItemEl.addEventListener('dragstart', (e) => {
     if (isElectron) {
-      // Use file:// protocol for Electron drag out
-      e.dataTransfer.effectAllowed = 'copy';
-      e.dataTransfer.setData('text/uri-list', 'file:///' + beat.path.replace(/\\/g, '/'));
-      e.dataTransfer.setData('text/plain', beat.path);
+      e.preventDefault();
+
+      // Check if beat has associated image
+      const imagePath = beatImages[beat.path];
+      const filesToDrag = [beat.path];
+
+      if (imagePath) {
+        // Add image to drag if it exists
+        filesToDrag.push(imagePath);
+      }
+
+      // Use Electron's native drag for multiple files
+      ipcRenderer.send('drag-files-start', filesToDrag);
     } else {
       // Browser mode - MUST get file from cache since beat.file is lost after render
       const fileObj = fileObjectsCache.get(beat.path);
