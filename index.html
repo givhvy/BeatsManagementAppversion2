@@ -118,9 +118,17 @@
 
           <!-- Beat Prompt -->
           <div class="beat-prompt-section" id="beat-prompt-section" style="display: none;">
-            <div style="font-weight: bold; font-size: 14px; margin-bottom: 10px; color: #3b82f6;">📝 Prompt</div>
-            <div id="beat-prompt-display" style="background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; padding: 10px; font-size: 13px; color: #ddd; margin-bottom: 15px; max-height: 150px; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div style="font-weight: bold; font-size: 14px; color: #3b82f6;">📝 Prompt</div>
+              <button id="edit-prompt-btn" class="btn-secondary" style="padding: 4px 12px; font-size: 12px;">Edit</button>
+            </div>
+            <div id="beat-prompt-display" style="background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; padding: 10px; font-size: 13px; color: #ddd; margin-bottom: 15px; max-height: 150px; overflow-y: auto; white-space: pre-wrap;">
               No prompt available
+            </div>
+            <textarea id="beat-prompt-editor" style="display: none; width: 100%; min-height: 120px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; padding: 10px; font-size: 13px; color: #ddd; margin-bottom: 10px; resize: vertical; font-family: inherit;" placeholder="Enter prompt for this beat..."></textarea>
+            <div id="prompt-edit-actions" style="display: none; flex-direction: row; gap: 10px; margin-bottom: 15px;">
+              <button id="save-prompt-btn" class="btn-primary" style="padding: 6px 16px; font-size: 13px;">Save</button>
+              <button id="cancel-prompt-btn" class="btn-secondary" style="padding: 6px 16px; font-size: 13px;">Cancel</button>
             </div>
           </div>
 

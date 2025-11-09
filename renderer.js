@@ -136,6 +136,11 @@ const beatImagePreview = document.getElementById('beat-image-preview');
 const beatImageDisplay = document.getElementById('beat-image-display');
 const beatPromptSection = document.getElementById('beat-prompt-section');
 const beatPromptDisplay = document.getElementById('beat-prompt-display');
+const editPromptBtn = document.getElementById('edit-prompt-btn');
+const beatPromptEditor = document.getElementById('beat-prompt-editor');
+const promptEditActions = document.getElementById('prompt-edit-actions');
+const savePromptBtn = document.getElementById('save-prompt-btn');
+const cancelPromptBtn = document.getElementById('cancel-prompt-btn');
 
 // Add email modal elements
 const addEmailModal = document.getElementById('add-email-modal');
@@ -320,6 +325,11 @@ async function init() {
       closeImagesModal();
     }
   });
+
+  // Prompt editor listeners
+  editPromptBtn.addEventListener('click', showPromptEditor);
+  savePromptBtn.addEventListener('click', savePrompt);
+  cancelPromptBtn.addEventListener('click', cancelPromptEdit);
 
   packDetailTitleEl.addEventListener('input', (e) => {
     if (currentPackId) {
@@ -717,12 +727,19 @@ function playBeat(beatPath, beatName) {
     beatImagePreview.style.display = 'none';
   }
 
+  // Always show prompt section when playing a beat (even if empty)
+  beatPromptSection.style.display = 'block';
   if (prompt) {
-    beatPromptSection.style.display = 'block';
     beatPromptDisplay.textContent = prompt;
   } else {
-    beatPromptSection.style.display = 'none';
+    beatPromptDisplay.textContent = 'No prompt available';
   }
+
+  // Make sure editor is hidden and display is shown
+  beatPromptEditor.style.display = 'none';
+  promptEditActions.style.display = 'none';
+  beatPromptDisplay.style.display = 'block';
+  editPromptBtn.style.display = 'block';
 }
 
 function togglePlayPause() {
@@ -2391,9 +2408,12 @@ function renderImagesGrid() {
 }
 
 async function randomizeImages() {
-  // Get all beats from all packs that don't have images assigned
+  // Get all beats from ACTIVE (non-hidden) packs that don't have images assigned
   const allBeats = [];
   packs.forEach(pack => {
+    // Skip hidden packs
+    if (pack.hidden) return;
+
     pack.beats.forEach(beat => {
       if (!beatImages[beat.path]) {
         allBeats.push(beat);
@@ -2431,5 +2451,48 @@ async function randomizeImages() {
   renderImagesGrid();
 
   alert(`✅ Assigned ${assignCount} images to beats!`);
+}
+
+
+// ===== Prompt Editor Functions =====
+
+function showPromptEditor() {
+  if (!currentBeat) return;
+
+  // Hide display, show editor
+  beatPromptDisplay.style.display = 'none';
+  beatPromptEditor.style.display = 'block';
+  promptEditActions.style.display = 'flex';
+  editPromptBtn.style.display = 'none';
+
+  // Load current prompt
+  const currentPrompt = beatPrompts[currentBeat.path] || '';
+  beatPromptEditor.value = currentPrompt;
+  beatPromptEditor.focus();
+}
+
+function cancelPromptEdit() {
+  // Hide editor, show display
+  beatPromptEditor.style.display = 'none';
+  promptEditActions.style.display = 'none';
+  beatPromptDisplay.style.display = 'block';
+  editPromptBtn.style.display = 'block';
+}
+
+async function savePrompt() {
+  if (!currentBeat) return;
+
+  const newPrompt = beatPromptEditor.value.trim();
+
+  if (newPrompt) {
+    beatPrompts[currentBeat.path] = newPrompt;
+    beatPromptDisplay.textContent = newPrompt;
+  } else {
+    delete beatPrompts[currentBeat.path];
+    beatPromptDisplay.textContent = 'No prompt available';
+  }
+
+  await saveData();
+  cancelPromptEdit();
 }
 
