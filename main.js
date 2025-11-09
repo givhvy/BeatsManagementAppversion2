@@ -76,6 +76,26 @@ ipcMain.handle('read-beats-folder', async (event, folderPath) => {
   }
 });
 
+// Read images from folder
+ipcMain.handle('read-images-folder', async (event, folderPath) => {
+  try {
+    const files = fs.readdirSync(folderPath);
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
+
+    const images = files
+      .filter(file => imageExtensions.includes(path.extname(file).toLowerCase()))
+      .map(file => ({
+        name: file,
+        path: path.join(folderPath, file)
+      }));
+
+    return images;
+  } catch (error) {
+    console.error('Error reading images folder:', error);
+    return [];
+  }
+});
+
 // Read folder contents with both folders and beats
 ipcMain.handle('read-folder-contents', async (event, folderPath) => {
   try {

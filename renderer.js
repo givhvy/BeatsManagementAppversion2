@@ -28,6 +28,12 @@ let channels = []; // List of created channels
 let pageFolders = []; // List of page folders with tags
 let folderTags = {}; // Map folder paths to channel tags
 
+// Image database state
+let imageFolder = ''; // Path to images folder
+let images = []; // List of {path, name, used, beatId}
+let beatImages = {}; // Map beatId to image path
+let beatPrompts = {}; // Map beatId to prompt text
+
 // Helper function to get current folder
 function getCurrentFolder() {
   return folders[currentFolderType].currentPath || folders[currentFolderType].path;
@@ -111,6 +117,25 @@ const numChannelsInput = document.getElementById('num-channels-input');
 const beatsPerChannelInput = document.getElementById('beats-per-channel-input');
 const confirmCreateChannelsBtn = document.getElementById('confirm-create-channels-btn');
 const cancelCreateChannelsBtn = document.getElementById('cancel-create-channels-btn');
+
+// Image manager elements
+const imagesManagerBtn = document.getElementById('images-manager-btn');
+const imagesModal = document.getElementById('images-modal');
+const closeImagesModalBtn = document.getElementById('close-images-modal-btn');
+const imageFolderDisplay = document.getElementById('image-folder-display');
+const selectImageFolderBtn = document.getElementById('select-image-folder-btn');
+const refreshImagesBtn = document.getElementById('refresh-images-btn');
+const imagesGrid = document.getElementById('images-grid');
+const imagesTotalCount = document.getElementById('images-total-count');
+const imagesUsedCount = document.getElementById('images-used-count');
+const imagesUnusedCount = document.getElementById('images-unused-count');
+const randomizeImagesBtn = document.getElementById('randomize-images-btn');
+
+// Beat image/prompt elements
+const beatImagePreview = document.getElementById('beat-image-preview');
+const beatImageDisplay = document.getElementById('beat-image-display');
+const beatPromptSection = document.getElementById('beat-prompt-section');
+const beatPromptDisplay = document.getElementById('beat-prompt-display');
 
 // Add email modal elements
 const addEmailModal = document.getElementById('add-email-modal');
@@ -204,6 +229,15 @@ async function init() {
       }
       packs = savedData.packs || [];
 
+      // Load image data
+      imageFolder = savedData.imageFolder || '';
+      images = savedData.images || [];
+      beatImages = savedData.beatImages || {};
+      beatPrompts = savedData.beatPrompts || {};
+      if (imageFolder) {
+        imageFolderDisplay.textContent = imageFolder;
+      }
+
       // Update UI for current folder
       updateFolderDisplay();
 
@@ -228,6 +262,12 @@ async function init() {
         currentFolderType = data.currentFolderType;
       }
       packs = data.packs || [];
+
+      // Load image data
+      imageFolder = data.imageFolder || '';
+      images = data.images || [];
+      beatImages = data.beatImages || {};
+      beatPrompts = data.beatPrompts || {};
 
       updateFolderDisplay();
       renderPacks();
@@ -264,6 +304,20 @@ async function init() {
   databaseModal.addEventListener('click', (e) => {
     if (e.target === databaseModal) {
       closeDatabaseModal();
+    }
+  });
+
+  // Image manager modal listeners
+  imagesManagerBtn.addEventListener('click', showImagesManager);
+  closeImagesModalBtn.addEventListener('click', closeImagesModal);
+  selectImageFolderBtn.addEventListener('click', selectImageFolder);
+  refreshImagesBtn.addEventListener('click', refreshImages);
+  randomizeImagesBtn.addEventListener('click', randomizeImages);
+
+  // Close images modal when clicking outside
+  imagesModal.addEventListener('click', (e) => {
+    if (e.target === imagesModal) {
+      closeImagesModal();
     }
   });
 
@@ -439,7 +493,9 @@ function renderPackEmailInfo() {
     packEmailInfoEl.innerHTML = `
       <div>
         <div style="font-weight: bold; color: #f59e0b; font-size: 14px; margin-bottom: 10px;">⚠️ No Email Assigned</div>
-        <div style="font-size: 12px; color: #999; margin-bottom: 10px;">Add an email account for this pack:</div>
+        <div style="font-size: 12px; color: #999; margin-bottom: 10px;">
+          Paste format: <span style="font-family: monospace; color: #3b82f6;">email	password|recovery</span>
+        </div>
         <input type="text" id="pack-email-input" placeholder="email@example.com" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 8px; font-size: 13px;">
         <input type="text" id="pack-password-input" placeholder="password" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 8px; font-size: 13px;">
         <input type="text" id="pack-recovery-input" placeholder="recovery email (optional)" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 10px; font-size: 13px;">
@@ -452,6 +508,37 @@ function renderPackEmailInfo() {
     const emailInput = document.getElementById('pack-email-input');
     const passwordInput = document.getElementById('pack-password-input');
     const recoveryInput = document.getElementById('pack-recovery-input');
+
+    // Auto-parse paste format: email	password|recovery
+    if (emailInput) {
+      emailInput.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pastedText = e.clipboardData.getData('text').trim();
+
+        // Try to parse format: email	password|recovery
+        // Split by tab first
+        const parts = pastedText.split('\t');
+
+        if (parts.length >= 2) {
+          // Has tab separator
+          const email = parts[0].trim();
+          const passwordAndRecovery = parts[1].trim();
+
+          // Check if password part has | separator for recovery
+          const passwordParts = passwordAndRecovery.split('|');
+          const password = passwordParts[0].trim();
+          const recovery = passwordParts[1] ? passwordParts[1].trim() : '';
+
+          // Fill in the fields
+          emailInput.value = email;
+          passwordInput.value = password;
+          recoveryInput.value = recovery;
+        } else {
+          // No tab, just paste as email
+          emailInput.value = pastedText;
+        }
+      });
+    }
 
     if (saveBtn) {
       saveBtn.addEventListener('click', async () => {
@@ -607,6 +694,30 @@ function playBeat(beatPath, beatName) {
   nowPlayingEl.textContent = displayName;
   playPauseBtn.disabled = false;
   updatePlayingState();
+
+  // Show image and prompt if available
+  const imagePath = beatImages[beatPath];
+  const prompt = beatPrompts[beatPath];
+
+  if (imagePath) {
+    beatImagePreview.style.display = 'block';
+    beatImageDisplay.src = 'file://' + imagePath;
+
+    // Set up drag-and-drop for image
+    beatImageDisplay.ondragstart = (e) => {
+      e.dataTransfer.effectAllowed = 'copy';
+      e.dataTransfer.setData('DownloadURL', `image/png:${beatName.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '.png')}:file://${imagePath}`);
+    };
+  } else {
+    beatImagePreview.style.display = 'none';
+  }
+
+  if (prompt) {
+    beatPromptSection.style.display = 'block';
+    beatPromptDisplay.textContent = prompt;
+  } else {
+    beatPromptSection.style.display = 'none';
+  }
 }
 
 function togglePlayPause() {
@@ -1741,7 +1852,11 @@ async function saveData() {
     packs,
     emails,
     channels,
-    folderTags
+    folderTags,
+    imageFolder,
+    images,
+    beatImages,
+    beatPrompts
   };
 
   if (isElectron) {
@@ -1763,7 +1878,11 @@ async function saveData() {
       packs: packsToSave,
       emails,
       channels,
-      folderTags
+      folderTags,
+      imageFolder,
+      images,
+      beatImages,
+      beatPrompts
     }));
   }
 }
@@ -1783,6 +1902,17 @@ async function loadChannelData() {
     emails = savedData.emails || [];
     channels = savedData.channels || [];
     folderTags = savedData.folderTags || {};
+
+    // Load image data if not already loaded
+    if (!imageFolder && savedData.imageFolder) {
+      imageFolder = savedData.imageFolder;
+      images = savedData.images || [];
+      beatImages = savedData.beatImages || {};
+      beatPrompts = savedData.beatPrompts || {};
+      if (imageFolder) {
+        imageFolderDisplay.textContent = imageFolder;
+      }
+    }
   }
 
   // Merge newly loaded emails with saved ones, updating used status
@@ -2128,3 +2258,130 @@ renderBeats = function() {
     });
   }
 }
+
+// ===== Image Management Functions =====
+
+function showImagesManager() {
+  imagesModal.style.display = 'flex';
+  renderImagesGrid();
+}
+
+function closeImagesModal() {
+  imagesModal.style.display = 'none';
+}
+
+async function selectImageFolder() {
+  if (!isElectron) return;
+
+  const folderPath = await ipcRenderer.invoke('select-folder');
+  if (folderPath) {
+    imageFolder = folderPath;
+    imageFolderDisplay.textContent = folderPath;
+    await loadImages();
+    await saveData();
+  }
+}
+
+async function loadImages() {
+  if (!imageFolder || !isElectron) return;
+
+  const imageFiles = await ipcRenderer.invoke('read-images-folder', imageFolder);
+
+  // Merge with existing images data to preserve 'used' status
+  const newImages = imageFiles.map(img => {
+    const existing = images.find(i => i.path === img.path);
+    return existing || { ...img, used: false, beatId: null };
+  });
+
+  images = newImages;
+  renderImagesGrid();
+}
+
+async function refreshImages() {
+  await loadImages();
+}
+
+function renderImagesGrid() {
+  if (!imageFolder) {
+    imagesGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px;">Select an image folder to get started</div>';
+    return;
+  }
+
+  const usedImages = images.filter(img => img.used);
+  const unusedImages = images.filter(img => !img.used);
+
+  imagesTotalCount.textContent = images.length;
+  imagesUsedCount.textContent = usedImages.length;
+  imagesUnusedCount.textContent = unusedImages.length;
+
+  if (images.length === 0) {
+    imagesGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px;">No images found in this folder</div>';
+    return;
+  }
+
+  imagesGrid.innerHTML = '';
+
+  images.forEach(img => {
+    const imgEl = document.createElement('div');
+    imgEl.style.cssText = 'position: relative; aspect-ratio: 1/1; background: #2a2a2a; border-radius: 4px; overflow: hidden; cursor: pointer; border: 2px solid ' + (img.used ? '#3b82f6' : '#404040');
+
+    const imgTag = document.createElement('img');
+    imgTag.src = 'file://' + img.path;
+    imgTag.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+    imgTag.alt = img.name;
+
+    if (img.used) {
+      const badge = document.createElement('div');
+      badge.style.cssText = 'position: absolute; top: 4px; right: 4px; background: #3b82f6; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold;';
+      badge.textContent = 'USED';
+      imgEl.appendChild(badge);
+    }
+
+    imgEl.appendChild(imgTag);
+    imagesGrid.appendChild(imgEl);
+  });
+}
+
+async function randomizeImages() {
+  // Get all beats from all packs that don't have images assigned
+  const allBeats = [];
+  packs.forEach(pack => {
+    pack.beats.forEach(beat => {
+      if (!beatImages[beat.path]) {
+        allBeats.push(beat);
+      }
+    });
+  });
+
+  if (allBeats.length === 0) {
+    alert('No beats without images found!');
+    return;
+  }
+
+  // Get unused images
+  const unusedImages = images.filter(img => !img.used);
+
+  if (unusedImages.length === 0) {
+    alert('No unused images available!');
+    return;
+  }
+
+  // Randomize assignment
+  const assignCount = Math.min(allBeats.length, unusedImages.length);
+  const shuffledImages = [...unusedImages].sort(() => Math.random() - 0.5);
+
+  for (let i = 0; i < assignCount; i++) {
+    const beat = allBeats[i];
+    const image = shuffledImages[i];
+
+    beatImages[beat.path] = image.path;
+    image.used = true;
+    image.beatId = beat.path;
+  }
+
+  await saveData();
+  renderImagesGrid();
+
+  alert(`✅ Assigned ${assignCount} images to beats!`);
+}
+

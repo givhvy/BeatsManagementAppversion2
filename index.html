@@ -68,6 +68,7 @@
           <button id="view-emails-btn" class="btn-secondary" style="display: none;">📧 Emails</button>
 
           <button id="toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs">👁️ Hidden</button>
+          <button id="images-manager-btn" class="btn-secondary" title="Image Database">🖼️ Images</button>
           <button id="database-info-btn" class="btn-secondary" title="Database Info">💾</button>
           <button id="create-pack-btn" class="btn-primary">+ Create Pack</button>
         </div>
@@ -107,6 +108,22 @@
         </div>
         <div class="resize-handle" id="resize-handle"></div>
         <div class="pack-detail-right" id="pack-detail-right-panel">
+          <!-- Beat Image Preview -->
+          <div class="beat-image-preview" id="beat-image-preview" style="display: none;">
+            <div style="font-weight: bold; font-size: 14px; margin-bottom: 10px; color: #3b82f6;">🖼️ Beat Image</div>
+            <div id="beat-image-container" style="position: relative; aspect-ratio: 1/1; background: #1a1a1a; border-radius: 8px; overflow: hidden; margin-bottom: 15px;">
+              <img id="beat-image-display" draggable="true" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+          </div>
+
+          <!-- Beat Prompt -->
+          <div class="beat-prompt-section" id="beat-prompt-section" style="display: none;">
+            <div style="font-weight: bold; font-size: 14px; margin-bottom: 10px; color: #3b82f6;">📝 Prompt</div>
+            <div id="beat-prompt-display" style="background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; padding: 10px; font-size: 13px; color: #ddd; margin-bottom: 15px; max-height: 150px; overflow-y: auto;">
+              No prompt available
+            </div>
+          </div>
+
           <!-- Pack Email/Password Info -->
           <div class="pack-email-info" id="pack-email-info">
             <!-- Email info will be rendered here -->
@@ -160,6 +177,36 @@
           <div style="display: flex; gap: 10px;">
             <button id="export-db-btn" class="btn-primary">Export Database</button>
             <button id="import-db-btn" class="btn-secondary">Import Database</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Manager Modal -->
+  <div id="images-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 900px;">
+      <div class="modal-header">
+        <h3>🖼️ Image Database</h3>
+        <button id="close-images-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Image Folder:</label>
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <div class="db-path" id="image-folder-display" style="flex: 1;">No folder selected</div>
+            <button id="select-image-folder-btn" class="btn-primary">Select Folder</button>
+            <button id="refresh-images-btn" class="btn-secondary">🔄 Refresh</button>
+          </div>
+        </div>
+
+        <div class="info-section" style="margin-top: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <label>Images (<span id="images-total-count">0</span> total, <span id="images-used-count">0</span> used, <span id="images-unused-count">0</span> unused)</label>
+            <button id="randomize-images-btn" class="btn-primary">🎲 Randomize Unused</button>
+          </div>
+          <div id="images-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto; padding: 10px; background: #1a1a1a; border-radius: 4px;">
+            <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px;">Select an image folder to get started</div>
           </div>
         </div>
       </div>
