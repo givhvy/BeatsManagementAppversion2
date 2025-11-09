@@ -2330,11 +2330,35 @@ function renderImagesGrid() {
     imgTag.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
     imgTag.alt = img.name;
 
-    if (img.used) {
+    if (img.used && img.beatId) {
+      // Find beat and pack info
+      let beatName = '';
+      let packName = '';
+
+      for (const pack of packs) {
+        const beat = pack.beats.find(b => b.path === img.beatId);
+        if (beat) {
+          beatName = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+          packName = pack.name;
+          break;
+        }
+      }
+
       const badge = document.createElement('div');
       badge.style.cssText = 'position: absolute; top: 4px; right: 4px; background: #3b82f6; color: white; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: bold;';
       badge.textContent = 'USED';
       imgEl.appendChild(badge);
+
+      // Add tooltip with beat and pack info
+      if (beatName && packName) {
+        imgEl.title = `Used in: ${packName}\nBeat: ${beatName}`;
+
+        // Add info label at bottom
+        const infoLabel = document.createElement('div');
+        infoLabel.style.cssText = 'position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; padding: 4px 6px; font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;';
+        infoLabel.innerHTML = `<span style="color: #3b82f6; font-weight: bold;">${packName}</span><br/>${beatName}`;
+        imgEl.appendChild(infoLabel);
+      }
     }
 
     imgEl.appendChild(imgTag);
