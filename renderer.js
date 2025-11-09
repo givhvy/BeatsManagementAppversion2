@@ -130,6 +130,7 @@ const imagesTotalCount = document.getElementById('images-total-count');
 const imagesUsedCount = document.getElementById('images-used-count');
 const imagesUnusedCount = document.getElementById('images-unused-count');
 const randomizeImagesBtn = document.getElementById('randomize-images-btn');
+const clearCacheBtn = document.getElementById('clear-cache-btn');
 
 // Beat image/prompt elements
 const beatImagePreview = document.getElementById('beat-image-preview');
@@ -318,6 +319,7 @@ async function init() {
   selectImageFolderBtn.addEventListener('click', selectImageFolder);
   refreshImagesBtn.addEventListener('click', refreshImages);
   randomizeImagesBtn.addEventListener('click', randomizeImages);
+  clearCacheBtn.addEventListener('click', clearImageCache);
 
   // Close images modal when clicking outside
   imagesModal.addEventListener('click', (e) => {
@@ -2438,11 +2440,35 @@ async function randomizeImages() {
   const assignCount = Math.min(allBeats.length, unusedImages.length);
   const shuffledImages = [...unusedImages].sort(() => Math.random() - 0.5);
 
+  // Show progress
+  const progressMsg = `Converting ${assignCount} images to 1:1...`;
+  console.log(progressMsg);
+
+  let convertedCount = 0;
+
   for (let i = 0; i < assignCount; i++) {
     const beat = allBeats[i];
     const image = shuffledImages[i];
 
-    beatImages[beat.path] = image.path;
+    // Convert image to 1:1 if using Electron
+    let imagePath = image.path;
+    if (isElectron) {
+      try {
+        const result = await ipcRenderer.invoke('convert-image-to-square', image.path);
+        if (result.success) {
+          imagePath = result.cachedPath;
+          convertedCount++;
+        } else {
+          console.warn(`Failed to convert image: ${image.name}`, result.error);
+          // Use original if conversion fails
+        }
+      } catch (error) {
+        console.error('Error converting image:', error);
+        // Use original if error
+      }
+    }
+
+    beatImages[beat.path] = imagePath;
     image.used = true;
     image.beatId = beat.path;
   }
@@ -2450,7 +2476,7 @@ async function randomizeImages() {
   await saveData();
   renderImagesGrid();
 
-  alert(`✅ Assigned ${assignCount} images to beats!`);
+  alert(`✅ Assigned ${assignCount} images to beats!\n${convertedCount} converted to 1:1 aspect ratio.`);
 }
 
 
@@ -2496,3 +2522,22 @@ async function savePrompt() {
   cancelPromptEdit();
 }
 
+
+async function clearImageCache() {
+  if (!isElectron) return;
+
+  if (!confirm('Clear all cached 1:1 images? This will free up disk space but images will need to be converted again when used.')) {
+    return;
+  }
+
+  try {
+    const result = await ipcRenderer.invoke('clear-image-cache');
+    if (result.success) {
+      alert(`✅ Cleared ${result.count} cached images!`);
+    } else {
+      alert(`❌ Error: ${result.error}`);
+    }
+  } catch (error) {
+    alert(`❌ Error clearing cache: ${error.message}`);
+  }
+}

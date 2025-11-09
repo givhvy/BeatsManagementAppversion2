@@ -211,7 +211,10 @@
         <div class="info-section" style="margin-top: 20px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
             <label>Images (<span id="images-total-count">0</span> total, <span id="images-used-count">0</span> used, <span id="images-unused-count">0</span> unused)</label>
-            <button id="randomize-images-btn" class="btn-primary">🎲 Randomize Unused</button>
+            <div style="display: flex; gap: 10px;">
+              <button id="clear-cache-btn" class="btn-secondary" title="Clear 1:1 image cache">🗑️ Clear Cache</button>
+              <button id="randomize-images-btn" class="btn-primary">🎲 Randomize Unused</button>
+            </div>
           </div>
           <div id="images-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto; padding: 10px; background: #1a1a1a; border-radius: 4px;">
             <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px;">Select an image folder to get started</div>
