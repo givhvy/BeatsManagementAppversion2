@@ -312,7 +312,7 @@ body {
   padding: 12px 15px;
   margin-bottom: 8px;
   border-radius: 6px;
-  cursor: pointer;
+  cursor: grab;
   transition: background-color 0.2s;
   user-select: none;
   border: 1px solid #404040;
@@ -324,6 +324,11 @@ body {
 .folder-item:hover {
   background-color: #333;
   border-color: #555;
+}
+
+.folder-item.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
 }
 
 .folder-icon {

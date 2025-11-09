@@ -915,6 +915,9 @@ function renderBeats() {
     folders.forEach(folder => {
       const folderEl = document.createElement('div');
       folderEl.className = 'folder-item';
+      folderEl.draggable = true; // Make folders draggable
+      folderEl.dataset.folderPath = folder.path;
+      folderEl.dataset.folderName = folder.name;
 
       const iconEl = document.createElement('span');
       iconEl.className = 'folder-icon';
@@ -929,11 +932,29 @@ function renderBeats() {
       beatsListEl.appendChild(folderEl);
 
       // Click to navigate into folder
-      folderEl.addEventListener('click', async () => {
+      folderEl.addEventListener('click', async (e) => {
+        // Don't navigate if dragging
+        if (e.defaultPrevented) return;
+
         setCurrentPath(folder.path);
         await loadFolderContents(folder.path);
         updateFolderDisplay();
         await saveData();
+      });
+
+      // Drag start event for folders
+      folderEl.addEventListener('dragstart', (e) => {
+        draggedFolder = {
+          name: folder.name,
+          path: folder.path
+        };
+        e.target.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'copy';
+      });
+
+      folderEl.addEventListener('dragend', (e) => {
+        e.target.classList.remove('dragging');
+        draggedFolder = null;
       });
     });
   }
@@ -1423,6 +1444,7 @@ function removeBeatFromPack(packId, beatPath) {
 
 // Drag and Drop handlers
 let draggedBeat = null;
+let draggedFolder = null;
 
 function handleDragStart(e) {
   draggedBeat = {
@@ -1447,14 +1469,99 @@ function handleDragLeave(e) {
   e.currentTarget.classList.remove('drag-over');
 }
 
-function handleDrop(e, packId) {
+async function handleDrop(e, packId) {
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over');
 
-  if (!draggedBeat) return;
-
   const pack = packs.find(p => p.id === packId);
   if (!pack) return;
+
+  // Handle folder drop
+  if (draggedFolder) {
+    // Store folder info in local variables before any async operations
+    const folderPath = draggedFolder.path;
+    const folderName = draggedFolder.name;
+
+    try {
+      // Safety check
+      if (!folderPath) {
+        console.error('Dragged folder has no path:', draggedFolder);
+        alert('Error: Folder path is missing');
+        draggedFolder = null;
+        return;
+      }
+
+      // Load all beats from the folder
+      const folderBeats = await ipcRenderer.invoke('read-beats-folder', folderPath);
+
+      if (!folderBeats || folderBeats.length === 0) {
+        alert(`No beats found in folder: ${folderName}`);
+        draggedFolder = null;
+        return;
+      }
+
+      // Add all beats from folder to pack (skip duplicates)
+      let addedCount = 0;
+      folderBeats.forEach(beat => {
+        const beatExists = pack.beats.some(b => b.path === beat.path);
+        if (!beatExists) {
+          const newBeat = {
+            name: beat.name,
+            path: beat.path,
+            file: beat.file
+          };
+
+          // Cache file object for browser mode
+          if (beat.file && !isElectron) {
+            fileObjectsCache.set(beat.path, beat.file);
+          }
+
+          pack.beats.push(newBeat);
+          addedCount++;
+        }
+      });
+
+      // Update folderTags - add or append channel tag
+      const channelTag = pack.name; // Use pack name as channel tag (e.g., "C10")
+
+      if (folderTags[folderPath]) {
+        // Folder already has tags, check if this channel is already there
+        const existingTags = folderTags[folderPath].split(', ');
+        if (!existingTags.includes(channelTag)) {
+          folderTags[folderPath] = existingTags.concat(channelTag).join(', ');
+        }
+      } else {
+        // First time this folder is tagged
+        folderTags[folderPath] = channelTag;
+      }
+
+      // Update last used timestamp
+      pack.lastUsed = Date.now();
+
+      // Update UI
+      if (currentPackId === packId) {
+        packDetailCountEl.textContent = `${pack.beats.length} beats`;
+        renderPackDetailBeats();
+      }
+
+      renderPacks();
+      renderBeats(); // Update beats list and folder tags
+      saveData();
+
+      // Show success message
+      alert(`Added ${addedCount} beats from "${folderName}" to ${pack.name}`);
+
+    } catch (error) {
+      console.error('Error adding folder to pack:', error);
+      alert(`Error adding folder: ${error.message}`);
+    } finally {
+      draggedFolder = null;
+    }
+    return;
+  }
+
+  // Handle single beat drop (existing logic)
+  if (!draggedBeat) return;
 
   // Check if beat already exists in this pack
   const beatExists = pack.beats.some(b => b.path === draggedBeat.path);
@@ -1997,17 +2104,25 @@ renderBeats = function() {
   if (currentFolderType === 'untagged') {
     const folderEls = document.querySelectorAll('.folder-item');
     folderEls.forEach(folderEl => {
-      const folderName = folderEl.querySelector('.folder-name');
-      if (folderName) {
-        // Try to find this folder in our tags
-        const folderPath = Object.keys(folderTags).find(path => path.includes(folderName.textContent));
+      const folderNameEl = folderEl.querySelector('.folder-name');
+      if (folderNameEl) {
+        const folderName = folderNameEl.textContent.trim();
+
+        // Try to find this folder in our tags using the full path from dataset
+        const folderPath = folderEl.dataset.folderPath;
+
         if (folderPath && folderTags[folderPath]) {
-          // Add tag
-          const tagEl = document.createElement('span');
-          tagEl.className = 'pack-tag';
-          tagEl.style.marginLeft = '8px';
-          tagEl.textContent = folderTags[folderPath];
-          folderEl.appendChild(tagEl);
+          // Split multiple tags (e.g., "C10, C12" -> ["C10", "C12"])
+          const tags = folderTags[folderPath].split(', ');
+
+          // Create a tag badge for each channel
+          tags.forEach(tag => {
+            const tagEl = document.createElement('span');
+            tagEl.className = 'pack-tag';
+            tagEl.style.marginLeft = '8px';
+            tagEl.textContent = tag;
+            folderEl.appendChild(tagEl);
+          });
         }
       }
     });
