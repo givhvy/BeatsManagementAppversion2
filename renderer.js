@@ -1189,6 +1189,13 @@ function renderBeats() {
 
         // Use Electron's native drag for multiple files
         ipcRenderer.send('drag-files-start', filesToDrag);
+
+        // Since Electron native drag bypasses dragend event, re-render after a short delay
+        setTimeout(() => {
+          if (currentPackId) {
+            renderPackDetailBeats();
+          }
+        }, 100);
       } else if (beat.file) {
         // Browser mode - add file to drag
         e.dataTransfer.items.add(beat.file);
@@ -1496,6 +1503,31 @@ function createPackBeatElement(beat, packId, index) {
 
       // Use Electron's native drag for multiple files
       ipcRenderer.send('drag-files-start', filesToDrag);
+
+      // Mark as "Last Used" immediately when dragging
+      if (packId) {
+        const pack = packs.find(p => p.id === packId);
+        if (pack) {
+          // Remove lastUsed from all beats in this pack
+          pack.beats.forEach(b => {
+            b.lastUsed = false;
+          });
+
+          // Find and mark this beat as last used
+          const targetBeat = pack.beats.find(b => b.path === beat.path);
+          if (targetBeat) {
+            targetBeat.lastUsed = true;
+          }
+
+          // Save data and re-render to show the badge after short delay
+          saveData();
+          setTimeout(() => {
+            if (currentPackId === packId) {
+              renderPackDetailBeats();
+            }
+          }, 100);
+        }
+      }
     } else {
       // Browser mode - MUST get file from cache since beat.file is lost after render
       const fileObj = fileObjectsCache.get(beat.path);
@@ -1503,11 +1535,6 @@ function createPackBeatElement(beat, packId, index) {
         e.dataTransfer.effectAllowed = 'copy';
         // Just add file, don't set DownloadURL (same as All Beats)
         e.dataTransfer.items.add(fileObj);
-
-        console.log('✓ Dragging pack beat:', beat.name, 'Type:', fileObj.type);
-      } else {
-        console.error('✗ File object not found in cache for:', beat.name, 'Path:', beat.path);
-        console.log('Cache keys:', Array.from(fileObjectsCache.keys()));
       }
     }
   });
@@ -1611,6 +1638,10 @@ function handleDragStart(e) {
 
 function handleDragEnd(e) {
   e.target.classList.remove('dragging');
+  // Re-render to show "Last Used" badge after drag ends
+  if (currentPackId) {
+    renderPackDetailBeats();
+  }
 }
 
 function handleDragOver(e) {
