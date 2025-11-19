@@ -1178,6 +1178,11 @@ function renderBeats() {
       if (isElectron) {
         e.preventDefault();
 
+        // Extract beat name (e.g., "Untitled - Brightelle_tagged.wav" -> "Brightelle")
+        const beatName = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, ''); // Remove extension
+        const nameMatch = beatName.match(/[-–]\s*([^_]+)_/); // Match text between "- " and "_"
+        const extractedName = nameMatch ? nameMatch[1].trim() : beatName;
+
         // Check if beat has associated image
         const imagePath = beatImages[beat.path];
         const filesToDrag = [beat.path];
@@ -1187,8 +1192,8 @@ function renderBeats() {
           filesToDrag.push(imagePath);
         }
 
-        // Use Electron's native drag for multiple files
-        ipcRenderer.send('drag-files-start', filesToDrag);
+        // Use Electron's native drag for multiple files (includes beat name)
+        ipcRenderer.send('drag-files-start', { files: filesToDrag, beatName: extractedName });
 
         // Since Electron native drag bypasses dragend event, re-render after a short delay
         setTimeout(() => {
@@ -1492,6 +1497,11 @@ function createPackBeatElement(beat, packId, index) {
     if (isElectron) {
       e.preventDefault();
 
+      // Extract beat name (e.g., "Untitled - Brightelle_tagged.wav" -> "Brightelle")
+      const beatName = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, ''); // Remove extension
+      const nameMatch = beatName.match(/[-–]\s*([^_]+)_/); // Match text between "- " and "_"
+      const extractedName = nameMatch ? nameMatch[1].trim() : beatName;
+
       // Check if beat has associated image
       const imagePath = beatImages[beat.path];
       const filesToDrag = [beat.path];
@@ -1501,8 +1511,8 @@ function createPackBeatElement(beat, packId, index) {
         filesToDrag.push(imagePath);
       }
 
-      // Use Electron's native drag for multiple files
-      ipcRenderer.send('drag-files-start', filesToDrag);
+      // Use Electron's native drag for multiple files (includes beat name)
+      ipcRenderer.send('drag-files-start', { files: filesToDrag, beatName: extractedName });
 
       // Mark as "Last Used" immediately when dragging
       if (packId) {

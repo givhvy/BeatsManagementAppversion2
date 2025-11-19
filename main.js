@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, nativeImage, clipboard } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -337,8 +337,26 @@ ipcMain.handle('get-page-folders', async () => {
 });
 
 // Handle drag multiple files to external apps (beat + image)
-ipcMain.on('drag-files-start', (event, filePaths) => {
+ipcMain.on('drag-files-start', (event, data) => {
+  // Handle both old format (array) and new format (object with files and beatName)
+  let filePaths, beatName;
+
+  if (Array.isArray(data)) {
+    // Old format: just array of file paths
+    filePaths = data;
+    beatName = null;
+  } else {
+    // New format: object with files array and beatName
+    filePaths = data.files;
+    beatName = data.beatName;
+  }
+
   if (!filePaths || filePaths.length === 0) return;
+
+  // Copy beat name to clipboard if provided
+  if (beatName) {
+    clipboard.writeText(beatName);
+  }
 
   // Use first file as icon (audio or image)
   const iconPath = filePaths[0];
