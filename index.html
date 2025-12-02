@@ -3,13 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Beats Management</title>
+  <title>Beats Management Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- Main Navigation Tabs -->
+  <div class="main-nav">
+    <div class="main-nav-tabs">
+      <button class="main-nav-tab active" data-section="beats">
+        <span class="nav-icon">🎵</span>
+        <span class="nav-label">Beats Management</span>
+      </button>
+      <button class="main-nav-tab" data-section="autovid">
+        <span class="nav-icon">🎬</span>
+        <span class="nav-label">Video Creator</span>
+      </button>
+      <button class="main-nav-tab" data-section="youtube">
+        <span class="nav-icon">📺</span>
+        <span class="nav-label">YouTube Uploader</span>
+      </button>
+    </div>
+    <div class="main-nav-status">
+      <span id="youtube-status" class="status-indicator offline">● YouTube: Offline</span>
+    </div>
+  </div>
+
+  <!-- Section: Beats Management -->
+  <div class="app-section active" id="beats-section">
   <div class="container">
     <!-- Left Panel - All Beats -->
     <div class="left-panel">
@@ -228,6 +251,9 @@
   <div id="beat-context-menu" class="context-menu" style="display: none;">
     <div class="context-menu-item" id="mark-last-used">Mark as Last Used</div>
     <div class="context-menu-item" id="unmark-last-used">Remove Last Used</div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item" id="create-video-from-beat">🎬 Create Video</div>
+    <div class="context-menu-item" id="upload-beat-to-youtube">📺 Upload to YouTube</div>
   </div>
 
   <!-- Create Channels Modal -->
@@ -308,6 +334,246 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
           <div id="emails-list-container" style="max-height: 400px; overflow-y: auto; border: 1px solid #333; border-radius: 4px; padding: 10px;">
             <!-- Email items will be loaded here -->
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div> <!-- End beats-section -->
+
+  <!-- Section: Video Creator (AutoVid) -->
+  <div class="app-section" id="autovid-section">
+    <div class="autovid-container">
+      <!-- Left Panel - Pinterest Boards -->
+      <div class="autovid-panel autovid-left">
+        <div class="panel-header">
+          <h2>📌 Pinterest</h2>
+          <button id="load-boards-btn" class="btn-primary">Load Boards</button>
+        </div>
+        <div class="autovid-search">
+          <input type="text" id="pinterest-search" placeholder="Search keywords..." class="filter-input">
+          <button id="search-pins-btn" class="btn-secondary">🔍</button>
+        </div>
+        <div class="autovid-boards-list" id="boards-list">
+          <div class="empty-state">Click "Load Boards" to start</div>
+        </div>
+      </div>
+
+      <!-- Center Panel - Image Preview -->
+      <div class="autovid-panel autovid-center">
+        <div class="panel-header">
+          <h2>🖼️ Image Preview</h2>
+          <div style="display: flex; gap: 8px;">
+            <button id="select-local-image-btn" class="btn-secondary">📁 Local</button>
+            <button id="randomize-pin-btn" class="btn-secondary">🎲 Random</button>
+          </div>
+        </div>
+        <div class="autovid-image-preview" id="image-preview-container">
+          <div class="empty-state" id="image-placeholder">
+            <span style="font-size: 48px;">🖼️</span>
+            <p>Select a local image or use Pinterest</p>
+          </div>
+          <img id="preview-image" style="display: none; max-width: 100%; max-height: 400px; border-radius: 8px;">
+        </div>
+        <div class="autovid-image-info" id="image-info" style="display: none;">
+          <div class="info-row">
+            <span class="info-label">Title:</span>
+            <span id="image-title">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Source:</span>
+            <span id="image-source">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Audio & Render -->
+      <div class="autovid-panel autovid-right">
+        <div class="panel-header">
+          <h2>🎵 Audio & Render</h2>
+        </div>
+        
+        <div class="autovid-section">
+          <label>Audio File</label>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="audio-file-path" class="filter-input" readonly placeholder="No audio selected">
+            <button id="select-audio-btn" class="btn-primary">Browse</button>
+          </div>
+          <div class="audio-preview" id="audio-preview-container" style="display: none; margin-top: 10px;">
+            <audio id="autovid-audio-player" controls style="width: 100%;"></audio>
+          </div>
+        </div>
+
+        <div class="autovid-section">
+          <label>Output Name</label>
+          <input type="text" id="output-name" class="filter-input" placeholder="video_output">
+        </div>
+
+        <div class="autovid-section">
+          <label>Video Settings</label>
+          <div class="settings-row">
+            <span>Resolution:</span>
+            <select id="video-resolution" class="filter-input" style="width: auto;">
+              <option value="1080">1080x1080</option>
+              <option value="720">720x720</option>
+              <option value="1920x1080">1920x1080 (16:9)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="autovid-render-section">
+          <button id="render-video-btn" class="btn-primary btn-large" disabled>
+            🎬 Render Video
+          </button>
+          <div class="render-progress" id="render-progress" style="display: none;">
+            <div class="progress-bar">
+              <div class="progress-fill" id="render-progress-fill"></div>
+            </div>
+            <span id="render-progress-text">0%</span>
+          </div>
+        </div>
+
+        <div class="autovid-output" id="render-output" style="display: none;">
+          <div class="success-message">
+            <span>✅ Video rendered successfully!</span>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+              <button id="open-output-folder-btn" class="btn-secondary">📁 Open Folder</button>
+              <button id="upload-to-youtube-btn" class="btn-primary">📺 Upload to YouTube</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: YouTube Uploader -->
+  <div class="app-section" id="youtube-section">
+    <div class="youtube-container">
+      <!-- Left Panel - Channels -->
+      <div class="youtube-panel youtube-channels">
+        <div class="panel-header">
+          <h2>📺 Channels</h2>
+          <button id="refresh-channels-btn" class="btn-secondary">🔄</button>
+        </div>
+        
+        <!-- Server Status -->
+        <div class="server-status-box" id="server-status-box">
+          <div class="server-status-indicator">
+            <span id="server-status-dot" class="status-dot offline">●</span>
+            <span id="server-status-text">Server Offline</span>
+          </div>
+          <button id="start-server-btn" class="btn-primary btn-small">▶ Start Server</button>
+        </div>
+        
+        <div class="channel-list" id="youtube-channel-list">
+          <div class="empty-state">Loading channels...</div>
+        </div>
+        <div class="channel-actions">
+          <button id="scan-channels-btn" class="btn-primary">Scan Channels</button>
+        </div>
+      </div>
+
+      <!-- Center Panel - Upload Queue -->
+      <div class="youtube-panel youtube-queue">
+        <div class="panel-header">
+          <h2>📋 Upload Queue</h2>
+          <span id="queue-count-badge" class="badge">0</span>
+        </div>
+        
+        <div class="upload-dropzone" id="video-dropzone">
+          <div class="dropzone-content">
+            <span style="font-size: 36px;">📤</span>
+            <p>Drag & drop videos here</p>
+            <span class="hint">or click to select files</span>
+          </div>
+          <input type="file" id="video-file-input" accept="video/*" multiple hidden>
+        </div>
+
+        <div class="queue-list" id="upload-queue-list">
+          <div class="empty-state">No videos in queue</div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Upload History & Settings -->
+      <div class="youtube-panel youtube-history">
+        <div class="panel-header">
+          <h2>📊 History</h2>
+        </div>
+        
+        <div class="history-stats">
+          <div class="stat-box">
+            <span class="stat-number" id="uploads-today">0</span>
+            <span class="stat-label">Today</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number" id="uploads-total">0</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-number" id="uploads-failed">0</span>
+            <span class="stat-label">Failed</span>
+          </div>
+        </div>
+
+        <div class="history-list" id="upload-history-list">
+          <div class="empty-state">No upload history</div>
+        </div>
+
+        <div class="youtube-settings">
+          <h3>⚙️ Settings</h3>
+          <div class="setting-row">
+            <label>Publish Time:</label>
+            <input type="time" id="publish-time" value="00:00" class="filter-input">
+          </div>
+          <div class="setting-row">
+            <label>Default Privacy:</label>
+            <select id="default-privacy" class="filter-input">
+              <option value="private">Private</option>
+              <option value="unlisted">Unlisted</option>
+              <option value="public">Public</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <label>
+              <input type="checkbox" id="auto-upload" checked>
+              Auto upload when video added
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Video Edit Modal -->
+  <div id="video-edit-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3>Edit Video Metadata</h3>
+        <button id="close-video-edit-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Title:</label>
+          <input type="text" id="video-title-input" class="modal-input" placeholder="Video title">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Description:</label>
+          <textarea id="video-description-input" class="modal-input" rows="4" placeholder="Video description"></textarea>
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Tags (comma separated):</label>
+          <input type="text" id="video-tags-input" class="modal-input" placeholder="tag1, tag2, tag3">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Privacy:</label>
+          <select id="video-privacy-select" class="modal-input">
+            <option value="private">Private</option>
+            <option value="unlisted">Unlisted</option>
+            <option value="public">Public</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button id="save-video-metadata-btn" class="btn-primary">Save & Upload</button>
+          <button id="cancel-video-edit-btn" class="btn-secondary">Cancel</button>
         </div>
       </div>
     </div>

@@ -1,0 +1,19 @@
+{
+  "uploadFolder": "uploads/BeatsUpload",
+  "logFolder": "logs",
+  "timezone": "America/Los_Angeles",
+  "publishTime": "12:00",
+  "randomUploadTime": false,
+  "aiProvider": "none",
+  "port": 9000,
+  "youtubeSettings": {
+    "defaultCategory": "10",
+    "defaultPrivacy": "private",
+    "defaultLanguage": "vi"
+  },
+  "aiSettings": {
+    "claudeApiKey": "",
+    "ollamaUrl": "http://localhost:11434",
+    "model": "claude-3-5-sonnet-20241022"
+  }
+}

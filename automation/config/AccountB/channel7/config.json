@@ -1,0 +1,26 @@
+{
+  "displayName": "C7",
+  "autoUpload": true,
+  "metadataTemplate": {
+    "titleTemplate": "(FREE) Type Beat - \"[Name]\"",
+    "descriptionConditions": {
+      "default": {
+        "text": "💰 Free beat for non-profit use",
+        "tags": [
+          "type beat",
+          "free beat",
+          "instrumental"
+        ]
+      }
+    },
+    "category": "10",
+    "privacy": "private",
+    "language": "en"
+  },
+  "audienceMode": {
+    "enabled": true,
+    "mode": "filmora-like",
+    "useUSProxy": false,
+    "proxyURL": ""
+  }
+}

@@ -81,6 +81,8 @@ const importDbBtn = document.getElementById('import-db-btn');
 const beatContextMenu = document.getElementById('beat-context-menu');
 const markLastUsedBtn = document.getElementById('mark-last-used');
 const unmarkLastUsedBtn = document.getElementById('unmark-last-used');
+const createVideoFromBeatBtn = document.getElementById('create-video-from-beat');
+const uploadBeatToYoutubeBtn = document.getElementById('upload-beat-to-youtube');
 
 // Pack detail panel elements
 const middlePanelEl = document.getElementById('middle-panel');
@@ -359,6 +361,43 @@ async function init() {
     }
     hideContextMenu();
   });
+
+  // Create video from beat context menu item
+  if (createVideoFromBeatBtn) {
+    createVideoFromBeatBtn.addEventListener('click', () => {
+      if (contextMenuTarget && contextMenuTarget.beatPath) {
+        // First play the beat to set it as current
+        const beatName = contextMenuTarget.beatPath.split('\\').pop();
+        playBeat(contextMenuTarget.beatPath, beatName);
+        // Then create video
+        setTimeout(() => createVideoFromCurrentBeat(), 100);
+      }
+      hideContextMenu();
+    });
+  }
+
+  // Upload beat to YouTube context menu item
+  if (uploadBeatToYoutubeBtn) {
+    uploadBeatToYoutubeBtn.addEventListener('click', async () => {
+      if (contextMenuTarget && contextMenuTarget.beatPath) {
+        // First play the beat to set it as current
+        const beatName = contextMenuTarget.beatPath.split('\\').pop();
+        playBeat(contextMenuTarget.beatPath, beatName);
+        // Wait for current beat to be set
+        await new Promise(r => setTimeout(r, 100));
+        // Check if beat has an associated image
+        const imagePath = beatImages[contextMenuTarget.beatPath];
+        if (!imagePath) {
+          alert('This beat needs an image to create a video first. Please assign an image in the Image Database.');
+          hideContextMenu();
+          return;
+        }
+        // Create video first, then upload
+        await createVideoFromCurrentBeat();
+      }
+      hideContextMenu();
+    });
+  }
 
   // Hide context menu when clicking anywhere
   document.addEventListener('click', () => {
@@ -2582,3 +2621,1112 @@ async function clearImageCache() {
     alert(`❌ Error clearing cache: ${error.message}`);
   }
 }
+
+// ============================
+// MAIN NAVIGATION
+// ============================
+
+const mainNavTabs = document.querySelectorAll('.main-nav-tab');
+const appSections = document.querySelectorAll('.app-section');
+
+mainNavTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    const section = tab.dataset.section;
+    
+    // Update active tab
+    mainNavTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    
+    // Show corresponding section
+    appSections.forEach(s => {
+      s.classList.remove('active');
+      if (s.id === `${section}-section`) {
+        s.classList.add('active');
+      }
+    });
+
+    // Initialize section if needed
+    if (section === 'youtube') {
+      initYouTubeSection();
+    } else if (section === 'autovid') {
+      initAutoVidSection();
+    }
+  });
+});
+
+// ============================
+// AUTOVID SECTION
+// ============================
+
+let autovidState = {
+  boards: [],
+  currentPins: [],
+  selectedImage: null,
+  selectedImagePath: null,
+  selectedAudioPath: null,
+  isRendering: false
+};
+
+// AutoVid DOM Elements
+const loadBoardsBtn = document.getElementById('load-boards-btn');
+const pinterestSearchInput = document.getElementById('pinterest-search');
+const searchPinsBtn = document.getElementById('search-pins-btn');
+const boardsList = document.getElementById('boards-list');
+const randomizePinBtn = document.getElementById('randomize-pin-btn');
+const previewImage = document.getElementById('preview-image');
+const imagePlaceholder = document.getElementById('image-placeholder');
+const imageInfo = document.getElementById('image-info');
+const imageTitle = document.getElementById('image-title');
+const imageSource = document.getElementById('image-source');
+const selectAudioBtn = document.getElementById('select-audio-btn');
+const audioFilePath = document.getElementById('audio-file-path');
+const audioPreviewContainer = document.getElementById('audio-preview-container');
+const autovidAudioPlayer = document.getElementById('autovid-audio-player');
+const outputNameInput = document.getElementById('output-name');
+const videoResolution = document.getElementById('video-resolution');
+const renderVideoBtn = document.getElementById('render-video-btn');
+const renderProgress = document.getElementById('render-progress');
+const renderProgressFill = document.getElementById('render-progress-fill');
+const renderProgressText = document.getElementById('render-progress-text');
+const renderOutput = document.getElementById('render-output');
+const openOutputFolderBtn = document.getElementById('open-output-folder-btn');
+
+let autovidInitialized = false;
+
+// Local image selection button
+const selectLocalImageBtn = document.getElementById('select-local-image-btn');
+
+function initAutoVidSection() {
+  if (autovidInitialized) return;
+  autovidInitialized = true;
+
+  // Event listeners
+  if (loadBoardsBtn) {
+    loadBoardsBtn.addEventListener('click', loadPinterestBoards);
+  }
+
+  if (searchPinsBtn) {
+    searchPinsBtn.addEventListener('click', searchPinterestPins);
+  }
+
+  if (pinterestSearchInput) {
+    pinterestSearchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') searchPinterestPins();
+    });
+  }
+
+  if (randomizePinBtn) {
+    randomizePinBtn.addEventListener('click', randomizePin);
+  }
+
+  if (selectAudioBtn) {
+    selectAudioBtn.addEventListener('click', selectAutovidAudio);
+  }
+
+  if (renderVideoBtn) {
+    renderVideoBtn.addEventListener('click', renderVideo);
+  }
+
+  if (openOutputFolderBtn) {
+    openOutputFolderBtn.addEventListener('click', openAutovidOutput);
+  }
+
+  // Upload to YouTube button
+  const uploadToYoutubeBtn = document.getElementById('upload-to-youtube-btn');
+  if (uploadToYoutubeBtn) {
+    uploadToYoutubeBtn.addEventListener('click', uploadCurrentVideoToYouTube);
+  }
+
+  // Local image selection
+  if (selectLocalImageBtn) {
+    selectLocalImageBtn.addEventListener('click', selectLocalImage);
+  }
+
+  updateRenderButton();
+}
+
+async function selectLocalImage() {
+  if (!isElectron) return;
+
+  try {
+    const filePath = await ipcRenderer.invoke('select-image');
+    if (filePath) {
+      autovidState.selectedImagePath = filePath;
+      autovidState.selectedImage = null; // Clear Pinterest selection
+      
+      // Update preview
+      if (previewImage && imagePlaceholder) {
+        previewImage.src = `file://${filePath}`;
+        previewImage.style.display = 'block';
+        imagePlaceholder.style.display = 'none';
+      }
+
+      if (imageInfo) {
+        imageInfo.style.display = 'block';
+        const fileName = filePath.split('\\').pop();
+        imageTitle.textContent = fileName;
+        imageSource.textContent = 'Local file';
+      }
+
+      updateRenderButton();
+    }
+  } catch (error) {
+    console.error('Error selecting image:', error);
+  }
+}
+
+async function loadPinterestBoards() {
+  if (!isElectron) {
+    alert('Pinterest integration requires Electron');
+    return;
+  }
+
+  boardsList.innerHTML = '<div class="empty-state">Loading boards...</div>';
+
+  try {
+    // Note: Pinterest API integration would go here
+    // For now, show a placeholder message
+    boardsList.innerHTML = `
+      <div class="empty-state">
+        <p>Pinterest integration requires API setup.</p>
+        <p style="font-size: 12px; margin-top: 10px; opacity: 0.7;">
+          Configure your Pinterest token in .env file
+        </p>
+      </div>
+    `;
+  } catch (error) {
+    boardsList.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
+  }
+}
+
+async function searchPinterestPins() {
+  const keyword = pinterestSearchInput?.value?.trim();
+  if (!keyword) {
+    alert('Please enter a search keyword');
+    return;
+  }
+
+  // Placeholder for Pinterest search
+  console.log('Searching Pinterest for:', keyword);
+}
+
+function randomizePin() {
+  if (autovidState.currentPins.length === 0) {
+    alert('No pins loaded. Load boards and search first.');
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * autovidState.currentPins.length);
+  const pin = autovidState.currentPins[randomIndex];
+  selectPin(pin);
+}
+
+function selectPin(pin) {
+  autovidState.selectedImage = pin;
+  
+  if (previewImage && imagePlaceholder) {
+    previewImage.src = pin.imageUrl;
+    previewImage.style.display = 'block';
+    imagePlaceholder.style.display = 'none';
+  }
+
+  if (imageInfo) {
+    imageInfo.style.display = 'block';
+    imageTitle.textContent = pin.title || 'Untitled';
+    imageSource.href = pin.link || '#';
+    imageSource.textContent = pin.link ? 'View on Pinterest' : '-';
+  }
+
+  updateRenderButton();
+}
+
+async function selectAutovidAudio() {
+  if (!isElectron) return;
+
+  try {
+    const filePath = await ipcRenderer.invoke('select-audio-file');
+    if (filePath) {
+      autovidState.selectedAudioPath = filePath;
+      audioFilePath.value = filePath.split('\\').pop();
+      
+      // Set audio preview
+      audioPreviewContainer.style.display = 'block';
+      autovidAudioPlayer.src = `file://${filePath}`;
+      
+      // Auto-fill output name
+      const baseName = filePath.split('\\').pop().replace(/\.[^/.]+$/, '');
+      outputNameInput.value = baseName;
+      
+      updateRenderButton();
+    }
+  } catch (error) {
+    console.error('Error selecting audio:', error);
+  }
+}
+
+function updateRenderButton() {
+  if (renderVideoBtn) {
+    const canRender = autovidState.selectedAudioPath && 
+                      (autovidState.selectedImage || autovidState.selectedImagePath);
+    renderVideoBtn.disabled = !canRender || autovidState.isRendering;
+  }
+}
+
+// Listen for render progress updates from main process
+if (isElectron) {
+  ipcRenderer.on('render-progress', (event, progress) => {
+    if (renderProgressFill && renderProgressText) {
+      renderProgressFill.style.width = `${progress}%`;
+      renderProgressText.textContent = `${progress}%`;
+    }
+  });
+}
+
+async function renderVideo() {
+  if (!isElectron) return;
+  
+  if (autovidState.isRendering) return;
+
+  // Validate inputs
+  if (!autovidState.selectedAudioPath) {
+    alert('Please select an audio file first');
+    return;
+  }
+
+  let imagePath = autovidState.selectedImagePath;
+  
+  // If we have a selected image from Pinterest, download it first
+  if (!imagePath && autovidState.selectedImage?.imageUrl) {
+    try {
+      const tempDir = await ipcRenderer.invoke('get-video-output-dir');
+      const tempImagePath = `${tempDir}\\temp_image_${Date.now()}.jpg`;
+      const downloadResult = await ipcRenderer.invoke('download-image', autovidState.selectedImage.imageUrl, tempImagePath);
+      if (downloadResult.success) {
+        imagePath = downloadResult.path;
+      } else {
+        alert('Failed to download image');
+        return;
+      }
+    } catch (error) {
+      alert(`Error downloading image: ${error.message}`);
+      return;
+    }
+  }
+
+  if (!imagePath) {
+    alert('Please select an image first');
+    return;
+  }
+
+  autovidState.isRendering = true;
+  renderVideoBtn.disabled = true;
+  renderProgress.style.display = 'block';
+  renderOutput.style.display = 'none';
+  renderProgressFill.style.width = '0%';
+  renderProgressText.textContent = '0%';
+
+  try {
+    const outputName = outputNameInput?.value || `video_${Date.now()}`;
+    const resolution = videoResolution?.value || '1080';
+
+    const result = await ipcRenderer.invoke('render-video', {
+      imagePath,
+      audioPath: autovidState.selectedAudioPath,
+      outputName,
+      resolution
+    });
+
+    if (result.success) {
+      autovidState.lastOutputPath = result.outputPath;
+      renderOutput.style.display = 'block';
+    } else {
+      alert(`Render error: ${result.error}`);
+    }
+  } catch (error) {
+    alert(`Render error: ${error.message}`);
+  } finally {
+    autovidState.isRendering = false;
+    updateRenderButton();
+  }
+}
+
+async function openAutovidOutput() {
+  if (!isElectron) return;
+  
+  try {
+    const outputDir = await ipcRenderer.invoke('get-video-output-dir');
+    await ipcRenderer.invoke('open-folder', outputDir);
+  } catch (error) {
+    console.error('Error opening output folder:', error);
+  }
+}
+
+// ============================
+// YOUTUBE SECTION
+// ============================
+
+let youtubeState = {
+  channels: [],
+  selectedChannel: null,
+  queue: [],
+  history: [],
+  serverOnline: false
+};
+
+// Show notification toast
+function showNotification(message, type = 'info') {
+  // Remove existing notification
+  const existing = document.querySelector('.notification-toast');
+  if (existing) existing.remove();
+  
+  const toast = document.createElement('div');
+  toast.className = `notification-toast ${type}`;
+  toast.innerHTML = `
+    <span class="notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+    <span class="notification-message">${message}</span>
+  `;
+  document.body.appendChild(toast);
+  
+  // Auto remove after 4 seconds
+  setTimeout(() => {
+    toast.classList.add('fade-out');
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+// YouTube DOM Elements
+const youtubeStatusEl = document.getElementById('youtube-status');
+const youtubeChannelList = document.getElementById('youtube-channel-list');
+const refreshChannelsBtn = document.getElementById('refresh-channels-btn');
+const scanChannelsBtn = document.getElementById('scan-channels-btn');
+const startServerBtn = document.getElementById('start-server-btn');
+const serverStatusDot = document.getElementById('server-status-dot');
+const serverStatusText = document.getElementById('server-status-text');
+const videoDropzone = document.getElementById('video-dropzone');
+const videoFileInput = document.getElementById('video-file-input');
+const uploadQueueList = document.getElementById('upload-queue-list');
+const queueCountBadge = document.getElementById('queue-count-badge');
+const uploadHistoryList = document.getElementById('upload-history-list');
+const uploadsTodayEl = document.getElementById('uploads-today');
+const uploadsTotalEl = document.getElementById('uploads-total');
+const uploadsFailedEl = document.getElementById('uploads-failed');
+const publishTimeInput = document.getElementById('publish-time');
+const defaultPrivacySelect = document.getElementById('default-privacy');
+const autoUploadCheckbox = document.getElementById('auto-upload');
+
+// Video edit modal elements
+const videoEditModal = document.getElementById('video-edit-modal');
+const closeVideoEditModalBtn = document.getElementById('close-video-edit-modal-btn');
+const videoTitleInput = document.getElementById('video-title-input');
+const videoDescriptionInput = document.getElementById('video-description-input');
+const videoTagsInput = document.getElementById('video-tags-input');
+const videoPrivacySelect = document.getElementById('video-privacy-select');
+const saveVideoMetadataBtn = document.getElementById('save-video-metadata-btn');
+const cancelVideoEditBtn = document.getElementById('cancel-video-edit-btn');
+
+let youtubeInitialized = false;
+let editingVideoId = null;
+
+function initYouTubeSection() {
+  if (youtubeInitialized) return;
+  youtubeInitialized = true;
+
+  // Event listeners
+  if (refreshChannelsBtn) {
+    refreshChannelsBtn.addEventListener('click', refreshYouTubeChannels);
+  }
+
+  if (scanChannelsBtn) {
+    scanChannelsBtn.addEventListener('click', scanYouTubeChannels);
+  }
+
+  // Start Server button
+  if (startServerBtn) {
+    startServerBtn.addEventListener('click', toggleAutomationServer);
+  }
+
+  // Video dropzone
+  if (videoDropzone && videoFileInput) {
+    videoDropzone.addEventListener('click', () => videoFileInput.click());
+    
+    videoDropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      videoDropzone.classList.add('dragover');
+    });
+
+    videoDropzone.addEventListener('dragleave', () => {
+      videoDropzone.classList.remove('dragover');
+    });
+
+    videoDropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      videoDropzone.classList.remove('dragover');
+      handleVideoFiles(e.dataTransfer.files);
+    });
+
+    videoFileInput.addEventListener('change', (e) => {
+      handleVideoFiles(e.target.files);
+    });
+  }
+
+  // Video edit modal
+  if (closeVideoEditModalBtn) {
+    closeVideoEditModalBtn.addEventListener('click', closeVideoEditModal);
+  }
+
+  if (cancelVideoEditBtn) {
+    cancelVideoEditBtn.addEventListener('click', closeVideoEditModal);
+  }
+
+  if (saveVideoMetadataBtn) {
+    saveVideoMetadataBtn.addEventListener('click', saveVideoMetadata);
+  }
+
+  // Initial load - wait for server to be ready
+  setTimeout(() => {
+    checkYouTubeServerWithRetry();
+  }, 1000);
+}
+
+// Automation server port
+const AUTOMATION_SERVER_PORT = 9000;
+const AUTOMATION_SERVER_URL = `http://localhost:${AUTOMATION_SERVER_PORT}`;
+
+// Check server with retry logic
+async function checkYouTubeServerWithRetry(retries = 5, delay = 2000) {
+  for (let i = 0; i < retries; i++) {
+    const isOnline = await checkYouTubeServer();
+    if (isOnline) {
+      scanYouTubeChannels();
+      return true;
+    }
+    if (i < retries - 1) {
+      console.log(`Server not ready, retrying in ${delay/1000}s... (${i + 1}/${retries})`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  console.log('Server offline after retries');
+  return false;
+}
+
+async function checkYouTubeServer() {
+  try {
+    // Try to connect to automation server directly
+    const response = await fetch(`${AUTOMATION_SERVER_URL}/api/channels`, {
+      method: 'GET',
+      signal: AbortSignal.timeout(3000)
+    });
+    
+    youtubeState.serverOnline = response.ok;
+    
+    // Update main status
+    if (youtubeStatusEl) {
+      if (response.ok) {
+        youtubeStatusEl.textContent = '● YouTube: Online';
+        youtubeStatusEl.classList.remove('offline');
+        youtubeStatusEl.classList.add('online');
+      } else {
+        youtubeStatusEl.textContent = '● YouTube: Offline';
+        youtubeStatusEl.classList.remove('online');
+        youtubeStatusEl.classList.add('offline');
+      }
+    }
+    
+    // Update server status box
+    updateServerStatusUI(response.ok);
+    
+    return response.ok;
+  } catch (error) {
+    youtubeState.serverOnline = false;
+    if (youtubeStatusEl) {
+      youtubeStatusEl.textContent = '● YouTube: Offline';
+      youtubeStatusEl.classList.remove('online');
+      youtubeStatusEl.classList.add('offline');
+    }
+    updateServerStatusUI(false);
+    return false;
+  }
+}
+
+function updateServerStatusUI(isOnline) {
+  if (serverStatusDot) {
+    serverStatusDot.className = 'status-dot ' + (isOnline ? 'online' : 'offline');
+  }
+  if (serverStatusText) {
+    serverStatusText.textContent = isOnline ? 'Server đang chạy' : 'Server đang tắt';
+  }
+  if (startServerBtn) {
+    startServerBtn.textContent = isOnline ? '⏹ Dừng Server' : '▶ Khởi động Server';
+    startServerBtn.classList.toggle('stop', isOnline);
+  }
+}
+
+async function toggleAutomationServer() {
+  if (startServerBtn) {
+    startServerBtn.disabled = true;
+    startServerBtn.textContent = '⏳ Đang xử lý...';
+  }
+  
+  try {
+    if (youtubeState.serverOnline) {
+      // Stop server
+      const result = await ipcRenderer.invoke('stop-automation-server');
+      if (result.success) {
+        showNotification('Đã dừng Automation Server', 'success');
+        youtubeState.serverOnline = false;
+        updateServerStatusUI(false);
+        if (youtubeChannelList) {
+          youtubeChannelList.innerHTML = '<div class="empty-state">Server offline. Click "Khởi động Server" to start.</div>';
+        }
+      } else {
+        showNotification('Lỗi dừng server: ' + result.error, 'error');
+      }
+    } else {
+      // Start server
+      showNotification('Đang khởi động server...', 'info');
+      const result = await ipcRenderer.invoke('start-automation-server');
+      if (result.success) {
+        // Wait and retry checking server
+        const serverReady = await checkYouTubeServerWithRetry(10, 1000);
+        if (serverReady) {
+          showNotification('Automation Server đã sẵn sàng!', 'success');
+        } else {
+          showNotification('Server khởi động nhưng chưa sẵn sàng', 'error');
+        }
+      } else {
+        showNotification('Lỗi khởi động server: ' + result.error, 'error');
+      }
+    }
+  } catch (error) {
+    showNotification('Lỗi: ' + error.message, 'error');
+  } finally {
+    if (startServerBtn) {
+      startServerBtn.disabled = false;
+      updateServerStatusUI(youtubeState.serverOnline);
+    }
+  }
+}
+
+async function scanYouTubeChannels() {
+  if (!youtubeChannelList) return;
+  
+  youtubeChannelList.innerHTML = '<div class="empty-state">Scanning channels...</div>';
+
+  // Check if server is online first
+  if (!youtubeState.serverOnline) {
+    youtubeChannelList.innerHTML = '<div class="empty-state">Server offline. Click "Khởi động Server" to start.</div>';
+    return;
+  }
+
+  try {
+    // First try to get from automation server (if running)
+    const response = await fetch(`${AUTOMATION_SERVER_URL}/api/channels`, {
+      signal: AbortSignal.timeout(5000)
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      youtubeState.channels = data.channels.map(ch => ({
+        id: ch.channelId,
+        name: ch.name,
+        account: ch.accountName,
+        ready: ch.isReady,
+        hasToken: ch.hasToken,
+        uploadFolder: ch.uploadsPath,
+        queueCount: ch.queueCount,
+        historyCount: ch.historyCount
+      }));
+      youtubeState.serverOnline = true;
+      renderYouTubeChannels();
+      
+      // Update status
+      if (youtubeStatusEl) {
+        youtubeStatusEl.textContent = '● YouTube: Online';
+        youtubeStatusEl.classList.remove('offline');
+        youtubeStatusEl.classList.add('online');
+      }
+      updateServerStatusUI(true);
+    } else {
+      throw new Error('Server not available');
+    }
+  } catch (error) {
+    console.error('Error scanning channels:', error.message);
+    
+    // Fallback to local scan via IPC
+    if (isElectron) {
+      try {
+        const result = await ipcRenderer.invoke('scan-youtube-channels');
+        if (result.success) {
+          youtubeState.channels = result.channels;
+          renderYouTubeChannels();
+        } else {
+          youtubeChannelList.innerHTML = `<div class="empty-state">Error: ${result.error}</div>`;
+        }
+      } catch (ipcError) {
+        youtubeChannelList.innerHTML = `<div class="empty-state">Error: ${ipcError.message}</div>`;
+      }
+    } else {
+      youtubeChannelList.innerHTML = `
+        <div class="empty-state">
+          <p>⚠️ Automation server offline</p>
+          <p style="font-size: 12px; margin-top: 10px;">
+            Start the server: <code>cd automation && npm start</code>
+          </p>
+        </div>
+      `;
+    }
+  }
+}
+
+async function refreshYouTubeChannels() {
+  await checkYouTubeServer();
+  await scanYouTubeChannels();
+}
+
+function renderYouTubeChannels() {
+  if (!youtubeChannelList) return;
+
+  if (youtubeState.channels.length === 0) {
+    youtubeChannelList.innerHTML = '<div class="empty-state">No channels found</div>';
+    return;
+  }
+
+  youtubeChannelList.innerHTML = youtubeState.channels.map(channel => `
+    <div class="channel-item ${youtubeState.selectedChannel?.id === channel.id ? 'selected' : ''}" 
+         data-channel-id="${channel.id}">
+      <span class="channel-name">${channel.name}</span>
+      <span class="channel-status ${channel.ready ? 'ready' : 'offline'}">
+        ${channel.ready ? '✓ Ready' : '⚠ Setup needed'}
+      </span>
+    </div>
+  `).join('');
+
+  // Add click handlers
+  youtubeChannelList.querySelectorAll('.channel-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const channelId = item.dataset.channelId;
+      selectYouTubeChannel(channelId);
+    });
+  });
+}
+
+function selectYouTubeChannel(channelId) {
+  const channel = youtubeState.channels.find(c => c.id === channelId);
+  youtubeState.selectedChannel = channel;
+  renderYouTubeChannels();
+  
+  // Load channel's queue and history
+  if (channel && youtubeState.serverOnline) {
+    loadChannelStatus(channelId);
+  }
+}
+
+async function loadChannelStatus(channelId) {
+  try {
+    const response = await fetch(`${AUTOMATION_SERVER_URL}/api/status/${channelId}`);
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Update queue from server
+      if (data.queue) {
+        // Merge with local queue
+        data.queue.forEach(serverItem => {
+          const existsLocally = youtubeState.queue.find(q => q.fileName === serverItem.fileName);
+          if (!existsLocally) {
+            youtubeState.queue.push({
+              id: serverItem.id,
+              fileName: serverItem.fileName,
+              filePath: serverItem.filePath,
+              metadata: serverItem.metadata,
+              status: serverItem.status
+            });
+          }
+        });
+        renderUploadQueue();
+      }
+      
+      // Update history from server
+      if (data.history) {
+        youtubeState.history = data.history;
+        renderUploadHistory();
+        updateHistoryStats();
+      }
+    }
+  } catch (error) {
+    console.error('Error loading channel status:', error);
+  }
+}
+
+function handleVideoFiles(files) {
+  const videoFiles = Array.from(files).filter(f => 
+    f.type.startsWith('video/') || 
+    ['.mp4', '.mov', '.avi', '.mkv', '.webm'].some(ext => f.name.toLowerCase().endsWith(ext))
+  );
+
+  if (videoFiles.length === 0) {
+    alert('Please select valid video files');
+    return;
+  }
+
+  videoFiles.forEach(file => {
+    addVideoToQueue({
+      filePath: file.path,
+      fileName: file.name,
+      title: file.name.replace(/\.[^/.]+$/, ''),
+      description: '',
+      tags: [],
+      privacy: defaultPrivacySelect?.value || 'private'
+    });
+  });
+}
+
+async function addVideoToQueue(videoData) {
+  if (!isElectron) return;
+
+  try {
+    const result = await ipcRenderer.invoke('add-to-upload-queue', {
+      ...videoData,
+      channelId: youtubeState.selectedChannel?.id
+    });
+
+    if (result.success) {
+      youtubeState.queue.push(result.item);
+      renderUploadQueue();
+    }
+  } catch (error) {
+    console.error('Error adding to queue:', error);
+  }
+}
+
+function renderUploadQueue() {
+  if (!uploadQueueList) return;
+
+  if (youtubeState.queue.length === 0) {
+    uploadQueueList.innerHTML = '<div class="empty-state">No videos in queue</div>';
+    queueCountBadge.textContent = '0';
+    return;
+  }
+
+  queueCountBadge.textContent = youtubeState.queue.length;
+
+  uploadQueueList.innerHTML = youtubeState.queue.map(item => `
+    <div class="queue-item" data-item-id="${item.id}">
+      <div class="video-info">
+        <div class="video-title">${item.metadata.title}</div>
+        <div class="video-meta">
+          <span class="upload-status ${item.status}">${item.status}</span>
+          · ${item.fileName}
+        </div>
+      </div>
+      <div class="queue-actions">
+        <button class="btn-secondary edit-btn" title="Edit">✏️</button>
+        <button class="btn-secondary upload-btn" title="Upload" ${item.status !== 'draft' ? 'disabled' : ''}>▶️</button>
+        <button class="btn-danger remove-btn" title="Remove">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+
+  // Add event handlers
+  uploadQueueList.querySelectorAll('.queue-item').forEach(item => {
+    const itemId = item.dataset.itemId;
+    
+    item.querySelector('.edit-btn')?.addEventListener('click', () => openVideoEditModal(itemId));
+    item.querySelector('.upload-btn')?.addEventListener('click', () => startUpload(itemId));
+    item.querySelector('.remove-btn')?.addEventListener('click', () => removeFromQueue(itemId));
+  });
+}
+
+function openVideoEditModal(itemId) {
+  const item = youtubeState.queue.find(q => q.id === itemId);
+  if (!item) return;
+
+  editingVideoId = itemId;
+
+  videoTitleInput.value = item.metadata.title || '';
+  videoDescriptionInput.value = item.metadata.description || '';
+  videoTagsInput.value = (item.metadata.tags || []).join(', ');
+  videoPrivacySelect.value = item.metadata.privacy || 'private';
+
+  videoEditModal.style.display = 'flex';
+}
+
+function closeVideoEditModal() {
+  videoEditModal.style.display = 'none';
+  editingVideoId = null;
+}
+
+async function saveVideoMetadata() {
+  if (!editingVideoId || !isElectron) return;
+
+  try {
+    const updates = {
+      title: videoTitleInput.value,
+      description: videoDescriptionInput.value,
+      tags: videoTagsInput.value.split(',').map(t => t.trim()).filter(t => t),
+      privacy: videoPrivacySelect.value
+    };
+
+    const result = await ipcRenderer.invoke('update-queue-item', editingVideoId, updates);
+    
+    if (result.success) {
+      const item = youtubeState.queue.find(q => q.id === editingVideoId);
+      if (item) {
+        Object.assign(item.metadata, updates);
+      }
+      renderUploadQueue();
+      closeVideoEditModal();
+    }
+  } catch (error) {
+    console.error('Error saving metadata:', error);
+  }
+}
+
+async function startUpload(itemId) {
+  const item = youtubeState.queue.find(q => q.id === itemId);
+  if (!item) {
+    alert('Video not found in queue');
+    return;
+  }
+  
+  if (!youtubeState.selectedChannel) {
+    alert('Please select a channel first');
+    return;
+  }
+
+  if (!youtubeState.selectedChannel.ready) {
+    alert('Selected channel is not ready. Please authenticate with YouTube first.');
+    return;
+  }
+
+  if (!youtubeState.serverOnline) {
+    alert('Automation server is offline. Please start the server first.');
+    return;
+  }
+
+  item.status = 'uploading';
+  renderUploadQueue();
+
+  try {
+    // Copy video to channel's upload folder - server will auto-detect and upload
+    if (isElectron) {
+      const result = await ipcRenderer.invoke('copy-video-for-upload', {
+        videoPath: item.filePath,
+        channelId: youtubeState.selectedChannel.id,
+        metadata: item.metadata
+      });
+      
+      if (result.success) {
+        item.status = 'pending';
+        item.serverPath = result.destPath;
+        showNotification(`Video đã gửi đến ${youtubeState.selectedChannel.name}. Server sẽ tự động upload.`, 'success');
+        renderUploadQueue();
+        
+        // Start polling for status updates
+        pollUploadStatus(item.id, youtubeState.selectedChannel.id);
+      } else {
+        throw new Error(result.error);
+      }
+    }
+  } catch (error) {
+    item.status = 'failed';
+    item.error = error.message;
+    renderUploadQueue();
+    alert(`Upload error: ${error.message}`);
+  }
+}
+
+// Poll automation server for upload status
+async function pollUploadStatus(itemId, channelId) {
+  const maxAttempts = 60; // 5 minutes max
+  let attempts = 0;
+
+  const poll = async () => {
+    try {
+      const response = await fetch(`${AUTOMATION_SERVER_URL}/api/status/${channelId}`);
+      const data = await response.json();
+      
+      // Check if video is completed or failed in history
+      const historyItem = data.history?.find(h => h.fileName === youtubeState.queue.find(q => q.id === itemId)?.fileName);
+      
+      if (historyItem) {
+        const item = youtubeState.queue.find(q => q.id === itemId);
+        if (item) {
+          item.status = historyItem.status;
+          item.result = historyItem.result;
+          
+          // Move to history
+          youtubeState.history.push(item);
+          youtubeState.queue = youtubeState.queue.filter(q => q.id !== itemId);
+          
+          renderUploadQueue();
+          renderUploadHistory();
+          updateHistoryStats();
+          
+          if (historyItem.status === 'completed') {
+            console.log('✅ Upload completed:', historyItem.result?.videoUrl);
+          }
+        }
+        return; // Stop polling
+      }
+
+      // Continue polling
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(poll, 5000); // Poll every 5 seconds
+      }
+    } catch (error) {
+      console.error('Polling error:', error);
+      attempts++;
+      if (attempts < maxAttempts) {
+        setTimeout(poll, 5000);
+      }
+    }
+  };
+
+  poll();
+}
+
+function updateHistoryStats() {
+  const today = new Date().toDateString();
+  const todayUploads = youtubeState.history.filter(h => 
+    new Date(h.completedAt || h.addedAt).toDateString() === today && h.status === 'completed'
+  ).length;
+  
+  const totalUploads = youtubeState.history.filter(h => h.status === 'completed').length;
+  const failedUploads = youtubeState.history.filter(h => h.status === 'failed').length;
+
+  if (uploadsTodayEl) uploadsTodayEl.textContent = todayUploads;
+  if (uploadsTotalEl) uploadsTotalEl.textContent = totalUploads;
+  if (uploadsFailedEl) uploadsFailedEl.textContent = failedUploads;
+}
+
+async function removeFromQueue(itemId) {
+  if (!isElectron) return;
+
+  try {
+    const result = await ipcRenderer.invoke('remove-from-queue', itemId);
+    if (result.success) {
+      youtubeState.queue = youtubeState.queue.filter(q => q.id !== itemId);
+      renderUploadQueue();
+    }
+  } catch (error) {
+    console.error('Error removing from queue:', error);
+  }
+}
+
+function renderUploadHistory() {
+  if (!uploadHistoryList) return;
+
+  if (youtubeState.history.length === 0) {
+    uploadHistoryList.innerHTML = '<div class="empty-state">No upload history</div>';
+    return;
+  }
+
+  uploadHistoryList.innerHTML = youtubeState.history.slice(-20).reverse().map(item => `
+    <div class="history-item">
+      <div class="video-info">
+        <div class="video-title">${item.metadata?.title || item.fileName}</div>
+        <div class="video-meta">
+          <span class="upload-status ${item.status}">${item.status}</span>
+          · ${new Date(item.completedAt || item.addedAt).toLocaleString()}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Periodic YouTube status check
+setInterval(() => {
+  if (youtubeInitialized) {
+    checkYouTubeServer();
+  }
+}, 30000);
+
+
+// ============================
+// CROSS-SECTION INTEGRATION
+// ============================
+
+/**
+ * Create video from currently playing beat
+ * Uses the beat's associated image if available
+ */
+async function createVideoFromCurrentBeat() {
+  if (!currentBeat) {
+    alert('Please select a beat first');
+    return;
+  }
+
+  // Switch to AutoVid section
+  document.querySelector('.main-nav-tab[data-section="autovid"]')?.click();
+
+  // Wait for section to initialize
+  await new Promise(r => setTimeout(r, 100));
+
+  // Set audio
+  autovidState.selectedAudioPath = currentBeat.path;
+  if (audioFilePath) {
+    audioFilePath.value = currentBeat.name;
+  }
+  if (audioPreviewContainer) {
+    audioPreviewContainer.style.display = 'block';
+    autovidAudioPlayer.src = `file://${currentBeat.path}`;
+  }
+
+  // Set image if available
+  const imagePath = beatImages[currentBeat.path];
+  if (imagePath) {
+    autovidState.selectedImagePath = imagePath;
+    if (previewImage && imagePlaceholder) {
+      previewImage.src = `file://${imagePath}`;
+      previewImage.style.display = 'block';
+      imagePlaceholder.style.display = 'none';
+    }
+    if (imageInfo) {
+      imageInfo.style.display = 'block';
+      imageTitle.textContent = imagePath.split('\\').pop();
+      imageSource.textContent = 'From beat library';
+    }
+  }
+
+  // Set output name
+  const beatNameWithoutExt = currentBeat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+  if (outputNameInput) {
+    outputNameInput.value = beatNameWithoutExt;
+  }
+
+  updateRenderButton();
+}
+
+/**
+ * Upload video to YouTube from current selection
+ */
+async function uploadCurrentVideoToYouTube() {
+  if (!autovidState.lastOutputPath) {
+    alert('Please render a video first');
+    return;
+  }
+
+  // Switch to YouTube section
+  document.querySelector('.main-nav-tab[data-section="youtube"]')?.click();
+
+  // Wait for section to initialize
+  await new Promise(r => setTimeout(r, 100));
+
+  // Add video to queue
+  const fileName = autovidState.lastOutputPath.split('\\').pop();
+  const title = fileName.replace(/\.(mp4|mov|avi|mkv|webm)$/i, '');
+
+  addVideoToQueue({
+    filePath: autovidState.lastOutputPath,
+    fileName: fileName,
+    title: title,
+    description: '',
+    tags: [],
+    privacy: defaultPrivacySelect?.value || 'private'
+  });
+}
+
+// Make functions globally available
+window.createVideoFromCurrentBeat = createVideoFromCurrentBeat;
+window.uploadCurrentVideoToYouTube = uploadCurrentVideoToYouTube;

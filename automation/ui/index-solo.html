@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Auto Uploader</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎬 YouTube Auto Uploader</h1>
+      <div class="status-bar">
+        <div class="status-item">
+          <span class="status-label">Status:</span>
+          <span id="connection-status" class="status-badge">Đang kết nối...</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Channel:</span>
+          <span id="channel-name">-</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Upload Zone -->
+      <section class="upload-section">
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-zone-content">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <h3>Kéo thả video vào đây</h3>
+            <p>hoặc nhấp để chọn file</p>
+            <span class="file-types">MP4, MOV, AVI, MKV</span>
+          </div>
+          <input type="file" id="fileInput" accept="video/*" multiple hidden>
+        </div>
+
+        <div class="manual-upload">
+          <h3>Upload thủ công</h3>
+          <form id="uploadForm">
+            <div class="form-group">
+              <label for="videoTitle">Tiêu đề</label>
+              <input type="text" id="videoTitle" placeholder="Nhập tiêu đề video...">
+            </div>
+            <div class="form-group">
+              <label for="videoDescription">Mô tả</label>
+              <textarea id="videoDescription" rows="4" placeholder="Nhập mô tả video..."></textarea>
+            </div>
+            <div class="form-group">
+              <label for="videoTags">Tags (cách nhau bởi dấu phẩy)</label>
+              <input type="text" id="videoTags" placeholder="beat, free beat, type beat, ...">
+            </div>
+            <button type="submit" class="btn btn-primary">Upload ngay</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Queue Section -->
+      <section class="queue-section">
+        <h2>📋 Hàng đợi upload (<span id="queueCount">0</span>)</h2>
+        <div id="queueList" class="video-list">
+          <p class="empty-state">Chưa có video trong hàng đợi</p>
+        </div>
+      </section>
+
+      <!-- History Section -->
+      <section class="history-section">
+        <h2>📊 Lịch sử upload (<span id="historyCount">0</span>)</h2>
+        <div id="historyList" class="video-list">
+          <p class="empty-state">Chưa có video nào được upload</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

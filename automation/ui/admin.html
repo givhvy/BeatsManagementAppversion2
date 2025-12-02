@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Channel Management</title>
+  <link rel="stylesheet" href="style-multi.css">
+  <style>
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .nav-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+    .channel-card {
+      background: var(--surface);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+    }
+    .channel-card h3 {
+      margin: 0 0 1rem 0;
+      color: var(--primary);
+    }
+    .channel-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .channel-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .form-section {
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    .modal-content .form-section {
+      background: #252525;
+      border: 1px solid var(--border);
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .file-upload {
+      border: 2px dashed var(--border);
+      padding: 2rem;
+      text-align: center;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .file-upload:hover {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.05);
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: #1a1a1a;
+      padding: 2rem;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="admin-header">
+        <h1>⚙️ Admin Dashboard</h1>
+        <div class="nav-buttons">
+          <a href="/index.html" class="btn btn-secondary">👤 User View</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Create New Channel -->
+      <section class="form-section">
+        <h2>➕ Create New Channel</h2>
+        <form id="createChannelForm">
+          <div class="form-group">
+            <label>Account Name</label>
+            <input type="text" id="newAccount" placeholder="AccountA, AccountB..." required>
+            <small>Use existing account name to add channel to that account</small>
+          </div>
+          <div class="form-group">
+            <label>Channel ID</label>
+            <input type="text" id="newChannelId" placeholder="channel1, channel2..." required>
+          </div>
+          <div class="form-group">
+            <label>Display Name</label>
+            <input type="text" id="newDisplayName" placeholder="Hip Hop Beats" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Create Channel</button>
+        </form>
+      </section>
+
+      <!-- Existing Channels -->
+      <section>
+        <h2>📺 Existing Channels</h2>
+        <div id="channelsList">
+          <p>Loading...</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Upload Credentials Modal -->
+  <div id="credentialsModal" class="modal">
+    <div class="modal-content">
+      <h2>Upload Credentials</h2>
+      <p>Upload the <code>credentials.json</code> file from Google Cloud Console</p>
+      <div class="file-upload" onclick="document.getElementById('credentialsFile').click()">
+        <p>📁 Click to select credentials.json</p>
+        <input type="file" id="credentialsFile" accept=".json" hidden>
+      </div>
+      <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+        <button class="btn btn-primary" onclick="uploadCredentials()">Upload</button>
+        <button class="btn btn-secondary" onclick="closeModal('credentialsModal')">Cancel</button>
+      </div>
+      <div id="uploadStatus"></div>
+    </div>
+  </div>
+
+  <!-- Get Token Modal -->
+  <div id="tokenModal" class="modal">
+    <div class="modal-content">
+      <h2>Get OAuth Token</h2>
+      <div id="tokenContent">
+        <p>Loading...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Config Modal -->
+  <div id="configModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+      <h2>Edit Channel Template</h2>
+      <div id="configContent">
+        <div class="form-group">
+          <label>Display Name</label>
+          <input type="text" id="editDisplayName" placeholder="Hip Hop Beats">
+        </div>
+
+        <div class="form-group">
+          <label>
+            Title Template
+            <small style="color: var(--text-secondary);">(Use <code>[Name]</code> as placeholder for video name)</small>
+          </label>
+          <input type="text" id="editTitleTemplate" placeholder='(FREE) Type Beat - "[Name]"'>
+          <small style="color: var(--text-secondary);">
+            Capitalization: "Beat" = Title Case, "beat" = lowercase, "BEAT" = ALL CAPS
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Auto Upload</label>
+          <select id="editAutoUpload">
+            <option value="false">Disabled (Manual confirm)</option>
+            <option value="true">Enabled (Auto upload)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Language</label>
+          <select id="editLanguage">
+            <option value="en">English</option>
+            <option value="vi">Tiếng Việt</option>
+          </select>
+        </div>
+
+        <h3 style="margin-top: 1.5rem;">Description & Tags</h3>
+
+        <div id="conditionsList">
+          <!-- Dynamic conditions will be added here -->
+        </div>
+
+        <button class="btn btn-secondary" onclick="addCondition()" style="margin-top: 1rem;">
+          ➕ Add Genre Condition
+        </button>
+
+        <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem;">
+          <button class="btn btn-primary" onclick="saveConfig()">Save Template</button>
+          <button class="btn btn-secondary" onclick="closeModal('configModal')">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>

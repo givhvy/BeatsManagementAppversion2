@@ -1,23 +1,27 @@
 {
-  "name": "beats-management",
-  "version": "1.0.0",
-  "description": "Local beats management application",
+  "name": "beats-management-studio",
+  "version": "2.0.0",
+  "description": "All-in-one beats management, video creation and YouTube automation",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "serve": "npx http-server -p 8080 -c-1",
-    "build": "electron-builder --win portable"
+    "build": "electron-builder --win portable",
+    "start:automation": "cd automation && node main-multi.js"
   },
   "keywords": [
     "beats",
     "music",
-    "management"
+    "management",
+    "youtube",
+    "video",
+    "automation"
   ],
   "author": "givhvy",
   "license": "MIT",
   "build": {
-    "appId": "com.givhvy.beatsmanagement",
-    "productName": "Beats Management",
+    "appId": "com.givhvy.beatsmanagementstudio",
+    "productName": "Beats Management Studio",
     "win": {
       "target": "portable",
       "icon": "build/icon.ico"
@@ -26,7 +30,9 @@
       "**/*",
       "!**/*.vbs",
       "!build/**/*",
-      "!dist/**/*"
+      "!dist/**/*",
+      "!autovid/node_modules/**/*",
+      "!automation/node_modules/**/*"
     ]
   },
   "devDependencies": {

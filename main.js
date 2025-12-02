@@ -1,6 +1,15 @@
-const { app, BrowserWindow, ipcMain, dialog, nativeImage, clipboard } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, nativeImage, clipboard, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
+
+// Video renderer for AutoVid functionality
+let videoRenderer = null;
+try {
+  const VideoRenderer = require('./modules/videoRenderer');
+  videoRenderer = new VideoRenderer();
+} catch (e) {
+  console.log('Video renderer not available:', e.message);
+}
 
 let mainWindow;
 
@@ -15,11 +24,87 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html');
+  
+  // Auto-start automation server when app starts
+  startAutomationServerOnStartup();
 }
+
+// Auto-start automation server
+async function startAutomationServerOnStartup() {
+  const automationPath = path.join(__dirname, 'automation');
+  const mainScript = path.join(automationPath, 'main-multi.js');
+  
+  if (!fs.existsSync(mainScript)) {
+    console.log('[Main] Automation script not found, skipping auto-start');
+    return;
+  }
+  
+  // Check if server already running
+  try {
+    const http = require('http');
+    await new Promise((resolve, reject) => {
+      const req = http.get('http://localhost:9000/api/channels', (res) => {
+        resolve(true);
+      });
+      req.on('error', () => reject(false));
+      req.setTimeout(2000, () => {
+        req.destroy();
+        reject(false);
+      });
+    });
+    console.log('[Main] Automation server already running');
+    return;
+  } catch (e) {
+    // Server not running, start it
+  }
+  
+  console.log('[Main] Starting automation server...');
+  
+  const { spawn } = require('child_process');
+  automationServerProcess = spawn('node', ['main-multi.js'], {
+    cwd: automationPath,
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: false,
+    shell: true
+  });
+  
+  automationServerProcess.stdout.on('data', (data) => {
+    console.log('[Automation Server]:', data.toString());
+  });
+  
+  automationServerProcess.stderr.on('data', (data) => {
+    console.error('[Automation Server Error]:', data.toString());
+  });
+  
+  automationServerProcess.on('error', (error) => {
+    console.error('[Automation Server Process Error]:', error);
+    automationServerProcess = null;
+  });
+  
+  automationServerProcess.on('exit', (code) => {
+    console.log('[Automation Server] exited with code:', code);
+    automationServerProcess = null;
+  });
+}
+
+// Variable to track automation server process
+let automationServerProcess = null;
 
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
+  // Cleanup automation server when app closes
+  if (automationServerProcess && !automationServerProcess.killed) {
+    console.log('[Main] Stopping automation server...');
+    if (process.platform === 'win32') {
+      const { exec } = require('child_process');
+      exec(`taskkill /pid ${automationServerProcess.pid} /f /t`);
+    } else {
+      automationServerProcess.kill('SIGTERM');
+    }
+    automationServerProcess = null;
+  }
+  
   if (process.platform !== 'darwin') {
     app.quit();
   }
@@ -455,6 +540,480 @@ ipcMain.handle('clear-image-cache', async () => {
       return { success: true, count: files.length };
     }
     return { success: true, count: 0 };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// ============================
+// AUTOVID IPC HANDLERS
+// ============================
+
+// Select audio file for video creation
+ipcMain.handle('select-audio-file', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile'],
+    filters: [
+      { name: 'Audio', extensions: ['mp3', 'wav', 'flac', 'm4a', 'aac', 'ogg'] }
+    ]
+  });
+
+  if (!result.canceled && result.filePaths.length > 0) {
+    return result.filePaths[0];
+  }
+  return null;
+});
+
+// Select video files for upload
+ipcMain.handle('select-video-files', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    properties: ['openFile', 'multiSelections'],
+    filters: [
+      { name: 'Video', extensions: ['mp4', 'mov', 'avi', 'mkv', 'webm'] }
+    ]
+  });
+
+  if (!result.canceled && result.filePaths.length > 0) {
+    return result.filePaths;
+  }
+  return [];
+});
+
+// Open folder in explorer
+ipcMain.handle('open-folder', async (event, folderPath) => {
+  try {
+    await shell.openPath(folderPath);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Get system info
+ipcMain.handle('get-system-info', async () => {
+  const os = require('os');
+  return {
+    platform: process.platform,
+    arch: process.arch,
+    cpus: os.cpus().length,
+    memory: Math.round(os.totalmem() / (1024 * 1024 * 1024)) + ' GB',
+    ffmpegPath: process.env.FFMPEG_PATH || 'ffmpeg'
+  };
+});
+
+// Render video from image and audio
+ipcMain.handle('render-video', async (event, data) => {
+  if (!videoRenderer) {
+    return { success: false, error: 'Video renderer not available' };
+  }
+
+  try {
+    const { imagePath, audioPath, outputName, resolution } = data;
+    
+    // Validate inputs
+    if (!imagePath || !fs.existsSync(imagePath)) {
+      return { success: false, error: 'Image file not found' };
+    }
+    if (!audioPath || !fs.existsSync(audioPath)) {
+      return { success: false, error: 'Audio file not found' };
+    }
+
+    const result = await videoRenderer.createVideo(
+      imagePath,
+      audioPath,
+      outputName || `video_${Date.now()}`,
+      resolution || '1080',
+      (progress) => {
+        mainWindow.webContents.send('render-progress', progress);
+      }
+    );
+
+    return { success: true, outputPath: result };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Get video output directory
+ipcMain.handle('get-video-output-dir', async () => {
+  if (!videoRenderer) {
+    return path.join(__dirname, 'output');
+  }
+  return videoRenderer.getOutputDirectory();
+});
+
+// Download image from URL
+ipcMain.handle('download-image', async (event, imageUrl, savePath) => {
+  try {
+    const https = require('https');
+    const http = require('http');
+    
+    const protocol = imageUrl.startsWith('https') ? https : http;
+    
+    return new Promise((resolve, reject) => {
+      const file = fs.createWriteStream(savePath);
+      
+      protocol.get(imageUrl, (response) => {
+        response.pipe(file);
+        file.on('finish', () => {
+          file.close();
+          resolve({ success: true, path: savePath });
+        });
+      }).on('error', (err) => {
+        fs.unlink(savePath, () => {});
+        reject(err);
+      });
+    });
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// ============================
+// YOUTUBE AUTOMATION IPC HANDLERS
+// ============================
+
+// YouTube state
+let youtubeChannels = [];
+let uploadQueue = [];
+let uploadHistory = [];
+let youtubeServerRunning = false;
+
+// Get automation config path
+const automationConfigPath = path.join(__dirname, 'automation', 'config');
+
+// Scan for YouTube channels
+ipcMain.handle('scan-youtube-channels', async () => {
+  try {
+    const channels = [];
+    const configPath = automationConfigPath;
+    
+    if (!fs.existsSync(configPath)) {
+      return { success: false, channels: [], error: 'Automation config folder not found' };
+    }
+
+    // Read account folders
+    const items = fs.readdirSync(configPath, { withFileTypes: true });
+    
+    for (const item of items) {
+      if (item.isDirectory() && item.name.startsWith('Account')) {
+        const accountPath = path.join(configPath, item.name);
+        const channelFolders = fs.readdirSync(accountPath, { withFileTypes: true });
+        
+        for (const channelFolder of channelFolders) {
+          if (channelFolder.isDirectory() && channelFolder.name.startsWith('channel')) {
+            const channelPath = path.join(accountPath, channelFolder.name);
+            const configFile = path.join(channelPath, 'config.json');
+            const tokenFile = path.join(channelPath, 'token.json');
+            
+            let channelConfig = {};
+            let hasToken = fs.existsSync(tokenFile);
+            
+            if (fs.existsSync(configFile)) {
+              try {
+                channelConfig = JSON.parse(fs.readFileSync(configFile, 'utf8'));
+              } catch (e) {}
+            }
+            
+            channels.push({
+              id: `${item.name}/${channelFolder.name}`,
+              name: channelConfig.channelName || channelFolder.name,
+              account: item.name,
+              path: channelPath,
+              hasToken: hasToken,
+              ready: hasToken,
+              uploadFolder: path.join(__dirname, 'automation', 'uploads', item.name, channelFolder.name)
+            });
+          }
+        }
+      }
+    }
+
+    youtubeChannels = channels;
+    return { success: true, channels };
+  } catch (error) {
+    console.error('Error scanning channels:', error);
+    return { success: false, channels: [], error: error.message };
+  }
+});
+
+// Get YouTube channels
+ipcMain.handle('get-youtube-channels', async () => {
+  return youtubeChannels;
+});
+
+// Get upload queue
+ipcMain.handle('get-upload-queue', async () => {
+  return uploadQueue;
+});
+
+// Get upload history
+ipcMain.handle('get-upload-history', async () => {
+  return uploadHistory;
+});
+
+// Add video to upload queue
+ipcMain.handle('add-to-upload-queue', async (event, videoData) => {
+  try {
+    const queueItem = {
+      id: Date.now().toString(),
+      fileName: path.basename(videoData.filePath),
+      filePath: videoData.filePath,
+      channelId: videoData.channelId,
+      metadata: {
+        title: videoData.title || path.parse(videoData.filePath).name,
+        description: videoData.description || '',
+        tags: videoData.tags || [],
+        privacy: videoData.privacy || 'private'
+      },
+      status: 'draft',
+      addedAt: new Date().toISOString()
+    };
+
+    uploadQueue.push(queueItem);
+    return { success: true, item: queueItem };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Update queue item
+ipcMain.handle('update-queue-item', async (event, itemId, updates) => {
+  const item = uploadQueue.find(q => q.id === itemId);
+  if (item) {
+    Object.assign(item.metadata, updates);
+    return { success: true, item };
+  }
+  return { success: false, error: 'Item not found' };
+});
+
+// Remove from queue
+ipcMain.handle('remove-from-queue', async (event, itemId) => {
+  const index = uploadQueue.findIndex(q => q.id === itemId);
+  if (index > -1) {
+    uploadQueue.splice(index, 1);
+    return { success: true };
+  }
+  return { success: false, error: 'Item not found' };
+});
+
+// Start YouTube automation server
+ipcMain.handle('start-youtube-server', async () => {
+  try {
+    if (youtubeServerRunning) {
+      return { success: true, message: 'Server already running' };
+    }
+
+    // The automation server runs separately, we just track if it should be running
+    youtubeServerRunning = true;
+    return { success: true, port: 3000 };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Check YouTube server status
+ipcMain.handle('check-youtube-server', async () => {
+  try {
+    // Try to fetch from the automation server
+    const http = require('http');
+    return new Promise((resolve) => {
+      const req = http.get('http://localhost:9000/api/status', (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const status = JSON.parse(data);
+            resolve({ success: true, online: true, ...status });
+          } catch (e) {
+            resolve({ success: true, online: true });
+          }
+        });
+      });
+      req.on('error', () => {
+        resolve({ success: false, online: false });
+      });
+      req.setTimeout(2000, () => {
+        req.destroy();
+        resolve({ success: false, online: false });
+      });
+    });
+  } catch (error) {
+    return { success: false, online: false, error: error.message };
+  }
+});
+
+// Start automation server
+ipcMain.handle('start-automation-server', async () => {
+  try {
+    const automationPath = path.join(__dirname, 'automation');
+    const mainScript = path.join(automationPath, 'main-multi.js');
+    
+    // Check if script exists
+    if (!fs.existsSync(mainScript)) {
+      return { success: false, error: 'Không tìm thấy main-multi.js' };
+    }
+    
+    // Check if server is already running
+    if (automationServerProcess && !automationServerProcess.killed) {
+      return { success: true, message: 'Server đang chạy' };
+    }
+    
+    const { spawn } = require('child_process');
+    
+    // Start the server
+    automationServerProcess = spawn('node', ['main-multi.js'], {
+      cwd: automationPath,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      detached: false,
+      shell: true
+    });
+    
+    automationServerProcess.stdout.on('data', (data) => {
+      console.log('[Automation Server]:', data.toString());
+    });
+    
+    automationServerProcess.stderr.on('data', (data) => {
+      console.error('[Automation Server Error]:', data.toString());
+    });
+    
+    automationServerProcess.on('error', (error) => {
+      console.error('[Automation Server Process Error]:', error);
+      automationServerProcess = null;
+    });
+    
+    automationServerProcess.on('exit', (code) => {
+      console.log('[Automation Server] exited with code:', code);
+      automationServerProcess = null;
+    });
+    
+    return { success: true, message: 'Server đã khởi động' };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Stop automation server
+ipcMain.handle('stop-automation-server', async () => {
+  try {
+    if (automationServerProcess && !automationServerProcess.killed) {
+      // Kill the process
+      if (process.platform === 'win32') {
+        // On Windows, we need to kill the process tree
+        const { exec } = require('child_process');
+        exec(`taskkill /pid ${automationServerProcess.pid} /f /t`, (error) => {
+          if (error) {
+            console.error('Error killing process:', error);
+          }
+        });
+      } else {
+        automationServerProcess.kill('SIGTERM');
+      }
+      automationServerProcess = null;
+      return { success: true, message: 'Server đã dừng' };
+    }
+    
+    // If no process tracked, try to kill any server on port 9000
+    const { exec } = require('child_process');
+    return new Promise((resolve) => {
+      if (process.platform === 'win32') {
+        exec('netstat -ano | findstr :9000', (error, stdout) => {
+          if (stdout) {
+            const lines = stdout.trim().split('\n');
+            for (const line of lines) {
+              const parts = line.trim().split(/\s+/);
+              const pid = parts[parts.length - 1];
+              if (pid && !isNaN(pid)) {
+                exec(`taskkill /pid ${pid} /f`, () => {});
+              }
+            }
+          }
+          resolve({ success: true, message: 'Server đã dừng' });
+        });
+      } else {
+        exec('lsof -t -i:9000 | xargs kill -9', () => {
+          resolve({ success: true, message: 'Server đã dừng' });
+        });
+      }
+    });
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Copy video to channel upload folder
+ipcMain.handle('copy-video-to-channel', async (event, videoPath, channelId) => {
+  try {
+    const channel = youtubeChannels.find(c => c.id === channelId);
+    if (!channel) {
+      return { success: false, error: 'Channel not found' };
+    }
+
+    // Ensure upload folder exists
+    if (!fs.existsSync(channel.uploadFolder)) {
+      fs.mkdirSync(channel.uploadFolder, { recursive: true });
+    }
+
+    const fileName = path.basename(videoPath);
+    const destPath = path.join(channel.uploadFolder, fileName);
+    
+    fs.copyFileSync(videoPath, destPath);
+    
+    return { success: true, destPath };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Copy video for upload - fetches channel info from automation server
+ipcMain.handle('copy-video-for-upload', async (event, { videoPath, channelId, metadata }) => {
+  try {
+    const http = require('http');
+    
+    // Get channel info from automation server
+    const channelData = await new Promise((resolve, reject) => {
+      http.get('http://localhost:9000/api/channels', (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(new Error('Invalid server response'));
+          }
+        });
+      }).on('error', reject);
+    });
+    
+    const channel = channelData.channels.find(c => c.channelId === channelId);
+    if (!channel) {
+      return { success: false, error: 'Channel not found on server' };
+    }
+    
+    // Get the uploads path from channel
+    const uploadsPath = channel.uploadsPath;
+    if (!uploadsPath) {
+      return { success: false, error: 'Channel upload path not configured' };
+    }
+    
+    // Ensure upload folder exists
+    if (!fs.existsSync(uploadsPath)) {
+      fs.mkdirSync(uploadsPath, { recursive: true });
+    }
+    
+    const fileName = path.basename(videoPath);
+    const destPath = path.join(uploadsPath, fileName);
+    
+    // Copy video file
+    fs.copyFileSync(videoPath, destPath);
+    
+    // Save metadata alongside video (optional - for manual uploads)
+    if (metadata) {
+      const metadataPath = destPath.replace(/\.[^.]+$/, '.json');
+      fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+    }
+    
+    return { success: true, destPath };
   } catch (error) {
     return { success: false, error: error.message };
   }

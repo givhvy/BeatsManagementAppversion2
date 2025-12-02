@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Multi-Channel Uploader</title>
+  <link rel="stylesheet" href="style-multi.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h1>🎬 YouTube Multi-Channel Uploader</h1>
+        <a href="/admin.html" class="btn btn-secondary">⚙️ Admin Dashboard</a>
+      </div>
+      <div class="status-bar">
+        <div class="status-item">
+          <span class="status-label">Channels:</span>
+          <span id="total-channels">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">Ready:</span>
+          <span id="ready-channels">0</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Channel Selector -->
+      <section class="channel-selector">
+        <label for="channelSelect">Chọn Channel:</label>
+        <select id="channelSelect">
+          <option value="">-- Chọn channel --</option>
+        </select>
+        <button id="refreshBtn" class="btn btn-secondary">🔄 Refresh</button>
+      </section>
+
+      <!-- Channel Info -->
+      <section id="channelInfo" class="channel-info" style="display: none;">
+        <h2>📺 <span id="currentChannelName"></span></h2>
+        <div class="channel-stats">
+          <div class="stat-item">
+            <span class="stat-label">Status:</span>
+            <span id="channelStatus" class="status-badge">-</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Queue:</span>
+            <span id="channelQueueCount">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">History:</span>
+            <span id="channelHistoryCount">0</span>
+          </div>
+        </div>
+        <div class="channel-paths">
+          <p><strong>📁 Upload folder:</strong> <code id="uploadPath"></code></p>
+          <p><strong>📋 Log file:</strong> <code id="logPath"></code></p>
+        </div>
+      </section>
+
+      <!-- Upload Zone -->
+      <section id="uploadSection" class="upload-section" style="display: none;">
+        <div class="drop-zone" id="dropZone">
+          <div class="drop-zone-content">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <h3>Kéo thả video vào đây</h3>
+            <p>hoặc nhấp để chọn file</p>
+            <span class="file-types">MP4, MOV, AVI, MKV</span>
+          </div>
+          <input type="file" id="fileInput" accept="video/*" multiple hidden>
+        </div>
+      </section>
+
+      <!-- Queue Section -->
+      <section id="queueSection" class="queue-section" style="display: none;">
+        <h2>📋 Hàng đợi upload (<span id="queueCount">0</span>)</h2>
+        <div id="queueList" class="video-list">
+          <p class="empty-state">Chưa có video trong hàng đợi</p>
+        </div>
+      </section>
+
+      <!-- History Section -->
+      <section id="historySection" class="history-section" style="display: none;">
+        <h2>📊 Lịch sử upload (<span id="historyCount">0</span>)</h2>
+        <div id="historyList" class="video-list">
+          <p class="empty-state">Chưa có video nào được upload</p>
+        </div>
+      </section>
+
+      <!-- Logs Section -->
+      <section id="logsSection" class="logs-section" style="display: none;">
+        <h2>📜 Logs</h2>
+        <button id="refreshLogsBtn" class="btn btn-secondary">🔄 Refresh Logs</button>
+        <div id="logsList" class="logs-container">
+          <p class="empty-state">Không có logs</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script-multi.js"></script>
+</body>
+</html>

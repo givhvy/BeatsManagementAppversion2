@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Sensitive files - NEVER commit these!
+config/credentials.json
+config/token.json
+config/**/credentials.json
+config/**/token.json
+.env
+
+# User uploads (single-channel old structure)
+uploads/BeatsUpload/*
+!uploads/BeatsUpload/.gitkeep
+
+# User uploads (multi-channel new structure)
+uploads/**/*.mp4
+uploads/**/*.mov
+uploads/**/*.avi
+uploads/**/*.mkv
+uploads/**/*.flv
+uploads/**/*.wmv
+!uploads/**/.gitkeep
+
+# Logs
+logs/*.log
+
+# Video files
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.flv
+*.wmv
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
