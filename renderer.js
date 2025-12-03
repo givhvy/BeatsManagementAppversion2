@@ -3906,3 +3906,284 @@ async function uploadCurrentVideoToYouTube() {
 // Make functions globally available
 window.createVideoFromCurrentBeat = createVideoFromCurrentBeat;
 window.uploadCurrentVideoToYouTube = uploadCurrentVideoToYouTube;
+
+// ============================
+// AUTO RENDER & UPLOAD SYSTEM
+// ============================
+
+/**
+ * Map pack name to corresponding YouTube channel
+ * Pack names like "C1", "C2 - Boom Bap" should map to channels with similar names
+ */
+function findChannelForPack(packName) {
+  if (!packName || youtubeState.channels.length === 0) return null;
+  
+  // Extract channel number from pack name (e.g., "C1" from "C1 - Boom Bap")
+  const packMatch = packName.match(/^C(\d+)/i);
+  if (!packMatch) return null;
+  
+  const packNumber = packMatch[1];
+  
+  // Find channel with matching number
+  const channel = youtubeState.channels.find(ch => {
+    const channelName = ch.name || ch.id || '';
+    // Match "C1", "channel1", "Channel 1", etc.
+    const channelMatch = channelName.match(/(?:channel\s*|C)(\d+)/i);
+    return channelMatch && channelMatch[1] === packNumber;
+  });
+  
+  return channel;
+}
+
+/**
+ * Auto render a single beat and upload to the pack's corresponding channel
+ * @param {string} beatPath - Path to the audio file
+ * @param {string} packId - Pack ID to determine the channel
+ * @returns {Promise<{success: boolean, error?: string, videoPath?: string}>}
+ */
+async function autoRenderAndUploadBeat(beatPath, packId) {
+  const pack = packs.find(p => p.id === packId);
+  if (!pack) {
+    return { success: false, error: 'Pack not found' };
+  }
+  
+  // Find the beat in the pack
+  const beat = pack.beats.find(b => b.path === beatPath);
+  if (!beat) {
+    return { success: false, error: 'Beat not found in pack' };
+  }
+  
+  // Check if beat has an image
+  const imagePath = beatImages[beatPath];
+  if (!imagePath) {
+    return { success: false, error: 'Beat has no image assigned' };
+  }
+  
+  // Find corresponding channel for this pack
+  const channel = findChannelForPack(pack.name);
+  if (!channel) {
+    return { success: false, error: `No channel found for pack "${pack.name}". Make sure channel name matches (e.g., C1, C2, etc.)` };
+  }
+  
+  if (!channel.ready) {
+    return { success: false, error: `Channel "${channel.name}" is not ready. Please authenticate first.` };
+  }
+  
+  // Extract clean beat name for video title
+  const beatNameWithoutExt = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+  const videoTitle = extractBeatName(beatNameWithoutExt);
+  
+  console.log(`[Auto Upload] Rendering: ${videoTitle} for channel ${channel.name}`);
+  
+  try {
+    // Step 1: Render video
+    const renderResult = await ipcRenderer.invoke('render-video', {
+      imagePath: imagePath,
+      audioPath: beatPath,
+      outputName: videoTitle,
+      resolution: '1080'
+    });
+    
+    if (!renderResult.success) {
+      return { success: false, error: `Render failed: ${renderResult.error}` };
+    }
+    
+    const videoPath = renderResult.outputPath;
+    console.log(`[Auto Upload] Rendered: ${videoPath}`);
+    
+    // Step 2: Copy to channel's upload folder
+    const copyResult = await ipcRenderer.invoke('copy-video-for-upload', {
+      videoPath: videoPath,
+      channelId: channel.id,
+      metadata: {
+        title: videoTitle,
+        description: '',
+        tags: [],
+        privacy: 'private'
+      }
+    });
+    
+    if (!copyResult.success) {
+      return { success: false, error: `Copy failed: ${copyResult.error}` };
+    }
+    
+    console.log(`[Auto Upload] Sent to channel: ${channel.name}`);
+    
+    // Mark beat as last used
+    pack.beats.forEach(b => b.lastUsed = false);
+    beat.lastUsed = true;
+    saveData();
+    
+    return { 
+      success: true, 
+      videoPath: videoPath,
+      channel: channel.name,
+      title: videoTitle
+    };
+    
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+/**
+ * Get next N unuploaded beats from a pack
+ * @param {string} packId - Pack ID
+ * @param {number} count - Number of beats to get
+ * @returns {Array} Array of beat objects
+ */
+function getNextUnuploadedBeats(packId, count = 6) {
+  const pack = packs.find(p => p.id === packId);
+  if (!pack) return [];
+  
+  // Find the last used beat index
+  let startIndex = 0;
+  const lastUsedIndex = pack.beats.findIndex(b => b.lastUsed);
+  if (lastUsedIndex !== -1) {
+    startIndex = lastUsedIndex + 1;
+  }
+  
+  // Get beats that haven't been uploaded yet
+  const unuploadedBeats = [];
+  for (let i = 0; i < pack.beats.length && unuploadedBeats.length < count; i++) {
+    const index = (startIndex + i) % pack.beats.length;
+    const beat = pack.beats[index];
+    
+    // Skip if already uploaded
+    if (isBeatUploaded(beat.name)) continue;
+    
+    // Skip if no image assigned
+    if (!beatImages[beat.path]) continue;
+    
+    unuploadedBeats.push(beat);
+  }
+  
+  return unuploadedBeats;
+}
+
+/**
+ * Auto upload next N beats from the current pack
+ * @param {number} count - Number of beats to upload (default 6)
+ */
+async function autoUploadNextBeats(count = 6) {
+  if (!currentPackId) {
+    showNotification('Please select a pack first', 'error');
+    return;
+  }
+  
+  const pack = packs.find(p => p.id === currentPackId);
+  if (!pack) {
+    showNotification('Pack not found', 'error');
+    return;
+  }
+  
+  // Check server status
+  if (!youtubeState.serverOnline) {
+    showNotification('YouTube server is offline. Please start the server first.', 'error');
+    return;
+  }
+  
+  // Find channel for this pack
+  const channel = findChannelForPack(pack.name);
+  if (!channel) {
+    showNotification(`No channel found for pack "${pack.name}". Make sure pack name starts with C1, C2, etc.`, 'error');
+    return;
+  }
+  
+  // Get next unuploaded beats
+  const beatsToUpload = getNextUnuploadedBeats(currentPackId, count);
+  
+  if (beatsToUpload.length === 0) {
+    showNotification('No unuploaded beats with images found in this pack', 'error');
+    return;
+  }
+  
+  showNotification(`Starting auto upload of ${beatsToUpload.length} beats to ${channel.name}...`, 'info');
+  
+  let successCount = 0;
+  let failCount = 0;
+  
+  // Process beats sequentially
+  for (const beat of beatsToUpload) {
+    const result = await autoRenderAndUploadBeat(beat.path, currentPackId);
+    
+    if (result.success) {
+      successCount++;
+      showNotification(`✅ (${successCount}/${beatsToUpload.length}) ${result.title} → ${result.channel}`, 'success');
+    } else {
+      failCount++;
+      console.error(`[Auto Upload] Failed: ${beat.name} - ${result.error}`);
+      showNotification(`❌ Failed: ${beat.name} - ${result.error}`, 'error');
+    }
+    
+    // Re-render pack detail to update UI
+    if (currentPackId) {
+      renderPackDetailBeats();
+    }
+    
+    // Small delay between uploads
+    await new Promise(r => setTimeout(r, 1000));
+  }
+  
+  // Final summary
+  showNotification(`Auto upload complete: ${successCount} success, ${failCount} failed`, successCount > 0 ? 'success' : 'error');
+  
+  // Refresh beats to update uploaded badges
+  renderPackDetailBeats();
+  renderBeats();
+}
+
+/**
+ * Auto upload a single beat (from context menu)
+ */
+async function autoUploadSingleBeat() {
+  if (!contextMenuTarget || !contextMenuTarget.beatPath || !contextMenuTarget.packId) {
+    showNotification('No beat selected', 'error');
+    return;
+  }
+  
+  // Check server status
+  if (!youtubeState.serverOnline) {
+    showNotification('YouTube server is offline. Please start the server first.', 'error');
+    return;
+  }
+  
+  const beatPath = contextMenuTarget.beatPath;
+  const packId = contextMenuTarget.packId;
+  
+  showNotification('Starting auto render & upload...', 'info');
+  
+  const result = await autoRenderAndUploadBeat(beatPath, packId);
+  
+  if (result.success) {
+    showNotification(`✅ Uploaded: ${result.title} → ${result.channel}`, 'success');
+    
+    // Re-render pack detail to update UI
+    if (currentPackId) {
+      renderPackDetailBeats();
+    }
+    renderBeats();
+  } else {
+    showNotification(`❌ Failed: ${result.error}`, 'error');
+  }
+}
+
+// Initialize auto upload button
+const autoUpload6Btn = document.getElementById('auto-upload-6-btn');
+if (autoUpload6Btn) {
+  autoUpload6Btn.addEventListener('click', () => autoUploadNextBeats(6));
+}
+
+// Initialize auto upload context menu item
+const autoUploadBeatBtn = document.getElementById('auto-upload-beat');
+if (autoUploadBeatBtn) {
+  autoUploadBeatBtn.addEventListener('click', () => {
+    autoUploadSingleBeat();
+    hideContextMenu();
+  });
+}
+
+// Make functions globally available
+window.autoUploadNextBeats = autoUploadNextBeats;
+window.autoUploadSingleBeat = autoUploadSingleBeat;
+window.findChannelForPack = findChannelForPack;
