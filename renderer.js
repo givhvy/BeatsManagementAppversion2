@@ -1527,11 +1527,25 @@ function createPackBeatElement(beat, packId, index) {
     contentContainer.appendChild(lastUsedBadge);
   }
 
-  // Add "Uploaded" badge if beat has been uploaded to YouTube
-  if (isBeatUploaded(beat.name)) {
+  // Add "Uploaded" badge with schedule date if beat has been uploaded to YouTube
+  const uploadInfo = getBeatUploadInfo(beat.name);
+  if (uploadInfo || isBeatUploaded(beat.name)) {
     const uploadedBadge = document.createElement('span');
     uploadedBadge.className = 'uploaded-badge';
-    uploadedBadge.textContent = '📺 Uploaded';
+    
+    // Format schedule date if available
+    if (uploadInfo?.scheduleDate) {
+      const scheduleDate = new Date(uploadInfo.scheduleDate);
+      const dateStr = scheduleDate.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        year: 'numeric'
+      });
+      uploadedBadge.textContent = `📅 ${dateStr}`;
+      uploadedBadge.title = `Scheduled to publish on ${dateStr}`;
+    } else {
+      uploadedBadge.textContent = '📺 Uploaded';
+    }
     contentContainer.appendChild(uploadedBadge);
   }
 
@@ -2991,7 +3005,8 @@ let youtubeState = {
   queue: [],
   history: [],
   serverOnline: false,
-  uploadedBeats: new Set() // Track uploaded beats by audio file name
+  uploadedBeats: new Set(), // Track uploaded beats by audio file name
+  uploadedBeatsInfo: new Map() // Map beat name -> { scheduleDate, videoId, channelName }
 };
 
 // Show notification toast
@@ -3474,6 +3489,7 @@ async function loadChannelStatus(channelId) {
 function updateUploadedBeatsFromHistory() {
   // Clear and rebuild the set from all history
   youtubeState.uploadedBeats.clear();
+  youtubeState.uploadedBeatsInfo.clear();
   
   youtubeState.history.forEach(item => {
     if (item.status === 'completed' || item.status === 'success') {
@@ -3485,15 +3501,27 @@ function updateUploadedBeatsFromHistory() {
       // Add various forms of the name for matching
       youtubeState.uploadedBeats.add(baseName.toLowerCase());
       
+      // Store upload info including schedule date
+      const uploadInfo = {
+        scheduleDate: item.scheduleDate || item.result?.scheduleDate || null,
+        videoId: item.result?.videoId || item.videoId || null,
+        channelName: item.channelName || null,
+        uploadedAt: item.completedAt || item.addedAt || null
+      };
+      youtubeState.uploadedBeatsInfo.set(baseName.toLowerCase(), uploadInfo);
+      
       // Also try to extract from "Untitled - Name_tagged" format
       const match = baseName.match(/[-–]\s*([^_]+)(?:_tagged)?$/i);
       if (match) {
-        youtubeState.uploadedBeats.add(match[1].trim().toLowerCase());
+        const extractedName = match[1].trim().toLowerCase();
+        youtubeState.uploadedBeats.add(extractedName);
+        youtubeState.uploadedBeatsInfo.set(extractedName, uploadInfo);
       }
     }
   });
   
   console.log('Uploaded beats tracked:', Array.from(youtubeState.uploadedBeats));
+  console.log('Upload info:', Object.fromEntries(youtubeState.uploadedBeatsInfo));
 }
 
 /**
@@ -3514,6 +3542,31 @@ function isBeatUploaded(beatName) {
   }
   
   return false;
+}
+
+/**
+ * Get upload info for a beat (schedule date, video ID, etc.)
+ */
+function getBeatUploadInfo(beatName) {
+  if (!beatName) return null;
+  
+  const baseName = beatName.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '').toLowerCase();
+  
+  // Check exact match
+  if (youtubeState.uploadedBeatsInfo.has(baseName)) {
+    return youtubeState.uploadedBeatsInfo.get(baseName);
+  }
+  
+  // Check extracted name
+  const match = baseName.match(/[-–]\s*([^_]+)(?:_tagged)?$/i);
+  if (match) {
+    const extractedName = match[1].trim().toLowerCase();
+    if (youtubeState.uploadedBeatsInfo.has(extractedName)) {
+      return youtubeState.uploadedBeatsInfo.get(extractedName);
+    }
+  }
+  
+  return null;
 }
 
 function handleVideoFiles(files) {
@@ -4020,18 +4073,85 @@ async function autoRenderAndUploadBeat(beatPath, packId) {
     // Mark beat as last used
     pack.beats.forEach(b => b.lastUsed = false);
     beat.lastUsed = true;
+    
+    // Step 3: Wait for upload to complete and get schedule date
+    const scheduleInfo = await waitForUploadComplete(videoTitle, channel.id);
+    
+    // Store upload info for this beat
+    if (scheduleInfo) {
+      const uploadInfo = {
+        scheduleDate: scheduleInfo.publishAt || scheduleInfo.publishAtLA,
+        videoId: scheduleInfo.videoId,
+        channelName: channel.name,
+        uploadedAt: new Date().toISOString()
+      };
+      
+      // Store in uploadedBeatsInfo
+      youtubeState.uploadedBeats.add(videoTitle.toLowerCase());
+      youtubeState.uploadedBeatsInfo.set(videoTitle.toLowerCase(), uploadInfo);
+      
+      console.log(`[Auto Upload] Schedule info saved: ${videoTitle} -> ${uploadInfo.scheduleDate}`);
+    }
+    
     saveData();
     
     return { 
       success: true, 
       videoPath: videoPath,
       channel: channel.name,
-      title: videoTitle
+      title: videoTitle,
+      scheduleDate: scheduleInfo?.publishAtLA || scheduleInfo?.publishAt
     };
     
   } catch (error) {
     return { success: false, error: error.message };
   }
+}
+
+/**
+ * Wait for a video to be uploaded and get its schedule info
+ * @param {string} videoTitle - Title of the video to wait for
+ * @param {string} channelId - Channel ID
+ * @param {number} maxWaitMs - Maximum time to wait in milliseconds (default 60s)
+ * @returns {Promise<Object|null>} Upload result with schedule info or null
+ */
+async function waitForUploadComplete(videoTitle, channelId, maxWaitMs = 60000) {
+  const startTime = Date.now();
+  const pollInterval = 2000; // 2 seconds
+  
+  while (Date.now() - startTime < maxWaitMs) {
+    try {
+      const response = await fetch(`${AUTOMATION_SERVER_URL}/api/status/${channelId}`);
+      if (!response.ok) {
+        await new Promise(r => setTimeout(r, pollInterval));
+        continue;
+      }
+      
+      const data = await response.json();
+      
+      // Check if our video is in history (completed)
+      if (data.history) {
+        const uploadedVideo = data.history.find(h => {
+          const historyTitle = h.metadata?.title || h.fileName || '';
+          // Match by title (case-insensitive, partial match)
+          return historyTitle.toLowerCase().includes(videoTitle.toLowerCase()) ||
+                 videoTitle.toLowerCase().includes(historyTitle.toLowerCase().replace(/\[free\].*?-\s*"|"$/gi, '').trim());
+        });
+        
+        if (uploadedVideo && (uploadedVideo.status === 'completed' || uploadedVideo.status === 'success')) {
+          console.log(`[Auto Upload] Found completed upload for: ${videoTitle}`);
+          return uploadedVideo.result || uploadedVideo;
+        }
+      }
+    } catch (error) {
+      console.log(`[Auto Upload] Polling error: ${error.message}`);
+    }
+    
+    await new Promise(r => setTimeout(r, pollInterval));
+  }
+  
+  console.log(`[Auto Upload] Timeout waiting for upload: ${videoTitle}`);
+  return null;
 }
 
 /**
@@ -4130,7 +4250,15 @@ async function autoUploadNextBeats(count = 6) {
     
     if (result.success) {
       successCount++;
-      showNotification(`✅ (${successCount}/${beatsToUpload.length}) ${result.title} → ${result.channel}`, 'success');
+      // Format schedule date for notification
+      let scheduleText = '';
+      if (result.scheduleDate) {
+        const scheduleDate = new Date(result.scheduleDate);
+        if (!isNaN(scheduleDate)) {
+          scheduleText = ` 📅 ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        }
+      }
+      showNotification(`✅ (${successCount}/${beatsToUpload.length}) ${result.title} → ${result.channel}${scheduleText}`, 'success');
     } else {
       failCount++;
       console.error(`[Auto Upload] Failed: ${beat.name} - ${result.error}`);

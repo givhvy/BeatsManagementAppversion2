@@ -790,7 +790,7 @@ body {
 
 .uploaded-badge,
 .uploaded-tag {
-  background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   padding: 2px 8px;
   border-radius: 10px;
@@ -801,7 +801,7 @@ body {
 }
 
 .uploaded-tag {
-  background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%) !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
 }
 
 /* Context Menu */
