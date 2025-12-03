@@ -612,42 +612,25 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
 
   <!-- Add Channel Modal -->
   <div id="add-channel-modal" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 550px;">
+    <div class="modal-content" style="max-width: 450px;">
       <div class="modal-header">
         <h3>➕ Add New Channel</h3>
         <button id="close-add-channel-modal-btn" class="close-btn">×</button>
       </div>
       <div class="modal-body">
         <div class="info-section">
-          <label>Account:</label>
-          <select id="new-channel-account" class="modal-input">
-            <option value="AccountA">AccountA</option>
-            <option value="AccountB">AccountB</option>
-            <option value="new">+ Create New Account</option>
-          </select>
-          <input type="text" id="new-account-name" class="modal-input" placeholder="New account name (e.g., AccountC)" style="display: none; margin-top: 10px;">
+          <label>Channel ID:</label>
+          <input type="text" id="new-channel-id" class="modal-input" placeholder="e.g., C20">
+          <small style="color: #888;">This will create folder: config/C20/C20/</small>
         </div>
-        <div class="info-section" style="margin-top: 15px;">
-          <label>Channel Name:</label>
-          <input type="text" id="new-channel-name" class="modal-input" placeholder="e.g., C7 - My Type Beats">
-        </div>
-        <div class="info-section" style="margin-top: 15px;">
-          <label>Channel ID (folder name):</label>
-          <input type="text" id="new-channel-id" class="modal-input" placeholder="e.g., channel7">
-          <small style="color: #888;">This will create folder: config/AccountX/channel7/</small>
-        </div>
-        <div class="info-section" style="margin-top: 15px;">
-          <label>Type Beat Style:</label>
-          <input type="text" id="new-channel-style" class="modal-input" placeholder="e.g., TRAVIS SCOTT x METRO BOOMIN">
-        </div>
-        <div class="info-section" style="margin-top: 15px;">
+        <div class="info-section" style="margin-top: 20px;">
           <label>Credentials JSON:</label>
-          <div style="display: flex; gap: 10px; align-items: center;">
-            <button id="select-credentials-btn" class="btn-secondary" style="flex-shrink: 0;">📁 Select File</button>
-            <span id="credentials-file-name" style="color: #888; font-size: 12px;">No file selected</span>
+          <div id="credentials-dropzone" class="dropzone" style="min-height: 120px; border: 2px dashed #555; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease;">
+            <span style="font-size: 32px;">📄</span>
+            <span id="credentials-file-name" style="color: #888; font-size: 14px; margin-top: 8px;">Drop credentials.json here</span>
+            <small style="color: #666; margin-top: 5px;">or click to browse</small>
           </div>
           <input type="file" id="credentials-file-input" accept=".json" hidden>
-          <small style="color: #888; margin-top: 5px; display: block;">Upload credentials.json from Google Cloud Console</small>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 25px;">
           <button id="create-channel-btn" class="btn-primary">Create Channel</button>

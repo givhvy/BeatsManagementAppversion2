@@ -3065,12 +3065,8 @@ const cancelVideoEditBtn = document.getElementById('cancel-video-edit-btn');
 const addChannelBtn = document.getElementById('add-channel-btn');
 const addChannelModal = document.getElementById('add-channel-modal');
 const closeAddChannelModalBtn = document.getElementById('close-add-channel-modal-btn');
-const newChannelAccount = document.getElementById('new-channel-account');
-const newAccountName = document.getElementById('new-account-name');
-const newChannelName = document.getElementById('new-channel-name');
 const newChannelId = document.getElementById('new-channel-id');
-const newChannelStyle = document.getElementById('new-channel-style');
-const selectCredentialsBtn = document.getElementById('select-credentials-btn');
+const credentialsDropzone = document.getElementById('credentials-dropzone');
 const credentialsFileInput = document.getElementById('credentials-file-input');
 const credentialsFileName = document.getElementById('credentials-file-name');
 const createChannelBtn = document.getElementById('create-channel-btn');
@@ -3135,18 +3131,42 @@ function initYouTubeSection() {
   if (createChannelBtn) {
     createChannelBtn.addEventListener('click', createNewChannel);
   }
-  if (newChannelAccount) {
-    newChannelAccount.addEventListener('change', (e) => {
-      if (e.target.value === 'new') {
-        newAccountName.style.display = 'block';
-      } else {
-        newAccountName.style.display = 'none';
+  
+  // Credentials dropzone - drag and drop
+  if (credentialsDropzone && credentialsFileInput) {
+    credentialsDropzone.addEventListener('click', () => credentialsFileInput.click());
+    credentialsFileInput.addEventListener('change', handleCredentialsFile);
+    
+    credentialsDropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      credentialsDropzone.style.borderColor = '#9147ff';
+      credentialsDropzone.style.background = 'rgba(145, 71, 255, 0.1)';
+    });
+    
+    credentialsDropzone.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      credentialsDropzone.style.borderColor = '#555';
+      credentialsDropzone.style.background = 'transparent';
+    });
+    
+    credentialsDropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      credentialsDropzone.style.borderColor = '#555';
+      credentialsDropzone.style.background = 'transparent';
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        if (file.name.endsWith('.json')) {
+          handleDroppedCredentialsFile(file);
+        } else {
+          showNotification('Please drop a .json file', 'error');
+        }
       }
     });
-  }
-  if (selectCredentialsBtn && credentialsFileInput) {
-    selectCredentialsBtn.addEventListener('click', () => credentialsFileInput.click());
-    credentialsFileInput.addEventListener('change', handleCredentialsFile);
   }
 
   // Global Settings event listeners
@@ -3475,15 +3495,16 @@ function openAddChannelModal() {
   }
   
   // Reset form
-  if (newChannelAccount) newChannelAccount.value = 'AccountA';
-  if (newAccountName) {
-    newAccountName.value = '';
-    newAccountName.style.display = 'none';
-  }
-  if (newChannelName) newChannelName.value = '';
   if (newChannelId) newChannelId.value = '';
-  if (newChannelStyle) newChannelStyle.value = '';
-  if (credentialsFileName) credentialsFileName.textContent = 'No file selected';
+  if (credentialsFileName) {
+    credentialsFileName.textContent = 'Drop credentials.json here';
+    credentialsFileName.style.color = '#888';
+  }
+  if (credentialsDropzone) {
+    credentialsDropzone.style.borderColor = '#555';
+    credentialsDropzone.style.background = 'transparent';
+  }
+  if (credentialsFileInput) credentialsFileInput.value = '';
   selectedCredentialsContent = null;
   
   if (addChannelModal) {
@@ -3492,12 +3513,24 @@ function openAddChannelModal() {
 }
 
 /**
- * Close Add Channel modal
+ * Close Add Channel modal and reset form
  */
 function closeAddChannelModal() {
   if (addChannelModal) {
     addChannelModal.style.display = 'none';
   }
+  // Reset form
+  if (newChannelId) newChannelId.value = '';
+  if (credentialsFileName) {
+    credentialsFileName.textContent = 'Drop credentials.json here';
+    credentialsFileName.style.color = '#888';
+  }
+  if (credentialsDropzone) {
+    credentialsDropzone.style.borderColor = '#555';
+    credentialsDropzone.style.background = 'transparent';
+  }
+  if (credentialsFileInput) credentialsFileInput.value = '';
+  selectedCredentialsContent = null;
 }
 
 /**
@@ -3506,17 +3539,26 @@ function closeAddChannelModal() {
 function handleCredentialsFile(e) {
   const file = e.target.files[0];
   if (!file) return;
-  
+  handleDroppedCredentialsFile(file);
+}
+
+/**
+ * Handle dropped credentials file (drag-drop or file input)
+ */
+function handleDroppedCredentialsFile(file) {
   const reader = new FileReader();
   reader.onload = (event) => {
     try {
       const content = JSON.parse(event.target.result);
       selectedCredentialsContent = content;
-      credentialsFileName.textContent = file.name;
+      credentialsFileName.textContent = `✅ ${file.name}`;
       credentialsFileName.style.color = '#4CAF50';
+      if (credentialsDropzone) {
+        credentialsDropzone.style.borderColor = '#4CAF50';
+      }
     } catch (err) {
       showNotification('Invalid JSON file', 'error');
-      credentialsFileName.textContent = 'Invalid file';
+      credentialsFileName.textContent = '❌ Invalid file';
       credentialsFileName.style.color = '#f44336';
       selectedCredentialsContent = null;
     }
@@ -3525,61 +3567,48 @@ function handleCredentialsFile(e) {
 }
 
 /**
- * Create new channel
+ * Create new channel - simplified version
+ * Only requires Channel ID (e.g., C20) and credentials.json
+ * Creates folder structure: config/C20/C20/
  */
 async function createNewChannel() {
-  // Validate inputs
-  let accountName = newChannelAccount?.value;
-  if (accountName === 'new') {
-    accountName = newAccountName?.value?.trim();
-    if (!accountName) {
-      showNotification('Please enter account name', 'error');
-      return;
-    }
-  }
-  
-  const channelName = newChannelName?.value?.trim();
   const channelId = newChannelId?.value?.trim();
-  const channelStyle = newChannelStyle?.value?.trim();
-  
-  if (!channelName) {
-    showNotification('Please enter channel name', 'error');
-    return;
-  }
   
   if (!channelId) {
-    showNotification('Please enter channel ID (folder name)', 'error');
+    showNotification('Please enter Channel ID (e.g., C20)', 'error');
     return;
   }
   
   if (!selectedCredentialsContent) {
-    showNotification('Please select credentials.json file', 'error');
+    showNotification('Please drop credentials.json file', 'error');
     return;
   }
   
   try {
     showNotification('Creating channel...', 'info');
     
+    // Use channelId for both account folder and channel folder
+    // e.g., C20 -> config/C20/C20/
     const result = await ipcRenderer.invoke('create-youtube-channel', {
-      accountName,
-      channelId,
-      channelName,
-      channelStyle,
+      accountName: channelId,  // Folder name = channelId
+      channelId: channelId,   // Subfolder name = channelId
+      channelName: channelId, // Display name = channelId
+      channelStyle: '',       // Empty, will use template
       credentials: selectedCredentialsContent
     });
     
     if (result.success) {
-      showNotification(`Channel "${channelName}" created successfully!`, 'success');
+      showNotification(`Channel "${channelId}" created successfully!`, 'success');
       closeAddChannelModal();
       
       // Refresh channels list
       await scanYouTubeChannels();
       
       // Prompt for authentication
-      if (confirm(`Channel created! Do you want to authenticate now?`)) {
+      if (confirm(`Channel "${channelId}" created! Do you want to authenticate now?`)) {
         // Select the new channel and authenticate
-        const newChannelFullId = `${accountName}/${channelId}`;
-        youtubeState.selectedChannel = { id: newChannelFullId, name: channelName };
+        const newChannelFullId = `${channelId}/${channelId}`;
+        youtubeState.selectedChannel = { id: newChannelFullId, name: channelId };
         await reauthenticateYouTube();
       }
     } else {
