@@ -3960,13 +3960,21 @@ async function autoRenderAndUploadBeat(beatPath, packId) {
   }
   
   // Find corresponding channel for this pack
-  const channel = findChannelForPack(pack.name);
-  if (!channel) {
-    return { success: false, error: `No channel found for pack "${pack.name}". Make sure channel name matches (e.g., C1, C2, etc.)` };
-  }
+  let channel = findChannelForPack(pack.name);
   
-  if (!channel.ready) {
-    return { success: false, error: `Channel "${channel.name}" is not ready. Please authenticate first.` };
+  // Fallback: create channel object from pack name if not found
+  if (!channel) {
+    const packMatch = pack.name.match(/^C(\d+)/i);
+    if (packMatch) {
+      const channelNum = packMatch[1];
+      channel = {
+        id: `AccountA/channel${channelNum}`,
+        name: `channel${channelNum}`,
+        ready: true
+      };
+    } else {
+      return { success: false, error: `No channel found for pack "${pack.name}". Make sure channel name matches (e.g., C1, C2, etc.)` };
+    }
   }
   
   // Extract clean beat name for video title
@@ -3991,7 +3999,7 @@ async function autoRenderAndUploadBeat(beatPath, packId) {
     const videoPath = renderResult.outputPath;
     console.log(`[Auto Upload] Rendered: ${videoPath}`);
     
-    // Step 2: Copy to channel's upload folder
+    // Step 2: Copy to channel's upload folder (works even if server is offline)
     const copyResult = await ipcRenderer.invoke('copy-video-for-upload', {
       videoPath: videoPath,
       channelId: channel.id,
@@ -4007,7 +4015,7 @@ async function autoRenderAndUploadBeat(beatPath, packId) {
       return { success: false, error: `Copy failed: ${copyResult.error}` };
     }
     
-    console.log(`[Auto Upload] Sent to channel: ${channel.name}`);
+    console.log(`[Auto Upload] Sent to channel: ${channel.name} at ${copyResult.destPath}`);
     
     // Mark beat as last used
     pack.beats.forEach(b => b.lastUsed = false);
@@ -4077,17 +4085,25 @@ async function autoUploadNextBeats(count = 6) {
     return;
   }
   
-  // Check server status
-  if (!youtubeState.serverOnline) {
-    showNotification('YouTube server is offline. Please start the server first.', 'error');
-    return;
-  }
+  // Find channel for this pack (we need channel info even if server is offline)
+  // First try from cached channels, then calculate from pack name
+  let channel = findChannelForPack(pack.name);
   
-  // Find channel for this pack
-  const channel = findChannelForPack(pack.name);
+  // If no channel found in cache but we have a valid pack name, create a minimal channel object
   if (!channel) {
-    showNotification(`No channel found for pack "${pack.name}". Make sure pack name starts with C1, C2, etc.`, 'error');
-    return;
+    const packMatch = pack.name.match(/^C(\d+)/i);
+    if (packMatch) {
+      const channelNum = packMatch[1];
+      channel = {
+        id: `AccountA/channel${channelNum}`,
+        name: pack.name,
+        ready: true // Assume ready, will fail gracefully if not
+      };
+      showNotification(`Using fallback channel mapping for ${pack.name}`, 'info');
+    } else {
+      showNotification(`No channel found for pack "${pack.name}". Make sure pack name starts with C1, C2, etc.`, 'error');
+      return;
+    }
   }
   
   // Get next unuploaded beats
@@ -4096,6 +4112,11 @@ async function autoUploadNextBeats(count = 6) {
   if (beatsToUpload.length === 0) {
     showNotification('No unuploaded beats with images found in this pack', 'error');
     return;
+  }
+  
+  // Warn if server is offline but allow proceeding
+  if (!youtubeState.serverOnline) {
+    showNotification('⚠️ Server offline - videos will be queued in upload folder. Start server to upload.', 'info');
   }
   
   showNotification(`Starting auto upload of ${beatsToUpload.length} beats to ${channel.name}...`, 'info');
@@ -4126,7 +4147,8 @@ async function autoUploadNextBeats(count = 6) {
   }
   
   // Final summary
-  showNotification(`Auto upload complete: ${successCount} success, ${failCount} failed`, successCount > 0 ? 'success' : 'error');
+  const serverNote = youtubeState.serverOnline ? '' : ' (Server offline - start server to upload)';
+  showNotification(`Auto upload complete: ${successCount} success, ${failCount} failed${serverNote}`, successCount > 0 ? 'success' : 'error');
   
   // Refresh beats to update uploaded badges
   renderPackDetailBeats();
@@ -4142,10 +4164,9 @@ async function autoUploadSingleBeat() {
     return;
   }
   
-  // Check server status
+  // Warn if server is offline but allow proceeding
   if (!youtubeState.serverOnline) {
-    showNotification('YouTube server is offline. Please start the server first.', 'error');
-    return;
+    showNotification('⚠️ Server offline - video will be queued in upload folder', 'info');
   }
   
   const beatPath = contextMenuTarget.beatPath;
@@ -4156,7 +4177,8 @@ async function autoUploadSingleBeat() {
   const result = await autoRenderAndUploadBeat(beatPath, packId);
   
   if (result.success) {
-    showNotification(`✅ Uploaded: ${result.title} → ${result.channel}`, 'success');
+    const serverNote = youtubeState.serverOnline ? '' : ' (queued for upload)';
+    showNotification(`✅ ${result.title} → ${result.channel}${serverNote}`, 'success');
     
     // Re-render pack detail to update UI
     if (currentPackId) {

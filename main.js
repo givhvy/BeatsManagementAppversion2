@@ -965,36 +965,71 @@ ipcMain.handle('copy-video-to-channel', async (event, videoPath, channelId) => {
   }
 });
 
-// Copy video for upload - fetches channel info from automation server
+// Copy video for upload - fetches channel info from automation server with fallback
 ipcMain.handle('copy-video-for-upload', async (event, { videoPath, channelId, metadata }) => {
   try {
     const http = require('http');
+    let uploadsPath = null;
     
-    // Get channel info from automation server
-    const channelData = await new Promise((resolve, reject) => {
-      http.get('http://localhost:9000/api/channels', (res) => {
-        let data = '';
-        res.on('data', chunk => data += chunk);
-        res.on('end', () => {
-          try {
-            resolve(JSON.parse(data));
-          } catch (e) {
-            reject(new Error('Invalid server response'));
-          }
+    // Try to get channel info from automation server first
+    try {
+      const channelData = await new Promise((resolve, reject) => {
+        const req = http.get('http://localhost:9000/api/channels', (res) => {
+          let data = '';
+          res.on('data', chunk => data += chunk);
+          res.on('end', () => {
+            try {
+              resolve(JSON.parse(data));
+            } catch (e) {
+              reject(new Error('Invalid server response'));
+            }
+          });
         });
-      }).on('error', reject);
-    });
-    
-    const channel = channelData.channels.find(c => c.channelId === channelId);
-    if (!channel) {
-      return { success: false, error: 'Channel not found on server' };
+        req.on('error', reject);
+        req.setTimeout(3000, () => {
+          req.destroy();
+          reject(new Error('Server timeout'));
+        });
+      });
+      
+      const channel = channelData.channels.find(c => c.channelId === channelId);
+      if (channel && channel.uploadsPath) {
+        uploadsPath = channel.uploadsPath;
+      }
+    } catch (serverError) {
+      console.log('[copy-video-for-upload] Server offline, using fallback path calculation');
     }
     
-    // Get the uploads path from channel
-    const uploadsPath = channel.uploadsPath;
+    // Fallback: Calculate upload path directly from channelId
+    // channelId format: "AccountA/channel1" or just "channel1"
     if (!uploadsPath) {
-      return { success: false, error: 'Channel upload path not configured' };
+      const automationPath = path.join(__dirname, 'automation');
+      
+      if (channelId.includes('/')) {
+        // Format: "AccountA/channel1"
+        uploadsPath = path.join(automationPath, 'uploads', channelId, 'BeatsUpload');
+      } else {
+        // Try to find the channel in config folders
+        const configPath = path.join(automationPath, 'config');
+        const accountFolders = fs.readdirSync(configPath, { withFileTypes: true })
+          .filter(d => d.isDirectory() && d.name.startsWith('Account'));
+        
+        for (const account of accountFolders) {
+          const channelPath = path.join(configPath, account.name, channelId);
+          if (fs.existsSync(channelPath)) {
+            uploadsPath = path.join(automationPath, 'uploads', account.name, channelId, 'BeatsUpload');
+            break;
+          }
+        }
+        
+        // Last resort: use default path
+        if (!uploadsPath) {
+          uploadsPath = path.join(automationPath, 'uploads', 'AccountA', channelId, 'BeatsUpload');
+        }
+      }
     }
+    
+    console.log(`[copy-video-for-upload] Using upload path: ${uploadsPath}`);
     
     // Ensure upload folder exists
     if (!fs.existsSync(uploadsPath)) {
@@ -1013,8 +1048,11 @@ ipcMain.handle('copy-video-for-upload', async (event, { videoPath, channelId, me
       fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
     }
     
+    console.log(`[copy-video-for-upload] Copied to: ${destPath}`);
+    
     return { success: true, destPath };
   } catch (error) {
+    console.error('[copy-video-for-upload] Error:', error.message);
     return { success: false, error: error.message };
   }
 });
