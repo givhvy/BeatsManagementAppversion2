@@ -1697,6 +1697,40 @@ h1, h2, h3, h4, h5, h6 {
   flex-wrap: wrap;
 }
 
+.channel-actions .btn-secondary {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+#add-channel-modal .modal-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+}
+
+#add-channel-modal .modal-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#add-channel-modal label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #e0e0e0;
+}
+
+#add-channel-modal small {
+  display: block;
+  margin-top: 5px;
+  font-size: 11px;
+}
+
 .upload-dropzone {
   display: flex;
   align-items: center;
@@ -1820,6 +1854,57 @@ h1, h2, h3, h4, h5, h6 {
   gap: 8px;
   color: rgba(255, 255, 255, 0.7);
   font-size: 13px;
+}
+
+.setting-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 15px 0;
+}
+
+.youtube-settings h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: #e0e0e0;
+}
+
+.btn-small {
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+}
+
+.setting-row .btn-small {
+  margin-right: 8px;
+}
+
+#edit-templates-modal .modal-input,
+#edit-templates-modal textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+#edit-templates-modal textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+#edit-templates-modal .modal-input:focus,
+#edit-templates-modal textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+#edit-templates-modal small {
+  display: block;
+  margin-top: 5px;
+  color: #888;
+  font-size: 11px;
 }
 
 .badge {

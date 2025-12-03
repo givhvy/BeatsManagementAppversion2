@@ -68,15 +68,21 @@ class YouTubeUploader {
     throw new Error('Cần xác thực OAuth. Vui lòng làm theo hướng dẫn ở trên.');
   }
 
-  async uploadVideo(videoPath, metadata) {
+  async uploadVideo(videoPath, metadata, scheduleDate = null) {
     try {
       const fileSize = (await fs.stat(videoPath)).size;
       const fileName = path.basename(videoPath);
 
       console.log(`\n📤 Đang upload: ${fileName} (${(fileSize / 1024 / 1024).toFixed(2)} MB)`);
 
-      // Tính thời gian publish (12:00 AM hôm nay hoặc ngày mai)
-      const publishAt = this.calculatePublishTime();
+      // Use provided scheduleDate or calculate publish time
+      let publishAt;
+      if (scheduleDate) {
+        publishAt = dayjs(scheduleDate).tz(this.config.timezone);
+        console.log(`📅 Sử dụng schedule date từ metadata: ${publishAt.format('DD/MM/YYYY HH:mm:ss')}`);
+      } else {
+        publishAt = this.calculatePublishTime();
+      }
 
       const requestBody = {
         snippet: {
@@ -111,6 +117,7 @@ class YouTubeUploader {
         success: true,
         videoId: response.data.id,
         publishAt: publishAt.toISOString(),
+        publishAtLA: publishAt.tz(this.config.timezone).toISOString(),
         videoUrl: `https://www.youtube.com/watch?v=${response.data.id}`,
       };
     } catch (error) {
@@ -119,7 +126,7 @@ class YouTubeUploader {
       if (error.code === 401) {
         console.log('🔄 Token hết hạn, đang làm mới...');
         await this.refreshToken();
-        return this.uploadVideo(videoPath, metadata);
+        return this.uploadVideo(videoPath, metadata, scheduleDate);
       }
 
       return {

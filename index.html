@@ -257,6 +257,7 @@
     <div class="context-menu-item" id="upload-beat-to-youtube">📺 Upload to YouTube</div>
     <div class="context-menu-divider"></div>
     <div class="context-menu-item" id="auto-upload-beat">🚀 Auto Render & Upload</div>
+    <div class="context-menu-item" id="auto-upload-6-from-here">📦 Auto Upload 6 from here</div>
   </div>
 
   <!-- Create Channels Modal -->
@@ -472,6 +473,7 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
         </div>
         <div class="channel-actions">
           <button id="scan-channels-btn" class="btn-primary">Scan Channels</button>
+          <button id="add-channel-btn" class="btn-secondary" title="Add new channel">➕ Add Channel</button>
           <button id="reauthenticate-btn" class="btn-secondary" title="Re-authenticate YouTube token">🔑 Re-auth</button>
         </div>
       </div>
@@ -526,7 +528,7 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
           <h3>⚙️ Settings</h3>
           <div class="setting-row">
             <label>Publish Time:</label>
-            <input type="time" id="publish-time" value="00:00" class="filter-input">
+            <input type="time" id="publish-time" value="12:00" class="filter-input">
           </div>
           <div class="setting-row">
             <label>Default Privacy:</label>
@@ -541,6 +543,31 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
               <input type="checkbox" id="auto-upload" checked>
               Auto upload when video added
             </label>
+          </div>
+          <div class="setting-divider"></div>
+          <h3>📝 Global Templates</h3>
+          <div class="setting-row">
+            <label>Active Template:</label>
+            <select id="active-template" class="filter-input">
+              <option value="template1">Default LVMH Template</option>
+              <option value="template2">Simple Template</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <button id="edit-templates-btn" class="btn-secondary btn-small">✏️ Edit Templates</button>
+            <button id="apply-template-all-btn" class="btn-primary btn-small">📋 Apply to All Channels</button>
+          </div>
+          <div class="setting-divider"></div>
+          <h3>📅 Auto Scheduling</h3>
+          <div class="setting-row">
+            <label>
+              <input type="checkbox" id="auto-schedule" checked>
+              Auto schedule +1 day between uploads
+            </label>
+          </div>
+          <div class="setting-row">
+            <label>Days between uploads:</label>
+            <input type="number" id="days-between-uploads" value="1" min="1" max="30" class="filter-input" style="width: 60px;">
           </div>
         </div>
       </div>
@@ -578,6 +605,93 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
         <div style="display: flex; gap: 10px; margin-top: 20px;">
           <button id="save-video-metadata-btn" class="btn-primary">Save & Upload</button>
           <button id="cancel-video-edit-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Channel Modal -->
+  <div id="add-channel-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 550px;">
+      <div class="modal-header">
+        <h3>➕ Add New Channel</h3>
+        <button id="close-add-channel-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Account:</label>
+          <select id="new-channel-account" class="modal-input">
+            <option value="AccountA">AccountA</option>
+            <option value="AccountB">AccountB</option>
+            <option value="new">+ Create New Account</option>
+          </select>
+          <input type="text" id="new-account-name" class="modal-input" placeholder="New account name (e.g., AccountC)" style="display: none; margin-top: 10px;">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Channel Name:</label>
+          <input type="text" id="new-channel-name" class="modal-input" placeholder="e.g., C7 - My Type Beats">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Channel ID (folder name):</label>
+          <input type="text" id="new-channel-id" class="modal-input" placeholder="e.g., channel7">
+          <small style="color: #888;">This will create folder: config/AccountX/channel7/</small>
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Type Beat Style:</label>
+          <input type="text" id="new-channel-style" class="modal-input" placeholder="e.g., TRAVIS SCOTT x METRO BOOMIN">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Credentials JSON:</label>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button id="select-credentials-btn" class="btn-secondary" style="flex-shrink: 0;">📁 Select File</button>
+            <span id="credentials-file-name" style="color: #888; font-size: 12px;">No file selected</span>
+          </div>
+          <input type="file" id="credentials-file-input" accept=".json" hidden>
+          <small style="color: #888; margin-top: 5px; display: block;">Upload credentials.json from Google Cloud Console</small>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 25px;">
+          <button id="create-channel-btn" class="btn-primary">Create Channel</button>
+          <button id="cancel-add-channel-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Templates Modal -->
+  <div id="edit-templates-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 700px; max-height: 85vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h3>📝 Edit Upload Templates</h3>
+        <button id="close-edit-templates-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Select Template to Edit:</label>
+          <select id="edit-template-select" class="modal-input">
+            <option value="template1">Template 1: Default LVMH</option>
+            <option value="template2">Template 2: Simple</option>
+          </select>
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Template Name:</label>
+          <input type="text" id="template-name-input" class="modal-input" placeholder="Template name">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Title Template:</label>
+          <input type="text" id="template-title-input" class="modal-input" placeholder='[FREE] [STYLE] TYPE BEAT - "[NAME]"'>
+          <small style="color: #888;">[NAME] = beat name, [STYLE] = channel style (e.g., FUTURE x METRO BOOMIN)</small>
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Description Template:</label>
+          <textarea id="template-description-input" class="modal-input" rows="10" placeholder="Video description..."></textarea>
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Tags (comma separated):</label>
+          <textarea id="template-tags-input" class="modal-input" rows="3" placeholder="type beat, free beat, instrumental"></textarea>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 25px;">
+          <button id="save-template-btn" class="btn-primary">💾 Save Template</button>
+          <button id="cancel-edit-templates-btn" class="btn-secondary">Cancel</button>
         </div>
       </div>
     </div>

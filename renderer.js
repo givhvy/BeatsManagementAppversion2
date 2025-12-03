@@ -3061,8 +3061,43 @@ const videoPrivacySelect = document.getElementById('video-privacy-select');
 const saveVideoMetadataBtn = document.getElementById('save-video-metadata-btn');
 const cancelVideoEditBtn = document.getElementById('cancel-video-edit-btn');
 
+// Add Channel modal elements
+const addChannelBtn = document.getElementById('add-channel-btn');
+const addChannelModal = document.getElementById('add-channel-modal');
+const closeAddChannelModalBtn = document.getElementById('close-add-channel-modal-btn');
+const newChannelAccount = document.getElementById('new-channel-account');
+const newAccountName = document.getElementById('new-account-name');
+const newChannelName = document.getElementById('new-channel-name');
+const newChannelId = document.getElementById('new-channel-id');
+const newChannelStyle = document.getElementById('new-channel-style');
+const selectCredentialsBtn = document.getElementById('select-credentials-btn');
+const credentialsFileInput = document.getElementById('credentials-file-input');
+const credentialsFileName = document.getElementById('credentials-file-name');
+const createChannelBtn = document.getElementById('create-channel-btn');
+const cancelAddChannelBtn = document.getElementById('cancel-add-channel-btn');
+
+// Global settings elements
+const activeTemplateSelect = document.getElementById('active-template');
+const editTemplatesBtn = document.getElementById('edit-templates-btn');
+const applyTemplateAllBtn = document.getElementById('apply-template-all-btn');
+const autoScheduleCheckbox = document.getElementById('auto-schedule');
+const daysBetweenUploadsInput = document.getElementById('days-between-uploads');
+
+// Edit Templates modal elements
+const editTemplatesModal = document.getElementById('edit-templates-modal');
+const closeEditTemplatesModalBtn = document.getElementById('close-edit-templates-modal-btn');
+const editTemplateSelect = document.getElementById('edit-template-select');
+const templateNameInput = document.getElementById('template-name-input');
+const templateTitleInput = document.getElementById('template-title-input');
+const templateDescriptionInput = document.getElementById('template-description-input');
+const templateTagsInput = document.getElementById('template-tags-input');
+const saveTemplateBtn = document.getElementById('save-template-btn');
+const cancelEditTemplatesBtn = document.getElementById('cancel-edit-templates-btn');
+
 let youtubeInitialized = false;
 let editingVideoId = null;
+let selectedCredentialsContent = null;
+let globalSettings = null;
 
 function initYouTubeSection() {
   if (youtubeInitialized) return;
@@ -3086,6 +3121,65 @@ function initYouTubeSection() {
   if (reauthenticateBtn) {
     reauthenticateBtn.addEventListener('click', reauthenticateYouTube);
   }
+
+  // Add Channel button and modal
+  if (addChannelBtn) {
+    addChannelBtn.addEventListener('click', openAddChannelModal);
+  }
+  if (closeAddChannelModalBtn) {
+    closeAddChannelModalBtn.addEventListener('click', closeAddChannelModal);
+  }
+  if (cancelAddChannelBtn) {
+    cancelAddChannelBtn.addEventListener('click', closeAddChannelModal);
+  }
+  if (createChannelBtn) {
+    createChannelBtn.addEventListener('click', createNewChannel);
+  }
+  if (newChannelAccount) {
+    newChannelAccount.addEventListener('change', (e) => {
+      if (e.target.value === 'new') {
+        newAccountName.style.display = 'block';
+      } else {
+        newAccountName.style.display = 'none';
+      }
+    });
+  }
+  if (selectCredentialsBtn && credentialsFileInput) {
+    selectCredentialsBtn.addEventListener('click', () => credentialsFileInput.click());
+    credentialsFileInput.addEventListener('change', handleCredentialsFile);
+  }
+
+  // Global Settings event listeners
+  if (editTemplatesBtn) {
+    editTemplatesBtn.addEventListener('click', openEditTemplatesModal);
+  }
+  if (closeEditTemplatesModalBtn) {
+    closeEditTemplatesModalBtn.addEventListener('click', closeEditTemplatesModal);
+  }
+  if (cancelEditTemplatesBtn) {
+    cancelEditTemplatesBtn.addEventListener('click', closeEditTemplatesModal);
+  }
+  if (saveTemplateBtn) {
+    saveTemplateBtn.addEventListener('click', saveTemplate);
+  }
+  if (editTemplateSelect) {
+    editTemplateSelect.addEventListener('change', loadTemplateForEditing);
+  }
+  if (applyTemplateAllBtn) {
+    applyTemplateAllBtn.addEventListener('click', applyTemplateToAllChannels);
+  }
+  if (activeTemplateSelect) {
+    activeTemplateSelect.addEventListener('change', saveGlobalSettings);
+  }
+  if (autoScheduleCheckbox) {
+    autoScheduleCheckbox.addEventListener('change', saveGlobalSettings);
+  }
+  if (daysBetweenUploadsInput) {
+    daysBetweenUploadsInput.addEventListener('change', saveGlobalSettings);
+  }
+
+  // Load global settings on init
+  loadGlobalSettings();
 
   // Video dropzone
   if (videoDropzone && videoFileInput) {
@@ -3369,6 +3463,397 @@ async function reauthenticateYouTube() {
   } catch (error) {
     showNotification('Lỗi: ' + error.message, 'error');
   }
+}
+
+/**
+ * Open Add Channel modal
+ */
+function openAddChannelModal() {
+  if (!isElectron) {
+    showNotification('Chức năng này chỉ khả dụng trong Electron', 'error');
+    return;
+  }
+  
+  // Reset form
+  if (newChannelAccount) newChannelAccount.value = 'AccountA';
+  if (newAccountName) {
+    newAccountName.value = '';
+    newAccountName.style.display = 'none';
+  }
+  if (newChannelName) newChannelName.value = '';
+  if (newChannelId) newChannelId.value = '';
+  if (newChannelStyle) newChannelStyle.value = '';
+  if (credentialsFileName) credentialsFileName.textContent = 'No file selected';
+  selectedCredentialsContent = null;
+  
+  if (addChannelModal) {
+    addChannelModal.style.display = 'flex';
+  }
+}
+
+/**
+ * Close Add Channel modal
+ */
+function closeAddChannelModal() {
+  if (addChannelModal) {
+    addChannelModal.style.display = 'none';
+  }
+}
+
+/**
+ * Handle credentials file selection
+ */
+function handleCredentialsFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    try {
+      const content = JSON.parse(event.target.result);
+      selectedCredentialsContent = content;
+      credentialsFileName.textContent = file.name;
+      credentialsFileName.style.color = '#4CAF50';
+    } catch (err) {
+      showNotification('Invalid JSON file', 'error');
+      credentialsFileName.textContent = 'Invalid file';
+      credentialsFileName.style.color = '#f44336';
+      selectedCredentialsContent = null;
+    }
+  };
+  reader.readAsText(file);
+}
+
+/**
+ * Create new channel
+ */
+async function createNewChannel() {
+  // Validate inputs
+  let accountName = newChannelAccount?.value;
+  if (accountName === 'new') {
+    accountName = newAccountName?.value?.trim();
+    if (!accountName) {
+      showNotification('Please enter account name', 'error');
+      return;
+    }
+  }
+  
+  const channelName = newChannelName?.value?.trim();
+  const channelId = newChannelId?.value?.trim();
+  const channelStyle = newChannelStyle?.value?.trim();
+  
+  if (!channelName) {
+    showNotification('Please enter channel name', 'error');
+    return;
+  }
+  
+  if (!channelId) {
+    showNotification('Please enter channel ID (folder name)', 'error');
+    return;
+  }
+  
+  if (!selectedCredentialsContent) {
+    showNotification('Please select credentials.json file', 'error');
+    return;
+  }
+  
+  try {
+    showNotification('Creating channel...', 'info');
+    
+    const result = await ipcRenderer.invoke('create-youtube-channel', {
+      accountName,
+      channelId,
+      channelName,
+      channelStyle,
+      credentials: selectedCredentialsContent
+    });
+    
+    if (result.success) {
+      showNotification(`Channel "${channelName}" created successfully!`, 'success');
+      closeAddChannelModal();
+      
+      // Refresh channels list
+      await scanYouTubeChannels();
+      
+      // Prompt for authentication
+      if (confirm(`Channel created! Do you want to authenticate now?`)) {
+        // Select the new channel and authenticate
+        const newChannelFullId = `${accountName}/${channelId}`;
+        youtubeState.selectedChannel = { id: newChannelFullId, name: channelName };
+        await reauthenticateYouTube();
+      }
+    } else {
+      showNotification('Error: ' + result.error, 'error');
+    }
+  } catch (error) {
+    showNotification('Error: ' + error.message, 'error');
+  }
+}
+
+// =============================================
+// GLOBAL SETTINGS FUNCTIONS
+// =============================================
+
+/**
+ * Load global settings from file
+ */
+async function loadGlobalSettings() {
+  if (!isElectron) return;
+  
+  try {
+    const result = await ipcRenderer.invoke('load-global-settings');
+    if (result.success && result.settings) {
+      globalSettings = result.settings;
+      
+      // Update UI
+      if (activeTemplateSelect && globalSettings.activeTemplate) {
+        activeTemplateSelect.value = globalSettings.activeTemplate;
+      }
+      if (autoScheduleCheckbox && globalSettings.scheduling) {
+        autoScheduleCheckbox.checked = globalSettings.scheduling.autoSchedule !== false;
+      }
+      if (daysBetweenUploadsInput && globalSettings.scheduling) {
+        daysBetweenUploadsInput.value = globalSettings.scheduling.daysBetweenUploads || 1;
+      }
+      if (publishTimeInput && globalSettings.scheduling) {
+        publishTimeInput.value = globalSettings.scheduling.publishTime || '12:00';
+      }
+      
+      console.log('Global settings loaded:', globalSettings);
+    }
+  } catch (error) {
+    console.error('Error loading global settings:', error);
+  }
+}
+
+/**
+ * Save global settings to file
+ */
+async function saveGlobalSettings() {
+  if (!isElectron || !globalSettings) return;
+  
+  // Update settings from UI
+  globalSettings.activeTemplate = activeTemplateSelect?.value || 'template1';
+  globalSettings.scheduling = globalSettings.scheduling || {};
+  globalSettings.scheduling.autoSchedule = autoScheduleCheckbox?.checked !== false;
+  globalSettings.scheduling.daysBetweenUploads = parseInt(daysBetweenUploadsInput?.value) || 1;
+  globalSettings.scheduling.publishTime = publishTimeInput?.value || '12:00';
+  
+  try {
+    const result = await ipcRenderer.invoke('save-global-settings', globalSettings);
+    if (result.success) {
+      console.log('Global settings saved');
+    }
+  } catch (error) {
+    console.error('Error saving global settings:', error);
+  }
+}
+
+/**
+ * Open Edit Templates modal
+ */
+function openEditTemplatesModal() {
+  if (!isElectron) {
+    showNotification('This feature is only available in Electron', 'error');
+    return;
+  }
+  
+  if (editTemplatesModal) {
+    editTemplatesModal.style.display = 'flex';
+    loadTemplateForEditing();
+  }
+}
+
+/**
+ * Close Edit Templates modal
+ */
+function closeEditTemplatesModal() {
+  if (editTemplatesModal) {
+    editTemplatesModal.style.display = 'none';
+  }
+}
+
+/**
+ * Load selected template for editing
+ */
+function loadTemplateForEditing() {
+  if (!globalSettings || !globalSettings.templates) return;
+  
+  const templateId = editTemplateSelect?.value || 'template1';
+  const template = globalSettings.templates[templateId];
+  
+  if (template) {
+    if (templateNameInput) templateNameInput.value = template.name || '';
+    if (templateTitleInput) templateTitleInput.value = template.titleTemplate || '';
+    if (templateDescriptionInput) templateDescriptionInput.value = template.description || '';
+    if (templateTagsInput) templateTagsInput.value = (template.tags || []).join(', ');
+  }
+}
+
+/**
+ * Save template
+ */
+async function saveTemplate() {
+  if (!globalSettings) {
+    showNotification('Settings not loaded', 'error');
+    return;
+  }
+  
+  const templateId = editTemplateSelect?.value || 'template1';
+  
+  globalSettings.templates = globalSettings.templates || {};
+  globalSettings.templates[templateId] = {
+    name: templateNameInput?.value || 'Template',
+    titleTemplate: templateTitleInput?.value || '[FREE] [STYLE] TYPE BEAT - "[NAME]"',
+    description: templateDescriptionInput?.value || '',
+    tags: (templateTagsInput?.value || '').split(',').map(t => t.trim()).filter(t => t)
+  };
+  
+  try {
+    const result = await ipcRenderer.invoke('save-global-settings', globalSettings);
+    if (result.success) {
+      showNotification('Template saved successfully!', 'success');
+      
+      // Update dropdown text
+      const option = activeTemplateSelect?.querySelector(`option[value="${templateId}"]`);
+      if (option) {
+        option.textContent = globalSettings.templates[templateId].name;
+      }
+    } else {
+      showNotification('Error saving template: ' + result.error, 'error');
+    }
+  } catch (error) {
+    showNotification('Error: ' + error.message, 'error');
+  }
+}
+
+/**
+ * Apply active template to all channels
+ */
+async function applyTemplateToAllChannels() {
+  if (!globalSettings || !globalSettings.templates) {
+    showNotification('Settings not loaded', 'error');
+    return;
+  }
+  
+  const templateId = activeTemplateSelect?.value || 'template1';
+  const template = globalSettings.templates[templateId];
+  
+  if (!template) {
+    showNotification('Template not found', 'error');
+    return;
+  }
+  
+  if (!confirm(`Apply "${template.name}" to ALL channels?\n\nThis will update the title template, description, and tags for all channels.`)) {
+    return;
+  }
+  
+  try {
+    showNotification('Applying template to all channels...', 'info');
+    
+    const result = await ipcRenderer.invoke('apply-template-to-all-channels', {
+      templateId,
+      template
+    });
+    
+    if (result.success) {
+      showNotification(`Template applied to ${result.channelCount} channels!`, 'success');
+    } else {
+      showNotification('Error: ' + result.error, 'error');
+    }
+  } catch (error) {
+    showNotification('Error: ' + error.message, 'error');
+  }
+}
+
+/**
+ * Get current active template
+ */
+function getActiveTemplate() {
+  if (!globalSettings || !globalSettings.templates) return null;
+  const templateId = globalSettings.activeTemplate || 'template1';
+  return globalSettings.templates[templateId];
+}
+
+/**
+ * Get scheduling settings
+ */
+function getSchedulingSettings() {
+  if (!globalSettings || !globalSettings.scheduling) {
+    return {
+      autoSchedule: true,
+      daysBetweenUploads: 1,
+      publishTime: '12:00',
+      timezone: 'America/Los_Angeles'
+    };
+  }
+  return globalSettings.scheduling;
+}
+
+/**
+ * Track scheduled dates for current upload session (to calculate next date incrementally)
+ */
+const sessionScheduledDates = new Map(); // channelId -> lastScheduledDate
+
+/**
+ * Get the last scheduled date for a channel from upload history
+ * @param {string} channelId - Channel ID like "AccountA/channel1" or "C16/C16"
+ * @returns {Promise<Date|null>} Last scheduled date or null
+ */
+async function getLastScheduleDateForChannel(channelId) {
+  try {
+    // First check session cache (for incremental scheduling within same batch)
+    if (sessionScheduledDates.has(channelId)) {
+      return sessionScheduledDates.get(channelId);
+    }
+    
+    // Extract channel key from channelId
+    const channelKey = channelId.split('/').pop(); // e.g., "channel1" or "C16"
+    
+    // Get upload history for this channel
+    const result = await ipcRenderer.invoke('load-upload-history', channelKey);
+    
+    // Handle both array and object response
+    let history = result;
+    if (result && typeof result === 'object' && !Array.isArray(result)) {
+      history = result.history || result[channelKey] || [];
+    }
+    
+    if (!history || !Array.isArray(history) || history.length === 0) {
+      return null;
+    }
+    
+    // Find the most recent scheduled date
+    let latestDate = null;
+    for (const entry of history) {
+      const dateStr = entry.publishAt || entry.publishAtLA || entry.scheduleDate;
+      if (dateStr) {
+        const date = new Date(dateStr);
+        if (!isNaN(date) && (!latestDate || date > latestDate)) {
+          latestDate = date;
+        }
+      }
+    }
+    
+    return latestDate;
+  } catch (error) {
+    console.error('[getLastScheduleDateForChannel] Error:', error);
+    return null;
+  }
+}
+
+/**
+ * Update session scheduled date after successful upload
+ */
+function updateSessionScheduledDate(channelId, date) {
+  sessionScheduledDates.set(channelId, date);
+}
+
+/**
+ * Clear session scheduled dates (call when starting new batch)
+ */
+function clearSessionScheduledDates() {
+  sessionScheduledDates.clear();
 }
 
 function showAuthCodeDialog(channelId, authUrl) {
@@ -4202,16 +4687,43 @@ async function autoRenderAndUploadBeat(beatPath, packId) {
   
   // Extract clean beat name for video title
   const beatNameWithoutExt = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
-  const videoTitle = extractBeatName(beatNameWithoutExt);
+  const cleanBeatName = extractBeatName(beatNameWithoutExt);
   
-  console.log(`[Auto Upload] Rendering: ${videoTitle} for channel ${channel.name}`);
+  // Get active template for title and description
+  const activeTemplate = getActiveTemplate();
+  let videoTitle = cleanBeatName;
+  let videoDescription = '';
+  let videoTags = [];
+  
+  if (activeTemplate) {
+    // Apply title template - replace [NAME] with beat name
+    if (activeTemplate.titleTemplate) {
+      videoTitle = activeTemplate.titleTemplate.replace(/\[NAME\]/gi, cleanBeatName);
+    }
+    videoDescription = activeTemplate.description || '';
+    videoTags = activeTemplate.tags || [];
+  }
+  
+  console.log(`[Auto Upload] Rendering: ${cleanBeatName} for channel ${channel.name}`);
+  console.log(`[Auto Upload] Title: ${videoTitle}`);
+  console.log(`[Auto Upload] Image path: ${imagePath}`);
+  console.log(`[Auto Upload] Audio path: ${beatPath}`);
   
   try {
+    // Check if files exist before rendering
+    const fs = require('fs');
+    if (!fs.existsSync(imagePath)) {
+      return { success: false, error: `Image file not found: ${imagePath}` };
+    }
+    if (!fs.existsSync(beatPath)) {
+      return { success: false, error: `Audio file not found: ${beatPath}` };
+    }
+    
     // Step 1: Render video
     const renderResult = await ipcRenderer.invoke('render-video', {
       imagePath: imagePath,
       audioPath: beatPath,
-      outputName: videoTitle,
+      outputName: cleanBeatName, // Use clean name without special chars
       resolution: '1080'
     });
     
@@ -4223,14 +4735,46 @@ async function autoRenderAndUploadBeat(beatPath, packId) {
     console.log(`[Auto Upload] Rendered: ${videoPath}`);
     
     // Step 2: Copy to channel's upload folder (works even if server is offline)
+    // Calculate schedule date if auto-scheduling is enabled
+    const schedulingSettings = getSchedulingSettings();
+    let scheduleDate = null;
+    
+    if (schedulingSettings.autoSchedule) {
+      // Get the last scheduled date for this channel from upload history OR session
+      const lastScheduleDate = await getLastScheduleDateForChannel(channel.id);
+      
+      if (lastScheduleDate) {
+        // Schedule for daysBetweenUploads days after the last scheduled video
+        const nextDate = new Date(lastScheduleDate);
+        nextDate.setDate(nextDate.getDate() + (schedulingSettings.daysBetweenUploads || 1));
+        scheduleDate = nextDate;
+      } else {
+        // First upload - schedule for tomorrow
+        scheduleDate = new Date();
+        scheduleDate.setDate(scheduleDate.getDate() + 1);
+      }
+      
+      // Set the publish time
+      if (schedulingSettings.publishTime) {
+        const [hours, minutes] = schedulingSettings.publishTime.split(':');
+        scheduleDate.setHours(parseInt(hours) || 12, parseInt(minutes) || 0, 0, 0);
+      }
+      
+      // Update session cache so next video in batch gets +1 day
+      updateSessionScheduledDate(channel.id, scheduleDate);
+      
+      console.log(`[Auto Upload] Auto-scheduled for: ${scheduleDate.toISOString()}`);
+    }
+    
     const copyResult = await ipcRenderer.invoke('copy-video-for-upload', {
       videoPath: videoPath,
       channelId: channel.id,
       metadata: {
         title: videoTitle,
-        description: '',
-        tags: [],
-        privacy: 'private'
+        description: videoDescription,
+        tags: videoTags,
+        privacy: scheduleDate ? 'private' : 'private',
+        scheduleDate: scheduleDate ? scheduleDate.toISOString() : null
       }
     });
     
@@ -4361,9 +4905,14 @@ function getNextUnuploadedBeats(packId, count = 6) {
 
 /**
  * Auto upload next N beats from the current pack
+/**
+ * Auto upload next N beats from the current pack
  * @param {number} count - Number of beats to upload (default 6)
  */
 async function autoUploadNextBeats(count = 6) {
+  // Clear session scheduled dates when starting new batch
+  clearSessionScheduledDates();
+  
   if (!currentPackId) {
     showNotification('Please select a pack first', 'error');
     return;
@@ -4488,6 +5037,113 @@ async function autoUploadSingleBeat() {
   }
 }
 
+/**
+ * Auto upload 6 beats starting from the selected beat
+ */
+async function autoUpload6FromHere() {
+  // Clear session scheduled dates when starting new batch
+  clearSessionScheduledDates();
+  
+  if (!contextMenuTarget || !contextMenuTarget.beatPath || !contextMenuTarget.packId) {
+    showNotification('No beat selected', 'error');
+    return;
+  }
+  
+  const packId = contextMenuTarget.packId;
+  const startBeatPath = contextMenuTarget.beatPath;
+  
+  const pack = packs.find(p => p.id === packId);
+  if (!pack) {
+    showNotification('Pack not found', 'error');
+    return;
+  }
+  
+  // Find channel for this pack
+  let channel = findChannelForPack(pack.name);
+  if (!channel) {
+    const packMatch = pack.name.match(/^C(\d+)/i);
+    if (packMatch) {
+      const channelNum = packMatch[1];
+      channel = {
+        id: `AccountA/channel${channelNum}`,
+        name: pack.name,
+        ready: true
+      };
+      showNotification(`Using fallback channel mapping for ${pack.name}`, 'info');
+    } else {
+      showNotification(`No channel found for pack "${pack.name}"`, 'error');
+      return;
+    }
+  }
+  
+  // Find starting beat index
+  const startIndex = pack.beats.findIndex(b => b.path === startBeatPath);
+  if (startIndex === -1) {
+    showNotification('Could not find selected beat in pack', 'error');
+    return;
+  }
+  
+  // Get 6 beats starting from the selected one (skip already uploaded)
+  const beatsToUpload = [];
+  for (let i = startIndex; i < pack.beats.length && beatsToUpload.length < 6; i++) {
+    const beat = pack.beats[i];
+    
+    // Skip if already uploaded
+    if (isBeatUploaded(beat.name)) continue;
+    
+    // Skip if no image assigned
+    if (!beatImages[beat.path]) continue;
+    
+    beatsToUpload.push(beat);
+  }
+  
+  if (beatsToUpload.length === 0) {
+    showNotification('No valid beats to upload from this position', 'error');
+    return;
+  }
+  
+  // Warn if server is offline
+  if (!youtubeState.serverOnline) {
+    showNotification('⚠️ Server offline - videos will be queued', 'info');
+  }
+  
+  showNotification(`Starting upload of ${beatsToUpload.length} beats from "${pack.beats[startIndex].name}"...`, 'info');
+  
+  let successCount = 0;
+  let failCount = 0;
+  
+  // Process beats sequentially
+  for (const beat of beatsToUpload) {
+    const result = await autoRenderAndUploadBeat(beat.path, packId);
+    
+    if (result.success) {
+      successCount++;
+      let scheduleText = '';
+      if (result.scheduleDate) {
+        const scheduleDate = new Date(result.scheduleDate);
+        if (!isNaN(scheduleDate)) {
+          scheduleText = ` 📅 ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        }
+      }
+      showNotification(`✅ (${successCount}/${beatsToUpload.length}) ${result.title}${scheduleText}`, 'success');
+    } else {
+      failCount++;
+      showNotification(`❌ Failed: ${result.error}`, 'error');
+    }
+  }
+  
+  // Final summary
+  const serverNote = youtubeState.serverOnline ? '' : ' (queued for upload)';
+  showNotification(`🎉 Completed: ${successCount} success, ${failCount} failed${serverNote}`, 
+    failCount > 0 ? 'warning' : 'success');
+  
+  // Refresh UI
+  if (currentPackId) {
+    renderPackDetailBeats();
+  }
+  renderBeats();
+}
+
 // Initialize auto upload button
 const autoUpload6Btn = document.getElementById('auto-upload-6-btn');
 if (autoUpload6Btn) {
@@ -4503,7 +5159,17 @@ if (autoUploadBeatBtn) {
   });
 }
 
+// Initialize auto upload 6 from here context menu item
+const autoUpload6FromHereBtn = document.getElementById('auto-upload-6-from-here');
+if (autoUpload6FromHereBtn) {
+  autoUpload6FromHereBtn.addEventListener('click', () => {
+    autoUpload6FromHere();
+    hideContextMenu();
+  });
+}
+
 // Make functions globally available
 window.autoUploadNextBeats = autoUploadNextBeats;
 window.autoUploadSingleBeat = autoUploadSingleBeat;
+window.autoUpload6FromHere = autoUpload6FromHere;
 window.findChannelForPack = findChannelForPack;

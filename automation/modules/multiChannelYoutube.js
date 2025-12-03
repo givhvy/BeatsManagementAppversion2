@@ -57,7 +57,7 @@ class MultiChannelYouTubeUploader {
     }
   }
 
-  async uploadVideo(videoPath, metadata) {
+  async uploadVideo(videoPath, metadata, scheduleDate = null) {
     let readStream = null;
 
     try {
@@ -66,9 +66,32 @@ class MultiChannelYouTubeUploader {
 
       console.log(`\n📤 [${this.channel.name}] Đang upload: ${fileName} (${(fileSize / 1024 / 1024).toFixed(2)} MB)`);
 
-      // === FILMORA-LIKE TIMEZONE CALCULATION ===
-      // Calculate publish time in Los Angeles timezone (like Filmora does)
-      const publishAt = await this.calculateFilmoraPublishTime();
+      // === AUTO +1 DAY SCHEDULING ===
+      // Always use calculateFilmoraPublishTime to ensure each video gets a unique date
+      // This ensures videos uploaded together are scheduled on consecutive days
+      let publishAt = await this.calculateFilmoraPublishTime();
+      
+      // If scheduleDate is provided and is later than calculated date, use it
+      // But still validate it's not a duplicate
+      if (scheduleDate) {
+        const scheduledDayjs = dayjs(scheduleDate).tz(this.config.timezone);
+        const scheduledDates = await this.getScheduledDates();
+        const scheduledDateStr = scheduledDayjs.format('YYYY-MM-DD');
+        
+        // Only use provided date if it's not already scheduled
+        if (!scheduledDates.includes(scheduledDateStr)) {
+          publishAt = {
+            dayjsObj: scheduledDayjs,
+            laTime: scheduledDayjs.format('YYYY-MM-DD HH:mm:ss [PST/PDT]'),
+            utcISO: scheduledDayjs.toISOString()
+          };
+          console.log(`📅 [${this.channel.name}] Sử dụng schedule date từ Beats app: ${publishAt.laTime}`);
+        } else {
+          console.log(`📅 [${this.channel.name}] Date ${scheduledDateStr} đã có video, dùng ngày tiếp theo: ${publishAt.laTime}`);
+        }
+      } else {
+        console.log(`📅 [${this.channel.name}] Auto-scheduled: ${publishAt.laTime}`);
+      }
 
       // === FILMORA-LIKE REQUEST BODY ===
       // Build request body with Filmora-style metadata

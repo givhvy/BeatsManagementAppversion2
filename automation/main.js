@@ -189,15 +189,17 @@ async function processUploadQueue() {
     try {
       logger.info(`Bắt đầu upload: ${item.fileName}`);
 
-      const result = await youtubeUploader.uploadVideo(item.filePath, item.metadata);
+      // Pass scheduleDate to uploadVideo if available
+      const result = await youtubeUploader.uploadVideo(item.filePath, item.metadata, item.scheduleDate);
 
       item.status = result.success ? 'completed' : 'failed';
       item.result = result;
       item.completedAt = new Date().toISOString();
 
       if (result.success) {
-        logger.info(`✅ ${item.fileName} uploaded successfully → Scheduled for ${config.publishTime}`);
-        console.log(`\n✅ [${item.metadata.title}] uploaded successfully → Scheduled for ${config.publishTime}`);
+        const scheduleInfo = item.scheduleDate ? new Date(item.scheduleDate).toLocaleString() : config.publishTime;
+        logger.info(`✅ ${item.fileName} uploaded successfully → Scheduled for ${scheduleInfo}`);
+        console.log(`\n✅ [${item.metadata.title}] uploaded successfully → Scheduled for ${scheduleInfo}`);
       } else {
         logger.error(`❌ Upload failed: ${item.fileName}`, result.error);
         console.log(`\n❌ [${item.fileName}] upload failed: ${result.error}`);
@@ -242,13 +244,37 @@ watcher.on('add', async (filePath) => {
   logger.info(`New video detected: ${filePath}`);
 
   try {
-    // Generate metadata bằng AI
     const fileName = path.basename(filePath);
-    console.log('🤖 Đang tạo metadata bằng AI...');
-
-    const metadata = await aiGenerator.generateMetadata(fileName, filePath);
-
-    console.log(`📝 Title: ${metadata.title}`);
+    let metadata = null;
+    let scheduleDate = null;
+    
+    // Check for metadata JSON file first (created by Beats Management app)
+    const metadataFilePath = filePath.replace(/\.[^.]+$/, '.json');
+    if (await fs.pathExists(metadataFilePath)) {
+      console.log('📄 Tìm thấy metadata file, đang đọc...');
+      const savedMetadata = await fs.readJson(metadataFilePath);
+      
+      // Use saved metadata
+      metadata = {
+        title: savedMetadata.title || fileName.replace(/\.[^.]+$/, ''),
+        description: savedMetadata.description || '',
+        tags: savedMetadata.tags || []
+      };
+      
+      // Get schedule date if provided
+      if (savedMetadata.scheduleDate) {
+        scheduleDate = savedMetadata.scheduleDate;
+        console.log(`📅 Schedule date từ metadata: ${scheduleDate}`);
+      }
+      
+      console.log(`📝 Title (từ metadata): ${metadata.title}`);
+    } else {
+      // Generate metadata bằng AI
+      console.log('🤖 Đang tạo metadata bằng AI...');
+      metadata = await aiGenerator.generateMetadata(fileName, filePath);
+      console.log(`📝 Title: ${metadata.title}`);
+    }
+    
     console.log(`📝 Tags: ${metadata.tags.join(', ')}`);
 
     const queueItem = {
@@ -256,6 +282,7 @@ watcher.on('add', async (filePath) => {
       fileName,
       filePath,
       metadata,
+      scheduleDate,
       status: 'draft', // Đổi từ 'pending' → 'draft' để cho phép edit
       addedAt: new Date().toISOString(),
     };

@@ -699,6 +699,197 @@ ipcMain.handle('load-upload-history', async () => {
   }
 });
 
+// Load global settings
+ipcMain.handle('load-global-settings', async () => {
+  try {
+    const settingsPath = path.join(automationConfigPath, 'global-settings.json');
+    
+    if (!fs.existsSync(settingsPath)) {
+      // Create default settings
+      const defaultSettings = {
+        templates: {
+          template1: {
+            name: "Default LVMH Template",
+            titleTemplate: '[FREE] [STYLE] TYPE BEAT - "[NAME]"',
+            description: "💰PURCHASE on instagram @sheloveslvmh\n\n• You must credit with (PROD. LVMH) in the title\n• You must purchase a lease to upload your track to streaming platforms like Spotify, Apple Music, etc.\n• Don't put a copyright on your song unless you purchased exclusive rights. Otherwise, it will be hit with a complaint.\n\nPrices:\n$15 - mp3 lease\n$25 - wav lease\n$35 - full stems\n$45 - unlimited\nnegotiate price - exclusive\n\n💰PURCHASE will have no tag on instagram @sheloveslvmh\n\nThis beat is free for NON PROFIT USE ONLY (writing lyrics, test recording with beat, no upload on streaming platforms)",
+            tags: ["type beat", "free type beat", "free beat", "instrumental", "type beat 2025"]
+          },
+          template2: {
+            name: "Simple Template",
+            titleTemplate: '[FREE] [STYLE] TYPE BEAT - "[NAME]"',
+            description: "🎵 Free for non-profit use\n📧 Contact for licensing",
+            tags: ["type beat", "free beat", "instrumental"]
+          }
+        },
+        activeTemplate: "template1",
+        scheduling: {
+          autoSchedule: true,
+          daysBetweenUploads: 1,
+          publishTime: "12:00",
+          timezone: "America/Los_Angeles"
+        }
+      };
+      fs.writeFileSync(settingsPath, JSON.stringify(defaultSettings, null, 2));
+      return { success: true, settings: defaultSettings };
+    }
+    
+    const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+    return { success: true, settings };
+  } catch (error) {
+    console.error('Error loading global settings:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Save global settings
+ipcMain.handle('save-global-settings', async (event, settings) => {
+  try {
+    const settingsPath = path.join(automationConfigPath, 'global-settings.json');
+    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
+    console.log('[Global Settings] Saved');
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving global settings:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Apply template to all channels
+ipcMain.handle('apply-template-to-all-channels', async (event, { templateId, template }) => {
+  try {
+    let channelCount = 0;
+    
+    // Recursively find all config.json files in channel folders
+    function findAndUpdateConfigs(dirPath, depth = 0) {
+      if (depth > 3) return; // Max depth to prevent infinite recursion
+      
+      const items = fs.readdirSync(dirPath, { withFileTypes: true });
+      
+      for (const item of items) {
+        if (!item.isDirectory()) continue;
+        
+        const itemPath = path.join(dirPath, item.name);
+        const configPath = path.join(itemPath, 'config.json');
+        
+        // Check if this folder has a config.json (it's a channel folder)
+        if (fs.existsSync(configPath)) {
+          try {
+            const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+            
+            // Update metadata template
+            config.metadataTemplate = config.metadataTemplate || {};
+            config.metadataTemplate.titleTemplate = template.titleTemplate;
+            config.metadataTemplate.description = template.description;
+            config.metadataTemplate.tags = template.tags || [];
+            config.metadataTemplate.descriptionConditions = {
+              default: {
+                text: template.description,
+                tags: template.tags || []
+              }
+            };
+            
+            fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+            channelCount++;
+            
+            // Get relative path for logging
+            const relativePath = itemPath.replace(automationConfigPath, '').replace(/^[\\/]/, '');
+            console.log(`[Apply Template] Updated: ${relativePath}`);
+          } catch (e) {
+            console.error(`[Apply Template] Error updating ${configPath}:`, e.message);
+          }
+        }
+        
+        // Recurse into subdirectories
+        findAndUpdateConfigs(itemPath, depth + 1);
+      }
+    }
+    
+    findAndUpdateConfigs(automationConfigPath);
+    
+    return { success: true, channelCount };
+  } catch (error) {
+    console.error('Error applying template:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Create new YouTube channel
+ipcMain.handle('create-youtube-channel', async (event, { accountName, channelId, channelName, channelStyle, credentials }) => {
+  try {
+    const channelPath = path.join(automationConfigPath, accountName, channelId);
+    const uploadsPath = path.join(__dirname, 'automation', 'uploads', accountName, channelId, 'BeatsUpload');
+    
+    // Check if channel already exists
+    if (fs.existsSync(channelPath)) {
+      return { success: false, error: 'Channel folder already exists' };
+    }
+    
+    // Create directories
+    fs.mkdirSync(channelPath, { recursive: true });
+    fs.mkdirSync(uploadsPath, { recursive: true });
+    
+    // Load global settings to get active template
+    let metadataTemplate = null;
+    const globalSettingsPath = path.join(automationConfigPath, 'global-settings.json');
+    if (fs.existsSync(globalSettingsPath)) {
+      try {
+        const globalSettings = JSON.parse(fs.readFileSync(globalSettingsPath, 'utf8'));
+        const activeTemplateId = globalSettings.activeTemplate || 'template1';
+        const activeTemplate = globalSettings.templates?.[activeTemplateId];
+        
+        if (activeTemplate) {
+          metadataTemplate = {
+            titleTemplate: activeTemplate.titleTemplate,
+            description: activeTemplate.description,
+            tags: activeTemplate.tags || [],
+            descriptionConditions: {
+              default: {
+                text: activeTemplate.description,
+                tags: activeTemplate.tags || []
+              }
+            }
+          };
+          console.log(`[Create Channel] Applied template: ${activeTemplate.name}`);
+        }
+      } catch (e) {
+        console.error('[Create Channel] Error loading global settings:', e.message);
+      }
+    }
+    
+    // Create config.json with template
+    const config = {
+      channelName: channelName,
+      typeBeatStyle: channelStyle || '',
+      publishTime: '12:00',
+      timezone: 'America/Los_Angeles',
+      autoUpload: true,
+      createdAt: new Date().toISOString(),
+      metadataTemplate: metadataTemplate
+    };
+    fs.writeFileSync(path.join(channelPath, 'config.json'), JSON.stringify(config, null, 2));
+    
+    // Save credentials.json
+    fs.writeFileSync(path.join(channelPath, 'credentials.json'), JSON.stringify(credentials, null, 2));
+    
+    // Create empty scheduled-dates.json
+    fs.writeFileSync(path.join(channelPath, 'scheduled-dates.json'), JSON.stringify({ dates: [] }, null, 2));
+    
+    // Create upload-count.json
+    fs.writeFileSync(path.join(channelPath, 'upload-count.json'), JSON.stringify({ date: null, count: 0 }, null, 2));
+    
+    console.log(`[Create Channel] Created channel: ${accountName}/${channelId}`);
+    
+    return { 
+      success: true, 
+      channelId: `${accountName}/${channelId}`,
+      channelPath: channelPath
+    };
+  } catch (error) {
+    console.error('[Create Channel] Error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Scan for YouTube channels
 ipcMain.handle('scan-youtube-channels', async () => {
   try {

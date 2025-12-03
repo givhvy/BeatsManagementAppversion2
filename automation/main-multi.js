@@ -136,11 +136,35 @@ async function setupChannelWatcher(channel) {
     console.log(`\n🎬 [${channel.name}] Phát hiện video mới: ${fileName}`);
 
     try {
-      // Generate metadata với template của channel
-      console.log(`🤖 [${channel.name}] Đang tạo metadata...`);
-      const metadata = await aiGenerator.generateMetadata(fileName, filePath, channel.metadataTemplate);
-
-      console.log(`📝 [${channel.name}] Title: ${metadata.title}`);
+      let metadata = null;
+      let scheduleDate = null;
+      
+      // Check for metadata JSON file first (created by Beats Management app)
+      const metadataFilePath = filePath.replace(/\.[^.]+$/, '.json');
+      if (await fs.pathExists(metadataFilePath)) {
+        console.log(`📄 [${channel.name}] Tìm thấy metadata file, đang đọc...`);
+        const savedMetadata = await fs.readJson(metadataFilePath);
+        
+        // Use saved metadata
+        metadata = {
+          title: savedMetadata.title || fileName.replace(/\.[^.]+$/, ''),
+          description: savedMetadata.description || '',
+          tags: savedMetadata.tags || []
+        };
+        
+        // Get schedule date if provided
+        if (savedMetadata.scheduleDate) {
+          scheduleDate = savedMetadata.scheduleDate;
+          console.log(`📅 [${channel.name}] Schedule date từ metadata: ${scheduleDate}`);
+        }
+        
+        console.log(`📝 [${channel.name}] Title (từ metadata): ${metadata.title}`);
+      } else {
+        // Generate metadata với template của channel
+        console.log(`🤖 [${channel.name}] Đang tạo metadata...`);
+        metadata = await aiGenerator.generateMetadata(fileName, filePath, channel.metadataTemplate);
+        console.log(`📝 [${channel.name}] Title: ${metadata.title}`);
+      }
 
       const queueItem = {
         id: `${channel.channelId}-${Date.now()}`,
@@ -149,6 +173,7 @@ async function setupChannelWatcher(channel) {
         fileName,
         filePath,
         metadata,
+        scheduleDate, // Add schedule date to queue item
         status: channel.autoUpload ? 'pending' : 'draft',
         addedAt: new Date().toISOString(),
       };
@@ -195,14 +220,16 @@ async function processChannelQueue(channelId) {
     try {
       logger.info(`Bắt đầu upload: ${item.fileName}`);
 
-      const result = await uploader.uploadVideo(item.filePath, item.metadata);
+      // Pass scheduleDate to uploadVideo if available
+      const result = await uploader.uploadVideo(item.filePath, item.metadata, item.scheduleDate);
 
       item.status = result.success ? 'completed' : 'failed';
       item.result = result;
       item.completedAt = new Date().toISOString();
 
       if (result.success) {
-        logger.info(`✅ Upload thành công: ${item.fileName} - ${result.videoUrl}`);
+        const scheduleInfo = item.scheduleDate ? new Date(item.scheduleDate).toLocaleString() : result.publishAt;
+        logger.info(`✅ Upload thành công: ${item.fileName} - Scheduled: ${scheduleInfo}`);
       } else {
         logger.error(`❌ Upload thất bại: ${item.fileName} - ${result.error}`);
       }
