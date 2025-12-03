@@ -4987,30 +4987,167 @@ async function autoUploadNextBeats(count = 6) {
     showNotification('⚠️ Server offline - videos will be queued in upload folder. Start server to upload.', 'info');
   }
   
-  showNotification(`Starting auto upload of ${beatsToUpload.length} beats to ${channel.name}...`, 'info');
+  showNotification(`🎬 Starting batch render of ${beatsToUpload.length} beats...`, 'info');
   
-  let successCount = 0;
-  let failCount = 0;
+  // ====== PHASE 1: BATCH RENDER (Parallel) ======
+  const CONCURRENT_RENDERS = 3; // Number of FFmpeg processes to run in parallel
+  const renderResults = [];
+  let renderSuccessCount = 0;
+  let renderFailCount = 0;
   
-  // Process beats sequentially
-  for (const beat of beatsToUpload) {
-    const result = await autoRenderAndUploadBeat(beat.path, currentPackId);
+  // Prepare render tasks
+  const renderTasks = beatsToUpload.map((beat, index) => ({
+    beat,
+    index,
+    imagePath: beatImages[beat.path]
+  }));
+  
+  // Process renders in batches
+  for (let i = 0; i < renderTasks.length; i += CONCURRENT_RENDERS) {
+    const batch = renderTasks.slice(i, i + CONCURRENT_RENDERS);
     
-    if (result.success) {
-      successCount++;
-      // Format schedule date for notification
-      let scheduleText = '';
-      if (result.scheduleDate) {
-        const scheduleDate = new Date(result.scheduleDate);
-        if (!isNaN(scheduleDate)) {
-          scheduleText = ` 📅 ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-        }
+    showNotification(`🎬 Rendering batch ${Math.floor(i/CONCURRENT_RENDERS) + 1}/${Math.ceil(renderTasks.length/CONCURRENT_RENDERS)} (${batch.length} videos)...`, 'info');
+    
+    const batchPromises = batch.map(async (task) => {
+      const { beat, imagePath } = task;
+      
+      if (!imagePath) {
+        return { success: false, beat, error: 'No image assigned' };
       }
-      showNotification(`✅ (${successCount}/${beatsToUpload.length}) ${result.title} → ${result.channel}${scheduleText}`, 'success');
-    } else {
-      failCount++;
-      console.error(`[Auto Upload] Failed: ${beat.name} - ${result.error}`);
-      showNotification(`❌ Failed: ${beat.name} - ${result.error}`, 'error');
+      
+      const beatNameWithoutExt = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+      const cleanBeatName = extractBeatName(beatNameWithoutExt);
+      
+      try {
+        const renderResult = await ipcRenderer.invoke('render-video', {
+          imagePath: imagePath,
+          audioPath: beat.path,
+          outputName: cleanBeatName,
+          resolution: '1080'
+        });
+        
+        if (renderResult.success) {
+          return { success: true, beat, videoPath: renderResult.outputPath, cleanBeatName };
+        } else {
+          return { success: false, beat, error: renderResult.error };
+        }
+      } catch (err) {
+        return { success: false, beat, error: err.message };
+      }
+    });
+    
+    // Wait for batch to complete
+    const batchResults = await Promise.all(batchPromises);
+    
+    // Process batch results
+    for (const result of batchResults) {
+      if (result.success) {
+        renderSuccessCount++;
+        renderResults.push(result);
+        showNotification(`✅ Rendered (${renderSuccessCount}/${renderTasks.length}): ${result.cleanBeatName}`, 'success');
+      } else {
+        renderFailCount++;
+        showNotification(`❌ Render failed: ${result.beat.name} - ${result.error}`, 'error');
+      }
+    }
+  }
+  
+  if (renderResults.length === 0) {
+    showNotification('❌ All renders failed. Check image/audio files.', 'error');
+    return;
+  }
+  
+  showNotification(`🎬 Render complete: ${renderSuccessCount} success, ${renderFailCount} failed. Now uploading...`, 'info');
+  
+  // ====== PHASE 2: COPY + UPLOAD (Sequential for correct scheduling) ======
+  let uploadSuccessCount = 0;
+  let uploadFailCount = 0;
+  
+  for (const renderResult of renderResults) {
+    const { beat, videoPath, cleanBeatName } = renderResult;
+    
+    try {
+      // Get active template
+      const activeTemplate = getActiveTemplate();
+      let videoTitle = cleanBeatName;
+      let videoDescription = '';
+      let videoTags = [];
+      
+      if (activeTemplate) {
+        if (activeTemplate.titleTemplate) {
+          videoTitle = activeTemplate.titleTemplate.replace(/\[NAME\]/gi, cleanBeatName);
+        }
+        videoDescription = activeTemplate.description || '';
+        videoTags = activeTemplate.tags || [];
+      }
+      
+      // Calculate schedule date
+      const schedulingSettings = getSchedulingSettings();
+      let scheduleDate = null;
+      
+      if (schedulingSettings.autoSchedule) {
+        const lastScheduleDate = await getLastScheduleDateForChannel(channel.id);
+        
+        if (lastScheduleDate) {
+          const nextDate = new Date(lastScheduleDate);
+          nextDate.setDate(nextDate.getDate() + (schedulingSettings.daysBetweenUploads || 1));
+          scheduleDate = nextDate;
+        } else {
+          scheduleDate = new Date();
+          scheduleDate.setDate(scheduleDate.getDate() + 1);
+        }
+        
+        if (schedulingSettings.publishTime) {
+          const [hours, minutes] = schedulingSettings.publishTime.split(':');
+          scheduleDate.setHours(parseInt(hours) || 12, parseInt(minutes) || 0, 0, 0);
+        }
+        
+        updateSessionScheduledDate(channel.id, scheduleDate);
+      }
+      
+      // Copy to upload folder
+      const copyResult = await ipcRenderer.invoke('copy-video-for-upload', {
+        videoPath: videoPath,
+        channelId: channel.id,
+        metadata: {
+          title: videoTitle,
+          description: videoDescription,
+          tags: videoTags,
+          privacy: 'private',
+          scheduleDate: scheduleDate ? scheduleDate.toISOString() : null
+        }
+      });
+      
+      if (!copyResult.success) {
+        throw new Error(copyResult.error);
+      }
+      
+      // Mark beat as last used
+      pack.beats.forEach(b => b.lastUsed = false);
+      beat.lastUsed = true;
+      
+      // Wait for upload and track
+      const scheduleInfo = await waitForUploadComplete(videoTitle, channel.id);
+      
+      if (scheduleInfo) {
+        const uploadInfo = {
+          scheduleDate: scheduleInfo.publishAt || scheduleInfo.publishAtLA,
+          videoId: scheduleInfo.videoId,
+          channelName: channel.name,
+          uploadedAt: new Date().toISOString()
+        };
+        
+        youtubeState.uploadedBeats.add(videoTitle.toLowerCase());
+        youtubeState.uploadedBeatsInfo.set(videoTitle.toLowerCase(), uploadInfo);
+      }
+      
+      uploadSuccessCount++;
+      let scheduleText = scheduleDate ? ` 📅 ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '';
+      showNotification(`✅ (${uploadSuccessCount}/${renderResults.length}) ${videoTitle} → ${channel.name}${scheduleText}`, 'success');
+      
+    } catch (error) {
+      uploadFailCount++;
+      showNotification(`❌ Upload failed: ${cleanBeatName} - ${error.message}`, 'error');
     }
     
     // Re-render pack detail to update UI
@@ -5019,12 +5156,14 @@ async function autoUploadNextBeats(count = 6) {
     }
     
     // Small delay between uploads
-    await new Promise(r => setTimeout(r, 1000));
+    await new Promise(r => setTimeout(r, 500));
   }
+  
+  saveData();
   
   // Final summary
   const serverNote = youtubeState.serverOnline ? '' : ' (Server offline - start server to upload)';
-  showNotification(`Auto upload complete: ${successCount} success, ${failCount} failed${serverNote}`, successCount > 0 ? 'success' : 'error');
+  showNotification(`🎉 Complete: ${uploadSuccessCount} uploaded, ${uploadFailCount + renderFailCount} failed${serverNote}`, uploadSuccessCount > 0 ? 'success' : 'error');
   
   // Refresh beats to update uploaded badges
   renderPackDetailBeats();
