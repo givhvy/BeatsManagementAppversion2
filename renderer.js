@@ -3318,9 +3318,11 @@ async function reauthenticateYouTube() {
     
     const result = await ipcRenderer.invoke('reauthenticate-youtube', youtubeState.selectedChannel.id);
     
-    if (result.success) {
+    if (result.success && result.needsCode) {
+      // Show dialog to input auth code
+      showAuthCodeDialog(result.channelId, result.authUrl);
+    } else if (result.success) {
       showNotification('Xác thực thành công! Token đã được refresh.', 'success');
-      // Refresh channels to update status
       await refreshYouTubeChannels();
     } else {
       showNotification('Lỗi xác thực: ' + result.error, 'error');
@@ -3328,6 +3330,123 @@ async function reauthenticateYouTube() {
   } catch (error) {
     showNotification('Lỗi: ' + error.message, 'error');
   }
+}
+
+function showAuthCodeDialog(channelId, authUrl) {
+  // Create modal overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'auth-code-overlay';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+  `;
+
+  const dialog = document.createElement('div');
+  dialog.style.cssText = `
+    background: linear-gradient(135deg, #1e1e2e 0%, #2d2d3d 100%);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.1);
+  `;
+
+  dialog.innerHTML = `
+    <h3 style="margin: 0 0 16px 0; color: #fff; font-size: 18px;">
+      🔐 YouTube Authorization
+    </h3>
+    <p style="color: #aaa; margin-bottom: 16px; font-size: 14px;">
+      1. Một cửa sổ trình duyệt đã mở<br>
+      2. Đăng nhập và cho phép quyền truy cập<br>
+      3. Copy code và dán vào ô bên dưới
+    </p>
+    <input type="text" id="auth-code-input" placeholder="Dán authorization code vào đây..." style="
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      background: rgba(0,0,0,0.3);
+      color: #fff;
+      font-size: 14px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    ">
+    <div style="display: flex; gap: 12px;">
+      <button id="auth-submit-btn" style="
+        flex: 1;
+        padding: 12px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      ">✓ Xác nhận</button>
+      <button id="auth-cancel-btn" style="
+        flex: 1;
+        padding: 12px;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 8px;
+        color: #fff;
+        cursor: pointer;
+      ">✕ Hủy</button>
+    </div>
+  `;
+
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+
+  const input = dialog.querySelector('#auth-code-input');
+  const submitBtn = dialog.querySelector('#auth-submit-btn');
+  const cancelBtn = dialog.querySelector('#auth-cancel-btn');
+
+  input.focus();
+
+  submitBtn.onclick = async () => {
+    const code = input.value.trim();
+    if (!code) {
+      showNotification('Vui lòng nhập authorization code', 'error');
+      return;
+    }
+
+    submitBtn.textContent = '⏳ Đang xử lý...';
+    submitBtn.disabled = true;
+
+    try {
+      const result = await ipcRenderer.invoke('complete-reauth', { channelId, authCode: code });
+      
+      if (result.success) {
+        showNotification('✅ Token đã được refresh thành công!', 'success');
+        overlay.remove();
+        await refreshYouTubeChannels();
+      } else {
+        showNotification('Lỗi: ' + result.error, 'error');
+        submitBtn.textContent = '✓ Xác nhận';
+        submitBtn.disabled = false;
+      }
+    } catch (error) {
+      showNotification('Lỗi: ' + error.message, 'error');
+      submitBtn.textContent = '✓ Xác nhận';
+      submitBtn.disabled = false;
+    }
+  };
+
+  cancelBtn.onclick = () => overlay.remove();
+  
+  // Close on Escape key
+  overlay.onkeydown = (e) => {
+    if (e.key === 'Escape') overlay.remove();
+  };
 }
 
 async function scanYouTubeChannels() {

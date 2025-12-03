@@ -1060,52 +1060,97 @@ ipcMain.handle('copy-video-for-upload', async (event, { videoPath, channelId, me
 // Re-authenticate YouTube token for a channel
 ipcMain.handle('reauthenticate-youtube', async (event, channelId) => {
   try {
-    const { spawn } = require('child_process');
     const automationPath = path.join(__dirname, 'automation');
     
     // channelId format: "AccountA/channel1"
-    const configPath = `config/${channelId}`;
+    const tokenPath = path.join(automationPath, 'config', channelId, 'token.json');
+    const credentialsPath = path.join(automationPath, 'config', channelId, 'credentials.json');
     
-    // Open browser for re-authentication
-    const getTokenProcess = spawn('node', ['getToken.js', configPath], {
-      cwd: automationPath,
-      stdio: ['inherit', 'pipe', 'pipe'],
-      shell: true
+    console.log('[Re-auth] Channel ID:', channelId);
+    console.log('[Re-auth] Credentials path:', credentialsPath);
+    console.log('[Re-auth] Credentials exists:', fs.existsSync(credentialsPath));
+    
+    // Check if credentials exist
+    if (!fs.existsSync(credentialsPath)) {
+      return { success: false, error: `Credentials file not found: ${credentialsPath}` };
+    }
+    
+    // Delete existing token to force re-auth
+    if (fs.existsSync(tokenPath)) {
+      fs.unlinkSync(tokenPath);
+      console.log('[Re-auth] Deleted existing token:', tokenPath);
+    }
+    
+    // Read credentials
+    const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
+    const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
+    
+    // Load googleapis from automation/node_modules
+    const googleapisPath = path.join(automationPath, 'node_modules', 'googleapis');
+    const { google } = require(googleapisPath);
+    
+    const oAuth2Client = new google.auth.OAuth2(
+      client_id,
+      client_secret,
+      redirect_uris[0]
+    );
+    
+    const authUrl = oAuth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: ['https://www.googleapis.com/auth/youtube.upload'],
     });
-
-    return new Promise((resolve) => {
-      let output = '';
-      let errorOutput = '';
-
-      getTokenProcess.stdout.on('data', (data) => {
-        output += data.toString();
-        console.log('[Re-auth]:', data.toString());
-      });
-
-      getTokenProcess.stderr.on('data', (data) => {
-        errorOutput += data.toString();
-        console.error('[Re-auth Error]:', data.toString());
-      });
-
-      getTokenProcess.on('close', (code) => {
-        if (code === 0) {
-          resolve({ success: true, message: 'Token refreshed successfully' });
-        } else {
-          resolve({ success: false, error: errorOutput || 'Re-authentication failed' });
-        }
-      });
-
-      getTokenProcess.on('error', (error) => {
-        resolve({ success: false, error: error.message });
-      });
-
-      // Timeout after 2 minutes
-      setTimeout(() => {
-        getTokenProcess.kill();
-        resolve({ success: false, error: 'Re-authentication timed out' });
-      }, 120000);
-    });
+    
+    // Open browser with auth URL
+    const { shell } = require('electron');
+    shell.openExternal(authUrl);
+    
+    // Return the auth URL and wait for user to input code
+    return { 
+      success: true, 
+      needsCode: true,
+      authUrl: authUrl,
+      channelId: channelId,
+      message: 'Browser opened. Please authorize and copy the code.' 
+    };
+    
   } catch (error) {
+    console.error('[Re-auth] Error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Complete re-authentication with auth code
+ipcMain.handle('complete-reauth', async (event, { channelId, authCode }) => {
+  try {
+    const automationPath = path.join(__dirname, 'automation');
+    const tokenPath = path.join(automationPath, 'config', channelId, 'token.json');
+    const credentialsPath = path.join(automationPath, 'config', channelId, 'credentials.json');
+    
+    // Read credentials
+    const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
+    const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
+    
+    // Load googleapis from automation/node_modules
+    const googleapisPath = path.join(automationPath, 'node_modules', 'googleapis');
+    const { google } = require(googleapisPath);
+    
+    const oAuth2Client = new google.auth.OAuth2(
+      client_id,
+      client_secret,
+      redirect_uris[0]
+    );
+    
+    // Exchange code for tokens
+    const { tokens } = await oAuth2Client.getToken(authCode);
+    
+    // Save tokens
+    fs.writeFileSync(tokenPath, JSON.stringify(tokens, null, 2));
+    console.log('[Re-auth] Token saved:', tokenPath);
+    
+    return { success: true, message: 'Token refreshed successfully!' };
+    
+  } catch (error) {
+    console.error('[Re-auth] Error getting token:', error);
     return { success: false, error: error.message };
   }
 });
