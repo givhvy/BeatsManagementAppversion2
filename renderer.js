@@ -5275,35 +5275,173 @@ async function autoUpload6FromHere() {
     showNotification('⚠️ Server offline - videos will be queued', 'info');
   }
   
-  showNotification(`Starting upload of ${beatsToUpload.length} beats from "${pack.beats[startIndex].name}"...`, 'info');
+  showNotification(`🎬 Starting batch render of ${beatsToUpload.length} beats...`, 'info');
   
-  let successCount = 0;
-  let failCount = 0;
+  // ====== PHASE 1: BATCH RENDER (Parallel) ======
+  const CONCURRENT_RENDERS = 3;
+  const renderResults = [];
+  let renderSuccessCount = 0;
+  let renderFailCount = 0;
   
-  // Process beats sequentially
-  for (const beat of beatsToUpload) {
-    const result = await autoRenderAndUploadBeat(beat.path, packId);
+  // Prepare render tasks
+  const renderTasks = beatsToUpload.map((beat, index) => ({
+    beat,
+    index,
+    imagePath: beatImages[beat.path]
+  }));
+  
+  // Process renders in batches
+  for (let i = 0; i < renderTasks.length; i += CONCURRENT_RENDERS) {
+    const batch = renderTasks.slice(i, i + CONCURRENT_RENDERS);
     
-    if (result.success) {
-      successCount++;
-      let scheduleText = '';
-      if (result.scheduleDate) {
-        const scheduleDate = new Date(result.scheduleDate);
-        if (!isNaN(scheduleDate)) {
-          scheduleText = ` 📅 ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-        }
+    showNotification(`🎬 Rendering batch ${Math.floor(i/CONCURRENT_RENDERS) + 1}/${Math.ceil(renderTasks.length/CONCURRENT_RENDERS)} (${batch.length} videos)...`, 'info');
+    
+    const batchPromises = batch.map(async (task) => {
+      const { beat, imagePath } = task;
+      
+      if (!imagePath) {
+        return { success: false, beat, error: 'No image assigned' };
       }
-      showNotification(`✅ (${successCount}/${beatsToUpload.length}) ${result.title}${scheduleText}`, 'success');
-    } else {
-      failCount++;
-      showNotification(`❌ Failed: ${result.error}`, 'error');
+      
+      const beatNameWithoutExt = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+      const cleanBeatName = extractBeatName(beatNameWithoutExt);
+      
+      try {
+        const renderResult = await ipcRenderer.invoke('render-video', {
+          imagePath: imagePath,
+          audioPath: beat.path,
+          outputName: cleanBeatName,
+          resolution: '1080'
+        });
+        
+        if (renderResult.success) {
+          return { success: true, beat, videoPath: renderResult.outputPath, cleanBeatName };
+        } else {
+          return { success: false, beat, error: renderResult.error };
+        }
+      } catch (err) {
+        return { success: false, beat, error: err.message };
+      }
+    });
+    
+    const batchResults = await Promise.all(batchPromises);
+    
+    for (const result of batchResults) {
+      if (result.success) {
+        renderSuccessCount++;
+        renderResults.push(result);
+        showNotification(`✅ Rendered (${renderSuccessCount}/${renderTasks.length}): ${result.cleanBeatName}`, 'success');
+      } else {
+        renderFailCount++;
+        showNotification(`❌ Render failed: ${result.beat.name} - ${result.error}`, 'error');
+      }
     }
   }
   
+  if (renderResults.length === 0) {
+    showNotification('❌ All renders failed', 'error');
+    return;
+  }
+  
+  showNotification(`🎬 Render complete: ${renderSuccessCount} success. Now uploading...`, 'info');
+  
+  // ====== PHASE 2: COPY + UPLOAD (Sequential) ======
+  let uploadSuccessCount = 0;
+  let uploadFailCount = 0;
+  
+  for (const renderResult of renderResults) {
+    const { beat, videoPath, cleanBeatName } = renderResult;
+    
+    try {
+      const activeTemplate = getActiveTemplate();
+      let videoTitle = cleanBeatName;
+      let videoDescription = '';
+      let videoTags = [];
+      
+      if (activeTemplate) {
+        if (activeTemplate.titleTemplate) {
+          videoTitle = activeTemplate.titleTemplate.replace(/\[NAME\]/gi, cleanBeatName);
+        }
+        videoDescription = activeTemplate.description || '';
+        videoTags = activeTemplate.tags || [];
+      }
+      
+      const schedulingSettings = getSchedulingSettings();
+      let scheduleDate = null;
+      
+      if (schedulingSettings.autoSchedule) {
+        const lastScheduleDate = await getLastScheduleDateForChannel(channel.id);
+        
+        if (lastScheduleDate) {
+          const nextDate = new Date(lastScheduleDate);
+          nextDate.setDate(nextDate.getDate() + (schedulingSettings.daysBetweenUploads || 1));
+          scheduleDate = nextDate;
+        } else {
+          scheduleDate = new Date();
+          scheduleDate.setDate(scheduleDate.getDate() + 1);
+        }
+        
+        if (schedulingSettings.publishTime) {
+          const [hours, minutes] = schedulingSettings.publishTime.split(':');
+          scheduleDate.setHours(parseInt(hours) || 12, parseInt(minutes) || 0, 0, 0);
+        }
+        
+        updateSessionScheduledDate(channel.id, scheduleDate);
+      }
+      
+      const copyResult = await ipcRenderer.invoke('copy-video-for-upload', {
+        videoPath: videoPath,
+        channelId: channel.id,
+        metadata: {
+          title: videoTitle,
+          description: videoDescription,
+          tags: videoTags,
+          privacy: 'private',
+          scheduleDate: scheduleDate ? scheduleDate.toISOString() : null
+        }
+      });
+      
+      if (!copyResult.success) {
+        throw new Error(copyResult.error);
+      }
+      
+      pack.beats.forEach(b => b.lastUsed = false);
+      beat.lastUsed = true;
+      
+      const scheduleInfo = await waitForUploadComplete(videoTitle, channel.id);
+      
+      if (scheduleInfo) {
+        youtubeState.uploadedBeats.add(videoTitle.toLowerCase());
+        youtubeState.uploadedBeatsInfo.set(videoTitle.toLowerCase(), {
+          scheduleDate: scheduleInfo.publishAt || scheduleInfo.publishAtLA,
+          videoId: scheduleInfo.videoId,
+          channelName: channel.name,
+          uploadedAt: new Date().toISOString()
+        });
+      }
+      
+      uploadSuccessCount++;
+      let scheduleText = scheduleDate ? ` 📅 ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '';
+      showNotification(`✅ (${uploadSuccessCount}/${renderResults.length}) ${videoTitle}${scheduleText}`, 'success');
+      
+    } catch (error) {
+      uploadFailCount++;
+      showNotification(`❌ Upload failed: ${cleanBeatName} - ${error.message}`, 'error');
+    }
+    
+    if (currentPackId) {
+      renderPackDetailBeats();
+    }
+    
+    await new Promise(r => setTimeout(r, 500));
+  }
+  
+  saveData();
+  
   // Final summary
   const serverNote = youtubeState.serverOnline ? '' : ' (queued for upload)';
-  showNotification(`🎉 Completed: ${successCount} success, ${failCount} failed${serverNote}`, 
-    failCount > 0 ? 'warning' : 'success');
+  showNotification(`🎉 Completed: ${uploadSuccessCount} success, ${uploadFailCount + renderFailCount} failed${serverNote}`, 
+    uploadFailCount + renderFailCount > 0 ? 'warning' : 'success');
   
   // Refresh UI
   if (currentPackId) {

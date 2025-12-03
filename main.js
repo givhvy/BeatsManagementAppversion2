@@ -13,7 +13,32 @@ try {
 
 let mainWindow;
 
+// Get database path - save to project folder instead of AppData (to avoid filling C: drive)
+function getDatabasePath() {
+  // Use project folder for database
+  return path.join(__dirname, 'beats-data.json');
+}
+
+// Migrate database from AppData to project folder (one-time)
+function migrateDatabase() {
+  const newPath = getDatabasePath();
+  const oldPath = path.join(app.getPath('userData'), 'beats-data.json');
+  
+  // If new database doesn't exist but old one does, migrate it
+  if (!fs.existsSync(newPath) && fs.existsSync(oldPath)) {
+    try {
+      console.log('📦 Migrating database from AppData to project folder...');
+      fs.copyFileSync(oldPath, newPath);
+      console.log('✅ Database migrated successfully to:', newPath);
+    } catch (err) {
+      console.error('❌ Database migration failed:', err.message);
+    }
+  }
+}
+
 function createWindow() {
+  // Migrate database on app start
+  migrateDatabase();
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
@@ -215,7 +240,7 @@ ipcMain.handle('read-folder-contents', async (event, folderPath) => {
 });
 
 ipcMain.handle('save-data', async (event, data) => {
-  const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
+  const dataPath = getDatabasePath();
   try {
     fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
     return true;
@@ -226,7 +251,7 @@ ipcMain.handle('save-data', async (event, data) => {
 });
 
 ipcMain.handle('load-data', async () => {
-  const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
+  const dataPath = getDatabasePath();
   console.log('📂 Database file location:', dataPath);
   try {
     if (fs.existsSync(dataPath)) {
@@ -241,11 +266,11 @@ ipcMain.handle('load-data', async () => {
 });
 
 ipcMain.handle('get-database-path', async () => {
-  return path.join(app.getPath('userData'), 'beats-data.json');
+  return getDatabasePath();
 });
 
 ipcMain.handle('export-database', async () => {
-  const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
+  const dataPath = getDatabasePath();
 
   if (!fs.existsSync(dataPath)) {
     return { success: false, error: 'No database found to export' };
@@ -287,7 +312,7 @@ ipcMain.handle('import-database', async () => {
       JSON.parse(data);
 
       // Copy to database location
-      const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
+      const dataPath = getDatabasePath();
       fs.writeFileSync(dataPath, data);
 
       return { success: true, path: importPath };
