@@ -2,6 +2,27 @@
 const isElectron = typeof require !== 'undefined' && typeof require('electron') !== 'undefined';
 const ipcRenderer = isElectron ? require('electron').ipcRenderer : null;
 
+// =============================================
+// UPLOAD PROGRESS TRACKING STATE
+// =============================================
+const uploadProgress = {
+  items: [], // Array of {id, name, channel, status, scheduleDate, error, startTime}
+  currentBatch: null, // {total, completed, channelName}
+  renderingCount: 0,
+  uploadingCount: 0,
+  completedCount: 0,
+  failedCount: 0
+};
+
+// Progress status types
+const PROGRESS_STATUS = {
+  QUEUED: 'queued',
+  RENDERING: 'rendering',
+  UPLOADING: 'uploading',
+  COMPLETED: 'completed',
+  FAILED: 'failed'
+};
+
 // State
 let folders = {
   all: { path: 'D:\\Beats', beats: [], basePath: 'D:\\Beats', currentPath: 'D:\\Beats' },
@@ -4987,6 +5008,17 @@ async function autoUploadNextBeats(count = 6) {
     showNotification('⚠️ Server offline - videos will be queued in upload folder. Start server to upload.', 'info');
   }
   
+  // Start progress tracking
+  startProgressBatch(beatsToUpload.length, channel.name);
+  const progressIds = {};
+  
+  // Add all items to progress tracker
+  beatsToUpload.forEach(beat => {
+    const beatNameWithoutExt = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+    const cleanBeatName = extractBeatName(beatNameWithoutExt);
+    progressIds[beat.path] = addProgressItem(cleanBeatName, channel.name);
+  });
+  
   showNotification(`🎬 Starting batch render of ${beatsToUpload.length} beats...`, 'info');
   
   // ====== PHASE 1: BATCH RENDER (Parallel) ======
@@ -5002,7 +5034,7 @@ async function autoUploadNextBeats(count = 6) {
     imagePath: beatImages[beat.path]
   }));
   
-  // Process renders in batches
+  // Process renders in batches (autoUploadNextBeats)
   for (let i = 0; i < renderTasks.length; i += CONCURRENT_RENDERS) {
     const batch = renderTasks.slice(i, i + CONCURRENT_RENDERS);
     
@@ -5010,13 +5042,18 @@ async function autoUploadNextBeats(count = 6) {
     
     const batchPromises = batch.map(async (task) => {
       const { beat, imagePath } = task;
+      const progressId = progressIds[beat.path];
       
       if (!imagePath) {
+        updateProgressItem(progressId, PROGRESS_STATUS.FAILED, { error: 'No image assigned' });
         return { success: false, beat, error: 'No image assigned' };
       }
       
       const beatNameWithoutExt = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
       const cleanBeatName = extractBeatName(beatNameWithoutExt);
+      
+      // Update progress: rendering
+      updateProgressItem(progressId, PROGRESS_STATUS.RENDERING);
       
       try {
         const renderResult = await ipcRenderer.invoke('render-video', {
@@ -5027,11 +5064,14 @@ async function autoUploadNextBeats(count = 6) {
         });
         
         if (renderResult.success) {
-          return { success: true, beat, videoPath: renderResult.outputPath, cleanBeatName };
+          updateProgressItem(progressId, PROGRESS_STATUS.UPLOADING); // Ready for upload
+          return { success: true, beat, videoPath: renderResult.outputPath, cleanBeatName, progressId };
         } else {
+          updateProgressItem(progressId, PROGRESS_STATUS.FAILED, { error: renderResult.error });
           return { success: false, beat, error: renderResult.error };
         }
       } catch (err) {
+        updateProgressItem(progressId, PROGRESS_STATUS.FAILED, { error: err.message });
         return { success: false, beat, error: err.message };
       }
     });
@@ -5054,6 +5094,7 @@ async function autoUploadNextBeats(count = 6) {
   
   if (renderResults.length === 0) {
     showNotification('❌ All renders failed. Check image/audio files.', 'error');
+    endProgressBatch();
     return;
   }
   
@@ -5064,7 +5105,10 @@ async function autoUploadNextBeats(count = 6) {
   let uploadFailCount = 0;
   
   for (const renderResult of renderResults) {
-    const { beat, videoPath, cleanBeatName } = renderResult;
+    const { beat, videoPath, cleanBeatName, progressId } = renderResult;
+    
+    // Update progress: uploading
+    updateProgressItem(progressId, 'uploading', 80);
     
     try {
       // Get active template
@@ -5145,9 +5189,14 @@ async function autoUploadNextBeats(count = 6) {
       let scheduleText = scheduleDate ? ` 📅 ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '';
       showNotification(`✅ (${uploadSuccessCount}/${renderResults.length}) ${videoTitle} → ${channel.name}${scheduleText}`, 'success');
       
+      // Update progress: completed
+      const scheduleDateStr = scheduleDate ? scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : null;
+      updateProgressItem(progressId, 'completed', 100, scheduleDateStr);
+      
     } catch (error) {
       uploadFailCount++;
       showNotification(`❌ Upload failed: ${cleanBeatName} - ${error.message}`, 'error');
+      updateProgressItem(progressId, 'error', 0, null, error.message);
     }
     
     // Re-render pack detail to update UI
@@ -5161,7 +5210,8 @@ async function autoUploadNextBeats(count = 6) {
   
   saveData();
   
-  // Final summary
+  // Final summary & finish progress tracking
+  endProgressBatch();
   const serverNote = youtubeState.serverOnline ? '' : ' (Server offline - start server to upload)';
   showNotification(`🎉 Complete: ${uploadSuccessCount} uploaded, ${uploadFailCount + renderFailCount} failed${serverNote}`, uploadSuccessCount > 0 ? 'success' : 'error');
   
@@ -5275,6 +5325,17 @@ async function autoUpload6FromHere() {
     showNotification('⚠️ Server offline - videos will be queued', 'info');
   }
   
+  // Start progress tracking for 6FromHere
+  startProgressBatch(beatsToUpload.length, channel.name);
+  const progressIds6 = {};
+  
+  // Add all items to progress tracker
+  beatsToUpload.forEach(beat => {
+    const beatNameWithoutExt = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+    const cleanBeatName = extractBeatName(beatNameWithoutExt);
+    progressIds6[beat.path] = addProgressItem(cleanBeatName, channel.name);
+  });
+  
   showNotification(`🎬 Starting batch render of ${beatsToUpload.length} beats...`, 'info');
   
   // ====== PHASE 1: BATCH RENDER (Parallel) ======
@@ -5290,7 +5351,7 @@ async function autoUpload6FromHere() {
     imagePath: beatImages[beat.path]
   }));
   
-  // Process renders in batches
+  // Process renders in batches (autoUpload6FromHere)
   for (let i = 0; i < renderTasks.length; i += CONCURRENT_RENDERS) {
     const batch = renderTasks.slice(i, i + CONCURRENT_RENDERS);
     
@@ -5298,13 +5359,18 @@ async function autoUpload6FromHere() {
     
     const batchPromises = batch.map(async (task) => {
       const { beat, imagePath } = task;
+      const progressId6 = progressIds6[beat.path];
       
       if (!imagePath) {
+        updateProgressItem(progressId6, PROGRESS_STATUS.FAILED, { error: 'No image assigned' });
         return { success: false, beat, error: 'No image assigned' };
       }
       
       const beatNameWithoutExt = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
       const cleanBeatName = extractBeatName(beatNameWithoutExt);
+      
+      // Update progress: rendering
+      updateProgressItem(progressId6, PROGRESS_STATUS.RENDERING);
       
       try {
         const renderResult = await ipcRenderer.invoke('render-video', {
@@ -5315,11 +5381,14 @@ async function autoUpload6FromHere() {
         });
         
         if (renderResult.success) {
-          return { success: true, beat, videoPath: renderResult.outputPath, cleanBeatName };
+          updateProgressItem(progressId6, PROGRESS_STATUS.UPLOADING);
+          return { success: true, beat, videoPath: renderResult.outputPath, cleanBeatName, progressId: progressId6 };
         } else {
+          updateProgressItem(progressId6, PROGRESS_STATUS.FAILED, { error: renderResult.error });
           return { success: false, beat, error: renderResult.error };
         }
       } catch (err) {
+        updateProgressItem(progressId6, PROGRESS_STATUS.FAILED, { error: err.message });
         return { success: false, beat, error: err.message };
       }
     });
@@ -5340,6 +5409,7 @@ async function autoUpload6FromHere() {
   
   if (renderResults.length === 0) {
     showNotification('❌ All renders failed', 'error');
+    endProgressBatch();
     return;
   }
   
@@ -5350,7 +5420,10 @@ async function autoUpload6FromHere() {
   let uploadFailCount = 0;
   
   for (const renderResult of renderResults) {
-    const { beat, videoPath, cleanBeatName } = renderResult;
+    const { beat, videoPath, cleanBeatName, progressId } = renderResult;
+    
+    // Update progress: uploading
+    updateProgressItem(progressId, PROGRESS_STATUS.UPLOADING);
     
     try {
       const activeTemplate = getActiveTemplate();
@@ -5424,9 +5497,14 @@ async function autoUpload6FromHere() {
       let scheduleText = scheduleDate ? ` 📅 ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '';
       showNotification(`✅ (${uploadSuccessCount}/${renderResults.length}) ${videoTitle}${scheduleText}`, 'success');
       
+      // Update progress: completed
+      const scheduleDateStr = scheduleDate ? scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : null;
+      updateProgressItem(progressId, PROGRESS_STATUS.COMPLETED, { scheduleDate: scheduleDateStr });
+      
     } catch (error) {
       uploadFailCount++;
       showNotification(`❌ Upload failed: ${cleanBeatName} - ${error.message}`, 'error');
+      updateProgressItem(progressId, PROGRESS_STATUS.FAILED, { error: error.message });
     }
     
     if (currentPackId) {
@@ -5438,7 +5516,8 @@ async function autoUpload6FromHere() {
   
   saveData();
   
-  // Final summary
+  // Final summary & finish progress tracking
+  endProgressBatch();
   const serverNote = youtubeState.serverOnline ? '' : ' (queued for upload)';
   showNotification(`🎉 Completed: ${uploadSuccessCount} success, ${uploadFailCount + renderFailCount} failed${serverNote}`, 
     uploadFailCount + renderFailCount > 0 ? 'warning' : 'success');
@@ -5474,8 +5553,276 @@ if (autoUpload6FromHereBtn) {
   });
 }
 
+// =============================================
+// UPLOAD PROGRESS TRACKING FUNCTIONS
+// =============================================
+
+/**
+ * Add item to progress tracker
+ */
+function addProgressItem(name, channelName) {
+  const item = {
+    id: Date.now() + Math.random().toString(36).substr(2, 9),
+    name: name,
+    channel: channelName,
+    status: PROGRESS_STATUS.QUEUED,
+    scheduleDate: null,
+    error: null,
+    startTime: new Date()
+  };
+  
+  uploadProgress.items.unshift(item);
+  updateProgressUI();
+  updateProgressBadge();
+  
+  return item.id;
+}
+
+/**
+ * Update progress item status
+ */
+function updateProgressItem(id, status, extraData = {}) {
+  const item = uploadProgress.items.find(i => i.id === id);
+  if (!item) return;
+  
+  const oldStatus = item.status;
+  item.status = status;
+  
+  if (extraData.scheduleDate) item.scheduleDate = extraData.scheduleDate;
+  if (extraData.error) item.error = extraData.error;
+  if (extraData.videoId) item.videoId = extraData.videoId;
+  
+  // Update counts
+  if (oldStatus === PROGRESS_STATUS.RENDERING) uploadProgress.renderingCount--;
+  if (oldStatus === PROGRESS_STATUS.UPLOADING) uploadProgress.uploadingCount--;
+  
+  if (status === PROGRESS_STATUS.RENDERING) uploadProgress.renderingCount++;
+  if (status === PROGRESS_STATUS.UPLOADING) uploadProgress.uploadingCount++;
+  if (status === PROGRESS_STATUS.COMPLETED) uploadProgress.completedCount++;
+  if (status === PROGRESS_STATUS.FAILED) uploadProgress.failedCount++;
+  
+  updateProgressUI();
+  updateProgressBadge();
+  
+  // Check if batch is complete
+  checkBatchComplete();
+}
+
+/**
+ * Start a new batch
+ */
+function startProgressBatch(total, channelName) {
+  uploadProgress.currentBatch = {
+    total: total,
+    completed: 0,
+    channelName: channelName
+  };
+  
+  // Switch to Progress tab automatically
+  const progressTab = document.querySelector('.main-nav-tab[data-section="progress"]');
+  if (progressTab) {
+    progressTab.click();
+  }
+  
+  updateProgressUI();
+}
+
+/**
+ * Increment batch progress
+ */
+function incrementBatchProgress() {
+  if (uploadProgress.currentBatch) {
+    uploadProgress.currentBatch.completed++;
+    updateProgressUI();
+  }
+}
+
+/**
+ * End current batch
+ */
+function endProgressBatch() {
+  uploadProgress.currentBatch = null;
+  updateProgressUI();
+}
+
+/**
+ * Check if batch is complete and show notification
+ */
+function checkBatchComplete() {
+  if (!uploadProgress.currentBatch) return;
+  
+  const batch = uploadProgress.currentBatch;
+  if (batch.completed >= batch.total) {
+    // All done!
+    showNotification(`🎉 Batch complete! ${uploadProgress.completedCount} uploaded to ${batch.channelName}`, 'success');
+    
+    // Flash the progress tab
+    const progressTab = document.querySelector('[data-section="progress"]');
+    if (progressTab) {
+      progressTab.classList.add('flash-complete');
+      setTimeout(() => progressTab.classList.remove('flash-complete'), 3000);
+    }
+    
+    endProgressBatch();
+  }
+}
+
+/**
+ * Update progress badge on tab
+ */
+function updateProgressBadge() {
+  const badge = document.getElementById('progress-badge');
+  if (!badge) return;
+  
+  const activeCount = uploadProgress.renderingCount + uploadProgress.uploadingCount;
+  
+  if (activeCount > 0) {
+    badge.textContent = activeCount;
+    badge.style.display = 'inline';
+    badge.classList.add('active');
+  } else {
+    badge.style.display = 'none';
+    badge.classList.remove('active');
+  }
+}
+
+/**
+ * Update all progress UI elements
+ */
+function updateProgressUI() {
+  // Update summary counts
+  const renderingCountEl = document.getElementById('rendering-count');
+  const uploadingCountEl = document.getElementById('uploading-count');
+  const completedCountEl = document.getElementById('completed-count');
+  const failedCountEl = document.getElementById('failed-count');
+  
+  if (renderingCountEl) renderingCountEl.textContent = uploadProgress.renderingCount;
+  if (uploadingCountEl) uploadingCountEl.textContent = uploadProgress.uploadingCount;
+  if (completedCountEl) completedCountEl.textContent = uploadProgress.completedCount;
+  if (failedCountEl) failedCountEl.textContent = uploadProgress.failedCount;
+  
+  // Update batch info
+  const batchInfo = document.getElementById('current-batch-info');
+  const batchProgressText = document.getElementById('batch-progress-text');
+  const batchProgressFill = document.getElementById('batch-progress-fill');
+  const batchChannelName = document.getElementById('batch-channel-name');
+  
+  if (uploadProgress.currentBatch) {
+    if (batchInfo) batchInfo.style.display = 'block';
+    if (batchProgressText) {
+      batchProgressText.textContent = `${uploadProgress.currentBatch.completed}/${uploadProgress.currentBatch.total}`;
+    }
+    if (batchProgressFill) {
+      const percent = (uploadProgress.currentBatch.completed / uploadProgress.currentBatch.total) * 100;
+      batchProgressFill.style.width = `${percent}%`;
+    }
+    if (batchChannelName) {
+      batchChannelName.textContent = `Channel: ${uploadProgress.currentBatch.channelName}`;
+    }
+  } else {
+    if (batchInfo) batchInfo.style.display = 'none';
+  }
+  
+  // Update progress list
+  renderProgressList();
+}
+
+/**
+ * Render progress items list
+ */
+function renderProgressList() {
+  const listEl = document.getElementById('progress-list');
+  const emptyEl = document.getElementById('progress-empty');
+  
+  if (!listEl) return;
+  
+  if (uploadProgress.items.length === 0) {
+    if (emptyEl) emptyEl.style.display = 'flex';
+    listEl.innerHTML = '';
+    listEl.appendChild(emptyEl);
+    return;
+  }
+  
+  if (emptyEl) emptyEl.style.display = 'none';
+  
+  listEl.innerHTML = uploadProgress.items.map(item => {
+    const statusClass = item.status;
+    const statusText = item.status.charAt(0).toUpperCase() + item.status.slice(1);
+    
+    let scheduleText = '--';
+    if (item.scheduleDate) {
+      // scheduleDate is already a formatted string like "Dec 5"
+      scheduleText = item.scheduleDate;
+    }
+    
+    let errorText = '';
+    if (item.error) {
+      errorText = `<div class="progress-item-error" title="${item.error}">⚠️ ${item.error.substring(0, 30)}${item.error.length > 30 ? '...' : ''}</div>`;
+    }
+    
+    return `
+      <div class="progress-item ${statusClass}" data-id="${item.id}">
+        <div class="progress-item-name" title="${item.name}">${item.name}</div>
+        <div class="progress-item-channel">${item.channel}</div>
+        <div class="progress-item-status">
+          <span class="status-dot ${statusClass}"></span>
+          <span class="status-text ${statusClass}">${statusText}</span>
+        </div>
+        <div class="progress-item-schedule ${item.scheduleDate ? 'has-date' : ''}">${scheduleText}</div>
+        ${errorText}
+      </div>
+    `;
+  }).join('');
+}
+
+/**
+ * Clear completed items from progress
+ */
+function clearCompletedProgress() {
+  uploadProgress.items = uploadProgress.items.filter(item => 
+    item.status !== PROGRESS_STATUS.COMPLETED && item.status !== PROGRESS_STATUS.FAILED
+  );
+  uploadProgress.completedCount = 0;
+  uploadProgress.failedCount = 0;
+  updateProgressUI();
+  updateProgressBadge();
+}
+
+/**
+ * Clear all progress items
+ */
+function clearAllProgress() {
+  uploadProgress.items = [];
+  uploadProgress.renderingCount = 0;
+  uploadProgress.uploadingCount = 0;
+  uploadProgress.completedCount = 0;
+  uploadProgress.failedCount = 0;
+  uploadProgress.currentBatch = null;
+  updateProgressUI();
+  updateProgressBadge();
+}
+
+// Initialize progress buttons
+document.addEventListener('DOMContentLoaded', () => {
+  const clearCompletedBtn = document.getElementById('clear-completed-btn');
+  const clearAllBtn = document.getElementById('clear-all-progress-btn');
+  
+  if (clearCompletedBtn) {
+    clearCompletedBtn.addEventListener('click', clearCompletedProgress);
+  }
+  if (clearAllBtn) {
+    clearAllBtn.addEventListener('click', clearAllProgress);
+  }
+});
+
 // Make functions globally available
 window.autoUploadNextBeats = autoUploadNextBeats;
 window.autoUploadSingleBeat = autoUploadSingleBeat;
 window.autoUpload6FromHere = autoUpload6FromHere;
 window.findChannelForPack = findChannelForPack;
+window.addProgressItem = addProgressItem;
+window.updateProgressItem = updateProgressItem;
+window.startProgressBatch = startProgressBatch;
+window.incrementBatchProgress = incrementBatchProgress;
+window.PROGRESS_STATUS = PROGRESS_STATUS;
+

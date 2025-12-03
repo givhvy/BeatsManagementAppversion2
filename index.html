@@ -25,6 +25,11 @@
         <span class="nav-icon">📺</span>
         <span class="nav-label">YouTube Uploader</span>
       </button>
+      <button class="main-nav-tab" data-section="progress">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Upload Progress</span>
+        <span id="progress-badge" class="progress-badge" style="display: none;">0</span>
+      </button>
     </div>
     <div class="main-nav-status">
       <span id="youtube-status" class="status-indicator offline">● YouTube: Offline</span>
@@ -605,6 +610,72 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
         <div style="display: flex; gap: 10px; margin-top: 20px;">
           <button id="save-video-metadata-btn" class="btn-primary">Save & Upload</button>
           <button id="cancel-video-edit-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: Upload Progress -->
+  <div class="app-section" id="progress-section">
+    <div class="progress-container">
+      <div class="progress-header">
+        <h2>📊 Upload Progress</h2>
+        <div class="progress-actions">
+          <button id="clear-completed-btn" class="btn-secondary">🗑️ Clear Completed</button>
+          <button id="clear-all-progress-btn" class="btn-secondary">Clear All</button>
+        </div>
+      </div>
+      
+      <!-- Progress Summary -->
+      <div class="progress-summary">
+        <div class="summary-card rendering">
+          <span class="summary-icon">🎬</span>
+          <span class="summary-count" id="rendering-count">0</span>
+          <span class="summary-label">Rendering</span>
+        </div>
+        <div class="summary-card uploading">
+          <span class="summary-icon">📤</span>
+          <span class="summary-count" id="uploading-count">0</span>
+          <span class="summary-label">Uploading</span>
+        </div>
+        <div class="summary-card completed">
+          <span class="summary-icon">✅</span>
+          <span class="summary-count" id="completed-count">0</span>
+          <span class="summary-label">Completed</span>
+        </div>
+        <div class="summary-card failed">
+          <span class="summary-icon">❌</span>
+          <span class="summary-count" id="failed-count">0</span>
+          <span class="summary-label">Failed</span>
+        </div>
+      </div>
+      
+      <!-- Current Batch Info -->
+      <div class="current-batch-info" id="current-batch-info" style="display: none;">
+        <div class="batch-header">
+          <span class="batch-title">Current Batch</span>
+          <span class="batch-progress" id="batch-progress-text">0/0</span>
+        </div>
+        <div class="batch-progress-bar">
+          <div class="batch-progress-fill" id="batch-progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="batch-channel" id="batch-channel-name">Channel: --</div>
+      </div>
+      
+      <!-- Progress List -->
+      <div class="progress-list-container">
+        <div class="progress-list-header">
+          <span>Video</span>
+          <span>Channel</span>
+          <span>Status</span>
+          <span>Schedule</span>
+        </div>
+        <div class="progress-list" id="progress-list">
+          <div class="progress-empty" id="progress-empty">
+            <span class="empty-icon">📭</span>
+            <span class="empty-text">No uploads in progress</span>
+            <span class="empty-hint">Start uploading from Beats Management tab</span>
+          </div>
         </div>
       </div>
     </div>
