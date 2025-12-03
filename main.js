@@ -682,6 +682,23 @@ let youtubeServerRunning = false;
 // Get automation config path
 const automationConfigPath = path.join(__dirname, 'automation', 'config');
 
+// Load upload history from local file
+ipcMain.handle('load-upload-history', async () => {
+  try {
+    const historyPath = path.join(automationConfigPath, 'upload-history.json');
+    
+    if (!fs.existsSync(historyPath)) {
+      return { success: false, error: 'History file not found' };
+    }
+    
+    const history = JSON.parse(fs.readFileSync(historyPath, 'utf8'));
+    return { success: true, history };
+  } catch (error) {
+    console.error('Error loading upload history:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Scan for YouTube channels
 ipcMain.handle('scan-youtube-channels', async () => {
   try {

@@ -3124,14 +3124,53 @@ function initYouTubeSection() {
     saveVideoMetadataBtn.addEventListener('click', saveVideoMetadata);
   }
 
-  // Initial load - wait for server to be ready
+  // Initial load - load history from local file immediately, then try server
   setTimeout(async () => {
+    // First, load from local file (instant, works offline)
+    if (isElectron) {
+      await loadHistoryFromLocalFile();
+    }
+    
+    // Then try server for latest data
     const serverReady = await checkYouTubeServerWithRetry();
     if (serverReady) {
-      // Load upload history to track uploaded beats
+      // Load upload history to track uploaded beats (will merge with local)
       await loadAllChannelsHistory();
     }
-  }, 1000);
+  }, 500);
+}
+
+/**
+ * Load history from local file when server is offline
+ */
+async function loadHistoryFromLocalFile() {
+  try {
+    const result = await ipcRenderer.invoke('load-upload-history');
+    if (result.success && result.history) {
+      // Process history from all channels
+      Object.values(result.history).forEach(channelHistory => {
+        if (Array.isArray(channelHistory)) {
+          channelHistory.forEach(item => {
+            if (!youtubeState.history.find(h => h.id === item.id)) {
+              youtubeState.history.push(item);
+            }
+          });
+        }
+      });
+      
+      // Update uploaded beats set
+      updateUploadedBeatsFromHistory();
+      
+      // Refresh beats list to show uploaded badges
+      if (typeof renderBeats === 'function') {
+        renderBeats();
+      }
+      
+      console.log(`Loaded ${youtubeState.uploadedBeats.size} uploaded beats from local file`);
+    }
+  } catch (error) {
+    console.error('Error loading history from local file:', error);
+  }
 }
 
 /**
@@ -3613,24 +3652,36 @@ function updateUploadedBeatsFromHistory() {
   youtubeState.history.forEach(item => {
     if (item.status === 'completed' || item.status === 'success') {
       // Extract beat name from video title or filename
-      // Formats: "Spectrum" or "Untitled - Spectrum_tagged.mp4"
-      const title = item.metadata?.title || item.fileName || '';
-      const baseName = title.replace(/\.(mp4|mov|avi|mkv|webm)$/i, '');
-      
-      // Add various forms of the name for matching
-      youtubeState.uploadedBeats.add(baseName.toLowerCase());
+      const title = item.metadata?.title || '';
+      const fileName = item.fileName || '';
       
       // Store upload info including schedule date
+      // Server stores as publishAt, not scheduleDate
       const uploadInfo = {
-        scheduleDate: item.scheduleDate || item.result?.scheduleDate || null,
+        scheduleDate: item.scheduleDate || item.result?.publishAt || item.result?.scheduleDate || null,
         videoId: item.result?.videoId || item.videoId || null,
-        channelName: item.channelName || null,
+        channelName: item.result?.channelName || item.channelName || null,
         uploadedAt: item.completedAt || item.addedAt || null
       };
-      youtubeState.uploadedBeatsInfo.set(baseName.toLowerCase(), uploadInfo);
+      
+      // Add fileName without extension (e.g., "Endless" from "Endless.mp4")
+      const fileNameNoExt = fileName.replace(/\.(mp4|mov|avi|mkv|webm)$/i, '').toLowerCase();
+      if (fileNameNoExt) {
+        youtubeState.uploadedBeats.add(fileNameNoExt);
+        youtubeState.uploadedBeatsInfo.set(fileNameNoExt, uploadInfo);
+      }
+      
+      // Also try to extract beat name from title like "[FREE] TYPE BEAT - "NAME""
+      // Handle both regular quotes and escaped quotes
+      const titleMatch = title.match(/["""]([^"""]+)["""]$/);
+      if (titleMatch) {
+        const beatName = titleMatch[1].trim().toLowerCase();
+        youtubeState.uploadedBeats.add(beatName);
+        youtubeState.uploadedBeatsInfo.set(beatName, uploadInfo);
+      }
       
       // Also try to extract from "Untitled - Name_tagged" format
-      const match = baseName.match(/[-–]\s*([^_]+)(?:_tagged)?$/i);
+      const match = fileNameNoExt.match(/[-–]\s*([^_]+)(?:_tagged)?$/i);
       if (match) {
         const extractedName = match[1].trim().toLowerCase();
         youtubeState.uploadedBeats.add(extractedName);
