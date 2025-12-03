@@ -1169,9 +1169,20 @@ function renderBeats() {
       folderChannelTag = folderTags[beatFolder];
     }
 
-    if (containingPacks.length > 0 || folderChannelTag) {
+    // Check if beat has been uploaded to YouTube
+    const isUploaded = isBeatUploaded(beat.name);
+
+    if (containingPacks.length > 0 || folderChannelTag || isUploaded) {
       const tagsContainer = document.createElement('div');
       tagsContainer.className = 'beat-tags';
+
+      // Add "Uploaded" badge if beat has been uploaded
+      if (isUploaded) {
+        const uploadedTag = document.createElement('span');
+        uploadedTag.className = 'pack-tag uploaded-tag';
+        uploadedTag.textContent = '📺 Uploaded';
+        tagsContainer.appendChild(uploadedTag);
+      }
 
       // Add pack tags
       containingPacks.forEach(pack => {
@@ -1514,6 +1525,14 @@ function createPackBeatElement(beat, packId, index) {
     lastUsedBadge.className = 'last-used-badge';
     lastUsedBadge.textContent = 'Last Used';
     contentContainer.appendChild(lastUsedBadge);
+  }
+
+  // Add "Uploaded" badge if beat has been uploaded to YouTube
+  if (isBeatUploaded(beat.name)) {
+    const uploadedBadge = document.createElement('span');
+    uploadedBadge.className = 'uploaded-badge';
+    uploadedBadge.textContent = '📺 Uploaded';
+    contentContainer.appendChild(uploadedBadge);
   }
 
   const removeBtn = document.createElement('button');
@@ -2853,9 +2872,10 @@ async function selectAutovidAudio() {
       audioPreviewContainer.style.display = 'block';
       autovidAudioPlayer.src = `file://${filePath}`;
       
-      // Auto-fill output name
+      // Auto-fill output name - extract clean beat name
       const baseName = filePath.split('\\').pop().replace(/\.[^/.]+$/, '');
-      outputNameInput.value = baseName;
+      const cleanName = extractBeatName(baseName);
+      outputNameInput.value = cleanName;
       
       updateRenderButton();
     }
@@ -2970,7 +2990,8 @@ let youtubeState = {
   selectedChannel: null,
   queue: [],
   history: [],
-  serverOnline: false
+  serverOnline: false,
+  uploadedBeats: new Set() // Track uploaded beats by audio file name
 };
 
 // Show notification toast
@@ -3013,6 +3034,7 @@ const uploadsFailedEl = document.getElementById('uploads-failed');
 const publishTimeInput = document.getElementById('publish-time');
 const defaultPrivacySelect = document.getElementById('default-privacy');
 const autoUploadCheckbox = document.getElementById('auto-upload');
+const reauthenticateBtn = document.getElementById('reauthenticate-btn');
 
 // Video edit modal elements
 const videoEditModal = document.getElementById('video-edit-modal');
@@ -3043,6 +3065,11 @@ function initYouTubeSection() {
   // Start Server button
   if (startServerBtn) {
     startServerBtn.addEventListener('click', toggleAutomationServer);
+  }
+
+  // Re-authenticate button
+  if (reauthenticateBtn) {
+    reauthenticateBtn.addEventListener('click', reauthenticateYouTube);
   }
 
   // Video dropzone
@@ -3083,9 +3110,59 @@ function initYouTubeSection() {
   }
 
   // Initial load - wait for server to be ready
-  setTimeout(() => {
-    checkYouTubeServerWithRetry();
+  setTimeout(async () => {
+    const serverReady = await checkYouTubeServerWithRetry();
+    if (serverReady) {
+      // Load upload history to track uploaded beats
+      await loadAllChannelsHistory();
+    }
   }, 1000);
+}
+
+/**
+ * Load history from all channels to build uploaded beats set
+ */
+async function loadAllChannelsHistory() {
+  try {
+    const response = await fetch(`${AUTOMATION_SERVER_URL}/api/channels`);
+    if (!response.ok) return;
+    
+    const data = await response.json();
+    const channels = data.channels || [];
+    
+    // Load history from each channel
+    for (const channel of channels) {
+      try {
+        const statusResponse = await fetch(`${AUTOMATION_SERVER_URL}/api/status/${channel.channelId}`);
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          if (statusData.history) {
+            // Add to global history
+            statusData.history.forEach(item => {
+              // Avoid duplicates
+              if (!youtubeState.history.find(h => h.id === item.id)) {
+                youtubeState.history.push(item);
+              }
+            });
+          }
+        }
+      } catch (e) {
+        console.log(`Failed to load history for ${channel.name}:`, e.message);
+      }
+    }
+    
+    // Update uploaded beats set
+    updateUploadedBeatsFromHistory();
+    
+    // Refresh beats list to show uploaded badges
+    if (typeof renderBeats === 'function') {
+      renderBeats();
+    }
+    
+    console.log(`Loaded history from ${channels.length} channels, ${youtubeState.uploadedBeats.size} uploaded beats tracked`);
+  } catch (error) {
+    console.error('Error loading all channels history:', error);
+  }
 }
 
 // Automation server port
@@ -3204,6 +3281,37 @@ async function toggleAutomationServer() {
       startServerBtn.disabled = false;
       updateServerStatusUI(youtubeState.serverOnline);
     }
+  }
+}
+
+/**
+ * Re-authenticate YouTube token for selected channel
+ */
+async function reauthenticateYouTube() {
+  if (!youtubeState.selectedChannel) {
+    showNotification('Vui lòng chọn channel trước', 'error');
+    return;
+  }
+
+  if (!isElectron) {
+    showNotification('Chức năng này chỉ khả dụng trong Electron', 'error');
+    return;
+  }
+
+  try {
+    showNotification('Đang mở trình duyệt để xác thực...', 'info');
+    
+    const result = await ipcRenderer.invoke('reauthenticate-youtube', youtubeState.selectedChannel.id);
+    
+    if (result.success) {
+      showNotification('Xác thực thành công! Token đã được refresh.', 'success');
+      // Refresh channels to update status
+      await refreshYouTubeChannels();
+    } else {
+      showNotification('Lỗi xác thực: ' + result.error, 'error');
+    }
+  } catch (error) {
+    showNotification('Lỗi: ' + error.message, 'error');
   }
 }
 
@@ -3348,6 +3456,8 @@ async function loadChannelStatus(channelId) {
       // Update history from server
       if (data.history) {
         youtubeState.history = data.history;
+        // Update uploaded beats set from history
+        updateUploadedBeatsFromHistory();
         renderUploadHistory();
         updateHistoryStats();
       }
@@ -3355,6 +3465,55 @@ async function loadChannelStatus(channelId) {
   } catch (error) {
     console.error('Error loading channel status:', error);
   }
+}
+
+/**
+ * Update uploadedBeats set from YouTube history
+ * This tracks which beats have been successfully uploaded
+ */
+function updateUploadedBeatsFromHistory() {
+  // Clear and rebuild the set from all history
+  youtubeState.uploadedBeats.clear();
+  
+  youtubeState.history.forEach(item => {
+    if (item.status === 'completed' || item.status === 'success') {
+      // Extract beat name from video title or filename
+      // Formats: "Spectrum" or "Untitled - Spectrum_tagged.mp4"
+      const title = item.metadata?.title || item.fileName || '';
+      const baseName = title.replace(/\.(mp4|mov|avi|mkv|webm)$/i, '');
+      
+      // Add various forms of the name for matching
+      youtubeState.uploadedBeats.add(baseName.toLowerCase());
+      
+      // Also try to extract from "Untitled - Name_tagged" format
+      const match = baseName.match(/[-–]\s*([^_]+)(?:_tagged)?$/i);
+      if (match) {
+        youtubeState.uploadedBeats.add(match[1].trim().toLowerCase());
+      }
+    }
+  });
+  
+  console.log('Uploaded beats tracked:', Array.from(youtubeState.uploadedBeats));
+}
+
+/**
+ * Check if a beat has been uploaded to YouTube
+ */
+function isBeatUploaded(beatName) {
+  if (!beatName) return false;
+  
+  const baseName = beatName.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '').toLowerCase();
+  
+  // Check exact match
+  if (youtubeState.uploadedBeats.has(baseName)) return true;
+  
+  // Check extracted name (e.g., "Spectrum" from "Untitled - Spectrum_tagged")
+  const match = baseName.match(/[-–]\s*([^_]+)(?:_tagged)?$/i);
+  if (match && youtubeState.uploadedBeats.has(match[1].trim().toLowerCase())) {
+    return true;
+  }
+  
+  return false;
 }
 
 function handleVideoFiles(files) {
@@ -3689,13 +3848,30 @@ async function createVideoFromCurrentBeat() {
     }
   }
 
-  // Set output name
+  // Set output name - extract just the beat name (e.g., "Spectrum" from "Untitled - Spectrum_tagged")
   const beatNameWithoutExt = currentBeat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+  const extractedName = extractBeatName(beatNameWithoutExt);
   if (outputNameInput) {
-    outputNameInput.value = beatNameWithoutExt;
+    outputNameInput.value = extractedName;
   }
 
   updateRenderButton();
+}
+
+/**
+ * Extract clean beat name from filename
+ * e.g., "Untitled - Spectrum_tagged" -> "Spectrum"
+ * e.g., "My Beat - Melody_v2" -> "Melody"
+ */
+function extractBeatName(fullName) {
+  // Try to match pattern: "Something - Name_something" or "Something - Name"
+  const match = fullName.match(/[-–]\s*([^_]+?)(?:_[^_]*)?$/);
+  if (match) {
+    return match[1].trim();
+  }
+  
+  // Fallback: remove common suffixes and return
+  return fullName.replace(/_tagged|_v\d+|_final|_master/gi, '').trim();
 }
 
 /**

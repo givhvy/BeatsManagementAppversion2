@@ -1018,3 +1018,56 @@ ipcMain.handle('copy-video-for-upload', async (event, { videoPath, channelId, me
     return { success: false, error: error.message };
   }
 });
+
+// Re-authenticate YouTube token for a channel
+ipcMain.handle('reauthenticate-youtube', async (event, channelId) => {
+  try {
+    const { spawn } = require('child_process');
+    const automationPath = path.join(__dirname, 'automation');
+    
+    // channelId format: "AccountA/channel1"
+    const configPath = `config/${channelId}`;
+    
+    // Open browser for re-authentication
+    const getTokenProcess = spawn('node', ['getToken.js', configPath], {
+      cwd: automationPath,
+      stdio: ['inherit', 'pipe', 'pipe'],
+      shell: true
+    });
+
+    return new Promise((resolve) => {
+      let output = '';
+      let errorOutput = '';
+
+      getTokenProcess.stdout.on('data', (data) => {
+        output += data.toString();
+        console.log('[Re-auth]:', data.toString());
+      });
+
+      getTokenProcess.stderr.on('data', (data) => {
+        errorOutput += data.toString();
+        console.error('[Re-auth Error]:', data.toString());
+      });
+
+      getTokenProcess.on('close', (code) => {
+        if (code === 0) {
+          resolve({ success: true, message: 'Token refreshed successfully' });
+        } else {
+          resolve({ success: false, error: errorOutput || 'Re-authentication failed' });
+        }
+      });
+
+      getTokenProcess.on('error', (error) => {
+        resolve({ success: false, error: error.message });
+      });
+
+      // Timeout after 2 minutes
+      setTimeout(() => {
+        getTokenProcess.kill();
+        resolve({ success: false, error: 'Re-authentication timed out' });
+      }, 120000);
+    });
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});

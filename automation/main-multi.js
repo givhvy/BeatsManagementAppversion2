@@ -43,8 +43,43 @@ const channelQueues = new Map(); // channelId -> uploadQueue
 const channelHistories = new Map(); // channelId -> uploadHistory
 const channelLoggers = new Map(); // channelId -> logger
 
+// History persistence file
+const HISTORY_FILE = path.join(__dirname, 'config', 'upload-history.json');
+
 // AI Generator (dùng chung)
 const aiGenerator = new AIMetadataGenerator(config);
+
+/**
+ * Load history from persistent storage
+ */
+async function loadHistoryFromFile() {
+  try {
+    if (await fs.pathExists(HISTORY_FILE)) {
+      const data = await fs.readJson(HISTORY_FILE);
+      for (const [channelId, history] of Object.entries(data)) {
+        channelHistories.set(channelId, history);
+      }
+      console.log(`📂 Loaded history for ${Object.keys(data).length} channels`);
+    }
+  } catch (error) {
+    console.error('Failed to load history:', error.message);
+  }
+}
+
+/**
+ * Save history to persistent storage
+ */
+async function saveHistoryToFile() {
+  try {
+    const data = {};
+    for (const [channelId, history] of channelHistories.entries()) {
+      data[channelId] = history;
+    }
+    await fs.writeJson(HISTORY_FILE, data, { spaces: 2 });
+  } catch (error) {
+    console.error('Failed to save history:', error.message);
+  }
+}
 
 /**
  * Khởi tạo logger cho từng channel
@@ -174,6 +209,7 @@ async function processChannelQueue(channelId) {
 
       history.push({ ...item });
       channelHistories.set(channelId, history);
+      await saveHistoryToFile(); // Persist history
 
       // Xóa khỏi queue
       const updatedQueue = queue.filter(q => q.id !== item.id);
@@ -185,6 +221,7 @@ async function processChannelQueue(channelId) {
 
       history.push({ ...item });
       channelHistories.set(channelId, history);
+      await saveHistoryToFile(); // Persist history
     }
   }
 }
@@ -548,6 +585,9 @@ app.post('/api/admin/channels/delete', async (req, res) => {
 async function startServer() {
   console.log('\n🚀 YouTube Multi-Channel Uploader đang khởi động...\n');
 
+  // Load saved history first
+  await loadHistoryFromFile();
+
   // Quét tất cả channels
   const scannedChannels = await scanner.scanChannels();
   channels.push(...scannedChannels);
@@ -571,7 +611,10 @@ async function startServer() {
 
     channelUploaders.set(channel.channelId, uploader);
     channelQueues.set(channel.channelId, []);
-    channelHistories.set(channel.channelId, []);
+    // Preserve loaded history, only initialize if not exists
+    if (!channelHistories.has(channel.channelId)) {
+      channelHistories.set(channel.channelId, []);
+    }
 
     if (isReady) {
       console.log(`✅ ${channel.name}: Sẵn sàng`);

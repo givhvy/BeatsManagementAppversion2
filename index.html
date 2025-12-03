@@ -413,9 +413,9 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
           <div class="settings-row">
             <span>Resolution:</span>
             <select id="video-resolution" class="filter-input" style="width: auto;">
-              <option value="1080">1080x1080</option>
-              <option value="720">720x720</option>
-              <option value="1920x1080">1920x1080 (16:9)</option>
+              <option value="1920x1080" selected>1920x1080 (16:9)</option>
+              <option value="1080">1080x1080 (1:1)</option>
+              <option value="720">1280x720 (16:9)</option>
             </select>
           </div>
         </div>
@@ -469,6 +469,7 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
         </div>
         <div class="channel-actions">
           <button id="scan-channels-btn" class="btn-primary">Scan Channels</button>
+          <button id="reauthenticate-btn" class="btn-secondary" title="Re-authenticate YouTube token">🔑 Re-auth</button>
         </div>
       </div>
 
