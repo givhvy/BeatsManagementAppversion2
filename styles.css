@@ -1982,6 +1982,111 @@ h1, h2, h3, h4, h5, h6 {
   gap: 10px;
 }
 
+/* =============================================
+   GLOBAL QUEUE CONTROLS
+   ============================================= */
+
+.global-queue-controls {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.1));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.queue-status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.queue-status {
+  font-weight: 600;
+  font-size: 14px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.queue-status.idle {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.queue-status.processing {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  animation: pulse-processing 1.5s infinite;
+}
+
+.queue-status.paused {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+@keyframes pulse-processing {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.queue-count {
+  font-size: 13px;
+  color: #999;
+}
+
+.queue-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.queue-btn {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.queue-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary.queue-btn {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  border: none;
+}
+
+.btn-primary.queue-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.btn-danger.queue-btn {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger.queue-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.3);
+}
+
+.queue-hint {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+  padding: 8px 0 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 8px;
+}
+
 /* Progress Badge on Tab */
 .progress-badge {
   background: #ef4444;

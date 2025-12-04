@@ -626,6 +626,22 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
         </div>
       </div>
       
+      <!-- Global Queue Controls -->
+      <div class="global-queue-controls">
+        <div class="queue-status-bar">
+          <span class="queue-status idle" id="global-queue-status">✅ Idle</span>
+          <span class="queue-count" id="global-queue-count">0 queued | 0 rendering | 0 uploading | 0 done</span>
+        </div>
+        <div class="queue-buttons">
+          <button id="start-queue-btn" class="btn-primary queue-btn">🚀 Start Queue</button>
+          <button id="pause-queue-btn" class="btn-secondary queue-btn" disabled>⏸️ Pause</button>
+          <button id="clear-queue-btn" class="btn-danger queue-btn">🗑️ Clear Queue</button>
+        </div>
+        <div class="queue-hint">
+          💡 Tip: Right-click beats in multiple packs → "Auto Upload 6 from here" to add to queue, then click Start Queue
+        </div>
+      </div>
+      
       <!-- Progress Summary -->
       <div class="progress-summary">
         <div class="summary-card rendering">
@@ -674,7 +690,7 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
           <div class="progress-empty" id="progress-empty">
             <span class="empty-icon">📭</span>
             <span class="empty-text">No uploads in progress</span>
-            <span class="empty-hint">Start uploading from Beats Management tab</span>
+            <span class="empty-hint">Right-click beats → "Auto Upload 6 from here" to add to queue</span>
           </div>
         </div>
       </div>

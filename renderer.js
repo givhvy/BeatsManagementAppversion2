@@ -23,6 +23,394 @@ const PROGRESS_STATUS = {
   FAILED: 'failed'
 };
 
+// =============================================
+// GLOBAL UPLOAD QUEUE MANAGER (Multi-Pack Support)
+// =============================================
+const globalUploadQueue = {
+  items: [], // All queued items from all packs: {id, beat, pack, channel, imagePath, status, progressId}
+  isProcessing: false,
+  isPaused: false,
+  
+  // Scheduling cache per channel to prevent conflicts
+  channelScheduleCache: new Map(), // channelId -> lastScheduleDate
+  
+  // Stats
+  totalQueued: 0,
+  totalProcessed: 0,
+  
+  // Batch settings
+  CONCURRENT_RENDERS: 3,
+  CONCURRENT_UPLOADS: 1, // Keep sequential for scheduling accuracy
+};
+
+/**
+ * Add beats to global queue from a pack
+ * Can be called multiple times for different packs
+ */
+function addToGlobalQueue(beats, pack, channel) {
+  const newItems = beats.map(beat => ({
+    id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    beat: beat,
+    pack: pack,
+    channel: channel,
+    imagePath: beatImages[beat.path],
+    status: 'queued', // queued, rendering, rendered, uploading, completed, failed
+    progressId: null,
+    videoPath: null,
+    cleanBeatName: null,
+    error: null
+  }));
+  
+  globalUploadQueue.items.push(...newItems);
+  globalUploadQueue.totalQueued += newItems.length;
+  
+  // Add to progress tracker
+  newItems.forEach(item => {
+    const beatNameWithoutExt = item.beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+    item.cleanBeatName = extractBeatName(beatNameWithoutExt);
+    item.progressId = addProgressItem(item.cleanBeatName, item.channel.name);
+  });
+  
+  updateGlobalQueueUI();
+  
+  return newItems.length;
+}
+
+/**
+ * Start processing the global queue
+ */
+async function startGlobalQueueProcessing() {
+  if (globalUploadQueue.isProcessing) {
+    showNotification('⚠️ Queue is already processing', 'info');
+    return;
+  }
+  
+  if (globalUploadQueue.items.length === 0) {
+    showNotification('⚠️ Queue is empty', 'info');
+    return;
+  }
+  
+  globalUploadQueue.isProcessing = true;
+  globalUploadQueue.isPaused = false;
+  updateGlobalQueueUI();
+  
+  // Switch to Progress tab
+  const progressTab = document.querySelector('.main-nav-tab[data-section="progress"]');
+  if (progressTab) progressTab.click();
+  
+  const queuedItems = globalUploadQueue.items.filter(i => i.status === 'queued');
+  
+  showNotification(`🚀 Starting queue processing: ${queuedItems.length} beats`, 'info');
+  
+  // ====== PHASE 1: BATCH RENDER (Parallel) ======
+  await processRenderPhase();
+  
+  if (globalUploadQueue.isPaused) {
+    showNotification('⏸️ Queue paused after render phase', 'info');
+    return;
+  }
+  
+  // ====== PHASE 2: BATCH UPLOAD (Sequential per channel for scheduling) ======
+  await processUploadPhase();
+  
+  globalUploadQueue.isProcessing = false;
+  updateGlobalQueueUI();
+  
+  // Final summary
+  const completed = globalUploadQueue.items.filter(i => i.status === 'completed').length;
+  const failed = globalUploadQueue.items.filter(i => i.status === 'failed').length;
+  showNotification(`🎉 Queue complete! ${completed} uploaded, ${failed} failed`, completed > 0 ? 'success' : 'error');
+  
+  // Refresh UI
+  renderPackDetailBeats();
+  renderBeats();
+  saveData();
+}
+
+/**
+ * Process render phase - renders all queued items in parallel batches
+ */
+async function processRenderPhase() {
+  const toRender = globalUploadQueue.items.filter(i => i.status === 'queued');
+  
+  if (toRender.length === 0) return;
+  
+  showNotification(`🎬 Rendering ${toRender.length} videos...`, 'info');
+  
+  // Process in batches
+  for (let i = 0; i < toRender.length; i += globalUploadQueue.CONCURRENT_RENDERS) {
+    if (globalUploadQueue.isPaused) break;
+    
+    const batch = toRender.slice(i, i + globalUploadQueue.CONCURRENT_RENDERS);
+    const batchNum = Math.floor(i / globalUploadQueue.CONCURRENT_RENDERS) + 1;
+    const totalBatches = Math.ceil(toRender.length / globalUploadQueue.CONCURRENT_RENDERS);
+    
+    showNotification(`🎬 Render batch ${batchNum}/${totalBatches} (${batch.length} videos)...`, 'info');
+    
+    const batchPromises = batch.map(async (item) => {
+      if (!item.imagePath) {
+        item.status = 'failed';
+        item.error = 'No image assigned';
+        updateProgressItem(item.progressId, PROGRESS_STATUS.FAILED, { error: 'No image assigned' });
+        return;
+      }
+      
+      item.status = 'rendering';
+      updateProgressItem(item.progressId, PROGRESS_STATUS.RENDERING);
+      
+      try {
+        const renderResult = await ipcRenderer.invoke('render-video', {
+          imagePath: item.imagePath,
+          audioPath: item.beat.path,
+          outputName: item.cleanBeatName,
+          resolution: '1080'
+        });
+        
+        if (renderResult.success) {
+          item.status = 'rendered';
+          item.videoPath = renderResult.outputPath;
+          showNotification(`✅ Rendered: ${item.cleanBeatName}`, 'success');
+        } else {
+          item.status = 'failed';
+          item.error = renderResult.error;
+          updateProgressItem(item.progressId, PROGRESS_STATUS.FAILED, { error: renderResult.error });
+        }
+      } catch (err) {
+        item.status = 'failed';
+        item.error = err.message;
+        updateProgressItem(item.progressId, PROGRESS_STATUS.FAILED, { error: err.message });
+      }
+    });
+    
+    await Promise.all(batchPromises);
+    updateGlobalQueueUI();
+  }
+  
+  const rendered = globalUploadQueue.items.filter(i => i.status === 'rendered').length;
+  const failed = globalUploadQueue.items.filter(i => i.status === 'failed').length;
+  showNotification(`🎬 Render complete: ${rendered} success, ${failed} failed`, 'info');
+}
+
+/**
+ * Process upload phase - uploads sequentially per channel for correct scheduling
+ */
+async function processUploadPhase() {
+  const toUpload = globalUploadQueue.items.filter(i => i.status === 'rendered');
+  
+  if (toUpload.length === 0) return;
+  
+  showNotification(`📤 Uploading ${toUpload.length} videos...`, 'info');
+  
+  // Group by channel for sequential scheduling
+  const byChannel = new Map();
+  toUpload.forEach(item => {
+    const channelId = item.channel.id;
+    if (!byChannel.has(channelId)) {
+      byChannel.set(channelId, []);
+    }
+    byChannel.get(channelId).push(item);
+  });
+  
+  // Process all channels in parallel, but items within each channel sequentially
+  const channelPromises = Array.from(byChannel.entries()).map(async ([channelId, items]) => {
+    for (const item of items) {
+      if (globalUploadQueue.isPaused) break;
+      
+      item.status = 'uploading';
+      updateProgressItem(item.progressId, PROGRESS_STATUS.UPLOADING);
+      
+      try {
+        // Get active template
+        const activeTemplate = getActiveTemplate();
+        let videoTitle = item.cleanBeatName;
+        let videoDescription = '';
+        let videoTags = [];
+        
+        if (activeTemplate) {
+          if (activeTemplate.titleTemplate) {
+            videoTitle = activeTemplate.titleTemplate.replace(/\[NAME\]/gi, item.cleanBeatName);
+          }
+          videoDescription = activeTemplate.description || '';
+          videoTags = activeTemplate.tags || [];
+        }
+        
+        // Calculate schedule date using global cache
+        const schedulingSettings = getSchedulingSettings();
+        let scheduleDate = null;
+        
+        if (schedulingSettings.autoSchedule) {
+          // Check cache first, then fall back to server
+          let lastScheduleDate = globalUploadQueue.channelScheduleCache.get(channelId);
+          
+          if (!lastScheduleDate) {
+            lastScheduleDate = await getLastScheduleDateForChannel(channelId);
+          }
+          
+          if (lastScheduleDate) {
+            const nextDate = new Date(lastScheduleDate);
+            nextDate.setDate(nextDate.getDate() + (schedulingSettings.daysBetweenUploads || 1));
+            scheduleDate = nextDate;
+          } else {
+            scheduleDate = new Date();
+            scheduleDate.setDate(scheduleDate.getDate() + 1);
+          }
+          
+          if (schedulingSettings.publishTime) {
+            const [hours, minutes] = schedulingSettings.publishTime.split(':');
+            scheduleDate.setHours(parseInt(hours) || 12, parseInt(minutes) || 0, 0, 0);
+          }
+          
+          // Update cache for next item in this channel
+          globalUploadQueue.channelScheduleCache.set(channelId, scheduleDate);
+        }
+        
+        // Copy to upload folder
+        const copyResult = await ipcRenderer.invoke('copy-video-for-upload', {
+          videoPath: item.videoPath,
+          channelId: channelId,
+          metadata: {
+            title: videoTitle,
+            description: videoDescription,
+            tags: videoTags,
+            privacy: 'private',
+            scheduleDate: scheduleDate ? scheduleDate.toISOString() : null
+          }
+        });
+        
+        if (!copyResult.success) {
+          throw new Error(copyResult.error);
+        }
+        
+        // Mark beat as last used
+        item.pack.beats.forEach(b => b.lastUsed = false);
+        item.beat.lastUsed = true;
+        
+        // Wait for upload and track
+        const scheduleInfo = await waitForUploadComplete(videoTitle, channelId);
+        
+        if (scheduleInfo) {
+          youtubeState.uploadedBeats.add(videoTitle.toLowerCase());
+          youtubeState.uploadedBeatsInfo.set(videoTitle.toLowerCase(), {
+            scheduleDate: scheduleInfo.publishAt || scheduleInfo.publishAtLA,
+            videoId: scheduleInfo.videoId,
+            channelName: item.channel.name,
+            uploadedAt: new Date().toISOString()
+          });
+        }
+        
+        item.status = 'completed';
+        const scheduleDateStr = scheduleDate ? scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : null;
+        updateProgressItem(item.progressId, PROGRESS_STATUS.COMPLETED, { scheduleDate: scheduleDateStr });
+        
+        showNotification(`✅ ${videoTitle} → ${item.channel.name} 📅 ${scheduleDateStr || 'Now'}`, 'success');
+        
+      } catch (error) {
+        item.status = 'failed';
+        item.error = error.message;
+        updateProgressItem(item.progressId, PROGRESS_STATUS.FAILED, { error: error.message });
+        showNotification(`❌ Upload failed: ${item.cleanBeatName} - ${error.message}`, 'error');
+      }
+      
+      updateGlobalQueueUI();
+      
+      // Small delay between uploads to same channel
+      await new Promise(r => setTimeout(r, 300));
+    }
+  });
+  
+  await Promise.all(channelPromises);
+}
+
+/**
+ * Pause global queue processing
+ */
+function pauseGlobalQueue() {
+  globalUploadQueue.isPaused = true;
+  showNotification('⏸️ Queue paused', 'info');
+  updateGlobalQueueUI();
+}
+
+/**
+ * Resume global queue processing
+ */
+function resumeGlobalQueue() {
+  if (!globalUploadQueue.isPaused) return;
+  
+  globalUploadQueue.isPaused = false;
+  showNotification('▶️ Queue resumed', 'info');
+  
+  // Continue processing
+  if (globalUploadQueue.isProcessing) {
+    // Already in a processing loop, it will continue
+  } else {
+    startGlobalQueueProcessing();
+  }
+  
+  updateGlobalQueueUI();
+}
+
+/**
+ * Clear global queue (only items not being processed)
+ */
+function clearGlobalQueue() {
+  const activeStatuses = ['rendering', 'uploading'];
+  globalUploadQueue.items = globalUploadQueue.items.filter(i => activeStatuses.includes(i.status));
+  globalUploadQueue.channelScheduleCache.clear();
+  
+  showNotification('🗑️ Queue cleared', 'info');
+  updateGlobalQueueUI();
+}
+
+/**
+ * Update global queue UI elements
+ */
+function updateGlobalQueueUI() {
+  const queueCountEl = document.getElementById('global-queue-count');
+  const queueStatusEl = document.getElementById('global-queue-status');
+  const startQueueBtn = document.getElementById('start-queue-btn');
+  const pauseQueueBtn = document.getElementById('pause-queue-btn');
+  const clearQueueBtn = document.getElementById('clear-queue-btn');
+  
+  const queued = globalUploadQueue.items.filter(i => i.status === 'queued').length;
+  const rendering = globalUploadQueue.items.filter(i => i.status === 'rendering').length;
+  const rendered = globalUploadQueue.items.filter(i => i.status === 'rendered').length;
+  const uploading = globalUploadQueue.items.filter(i => i.status === 'uploading').length;
+  const completed = globalUploadQueue.items.filter(i => i.status === 'completed').length;
+  const failed = globalUploadQueue.items.filter(i => i.status === 'failed').length;
+  
+  if (queueCountEl) {
+    queueCountEl.textContent = `${queued} queued | ${rendering} rendering | ${uploading} uploading | ${completed} done | ${failed} failed`;
+  }
+  
+  if (queueStatusEl) {
+    if (globalUploadQueue.isPaused) {
+      queueStatusEl.textContent = '⏸️ Paused';
+      queueStatusEl.className = 'queue-status paused';
+    } else if (globalUploadQueue.isProcessing) {
+      queueStatusEl.textContent = '🔄 Processing...';
+      queueStatusEl.className = 'queue-status processing';
+    } else {
+      queueStatusEl.textContent = queued > 0 ? '⏳ Ready' : '✅ Idle';
+      queueStatusEl.className = 'queue-status idle';
+    }
+  }
+  
+  // Update button states
+  if (startQueueBtn) {
+    startQueueBtn.disabled = globalUploadQueue.isProcessing || queued === 0;
+    startQueueBtn.textContent = globalUploadQueue.isPaused ? '▶️ Resume' : '🚀 Start Queue';
+  }
+  if (pauseQueueBtn) {
+    pauseQueueBtn.disabled = !globalUploadQueue.isProcessing || globalUploadQueue.isPaused;
+  }
+  if (clearQueueBtn) {
+    clearQueueBtn.disabled = globalUploadQueue.items.length === 0;
+  }
+  
+  // Update progress badge
+  updateProgressBadge();
+}
+
 // State
 let folders = {
   all: { path: 'D:\\Beats', beats: [], basePath: 'D:\\Beats', currentPath: 'D:\\Beats' },
@@ -5257,8 +5645,91 @@ async function autoUploadSingleBeat() {
 
 /**
  * Auto upload 6 beats starting from the selected beat
+ * Now uses global queue for multi-pack support
  */
 async function autoUpload6FromHere() {
+  if (!contextMenuTarget || !contextMenuTarget.beatPath || !contextMenuTarget.packId) {
+    showNotification('No beat selected', 'error');
+    return;
+  }
+  
+  const packId = contextMenuTarget.packId;
+  const startBeatPath = contextMenuTarget.beatPath;
+  
+  const pack = packs.find(p => p.id === packId);
+  if (!pack) {
+    showNotification('Pack not found', 'error');
+    return;
+  }
+  
+  // Find channel for this pack
+  let channel = findChannelForPack(pack.name);
+  if (!channel) {
+    const packMatch = pack.name.match(/^C(\d+)/i);
+    if (packMatch) {
+      const channelNum = packMatch[1];
+      channel = {
+        id: `AccountA/channel${channelNum}`,
+        name: pack.name,
+        ready: true
+      };
+      showNotification(`Using fallback channel mapping for ${pack.name}`, 'info');
+    } else {
+      showNotification(`No channel found for pack "${pack.name}"`, 'error');
+      return;
+    }
+  }
+  
+  // Find starting beat index
+  const startIndex = pack.beats.findIndex(b => b.path === startBeatPath);
+  if (startIndex === -1) {
+    showNotification('Could not find selected beat in pack', 'error');
+    return;
+  }
+  
+  // Get 6 beats starting from the selected one (skip already uploaded)
+  const beatsToQueue = [];
+  for (let i = startIndex; i < pack.beats.length && beatsToQueue.length < 6; i++) {
+    const beat = pack.beats[i];
+    
+    // Skip if already uploaded
+    if (isBeatUploaded(beat.name)) continue;
+    
+    // Skip if no image assigned
+    if (!beatImages[beat.path]) continue;
+    
+    // Skip if already in queue
+    const alreadyQueued = globalUploadQueue.items.some(item => 
+      item.beat.path === beat.path && !['completed', 'failed'].includes(item.status)
+    );
+    if (alreadyQueued) continue;
+    
+    beatsToQueue.push(beat);
+  }
+  
+  if (beatsToQueue.length === 0) {
+    showNotification('No valid beats to queue from this position (all uploaded or already queued)', 'info');
+    return;
+  }
+  
+  // Add to global queue
+  const addedCount = addToGlobalQueue(beatsToQueue, pack, channel);
+  
+  showNotification(`📦 Added ${addedCount} beats from "${pack.name}" to queue`, 'success');
+  
+  // Show queue status
+  const totalQueued = globalUploadQueue.items.filter(i => i.status === 'queued').length;
+  showNotification(`📋 Total in queue: ${totalQueued} beats | Click "Start Queue" to process`, 'info');
+  
+  // Switch to Progress tab to show queue
+  const progressTab = document.querySelector('.main-nav-tab[data-section="progress"]');
+  if (progressTab) progressTab.click();
+}
+
+/**
+ * Legacy function - still works for single pack auto upload with immediate processing
+ */
+async function autoUpload6FromHereLegacy() {
   // Clear session scheduled dates when starting new batch
   clearSessionScheduledDates();
   
@@ -5813,6 +6284,35 @@ document.addEventListener('DOMContentLoaded', () => {
   if (clearAllBtn) {
     clearAllBtn.addEventListener('click', clearAllProgress);
   }
+  
+  // Initialize global queue control buttons
+  const startQueueBtn = document.getElementById('start-queue-btn');
+  const pauseQueueBtn = document.getElementById('pause-queue-btn');
+  const clearQueueBtn = document.getElementById('clear-queue-btn');
+  
+  if (startQueueBtn) {
+    startQueueBtn.addEventListener('click', () => {
+      if (globalUploadQueue.isPaused) {
+        resumeGlobalQueue();
+      } else {
+        startGlobalQueueProcessing();
+      }
+    });
+  }
+  if (pauseQueueBtn) {
+    pauseQueueBtn.addEventListener('click', pauseGlobalQueue);
+  }
+  if (clearQueueBtn) {
+    clearQueueBtn.addEventListener('click', () => {
+      if (confirm('Clear all queued items?')) {
+        clearGlobalQueue();
+        clearAllProgress();
+      }
+    });
+  }
+  
+  // Initial UI update
+  updateGlobalQueueUI();
 });
 
 // Make functions globally available
@@ -5825,4 +6325,12 @@ window.updateProgressItem = updateProgressItem;
 window.startProgressBatch = startProgressBatch;
 window.incrementBatchProgress = incrementBatchProgress;
 window.PROGRESS_STATUS = PROGRESS_STATUS;
+
+// Global queue functions
+window.addToGlobalQueue = addToGlobalQueue;
+window.startGlobalQueueProcessing = startGlobalQueueProcessing;
+window.pauseGlobalQueue = pauseGlobalQueue;
+window.resumeGlobalQueue = resumeGlobalQueue;
+window.clearGlobalQueue = clearGlobalQueue;
+window.globalUploadQueue = globalUploadQueue;
 
