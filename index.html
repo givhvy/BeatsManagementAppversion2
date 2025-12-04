@@ -621,6 +621,7 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
       <div class="progress-header">
         <h2>📊 Upload Progress</h2>
         <div class="progress-actions">
+          <button id="batch-upload-channels-btn" class="btn-primary">🎯 Batch Upload Channels</button>
           <button id="clear-completed-btn" class="btn-secondary">🗑️ Clear Completed</button>
           <button id="clear-all-progress-btn" class="btn-secondary">Clear All</button>
         </div>
@@ -762,6 +763,51 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
         <div style="display: flex; gap: 10px; margin-top: 25px;">
           <button id="save-template-btn" class="btn-primary">💾 Save Template</button>
           <button id="cancel-edit-templates-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Batch Upload Channels Modal -->
+  <div id="batch-upload-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3>🎯 Batch Upload - Select Channels</h3>
+        <button id="close-batch-upload-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="batch-upload-info">
+          <p>Select channels to auto-upload 6 beats from each (starting after the last used beat):</p>
+        </div>
+        
+        <div class="batch-select-actions">
+          <button id="batch-select-all-btn" class="btn-secondary btn-sm">✅ Select All</button>
+          <button id="batch-deselect-all-btn" class="btn-secondary btn-sm">❌ Deselect All</button>
+          <button id="batch-refresh-btn" class="btn-secondary btn-sm">🔄 Refresh</button>
+          <span class="selected-count" id="batch-selected-count">0 channels selected</span>
+        </div>
+        
+        <div class="batch-channels-grid" id="batch-channels-grid">
+          <!-- Channels will be populated here -->
+          <div class="loading-channels">Loading channels...</div>
+        </div>
+        
+        <div class="batch-summary" id="batch-summary" style="display: none;">
+          <div class="summary-row">
+            <span>📦 Total beats to upload:</span>
+            <span id="batch-total-beats">0</span>
+          </div>
+          <div class="summary-row">
+            <span>📺 Channels selected:</span>
+            <span id="batch-channel-count">0</span>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button id="confirm-batch-upload-btn" class="btn-primary" disabled>
+            🚀 Continue with Auto Upload 6
+          </button>
+          <button id="cancel-batch-upload-btn" class="btn-secondary">Cancel</button>
         </div>
       </div>
     </div>

@@ -6311,9 +6311,377 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
+  // Initialize Batch Upload Channels Modal
+  initBatchUploadModal();
+  
   // Initial UI update
   updateGlobalQueueUI();
 });
+
+// =============================================
+// BATCH UPLOAD CHANNELS MODAL
+// =============================================
+
+let batchUploadState = {
+  selectedChannels: new Set(),
+  channelData: [] // [{pack, channel, availableBeats}]
+};
+
+function initBatchUploadModal() {
+  const batchUploadBtn = document.getElementById('batch-upload-channels-btn');
+  const closeBtn = document.getElementById('close-batch-upload-modal-btn');
+  const cancelBtn = document.getElementById('cancel-batch-upload-btn');
+  const confirmBtn = document.getElementById('confirm-batch-upload-btn');
+  const selectAllBtn = document.getElementById('batch-select-all-btn');
+  const deselectAllBtn = document.getElementById('batch-deselect-all-btn');
+  const refreshBtn = document.getElementById('batch-refresh-btn');
+  
+  if (batchUploadBtn) {
+    batchUploadBtn.addEventListener('click', openBatchUploadModal);
+  }
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeBatchUploadModal);
+  }
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', closeBatchUploadModal);
+  }
+  if (confirmBtn) {
+    confirmBtn.addEventListener('click', executeBatchUpload);
+  }
+  if (selectAllBtn) {
+    selectAllBtn.addEventListener('click', batchSelectAll);
+  }
+  if (deselectAllBtn) {
+    deselectAllBtn.addEventListener('click', batchDeselectAll);
+  }
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', refreshBatchChannels);
+  }
+}
+
+/**
+ * Refresh batch channels data
+ */
+function refreshBatchChannels() {
+  showNotification('🔄 Refreshing channels data...', 'info');
+  
+  // Save previous selections by pack ID
+  const previousSelectedPackIds = new Set();
+  batchUploadState.selectedChannels.forEach(index => {
+    const data = batchUploadState.channelData[index];
+    if (data) {
+      previousSelectedPackIds.add(data.pack.id);
+    }
+  });
+  
+  // Reset state
+  batchUploadState.selectedChannels.clear();
+  batchUploadState.channelData = [];
+  
+  // Repopulate with fresh data
+  populateBatchChannels();
+  
+  // Restore previous selections by pack ID
+  batchUploadState.channelData.forEach((data, index) => {
+    if (previousSelectedPackIds.has(data.pack.id) && data.availableCount > 0) {
+      batchUploadState.selectedChannels.add(index);
+    }
+  });
+  
+  // Update UI
+  updateBatchChannelCards();
+  updateBatchSelectedCount();
+  updateBatchSummary();
+  
+  showNotification('✅ Channels data refreshed!', 'success');
+}
+
+function openBatchUploadModal() {
+  const modal = document.getElementById('batch-upload-modal');
+  if (!modal) return;
+  
+  // Reset state
+  batchUploadState.selectedChannels.clear();
+  batchUploadState.channelData = [];
+  
+  // Populate channels from visible packs
+  populateBatchChannels();
+  
+  modal.style.display = 'flex';
+}
+
+function closeBatchUploadModal() {
+  const modal = document.getElementById('batch-upload-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function populateBatchChannels() {
+  const grid = document.getElementById('batch-channels-grid');
+  if (!grid) return;
+  
+  // Get visible (non-hidden) packs
+  const visiblePacks = packs.filter(p => !p.hidden);
+  
+  if (visiblePacks.length === 0) {
+    grid.innerHTML = '<div class="loading-channels">No visible packs found</div>';
+    return;
+  }
+  
+  batchUploadState.channelData = [];
+  
+  // Build channel data for each pack
+  visiblePacks.forEach(pack => {
+    // Find channel for this pack
+    let channel = findChannelForPack(pack.name);
+    if (!channel) {
+      const packMatch = pack.name.match(/^C(\d+)/i);
+      if (packMatch) {
+        const channelNum = packMatch[1];
+        channel = {
+          id: `AccountA/channel${channelNum}`,
+          name: pack.name,
+          ready: true
+        };
+      }
+    }
+    
+    if (!channel) return;
+    
+    // Find last used beat index
+    const lastUsedIndex = pack.beats.findIndex(b => b.lastUsed);
+    const startIndex = lastUsedIndex >= 0 ? lastUsedIndex + 1 : 0;
+    
+    // Count available beats (after last used, not uploaded, has image)
+    let availableCount = 0;
+    const availableBeats = [];
+    
+    for (let i = startIndex; i < pack.beats.length && availableBeats.length < 6; i++) {
+      const beat = pack.beats[i];
+      
+      // Skip if already uploaded
+      if (isBeatUploaded(beat.name)) continue;
+      
+      // Skip if no image
+      if (!beatImages[beat.path]) continue;
+      
+      // Skip if already in global queue
+      const alreadyQueued = globalUploadQueue.items.some(item => 
+        item.beat.path === beat.path && !['completed', 'failed'].includes(item.status)
+      );
+      if (alreadyQueued) continue;
+      
+      availableBeats.push(beat);
+      availableCount++;
+    }
+    
+    batchUploadState.channelData.push({
+      pack: pack,
+      channel: channel,
+      availableBeats: availableBeats,
+      availableCount: availableCount,
+      lastUsedIndex: lastUsedIndex
+    });
+  });
+  
+  // Sort by pack name (C1, C2, C3...)
+  batchUploadState.channelData.sort((a, b) => {
+    const numA = parseInt(a.pack.name.replace(/\D/g, '')) || 0;
+    const numB = parseInt(b.pack.name.replace(/\D/g, '')) || 0;
+    return numA - numB;
+  });
+  
+  // Render channel cards
+  grid.innerHTML = batchUploadState.channelData.map((data, index) => {
+    const isDisabled = data.availableCount === 0;
+    const disabledClass = isDisabled ? 'disabled' : '';
+    const beatsClass = data.availableCount === 0 ? 'none' : '';
+    
+    return `
+      <div class="batch-channel-card ${disabledClass}" 
+           data-index="${index}" 
+           data-pack-id="${data.pack.id}"
+           ${isDisabled ? '' : 'onclick="toggleBatchChannel(this)"'}>
+        <div class="check-indicator">${isDisabled ? '—' : ''}</div>
+        <div class="channel-name">${data.pack.name}</div>
+        <div class="channel-info">
+          ${data.lastUsedIndex >= 0 ? `Last: #${data.lastUsedIndex + 1}` : 'No last used'}
+        </div>
+        <div class="beats-available ${beatsClass}">
+          ${data.availableCount > 0 ? `${data.availableCount} beats ready` : 'No beats available'}
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  updateBatchSummary();
+}
+
+function toggleBatchChannel(element) {
+  const index = parseInt(element.dataset.index);
+  const data = batchUploadState.channelData[index];
+  
+  if (!data || data.availableCount === 0) return;
+  
+  if (batchUploadState.selectedChannels.has(index)) {
+    batchUploadState.selectedChannels.delete(index);
+    element.classList.remove('selected');
+    element.querySelector('.check-indicator').textContent = '';
+  } else {
+    batchUploadState.selectedChannels.add(index);
+    element.classList.add('selected');
+    element.querySelector('.check-indicator').textContent = '✓';
+  }
+  
+  updateBatchSummary();
+}
+
+/**
+ * Update batch channel cards UI after refresh
+ */
+function updateBatchChannelCards() {
+  const grid = document.getElementById('batch-channels-grid');
+  if (!grid) return;
+  
+  // Re-render channel cards with fresh data
+  grid.innerHTML = batchUploadState.channelData.map((data, index) => {
+    const isDisabled = data.availableCount === 0;
+    const disabledClass = isDisabled ? 'disabled' : '';
+    const beatsClass = data.availableCount === 0 ? 'none' : '';
+    const isSelected = batchUploadState.selectedChannels.has(index);
+    const selectedClass = isSelected ? 'selected' : '';
+    
+    return `
+      <div class="batch-channel-card ${disabledClass} ${selectedClass}" 
+           data-index="${index}" 
+           data-pack-id="${data.pack.id}"
+           ${isDisabled ? '' : 'onclick="toggleBatchChannel(this)"'}>
+        <div class="check-indicator">${isSelected ? '✓' : (isDisabled ? '—' : '')}</div>
+        <div class="channel-name">${data.pack.name}</div>
+        <div class="channel-info">
+          ${data.lastUsedIndex >= 0 ? `Last: #${data.lastUsedIndex + 1}` : 'No last used'}
+        </div>
+        <div class="beats-available ${beatsClass}">
+          ${data.availableCount > 0 ? `${data.availableCount} beats ready` : 'No beats available'}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/**
+ * Update selected count display
+ */
+function updateBatchSelectedCount() {
+  const countEl = document.getElementById('batch-selected-count');
+  const selectedCount = batchUploadState.selectedChannels.size;
+  
+  if (countEl) {
+    countEl.textContent = `${selectedCount} channel${selectedCount !== 1 ? 's' : ''} selected`;
+  }
+}
+
+function batchSelectAll() {
+  batchUploadState.channelData.forEach((data, index) => {
+    if (data.availableCount > 0) {
+      batchUploadState.selectedChannels.add(index);
+    }
+  });
+  
+  document.querySelectorAll('.batch-channel-card:not(.disabled)').forEach(card => {
+    card.classList.add('selected');
+    card.querySelector('.check-indicator').textContent = '✓';
+  });
+  
+  updateBatchSummary();
+}
+
+function batchDeselectAll() {
+  batchUploadState.selectedChannels.clear();
+  
+  document.querySelectorAll('.batch-channel-card').forEach(card => {
+    card.classList.remove('selected');
+    card.querySelector('.check-indicator').textContent = '';
+  });
+  
+  updateBatchSummary();
+}
+
+function updateBatchSummary() {
+  const countEl = document.getElementById('batch-selected-count');
+  const summaryEl = document.getElementById('batch-summary');
+  const totalBeatsEl = document.getElementById('batch-total-beats');
+  const channelCountEl = document.getElementById('batch-channel-count');
+  const confirmBtn = document.getElementById('confirm-batch-upload-btn');
+  
+  const selectedCount = batchUploadState.selectedChannels.size;
+  let totalBeats = 0;
+  
+  batchUploadState.selectedChannels.forEach(index => {
+    const data = batchUploadState.channelData[index];
+    if (data) {
+      totalBeats += data.availableCount;
+    }
+  });
+  
+  if (countEl) {
+    countEl.textContent = `${selectedCount} channel${selectedCount !== 1 ? 's' : ''} selected`;
+  }
+  
+  if (summaryEl) {
+    summaryEl.style.display = selectedCount > 0 ? 'block' : 'none';
+  }
+  
+  if (totalBeatsEl) {
+    totalBeatsEl.textContent = totalBeats;
+  }
+  
+  if (channelCountEl) {
+    channelCountEl.textContent = selectedCount;
+  }
+  
+  if (confirmBtn) {
+    confirmBtn.disabled = selectedCount === 0;
+    confirmBtn.textContent = selectedCount > 0 
+      ? `🚀 Upload ${totalBeats} beats from ${selectedCount} channels`
+      : '🚀 Continue with Auto Upload 6';
+  }
+}
+
+async function executeBatchUpload() {
+  if (batchUploadState.selectedChannels.size === 0) {
+    showNotification('No channels selected', 'error');
+    return;
+  }
+  
+  // Collect all beats from selected channels
+  let totalAdded = 0;
+  
+  batchUploadState.selectedChannels.forEach(index => {
+    const data = batchUploadState.channelData[index];
+    if (data && data.availableBeats.length > 0) {
+      const added = addToGlobalQueue(data.availableBeats, data.pack, data.channel);
+      totalAdded += added;
+    }
+  });
+  
+  // Close modal
+  closeBatchUploadModal();
+  
+  if (totalAdded > 0) {
+    showNotification(`📦 Added ${totalAdded} beats from ${batchUploadState.selectedChannels.size} channels to queue`, 'success');
+    
+    // Auto-start the queue
+    if (!globalUploadQueue.isProcessing) {
+      showNotification('🚀 Starting queue processing...', 'info');
+      await startGlobalQueueProcessing();
+    }
+  } else {
+    showNotification('No beats were added to queue', 'warning');
+  }
+}
+
+// Make toggle function globally available for onclick
+window.toggleBatchChannel = toggleBatchChannel;
 
 // Make functions globally available
 window.autoUploadNextBeats = autoUploadNextBeats;
