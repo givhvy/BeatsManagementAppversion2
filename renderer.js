@@ -5073,10 +5073,28 @@ function findChannelForPack(packName) {
   // Find channel with matching number
   const channel = youtubeState.channels.find(ch => {
     const channelName = ch.name || ch.id || '';
+    const channelId = ch.id || '';
+    
     // Match "C1", "channel1", "Channel 1", etc.
     const channelMatch = channelName.match(/(?:channel\s*|C)(\d+)/i);
-    return channelMatch && channelMatch[1] === packNumber;
+    const idMatch = channelId.match(/(\d+)/);
+    
+    return (channelMatch && channelMatch[1] === packNumber) || 
+           (idMatch && idMatch[1] === packNumber);
   });
+  
+  // If found, normalize the channel ID for new-style channels (C16+)
+  if (channel) {
+    // Check if this is a new-style channel (C16, C17, etc.)
+    const isNewStyle = channel.id && channel.id.match(/^C\d+\/C\d+$/i);
+    if (isNewStyle) {
+      // Return channel with normalized ID
+      return {
+        ...channel,
+        id: `C${packNumber}` // Use simple format like "C25"
+      };
+    }
+  }
   
   return channel;
 }
@@ -6334,7 +6352,6 @@ function initBatchUploadModal() {
   const confirmBtn = document.getElementById('confirm-batch-upload-btn');
   const selectAllBtn = document.getElementById('batch-select-all-btn');
   const deselectAllBtn = document.getElementById('batch-deselect-all-btn');
-  const refreshBtn = document.getElementById('batch-refresh-btn');
   
   if (batchUploadBtn) {
     batchUploadBtn.addEventListener('click', openBatchUploadModal);
@@ -6354,46 +6371,6 @@ function initBatchUploadModal() {
   if (deselectAllBtn) {
     deselectAllBtn.addEventListener('click', batchDeselectAll);
   }
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', refreshBatchChannels);
-  }
-}
-
-/**
- * Refresh batch channels data
- */
-function refreshBatchChannels() {
-  showNotification('🔄 Refreshing channels data...', 'info');
-  
-  // Save previous selections by pack ID
-  const previousSelectedPackIds = new Set();
-  batchUploadState.selectedChannels.forEach(index => {
-    const data = batchUploadState.channelData[index];
-    if (data) {
-      previousSelectedPackIds.add(data.pack.id);
-    }
-  });
-  
-  // Reset state
-  batchUploadState.selectedChannels.clear();
-  batchUploadState.channelData = [];
-  
-  // Repopulate with fresh data
-  populateBatchChannels();
-  
-  // Restore previous selections by pack ID
-  batchUploadState.channelData.forEach((data, index) => {
-    if (previousSelectedPackIds.has(data.pack.id) && data.availableCount > 0) {
-      batchUploadState.selectedChannels.add(index);
-    }
-  });
-  
-  // Update UI
-  updateBatchChannelCards();
-  updateBatchSelectedCount();
-  updateBatchSummary();
-  
-  showNotification('✅ Channels data refreshed!', 'success');
 }
 
 function openBatchUploadModal() {
@@ -6451,6 +6428,9 @@ function populateBatchChannels() {
     const lastUsedIndex = pack.beats.findIndex(b => b.lastUsed);
     const startIndex = lastUsedIndex >= 0 ? lastUsedIndex + 1 : 0;
     
+    // Calculate remaining beats after last used
+    const remainingBeatsCount = pack.beats.length - startIndex;
+    
     // Count available beats (after last used, not uploaded, has image)
     let availableCount = 0;
     const availableBeats = [];
@@ -6479,7 +6459,9 @@ function populateBatchChannels() {
       channel: channel,
       availableBeats: availableBeats,
       availableCount: availableCount,
-      lastUsedIndex: lastUsedIndex
+      lastUsedIndex: lastUsedIndex,
+      totalBeats: pack.beats.length,
+      remainingBeats: remainingBeatsCount
     });
   });
   
@@ -6496,6 +6478,11 @@ function populateBatchChannels() {
     const disabledClass = isDisabled ? 'disabled' : '';
     const beatsClass = data.availableCount === 0 ? 'none' : '';
     
+    // Show remaining vs available (to explain why some beats aren't available)
+    const remainingInfo = data.remainingBeats > data.availableCount 
+      ? `<div class="beats-note">(${data.remainingBeats - data.availableCount} need images)</div>` 
+      : '';
+    
     return `
       <div class="batch-channel-card ${disabledClass}" 
            data-index="${index}" 
@@ -6504,11 +6491,13 @@ function populateBatchChannels() {
         <div class="check-indicator">${isDisabled ? '—' : ''}</div>
         <div class="channel-name">${data.pack.name}</div>
         <div class="channel-info">
-          ${data.lastUsedIndex >= 0 ? `Last: #${data.lastUsedIndex + 1}` : 'No last used'}
+          ${data.lastUsedIndex >= 0 ? `<span style="color: #ff9500;">Last Used:</span> #${data.lastUsedIndex + 1}` : 'No last used'}
         </div>
+        <div class="channel-total">${data.totalBeats} beats total</div>
         <div class="beats-available ${beatsClass}">
           ${data.availableCount > 0 ? `${data.availableCount} beats ready` : 'No beats available'}
         </div>
+        ${remainingInfo}
       </div>
     `;
   }).join('');
@@ -6533,51 +6522,6 @@ function toggleBatchChannel(element) {
   }
   
   updateBatchSummary();
-}
-
-/**
- * Update batch channel cards UI after refresh
- */
-function updateBatchChannelCards() {
-  const grid = document.getElementById('batch-channels-grid');
-  if (!grid) return;
-  
-  // Re-render channel cards with fresh data
-  grid.innerHTML = batchUploadState.channelData.map((data, index) => {
-    const isDisabled = data.availableCount === 0;
-    const disabledClass = isDisabled ? 'disabled' : '';
-    const beatsClass = data.availableCount === 0 ? 'none' : '';
-    const isSelected = batchUploadState.selectedChannels.has(index);
-    const selectedClass = isSelected ? 'selected' : '';
-    
-    return `
-      <div class="batch-channel-card ${disabledClass} ${selectedClass}" 
-           data-index="${index}" 
-           data-pack-id="${data.pack.id}"
-           ${isDisabled ? '' : 'onclick="toggleBatchChannel(this)"'}>
-        <div class="check-indicator">${isSelected ? '✓' : (isDisabled ? '—' : '')}</div>
-        <div class="channel-name">${data.pack.name}</div>
-        <div class="channel-info">
-          ${data.lastUsedIndex >= 0 ? `Last: #${data.lastUsedIndex + 1}` : 'No last used'}
-        </div>
-        <div class="beats-available ${beatsClass}">
-          ${data.availableCount > 0 ? `${data.availableCount} beats ready` : 'No beats available'}
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-/**
- * Update selected count display
- */
-function updateBatchSelectedCount() {
-  const countEl = document.getElementById('batch-selected-count');
-  const selectedCount = batchUploadState.selectedChannels.size;
-  
-  if (countEl) {
-    countEl.textContent = `${selectedCount} channel${selectedCount !== 1 ? 's' : ''} selected`;
-  }
 }
 
 function batchSelectAll() {

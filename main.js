@@ -13,32 +13,7 @@ try {
 
 let mainWindow;
 
-// Get database path - save to project folder instead of AppData (to avoid filling C: drive)
-function getDatabasePath() {
-  // Use project folder for database
-  return path.join(__dirname, 'beats-data.json');
-}
-
-// Migrate database from AppData to project folder (one-time)
-function migrateDatabase() {
-  const newPath = getDatabasePath();
-  const oldPath = path.join(app.getPath('userData'), 'beats-data.json');
-  
-  // If new database doesn't exist but old one does, migrate it
-  if (!fs.existsSync(newPath) && fs.existsSync(oldPath)) {
-    try {
-      console.log('📦 Migrating database from AppData to project folder...');
-      fs.copyFileSync(oldPath, newPath);
-      console.log('✅ Database migrated successfully to:', newPath);
-    } catch (err) {
-      console.error('❌ Database migration failed:', err.message);
-    }
-  }
-}
-
 function createWindow() {
-  // Migrate database on app start
-  migrateDatabase();
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
@@ -240,7 +215,7 @@ ipcMain.handle('read-folder-contents', async (event, folderPath) => {
 });
 
 ipcMain.handle('save-data', async (event, data) => {
-  const dataPath = getDatabasePath();
+  const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
   try {
     fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
     return true;
@@ -251,7 +226,7 @@ ipcMain.handle('save-data', async (event, data) => {
 });
 
 ipcMain.handle('load-data', async () => {
-  const dataPath = getDatabasePath();
+  const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
   console.log('📂 Database file location:', dataPath);
   try {
     if (fs.existsSync(dataPath)) {
@@ -266,11 +241,11 @@ ipcMain.handle('load-data', async () => {
 });
 
 ipcMain.handle('get-database-path', async () => {
-  return getDatabasePath();
+  return path.join(app.getPath('userData'), 'beats-data.json');
 });
 
 ipcMain.handle('export-database', async () => {
-  const dataPath = getDatabasePath();
+  const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
 
   if (!fs.existsSync(dataPath)) {
     return { success: false, error: 'No database found to export' };
@@ -312,7 +287,7 @@ ipcMain.handle('import-database', async () => {
       JSON.parse(data);
 
       // Copy to database location
-      const dataPath = getDatabasePath();
+      const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
       fs.writeFileSync(dataPath, data);
 
       return { success: true, path: importPath };
@@ -707,20 +682,20 @@ let youtubeServerRunning = false;
 // Get automation config path
 const automationConfigPath = path.join(__dirname, 'automation', 'config');
 
-// Load upload history from local file
+// Load upload history from file
 ipcMain.handle('load-upload-history', async () => {
   try {
     const historyPath = path.join(automationConfigPath, 'upload-history.json');
     
     if (!fs.existsSync(historyPath)) {
-      return { success: false, error: 'History file not found' };
+      return { success: true, history: [] };
     }
     
     const history = JSON.parse(fs.readFileSync(historyPath, 'utf8'));
     return { success: true, history };
   } catch (error) {
     console.error('Error loading upload history:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: error.message, history: [] };
   }
 });
 
@@ -730,20 +705,14 @@ ipcMain.handle('load-global-settings', async () => {
     const settingsPath = path.join(automationConfigPath, 'global-settings.json');
     
     if (!fs.existsSync(settingsPath)) {
-      // Create default settings
+      // Return default settings
       const defaultSettings = {
         templates: {
           template1: {
             name: "Default LVMH Template",
             titleTemplate: '[FREE] [STYLE] TYPE BEAT - "[NAME]"',
-            description: "💰PURCHASE on instagram @sheloveslvmh\n\n• You must credit with (PROD. LVMH) in the title\n• You must purchase a lease to upload your track to streaming platforms like Spotify, Apple Music, etc.\n• Don't put a copyright on your song unless you purchased exclusive rights. Otherwise, it will be hit with a complaint.\n\nPrices:\n$15 - mp3 lease\n$25 - wav lease\n$35 - full stems\n$45 - unlimited\nnegotiate price - exclusive\n\n💰PURCHASE will have no tag on instagram @sheloveslvmh\n\nThis beat is free for NON PROFIT USE ONLY (writing lyrics, test recording with beat, no upload on streaming platforms)",
+            description: "💰PURCHASE on instagram @sheloveslvmh\n\n• You must credit with (PROD. LVMH) in the title",
             tags: ["type beat", "free type beat", "free beat", "instrumental", "type beat 2025"]
-          },
-          template2: {
-            name: "Simple Template",
-            titleTemplate: '[FREE] [STYLE] TYPE BEAT - "[NAME]"',
-            description: "🎵 Free for non-profit use\n📧 Contact for licensing",
-            tags: ["type beat", "free beat", "instrumental"]
           }
         },
         activeTemplate: "template1",
@@ -754,7 +723,6 @@ ipcMain.handle('load-global-settings', async () => {
           timezone: "America/Los_Angeles"
         }
       };
-      fs.writeFileSync(settingsPath, JSON.stringify(defaultSettings, null, 2));
       return { success: true, settings: defaultSettings };
     }
     
@@ -770,8 +738,13 @@ ipcMain.handle('load-global-settings', async () => {
 ipcMain.handle('save-global-settings', async (event, settings) => {
   try {
     const settingsPath = path.join(automationConfigPath, 'global-settings.json');
+    
+    // Ensure directory exists
+    if (!fs.existsSync(automationConfigPath)) {
+      fs.mkdirSync(automationConfigPath, { recursive: true });
+    }
+    
     fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
-    console.log('[Global Settings] Saved');
     return { success: true };
   } catch (error) {
     console.error('Error saving global settings:', error);
@@ -779,139 +752,22 @@ ipcMain.handle('save-global-settings', async (event, settings) => {
   }
 });
 
-// Apply template to all channels
-ipcMain.handle('apply-template-to-all-channels', async (event, { templateId, template }) => {
+// Load channel history (for specific channel)
+ipcMain.handle('load-channel-history', async (event, channelId) => {
   try {
-    let channelCount = 0;
+    // channelId format: "AccountA/channel1"
+    const channelPath = path.join(automationConfigPath, channelId);
+    const historyPath = path.join(channelPath, 'upload-history.json');
     
-    // Recursively find all config.json files in channel folders
-    function findAndUpdateConfigs(dirPath, depth = 0) {
-      if (depth > 3) return; // Max depth to prevent infinite recursion
-      
-      const items = fs.readdirSync(dirPath, { withFileTypes: true });
-      
-      for (const item of items) {
-        if (!item.isDirectory()) continue;
-        
-        const itemPath = path.join(dirPath, item.name);
-        const configPath = path.join(itemPath, 'config.json');
-        
-        // Check if this folder has a config.json (it's a channel folder)
-        if (fs.existsSync(configPath)) {
-          try {
-            const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-            
-            // Update metadata template
-            config.metadataTemplate = config.metadataTemplate || {};
-            config.metadataTemplate.titleTemplate = template.titleTemplate;
-            config.metadataTemplate.description = template.description;
-            config.metadataTemplate.tags = template.tags || [];
-            config.metadataTemplate.descriptionConditions = {
-              default: {
-                text: template.description,
-                tags: template.tags || []
-              }
-            };
-            
-            fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
-            channelCount++;
-            
-            // Get relative path for logging
-            const relativePath = itemPath.replace(automationConfigPath, '').replace(/^[\\/]/, '');
-            console.log(`[Apply Template] Updated: ${relativePath}`);
-          } catch (e) {
-            console.error(`[Apply Template] Error updating ${configPath}:`, e.message);
-          }
-        }
-        
-        // Recurse into subdirectories
-        findAndUpdateConfigs(itemPath, depth + 1);
-      }
+    if (!fs.existsSync(historyPath)) {
+      return { success: true, history: [] };
     }
     
-    findAndUpdateConfigs(automationConfigPath);
-    
-    return { success: true, channelCount };
+    const history = JSON.parse(fs.readFileSync(historyPath, 'utf8'));
+    return { success: true, history };
   } catch (error) {
-    console.error('Error applying template:', error);
-    return { success: false, error: error.message };
-  }
-});
-
-// Create new YouTube channel
-ipcMain.handle('create-youtube-channel', async (event, { accountName, channelId, channelName, channelStyle, credentials }) => {
-  try {
-    const channelPath = path.join(automationConfigPath, accountName, channelId);
-    const uploadsPath = path.join(__dirname, 'automation', 'uploads', accountName, channelId, 'BeatsUpload');
-    
-    // Check if channel already exists
-    if (fs.existsSync(channelPath)) {
-      return { success: false, error: 'Channel folder already exists' };
-    }
-    
-    // Create directories
-    fs.mkdirSync(channelPath, { recursive: true });
-    fs.mkdirSync(uploadsPath, { recursive: true });
-    
-    // Load global settings to get active template
-    let metadataTemplate = null;
-    const globalSettingsPath = path.join(automationConfigPath, 'global-settings.json');
-    if (fs.existsSync(globalSettingsPath)) {
-      try {
-        const globalSettings = JSON.parse(fs.readFileSync(globalSettingsPath, 'utf8'));
-        const activeTemplateId = globalSettings.activeTemplate || 'template1';
-        const activeTemplate = globalSettings.templates?.[activeTemplateId];
-        
-        if (activeTemplate) {
-          metadataTemplate = {
-            titleTemplate: activeTemplate.titleTemplate,
-            description: activeTemplate.description,
-            tags: activeTemplate.tags || [],
-            descriptionConditions: {
-              default: {
-                text: activeTemplate.description,
-                tags: activeTemplate.tags || []
-              }
-            }
-          };
-          console.log(`[Create Channel] Applied template: ${activeTemplate.name}`);
-        }
-      } catch (e) {
-        console.error('[Create Channel] Error loading global settings:', e.message);
-      }
-    }
-    
-    // Create config.json with template
-    const config = {
-      channelName: channelName,
-      typeBeatStyle: channelStyle || '',
-      publishTime: '12:00',
-      timezone: 'America/Los_Angeles',
-      autoUpload: true,
-      createdAt: new Date().toISOString(),
-      metadataTemplate: metadataTemplate
-    };
-    fs.writeFileSync(path.join(channelPath, 'config.json'), JSON.stringify(config, null, 2));
-    
-    // Save credentials.json
-    fs.writeFileSync(path.join(channelPath, 'credentials.json'), JSON.stringify(credentials, null, 2));
-    
-    // Create empty scheduled-dates.json
-    fs.writeFileSync(path.join(channelPath, 'scheduled-dates.json'), JSON.stringify({ dates: [] }, null, 2));
-    
-    // Create upload-count.json
-    fs.writeFileSync(path.join(channelPath, 'upload-count.json'), JSON.stringify({ date: null, count: 0 }, null, 2));
-    
-    console.log(`[Create Channel] Created channel: ${accountName}/${channelId}`);
-    
-    return { 
-      success: true, 
-      channelId: `${accountName}/${channelId}`,
-      channelPath: channelPath
-    };
-  } catch (error) {
-    console.error('[Create Channel] Error:', error);
-    return { success: false, error: error.message };
+    console.error('Error loading channel history:', error);
+    return { success: false, error: error.message, history: [] };
   }
 });
 
@@ -1198,71 +1054,58 @@ ipcMain.handle('copy-video-to-channel', async (event, videoPath, channelId) => {
   }
 });
 
-// Copy video for upload - fetches channel info from automation server with fallback
+// Copy video for upload - fetches channel info from automation server
 ipcMain.handle('copy-video-for-upload', async (event, { videoPath, channelId, metadata }) => {
   try {
     const http = require('http');
-    let uploadsPath = null;
     
-    // Try to get channel info from automation server first
-    try {
-      const channelData = await new Promise((resolve, reject) => {
-        const req = http.get('http://localhost:9000/api/channels', (res) => {
-          let data = '';
-          res.on('data', chunk => data += chunk);
-          res.on('end', () => {
-            try {
-              resolve(JSON.parse(data));
-            } catch (e) {
-              reject(new Error('Invalid server response'));
-            }
-          });
-        });
-        req.on('error', reject);
-        req.setTimeout(3000, () => {
-          req.destroy();
-          reject(new Error('Server timeout'));
-        });
-      });
-      
-      const channel = channelData.channels.find(c => c.channelId === channelId);
-      if (channel && channel.uploadsPath) {
-        uploadsPath = channel.uploadsPath;
-      }
-    } catch (serverError) {
-      console.log('[copy-video-for-upload] Server offline, using fallback path calculation');
-    }
-    
-    // Fallback: Calculate upload path directly from channelId
-    // channelId format: "AccountA/channel1" or just "channel1"
-    if (!uploadsPath) {
-      const automationPath = path.join(__dirname, 'automation');
-      
-      if (channelId.includes('/')) {
-        // Format: "AccountA/channel1"
-        uploadsPath = path.join(automationPath, 'uploads', channelId, 'BeatsUpload');
-      } else {
-        // Try to find the channel in config folders
-        const configPath = path.join(automationPath, 'config');
-        const accountFolders = fs.readdirSync(configPath, { withFileTypes: true })
-          .filter(d => d.isDirectory() && d.name.startsWith('Account'));
-        
-        for (const account of accountFolders) {
-          const channelPath = path.join(configPath, account.name, channelId);
-          if (fs.existsSync(channelPath)) {
-            uploadsPath = path.join(automationPath, 'uploads', account.name, channelId, 'BeatsUpload');
-            break;
+    // Get channel info from automation server
+    const channelData = await new Promise((resolve, reject) => {
+      http.get('http://localhost:9000/api/channels', (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(new Error('Invalid server response'));
           }
-        }
+        });
+      }).on('error', reject);
+    });
+    
+    // Extract channel number from channelId (e.g., "AccountA/channel25" -> "25", "C25/C25" -> "25")
+    const channelNumMatch = channelId.match(/(\d+)/);
+    const channelNum = channelNumMatch ? channelNumMatch[1] : null;
+    
+    // Find channel with flexible matching
+    let channel = channelData.channels.find(c => {
+      // Exact match
+      if (c.channelId === channelId) return true;
+      
+      // Match by channel number
+      if (channelNum) {
+        const serverChannelNum = c.channelId.match(/(\d+)/);
+        if (serverChannelNum && serverChannelNum[1] === channelNum) return true;
         
-        // Last resort: use default path
-        if (!uploadsPath) {
-          uploadsPath = path.join(automationPath, 'uploads', 'AccountA', channelId, 'BeatsUpload');
-        }
+        // Also check if channelId is like "C25"
+        if (c.channelId === `C${channelNum}`) return true;
+        if (c.channelId === `channel${channelNum}`) return true;
       }
+      
+      return false;
+    });
+    
+    if (!channel) {
+      console.error(`[copy-video-for-upload] Channel not found. Looking for: ${channelId}, available:`, channelData.channels.map(c => c.channelId));
+      return { success: false, error: `Channel not found on server (looking for: ${channelId})` };
     }
     
-    console.log(`[copy-video-for-upload] Using upload path: ${uploadsPath}`);
+    // Get the uploads path from channel
+    const uploadsPath = channel.uploadsPath;
+    if (!uploadsPath) {
+      return { success: false, error: 'Channel upload path not configured' };
+    }
     
     // Ensure upload folder exists
     if (!fs.existsSync(uploadsPath)) {
@@ -1281,11 +1124,8 @@ ipcMain.handle('copy-video-for-upload', async (event, { videoPath, channelId, me
       fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
     }
     
-    console.log(`[copy-video-for-upload] Copied to: ${destPath}`);
-    
     return { success: true, destPath };
   } catch (error) {
-    console.error('[copy-video-for-upload] Error:', error.message);
     return { success: false, error: error.message };
   }
 });
@@ -1293,97 +1133,52 @@ ipcMain.handle('copy-video-for-upload', async (event, { videoPath, channelId, me
 // Re-authenticate YouTube token for a channel
 ipcMain.handle('reauthenticate-youtube', async (event, channelId) => {
   try {
+    const { spawn } = require('child_process');
     const automationPath = path.join(__dirname, 'automation');
     
     // channelId format: "AccountA/channel1"
-    const tokenPath = path.join(automationPath, 'config', channelId, 'token.json');
-    const credentialsPath = path.join(automationPath, 'config', channelId, 'credentials.json');
+    const configPath = `config/${channelId}`;
     
-    console.log('[Re-auth] Channel ID:', channelId);
-    console.log('[Re-auth] Credentials path:', credentialsPath);
-    console.log('[Re-auth] Credentials exists:', fs.existsSync(credentialsPath));
-    
-    // Check if credentials exist
-    if (!fs.existsSync(credentialsPath)) {
-      return { success: false, error: `Credentials file not found: ${credentialsPath}` };
-    }
-    
-    // Delete existing token to force re-auth
-    if (fs.existsSync(tokenPath)) {
-      fs.unlinkSync(tokenPath);
-      console.log('[Re-auth] Deleted existing token:', tokenPath);
-    }
-    
-    // Read credentials
-    const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
-    const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
-    
-    // Load googleapis from automation/node_modules
-    const googleapisPath = path.join(automationPath, 'node_modules', 'googleapis');
-    const { google } = require(googleapisPath);
-    
-    const oAuth2Client = new google.auth.OAuth2(
-      client_id,
-      client_secret,
-      redirect_uris[0]
-    );
-    
-    const authUrl = oAuth2Client.generateAuthUrl({
-      access_type: 'offline',
-      scope: ['https://www.googleapis.com/auth/youtube.upload'],
+    // Open browser for re-authentication
+    const getTokenProcess = spawn('node', ['getToken.js', configPath], {
+      cwd: automationPath,
+      stdio: ['inherit', 'pipe', 'pipe'],
+      shell: true
     });
-    
-    // Open browser with auth URL
-    const { shell } = require('electron');
-    shell.openExternal(authUrl);
-    
-    // Return the auth URL and wait for user to input code
-    return { 
-      success: true, 
-      needsCode: true,
-      authUrl: authUrl,
-      channelId: channelId,
-      message: 'Browser opened. Please authorize and copy the code.' 
-    };
-    
-  } catch (error) {
-    console.error('[Re-auth] Error:', error);
-    return { success: false, error: error.message };
-  }
-});
 
-// Complete re-authentication with auth code
-ipcMain.handle('complete-reauth', async (event, { channelId, authCode }) => {
-  try {
-    const automationPath = path.join(__dirname, 'automation');
-    const tokenPath = path.join(automationPath, 'config', channelId, 'token.json');
-    const credentialsPath = path.join(automationPath, 'config', channelId, 'credentials.json');
-    
-    // Read credentials
-    const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
-    const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
-    
-    // Load googleapis from automation/node_modules
-    const googleapisPath = path.join(automationPath, 'node_modules', 'googleapis');
-    const { google } = require(googleapisPath);
-    
-    const oAuth2Client = new google.auth.OAuth2(
-      client_id,
-      client_secret,
-      redirect_uris[0]
-    );
-    
-    // Exchange code for tokens
-    const { tokens } = await oAuth2Client.getToken(authCode);
-    
-    // Save tokens
-    fs.writeFileSync(tokenPath, JSON.stringify(tokens, null, 2));
-    console.log('[Re-auth] Token saved:', tokenPath);
-    
-    return { success: true, message: 'Token refreshed successfully!' };
-    
+    return new Promise((resolve) => {
+      let output = '';
+      let errorOutput = '';
+
+      getTokenProcess.stdout.on('data', (data) => {
+        output += data.toString();
+        console.log('[Re-auth]:', data.toString());
+      });
+
+      getTokenProcess.stderr.on('data', (data) => {
+        errorOutput += data.toString();
+        console.error('[Re-auth Error]:', data.toString());
+      });
+
+      getTokenProcess.on('close', (code) => {
+        if (code === 0) {
+          resolve({ success: true, message: 'Token refreshed successfully' });
+        } else {
+          resolve({ success: false, error: errorOutput || 'Re-authentication failed' });
+        }
+      });
+
+      getTokenProcess.on('error', (error) => {
+        resolve({ success: false, error: error.message });
+      });
+
+      // Timeout after 2 minutes
+      setTimeout(() => {
+        getTokenProcess.kill();
+        resolve({ success: false, error: 'Re-authentication timed out' });
+      }, 120000);
+    });
   } catch (error) {
-    console.error('[Re-auth] Error getting token:', error);
     return { success: false, error: error.message };
   }
 });
