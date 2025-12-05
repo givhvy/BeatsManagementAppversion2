@@ -30,6 +30,10 @@
         <span class="nav-label">Upload Progress</span>
         <span id="progress-badge" class="progress-badge" style="display: none;">0</span>
       </button>
+      <button class="main-nav-tab" data-section="customers">
+        <span class="nav-icon">👥</span>
+        <span class="nav-label">Customer Database</span>
+      </button>
     </div>
     <div class="main-nav-status">
       <span id="youtube-status" class="status-indicator offline">● YouTube: Offline</span>
@@ -808,6 +812,206 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
           </button>
           <button id="cancel-batch-upload-btn" class="btn-secondary">Cancel</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: Customer Database -->
+  <div class="app-section" id="customers-section">
+    <div class="customers-container">
+      <!-- Left Panel - Customer List -->
+      <div class="customers-sidebar">
+        <div class="panel-header">
+          <h2>👥 Customers</h2>
+          <button id="add-customer-btn" class="btn-primary btn-sm" onclick="openAddCustomerModal()">+ Add</button>
+        </div>
+        
+        <div class="customer-search">
+          <input type="text" id="customer-search-input" placeholder="Search customers..." />
+        </div>
+        
+        <div class="customer-filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="lead">Leads</button>
+          <button class="filter-btn" data-filter="customer">Customers</button>
+          <button class="filter-btn" data-filter="vip">VIP</button>
+        </div>
+        
+        <div class="customer-stats">
+          <div class="stat-item">
+            <span class="stat-value" id="total-customers">0</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="total-leads">0</span>
+            <span class="stat-label">Leads</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="total-vip">0</span>
+            <span class="stat-label">VIP</span>
+          </div>
+        </div>
+        
+        <div class="customer-list" id="customer-list">
+          <div class="empty-state">No customers yet. Click "+ Add" to add your first customer.</div>
+        </div>
+      </div>
+      
+      <!-- Middle Panel - Customer Details -->
+      <div class="customer-details-panel">
+        <div id="customer-details-content">
+          <div class="empty-state-large">
+            <span class="empty-icon">👤</span>
+            <h3>Select a customer</h3>
+            <p>Choose a customer from the list to view details and send emails</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Panel - Email Composer -->
+      <div class="email-panel">
+        <div class="panel-header">
+          <h2>✉️ Email Composer</h2>
+        </div>
+        
+        <div class="email-templates">
+          <label>Template:</label>
+          <select id="email-template-select">
+            <option value="">-- Select Template --</option>
+            <option value="welcome">Welcome Email</option>
+            <option value="followup">Follow-up</option>
+            <option value="promo">Promotion</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        
+        <div class="email-form">
+          <div class="form-group">
+            <label>To:</label>
+            <input type="text" id="email-to" placeholder="Select customer or enter email" readonly />
+          </div>
+          
+          <div class="form-group">
+            <label>Subject:</label>
+            <input type="text" id="email-subject" placeholder="Email subject..." />
+          </div>
+          
+          <div class="form-group">
+            <label>Message:</label>
+            <textarea id="email-body" placeholder="Write your email message..." rows="10"></textarea>
+          </div>
+          
+          <div class="email-variables">
+            <span class="var-label">Variables:</span>
+            <button class="var-btn" data-var="{name}">{name}</button>
+            <button class="var-btn" data-var="{email}">{email}</button>
+            <button class="var-btn" data-var="{instagram}">{instagram}</button>
+          </div>
+          
+          <div class="email-actions">
+            <button id="send-email-btn" class="btn-primary" disabled>
+              📨 Send Email
+            </button>
+            <button id="send-bulk-email-btn" class="btn-secondary">
+              📤 Bulk Send
+            </button>
+          </div>
+        </div>
+        
+        <div class="email-history">
+          <h3>📬 Recent Emails</h3>
+          <div class="email-history-list" id="email-history-list">
+            <div class="empty-state">No emails sent yet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Add Customer Modal -->
+  <div class="modal-overlay" id="add-customer-modal" style="display: none;">
+    <div class="modal-content customer-modal">
+      <div class="modal-header">
+        <h3>👤 Add New Customer</h3>
+        <button class="modal-close" id="close-customer-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Name *</label>
+          <input type="text" id="new-customer-name" placeholder="Customer name" />
+        </div>
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" id="new-customer-email" placeholder="email@example.com" />
+        </div>
+        <div class="form-group">
+          <label>Instagram</label>
+          <input type="text" id="new-customer-instagram" placeholder="@username" />
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="new-customer-type">
+            <option value="lead">Lead</option>
+            <option value="customer">Customer</option>
+            <option value="vip">VIP</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Source</label>
+          <select id="new-customer-source">
+            <option value="instagram">Instagram</option>
+            <option value="youtube">YouTube</option>
+            <option value="website">Website</option>
+            <option value="referral">Referral</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="new-customer-notes" placeholder="Additional notes..." rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancel-customer-btn">Cancel</button>
+        <button class="btn-primary" id="save-customer-btn">💾 Save Customer</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bulk Email Modal -->
+  <div class="modal-overlay" id="bulk-email-modal" style="display: none;">
+    <div class="modal-content bulk-email-modal">
+      <div class="modal-header">
+        <h3>📤 Bulk Email</h3>
+        <button class="modal-close" id="close-bulk-email-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="bulk-email-recipients">
+          <h4>Recipients</h4>
+          <div class="recipient-filters">
+            <label><input type="checkbox" id="bulk-all" checked /> All Customers</label>
+            <label><input type="checkbox" id="bulk-leads" /> Leads Only</label>
+            <label><input type="checkbox" id="bulk-customers" /> Customers Only</label>
+            <label><input type="checkbox" id="bulk-vip" /> VIP Only</label>
+          </div>
+          <div class="recipient-count">
+            <span id="bulk-recipient-count">0</span> recipients selected
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Subject:</label>
+          <input type="text" id="bulk-email-subject" placeholder="Email subject..." />
+        </div>
+        
+        <div class="form-group">
+          <label>Message:</label>
+          <textarea id="bulk-email-body" placeholder="Write your email message... Use {name} for personalization" rows="8"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancel-bulk-email-btn">Cancel</button>
+        <button class="btn-primary" id="confirm-bulk-email-btn">🚀 Send to All</button>
       </div>
     </div>
   </div>

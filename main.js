@@ -752,6 +752,35 @@ ipcMain.handle('save-global-settings', async (event, settings) => {
   }
 });
 
+// Load customers database
+ipcMain.handle('load-customers', async () => {
+  try {
+    const customersPath = path.join(app.getPath('userData'), 'customers.json');
+    
+    if (!fs.existsSync(customersPath)) {
+      return { customers: [], emailHistory: [] };
+    }
+    
+    const data = JSON.parse(fs.readFileSync(customersPath, 'utf8'));
+    return data;
+  } catch (error) {
+    console.error('Error loading customers:', error);
+    return { customers: [], emailHistory: [] };
+  }
+});
+
+// Save customers database
+ipcMain.handle('save-customers', async (event, data) => {
+  try {
+    const customersPath = path.join(app.getPath('userData'), 'customers.json');
+    fs.writeFileSync(customersPath, JSON.stringify(data, null, 2));
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving customers:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Load channel history (for specific channel)
 ipcMain.handle('load-channel-history', async (event, channelId) => {
   try {
