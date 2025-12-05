@@ -7058,10 +7058,6 @@ function renderCustomerDetails() {
           <div class="value"><span class="customer-type-badge ${customer.type}">${customer.type}</span></div>
         </div>
         <div class="detail-item">
-          <label>Source</label>
-          <div class="value">${customer.source || 'N/A'}</div>
-        </div>
-        <div class="detail-item">
           <label>Instagram</label>
           <div class="value">${customer.instagram || 'N/A'}</div>
         </div>
@@ -7114,18 +7110,14 @@ function openAddCustomerModal() {
   }
   
   // Reset form
-  const nameInput = document.getElementById('new-customer-name');
   const emailInput = document.getElementById('new-customer-email');
   const instagramInput = document.getElementById('new-customer-instagram');
   const typeInput = document.getElementById('new-customer-type');
-  const sourceInput = document.getElementById('new-customer-source');
   const notesInput = document.getElementById('new-customer-notes');
   
-  if (nameInput) nameInput.value = '';
   if (emailInput) emailInput.value = '';
   if (instagramInput) instagramInput.value = '';
   if (typeInput) typeInput.value = 'lead';
-  if (sourceInput) sourceInput.value = 'instagram';
   if (notesInput) notesInput.value = '';
   
   modal.style.display = 'flex';
@@ -7145,17 +7137,18 @@ function closeAddCustomerModal() {
  * Save new customer
  */
 async function saveNewCustomer() {
-  const name = document.getElementById('new-customer-name').value.trim();
   const email = document.getElementById('new-customer-email').value.trim();
   const instagram = document.getElementById('new-customer-instagram').value.trim();
   const type = document.getElementById('new-customer-type').value;
-  const source = document.getElementById('new-customer-source').value;
   const notes = document.getElementById('new-customer-notes').value.trim();
   
-  if (!name || !email) {
-    showNotification('Name and email are required', 'error');
+  if (!email) {
+    showNotification('Email is required', 'error');
     return;
   }
+  
+  // Use instagram or email prefix as name
+  const name = instagram ? instagram.replace('@', '') : email.split('@')[0];
   
   // Check for duplicate email
   if (customerState.customers.some(c => c.email.toLowerCase() === email.toLowerCase())) {
@@ -7169,7 +7162,6 @@ async function saveNewCustomer() {
     email,
     instagram,
     type,
-    source,
     notes,
     createdAt: new Date().toISOString()
   };
