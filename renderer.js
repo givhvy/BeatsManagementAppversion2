@@ -3,6 +3,79 @@ const isElectron = typeof require !== 'undefined' && typeof require('electron') 
 const ipcRenderer = isElectron ? require('electron').ipcRenderer : null;
 
 // =============================================
+// NOTIFICATION SOUND
+// =============================================
+const notificationSound = {
+  audioContext: null,
+  
+  init() {
+    if (!this.audioContext) {
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  },
+  
+  // Play success sound (pleasant chime)
+  playSuccess() {
+    this.init();
+    const ctx = this.audioContext;
+    const now = ctx.currentTime;
+    
+    // Two-tone chime
+    [523.25, 659.25].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.3, now + i * 0.15);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.15 + 0.3);
+      osc.start(now + i * 0.15);
+      osc.stop(now + i * 0.15 + 0.3);
+    });
+  },
+  
+  // Play completion sound (triumphant fanfare)
+  playComplete() {
+    this.init();
+    const ctx = this.audioContext;
+    const now = ctx.currentTime;
+    
+    // Three-tone fanfare
+    [523.25, 659.25, 783.99].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.4, now + i * 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.12 + 0.4);
+      osc.start(now + i * 0.12);
+      osc.stop(now + i * 0.12 + 0.5);
+    });
+  },
+  
+  // Play error sound
+  playError() {
+    this.init();
+    const ctx = this.audioContext;
+    const now = ctx.currentTime;
+    
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 200;
+    osc.type = 'sawtooth';
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+    osc.start(now);
+    osc.stop(now + 0.3);
+  }
+};
+
+// =============================================
 // UPLOAD PROGRESS TRACKING STATE
 // =============================================
 const uploadProgress = {
@@ -120,6 +193,13 @@ async function startGlobalQueueProcessing() {
   const completed = globalUploadQueue.items.filter(i => i.status === 'completed').length;
   const failed = globalUploadQueue.items.filter(i => i.status === 'failed').length;
   showNotification(`🎉 Queue complete! ${completed} uploaded, ${failed} failed`, completed > 0 ? 'success' : 'error');
+  
+  // Play completion sound
+  if (completed > 0) {
+    notificationSound.playComplete();
+  } else {
+    notificationSound.playError();
+  }
   
   // Refresh UI
   renderPackDetailBeats();
@@ -303,12 +383,14 @@ async function processUploadPhase() {
         updateProgressItem(item.progressId, PROGRESS_STATUS.COMPLETED, { scheduleDate: scheduleDateStr });
         
         showNotification(`✅ ${videoTitle} → ${item.channel.name} 📅 ${scheduleDateStr || 'Now'}`, 'success');
+        notificationSound.playSuccess(); // Play success sound
         
       } catch (error) {
         item.status = 'failed';
         item.error = error.message;
         updateProgressItem(item.progressId, PROGRESS_STATUS.FAILED, { error: error.message });
         showNotification(`❌ Upload failed: ${item.cleanBeatName} - ${error.message}`, 'error');
+        notificationSound.playError(); // Play error sound
       }
       
       updateGlobalQueueUI();
