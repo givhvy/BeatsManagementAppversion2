@@ -771,6 +771,64 @@ ipcMain.handle('load-channel-history', async (event, channelId) => {
   }
 });
 
+// Create new YouTube channel folder structure
+ipcMain.handle('create-youtube-channel', async (event, { accountName, channelId, channelName, channelStyle, credentials }) => {
+  try {
+    // Create folder structure: config/AccountName/channelId/
+    const channelPath = path.join(automationConfigPath, accountName, channelId);
+    
+    if (fs.existsSync(channelPath)) {
+      return { success: false, error: 'Channel folder already exists' };
+    }
+    
+    // Create directories
+    fs.mkdirSync(channelPath, { recursive: true });
+    
+    // Save credentials.json
+    const credentialsPath = path.join(channelPath, 'credentials.json');
+    fs.writeFileSync(credentialsPath, JSON.stringify(credentials, null, 2));
+    
+    // Create config.json with default template
+    const configPath = path.join(channelPath, 'config.json');
+    const defaultConfig = {
+      channelName: channelName || channelId,
+      channelStyle: channelStyle || '',
+      autoUpload: true,
+      metadataTemplate: {
+        titleTemplate: '(FREE) MF DOOM x Joey Bada$$ x 90s Boom Bap Type Beat - "[NAME]"',
+        description: '💰PURCHASE on instagram @prodvince\n\n• You must credit with (PROD. VINCE) in the title\n• You must purchase a lease to upload your track to streaming platforms like Spotify, Apple Music, etc.\n\nThis beat is free for NON PROFIT USE ONLY',
+        tags: ['beats'],
+        descriptionConditions: {
+          default: {
+            text: '💰PURCHASE on instagram @prodvince\n\nThis beat is free for NON PROFIT USE ONLY',
+            tags: 'beats'
+          }
+        }
+      }
+    };
+    fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
+    
+    // Create uploads folder
+    const uploadsPath = path.join(__dirname, 'automation', 'uploads', accountName, channelId, 'BeatsUpload');
+    fs.mkdirSync(uploadsPath, { recursive: true });
+    
+    // Create Processed folder
+    const processedPath = path.join(__dirname, 'automation', 'uploads', accountName, channelId, 'Processed');
+    fs.mkdirSync(processedPath, { recursive: true });
+    
+    console.log(`[create-youtube-channel] Created channel: ${accountName}/${channelId}`);
+    
+    return { 
+      success: true, 
+      channelPath,
+      message: `Channel ${channelId} created successfully`
+    };
+  } catch (error) {
+    console.error('Error creating YouTube channel:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Scan for YouTube channels
 ipcMain.handle('scan-youtube-channels', async () => {
   try {
@@ -1131,54 +1189,115 @@ ipcMain.handle('copy-video-for-upload', async (event, { videoPath, channelId, me
 });
 
 // Re-authenticate YouTube token for a channel
+// This will generate auth URL, open browser, and return URL for code input
 ipcMain.handle('reauthenticate-youtube', async (event, channelId) => {
   try {
-    const { spawn } = require('child_process');
-    const automationPath = path.join(__dirname, 'automation');
+    const { google } = require('googleapis');
+    const { shell } = require('electron');
     
-    // channelId format: "AccountA/channel1"
-    const configPath = `config/${channelId}`;
+    // channelId can be:
+    // - "AccountA/channel1" (old format)
+    // - "C14" (new format, folder is C14/C14)
+    // - "C14/C14" (if passed full path)
     
-    // Open browser for re-authentication
-    const getTokenProcess = spawn('node', ['getToken.js', configPath], {
-      cwd: automationPath,
-      stdio: ['inherit', 'pipe', 'pipe'],
-      shell: true
+    let channelConfigPath = path.join(automationConfigPath, channelId);
+    let credentialsPath = path.join(channelConfigPath, 'credentials.json');
+    
+    console.log('[Re-auth] Trying path 1:', credentialsPath);
+    
+    // If not found, try nested path (C14 -> C14/C14)
+    if (!fs.existsSync(credentialsPath)) {
+      // Check if it's a new-style channel (C14)
+      const parts = channelId.split('/');
+      if (parts.length === 1) {
+        // Try nested: C14/C14
+        channelConfigPath = path.join(automationConfigPath, channelId, channelId);
+        credentialsPath = path.join(channelConfigPath, 'credentials.json');
+        console.log('[Re-auth] Trying path 2 (nested):', credentialsPath);
+      }
+    }
+    
+    if (!fs.existsSync(credentialsPath)) {
+      return { success: false, error: `credentials.json not found. Tried paths under: ${automationConfigPath}/${channelId}` };
+    }
+    
+    // Update channelId to full path for complete-reauth
+    const fullChannelId = channelConfigPath.replace(automationConfigPath + path.sep, '').replace(/\\/g, '/');
+    
+    const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
+    const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
+    
+    if (!client_id || !client_secret) {
+      return { success: false, error: 'Invalid credentials.json - missing client_id or client_secret' };
+    }
+    
+    const SCOPES = ['https://www.googleapis.com/auth/youtube.upload'];
+    
+    const oAuth2Client = new google.auth.OAuth2(
+      client_id,
+      client_secret,
+      redirect_uris[0]
+    );
+    
+    const authUrl = oAuth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: SCOPES,
     });
-
-    return new Promise((resolve) => {
-      let output = '';
-      let errorOutput = '';
-
-      getTokenProcess.stdout.on('data', (data) => {
-        output += data.toString();
-        console.log('[Re-auth]:', data.toString());
-      });
-
-      getTokenProcess.stderr.on('data', (data) => {
-        errorOutput += data.toString();
-        console.error('[Re-auth Error]:', data.toString());
-      });
-
-      getTokenProcess.on('close', (code) => {
-        if (code === 0) {
-          resolve({ success: true, message: 'Token refreshed successfully' });
-        } else {
-          resolve({ success: false, error: errorOutput || 'Re-authentication failed' });
-        }
-      });
-
-      getTokenProcess.on('error', (error) => {
-        resolve({ success: false, error: error.message });
-      });
-
-      // Timeout after 2 minutes
-      setTimeout(() => {
-        getTokenProcess.kill();
-        resolve({ success: false, error: 'Re-authentication timed out' });
-      }, 120000);
-    });
+    
+    console.log('[Re-auth] Generated auth URL for channel:', fullChannelId);
+    
+    // Open browser with auth URL
+    shell.openExternal(authUrl);
+    
+    // Return success with needsCode flag so UI can show code input dialog
+    return { 
+      success: true, 
+      needsCode: true, 
+      channelId: fullChannelId,  // Return full path for complete-reauth
+      authUrl: authUrl 
+    };
   } catch (error) {
+    console.error('[Re-auth] Error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Complete re-authentication by exchanging auth code for token
+ipcMain.handle('complete-reauth', async (event, { channelId, authCode }) => {
+  try {
+    const { google } = require('googleapis');
+    
+    const channelConfigPath = path.join(automationConfigPath, channelId);
+    const credentialsPath = path.join(channelConfigPath, 'credentials.json');
+    const tokenPath = path.join(channelConfigPath, 'token.json');
+    
+    console.log('[Complete Re-auth] Channel:', channelId);
+    console.log('[Complete Re-auth] Credentials path:', credentialsPath);
+    
+    if (!fs.existsSync(credentialsPath)) {
+      return { success: false, error: 'credentials.json not found' };
+    }
+    
+    const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
+    const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
+    
+    const oAuth2Client = new google.auth.OAuth2(
+      client_id,
+      client_secret,
+      redirect_uris[0]
+    );
+    
+    // Exchange auth code for tokens
+    const { tokens } = await oAuth2Client.getToken(authCode.trim());
+    
+    // Save token
+    fs.writeFileSync(tokenPath, JSON.stringify(tokens, null, 2));
+    
+    console.log('[Complete Re-auth] Token saved to:', tokenPath);
+    
+    return { success: true, message: 'Token saved successfully!' };
+  } catch (error) {
+    console.error('[Complete Re-auth] Error:', error);
     return { success: false, error: error.message };
   }
 });
