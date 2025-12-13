@@ -259,14 +259,66 @@ app.get('/api/channels', async (req, res) => {
   // Rescan channels để lấy danh sách mới nhất
   const latestChannels = await scanner.scanChannels();
 
-  const channelList = latestChannels.map(ch => ({
-    ...ch,
-    configPath: undefined,
-    credentialsPath: undefined,
-    tokenPath: undefined,
-    queueCount: (channelQueues.get(ch.channelId) || []).length,
-    historyCount: (channelHistories.get(ch.channelId) || []).length,
-    isReady: channelUploaders.get(ch.channelId)?.isReady || false,
+  const channelList = await Promise.all(latestChannels.map(async (ch) => {
+    // Check token expiry status
+    let tokenStatus = { valid: false, expiresAt: null, expiresIn: null, message: 'No token' };
+    
+    if (ch.tokenPath && await fs.pathExists(ch.tokenPath)) {
+      try {
+        const token = await fs.readJson(ch.tokenPath);
+        const now = Date.now();
+        
+        if (token.expiry_date) {
+          const expiresIn = token.expiry_date - now;
+          const expiresInMinutes = Math.round(expiresIn / 60000);
+          
+          if (expiresIn > 0) {
+            tokenStatus = {
+              valid: true,
+              expiresAt: new Date(token.expiry_date).toISOString(),
+              expiresIn: expiresInMinutes,
+              message: expiresInMinutes > 60 ? `${Math.round(expiresInMinutes / 60)}h remaining` : `${expiresInMinutes}m remaining`
+            };
+          } else {
+            // Access token expired, but refresh token might still work
+            // Check refresh_token_expires_in (7 days for testing mode)
+            const refreshTokenCreatedAt = token.expiry_date - 3600000; // approx creation time
+            const refreshTokenExpiresIn = 7 * 24 * 60 * 60 * 1000; // 7 days
+            const refreshTokenExpiry = refreshTokenCreatedAt + refreshTokenExpiresIn;
+            
+            if (now < refreshTokenExpiry) {
+              tokenStatus = {
+                valid: true,
+                expiresAt: new Date(token.expiry_date).toISOString(),
+                expiresIn: 0,
+                message: 'Token refreshable',
+                needsRefresh: true
+              };
+            } else {
+              tokenStatus = {
+                valid: false,
+                expiresAt: new Date(token.expiry_date).toISOString(),
+                expiresIn: expiresInMinutes,
+                message: 'Token expired - Re-auth required'
+              };
+            }
+          }
+        }
+      } catch (err) {
+        tokenStatus = { valid: false, message: 'Token read error' };
+      }
+    }
+    
+    return {
+      ...ch,
+      configPath: undefined,
+      credentialsPath: undefined,
+      tokenPath: undefined,
+      queueCount: (channelQueues.get(ch.channelId) || []).length,
+      historyCount: (channelHistories.get(ch.channelId) || []).length,
+      isReady: channelUploaders.get(ch.channelId)?.isReady || false,
+      tokenStatus,
+    };
   }));
 
   res.json({ channels: channelList });

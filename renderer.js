@@ -3521,6 +3521,40 @@ function showNotification(message, type = 'info') {
   }, 4000);
 }
 
+// Show modal dialog
+function showModal(content) {
+  // Remove existing modal
+  closeModal();
+  
+  const overlay = document.createElement('div');
+  overlay.id = 'modal-overlay';
+  overlay.className = 'modal-overlay';
+  overlay.onclick = (e) => {
+    if (e.target === overlay) closeModal();
+  };
+  
+  const modal = document.createElement('div');
+  modal.className = 'modal-dialog';
+  modal.innerHTML = content;
+  
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+  
+  // Add animation
+  requestAnimationFrame(() => {
+    overlay.classList.add('show');
+  });
+}
+
+// Close modal dialog
+function closeModal() {
+  const overlay = document.getElementById('modal-overlay');
+  if (overlay) {
+    overlay.classList.remove('show');
+    setTimeout(() => overlay.remove(), 200);
+  }
+}
+
 // YouTube DOM Elements
 const youtubeStatusEl = document.getElementById('youtube-status');
 const serverLastCheckEl = document.getElementById('server-last-check');
@@ -4540,10 +4574,14 @@ async function scanYouTubeChannels() {
         hasToken: ch.hasToken,
         uploadFolder: ch.uploadsPath,
         queueCount: ch.queueCount,
-        historyCount: ch.historyCount
+        historyCount: ch.historyCount,
+        tokenStatus: ch.tokenStatus || { valid: false, message: 'Unknown' }
       }));
       youtubeState.serverOnline = true;
       renderYouTubeChannels();
+      
+      // Check for expired tokens and show notification
+      checkExpiredTokens();
       
       // Update status
       if (youtubeStatusEl) {
@@ -4584,6 +4622,125 @@ async function scanYouTubeChannels() {
   }
 }
 
+/**
+ * Check for expired tokens and show notification
+ */
+function checkExpiredTokens() {
+  const expiredChannels = youtubeState.channels.filter(ch => 
+    ch.tokenStatus && !ch.tokenStatus.valid
+  );
+  
+  if (expiredChannels.length > 0) {
+    showExpiredTokensNotification(expiredChannels);
+  } else {
+    hideExpiredTokensNotification();
+  }
+}
+
+/**
+ * Show notification for expired tokens
+ */
+function showExpiredTokensNotification(expiredChannels) {
+  let notificationEl = document.getElementById('expired-tokens-notification');
+  
+  if (!notificationEl) {
+    notificationEl = document.createElement('div');
+    notificationEl.id = 'expired-tokens-notification';
+    notificationEl.className = 'expired-tokens-notification';
+    
+    // Insert after youtube status or at top of youtube section
+    const youtubeSection = document.querySelector('.youtube-section') || document.querySelector('#youtube-tab');
+    if (youtubeSection) {
+      youtubeSection.insertBefore(notificationEl, youtubeSection.firstChild);
+    }
+  }
+  
+  const channelNames = expiredChannels.map(ch => ch.name).join(', ');
+  const count = expiredChannels.length;
+  
+  notificationEl.innerHTML = `
+    <div class="notification-content">
+      <span class="notification-icon">⚠️</span>
+      <span class="notification-text">
+        <strong>${count} channel${count > 1 ? 's' : ''} có token hết hạn:</strong> 
+        ${channelNames.length > 100 ? channelNames.substring(0, 100) + '...' : channelNames}
+      </span>
+      <button class="notification-action" onclick="showExpiredTokensDetails()">Chi tiết</button>
+      <button class="notification-close" onclick="hideExpiredTokensNotification()">×</button>
+    </div>
+  `;
+  
+  notificationEl.style.display = 'block';
+}
+
+/**
+ * Hide expired tokens notification
+ */
+function hideExpiredTokensNotification() {
+  const notificationEl = document.getElementById('expired-tokens-notification');
+  if (notificationEl) {
+    notificationEl.style.display = 'none';
+  }
+}
+
+/**
+ * Show detailed modal for expired tokens
+ */
+function showExpiredTokensDetails() {
+  const expiredChannels = youtubeState.channels.filter(ch => 
+    ch.tokenStatus && !ch.tokenStatus.valid
+  );
+  
+  const modalContent = `
+    <div class="modal-header">
+      <h3>⚠️ Channels cần Re-authenticate</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="margin-bottom: 15px;">Các channel sau đây có token đã hết hạn và cần được xác thực lại:</p>
+      <div class="expired-channels-list">
+        ${expiredChannels.map(ch => `
+          <div class="expired-channel-item">
+            <span class="channel-name">${ch.name}</span>
+            <span class="token-message">${ch.tokenStatus?.message || 'Token expired'}</span>
+            <button class="btn-reauth" onclick="reAuthChannel('${ch.id}')">Re-auth</button>
+          </div>
+        `).join('')}
+      </div>
+      <div class="modal-tip" style="margin-top: 15px; padding: 10px; background: #2a2a40; border-radius: 8px;">
+        <strong>💡 Tip:</strong> Google OAuth Testing mode token chỉ có hiệu lực 7 ngày. 
+        Sau khi re-auth, cần <strong>restart server</strong> để load token mới.
+      </div>
+    </div>
+  `;
+  
+  showModal(modalContent);
+}
+
+/**
+ * Re-authenticate a specific channel
+ */
+async function reAuthChannel(channelId) {
+  const channel = youtubeState.channels.find(c => c.id === channelId);
+  if (!channel) return;
+  
+  try {
+    closeModal();
+    showNotification(`Đang mở trình duyệt để xác thực ${channel.name}...`, 'info');
+    
+    const result = await ipcRenderer.invoke('reauthenticate-youtube', channelId);
+    
+    if (result.success) {
+      showNotification(`✅ Đã xác thực ${channel.name}. Hãy restart server để áp dụng!`, 'success');
+      await refreshYouTubeChannels();
+    } else {
+      showNotification(`❌ Lỗi xác thực: ${result.error}`, 'error');
+    }
+  } catch (error) {
+    showNotification(`❌ Lỗi: ${error.message}`, 'error');
+  }
+}
+
 async function refreshYouTubeChannels() {
   await checkYouTubeServer();
   await scanYouTubeChannels();
@@ -4597,15 +4754,36 @@ function renderYouTubeChannels() {
     return;
   }
 
-  youtubeChannelList.innerHTML = youtubeState.channels.map(channel => `
-    <div class="channel-item ${youtubeState.selectedChannel?.id === channel.id ? 'selected' : ''}" 
-         data-channel-id="${channel.id}">
-      <span class="channel-name">${channel.name}</span>
-      <span class="channel-status ${channel.ready ? 'ready' : 'offline'}">
-        ${channel.ready ? '✓ Ready' : '⚠ Setup needed'}
-      </span>
-    </div>
-  `).join('');
+  youtubeChannelList.innerHTML = youtubeState.channels.map(channel => {
+    const tokenValid = channel.tokenStatus?.valid !== false;
+    const tokenMessage = channel.tokenStatus?.message || '';
+    const tokenExpired = !tokenValid && channel.hasToken;
+    
+    let statusClass = 'offline';
+    let statusText = '⚠ Setup needed';
+    
+    if (channel.ready && tokenValid) {
+      statusClass = 'ready';
+      statusText = '✓ Ready';
+    } else if (tokenExpired) {
+      statusClass = 'expired';
+      statusText = '⛔ Token expired';
+    } else if (channel.ready) {
+      statusClass = 'warning';
+      statusText = '⚠ Token issue';
+    }
+    
+    return `
+      <div class="channel-item ${youtubeState.selectedChannel?.id === channel.id ? 'selected' : ''} ${tokenExpired ? 'token-expired' : ''}" 
+           data-channel-id="${channel.id}"
+           title="${tokenMessage}">
+        <span class="channel-name">${channel.name}</span>
+        <span class="channel-status ${statusClass}">
+          ${statusText}
+        </span>
+      </div>
+    `;
+  }).join('');
 
   // Add click handlers
   youtubeChannelList.querySelectorAll('.channel-item').forEach(item => {
