@@ -4014,7 +4014,9 @@ async function reauthenticateYouTube() {
   try {
     showNotification('Đang mở trình duyệt để xác thực...', 'info');
     
-    const result = await ipcRenderer.invoke('reauthenticate-youtube', youtubeState.selectedChannel.id);
+    // Use configPath (account/channelId) for re-auth
+    const channelPath = youtubeState.selectedChannel.configPath || youtubeState.selectedChannel.id;
+    const result = await ipcRenderer.invoke('reauthenticate-youtube', channelPath);
     
     if (result.success && result.needsCode) {
       // Show dialog to input auth code
@@ -4569,7 +4571,8 @@ async function scanYouTubeChannels() {
       youtubeState.channels = data.channels.map(ch => ({
         id: ch.channelId,
         name: ch.name,
-        account: ch.accountName,
+        account: ch.account, // Account folder name
+        configPath: `${ch.account}/${ch.channelId}`, // Full path for re-auth
         ready: ch.isReady,
         hasToken: ch.hasToken,
         uploadFolder: ch.uploadsPath,
@@ -4703,7 +4706,7 @@ function showExpiredTokensDetails() {
           <div class="expired-channel-item">
             <span class="channel-name">${ch.name}</span>
             <span class="token-message">${ch.tokenStatus?.message || 'Token expired'}</span>
-            <button class="btn-reauth" onclick="reAuthChannel('${ch.id}')">Re-auth</button>
+            <button class="btn-reauth" data-channel-id="${ch.id}">Re-auth</button>
           </div>
         `).join('')}
       </div>
@@ -4715,6 +4718,13 @@ function showExpiredTokensDetails() {
   `;
   
   showModal(modalContent);
+  
+  // Add click handlers for re-auth buttons
+  document.querySelectorAll('.btn-reauth[data-channel-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      reAuthChannel(btn.dataset.channelId);
+    });
+  });
 }
 
 /**
@@ -4728,7 +4738,9 @@ async function reAuthChannel(channelId) {
     closeModal();
     showNotification(`Đang mở trình duyệt để xác thực ${channel.name}...`, 'info');
     
-    const result = await ipcRenderer.invoke('reauthenticate-youtube', channelId);
+    // Use configPath (account/channelId) for re-auth
+    const channelPath = channel.configPath || channelId;
+    const result = await ipcRenderer.invoke('reauthenticate-youtube', channelPath);
     
     if (result.success) {
       showNotification(`✅ Đã xác thực ${channel.name}. Hãy restart server để áp dụng!`, 'success');
