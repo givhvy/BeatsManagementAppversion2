@@ -187,6 +187,18 @@ class MultiChannelYouTubeUploader {
         readStream.close();
       }
 
+      // Handle invalid_grant - reload token from file and retry
+      if (error.message && error.message.includes('invalid_grant')) {
+        console.log(`🔄 [${this.channel.name}] Token invalid_grant, reloading từ file...`);
+        const reloaded = await this.reloadTokenFromFile();
+        if (reloaded) {
+          console.log(`✅ [${this.channel.name}] Token đã reload, thử upload lại...`);
+          return this.uploadVideo(videoPath, metadata, scheduleDate);
+        } else {
+          console.log(`❌ [${this.channel.name}] Không thể reload token, cần Re-auth lại`);
+        }
+      }
+
       if (error.code === 401) {
         console.log(`🔄 [${this.channel.name}] Token hết hạn, đang làm mới...`);
         await this.refreshToken();
@@ -198,6 +210,24 @@ class MultiChannelYouTubeUploader {
         error: error.message,
         channelName: this.channel.name,
       };
+    }
+  }
+
+  /**
+   * Reload token from file (useful when token is updated externally)
+   */
+  async reloadTokenFromFile() {
+    try {
+      if (await fs.pathExists(this.channel.tokenPath)) {
+        const token = await fs.readJson(this.channel.tokenPath);
+        this.oauth2Client.setCredentials(token);
+        console.log(`📄 [${this.channel.name}] Token reloaded from file`);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error(`❌ [${this.channel.name}] Error reloading token:`, error.message);
+      return false;
     }
   }
 

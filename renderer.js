@@ -3523,6 +3523,8 @@ function showNotification(message, type = 'info') {
 
 // YouTube DOM Elements
 const youtubeStatusEl = document.getElementById('youtube-status');
+const serverLastCheckEl = document.getElementById('server-last-check');
+let lastServerCheckTime = null;
 const youtubeChannelList = document.getElementById('youtube-channel-list');
 const refreshChannelsBtn = document.getElementById('refresh-channels-btn');
 const scanChannelsBtn = document.getElementById('scan-channels-btn');
@@ -3855,6 +3857,10 @@ async function checkYouTubeServer() {
     
     youtubeState.serverOnline = response.ok;
     
+    // Update last check time
+    lastServerCheckTime = new Date();
+    updateLastCheckTimeUI();
+    
     // Update main status
     if (youtubeStatusEl) {
       if (response.ok) {
@@ -3874,6 +3880,8 @@ async function checkYouTubeServer() {
     return response.ok;
   } catch (error) {
     youtubeState.serverOnline = false;
+    lastServerCheckTime = new Date();
+    updateLastCheckTimeUI();
     if (youtubeStatusEl) {
       youtubeStatusEl.textContent = '● YouTube: Offline';
       youtubeStatusEl.classList.remove('online');
@@ -3881,6 +3889,18 @@ async function checkYouTubeServer() {
     }
     updateServerStatusUI(false);
     return false;
+  }
+}
+
+// Update the last check time UI
+function updateLastCheckTimeUI() {
+  if (serverLastCheckEl && lastServerCheckTime) {
+    const timeStr = lastServerCheckTime.toLocaleTimeString('vi-VN', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    serverLastCheckEl.textContent = `(Updated: ${timeStr})`;
   }
 }
 
@@ -5364,12 +5384,19 @@ async function autoRenderAndUploadBeat(beatPath, packId) {
  * Wait for a video to be uploaded and get its schedule info
  * @param {string} videoTitle - Title of the video to wait for
  * @param {string} channelId - Channel ID
- * @param {number} maxWaitMs - Maximum time to wait in milliseconds (default 60s)
+ * @param {number} maxWaitMs - Maximum time to wait in milliseconds (default 5 minutes)
  * @returns {Promise<Object|null>} Upload result with schedule info or null
  */
 async function waitForUploadComplete(videoTitle, channelId, maxWaitMs = 60000) {
   const startTime = Date.now();
   const pollInterval = 2000; // 2 seconds
+  
+  // Extract beat name from title for matching
+  // Title format: (FREE) MF DOOM x Joey Bada$$ x 90s Boom Bap Type Beat - "Ice"
+  const beatNameMatch = videoTitle.match(/-\s*"([^"]+)"$/);
+  const beatName = beatNameMatch ? beatNameMatch[1].toLowerCase() : videoTitle.toLowerCase();
+  
+  console.log(`[Auto Upload] Waiting for upload: "${beatName}" (channel: ${channelId})`);
   
   while (Date.now() - startTime < maxWaitMs) {
     try {
@@ -5382,17 +5409,47 @@ async function waitForUploadComplete(videoTitle, channelId, maxWaitMs = 60000) {
       const data = await response.json();
       
       // Check if our video is in history (completed)
-      if (data.history) {
-        const uploadedVideo = data.history.find(h => {
+      if (data.history && data.history.length > 0) {
+        // Filter to only completed/success items first, then search
+        const completedItems = data.history.filter(h => 
+          h.status === 'completed' || h.status === 'success'
+        );
+        
+        const uploadedVideo = completedItems.find(h => {
           const historyTitle = h.metadata?.title || h.fileName || '';
-          // Match by title (case-insensitive, partial match)
-          return historyTitle.toLowerCase().includes(videoTitle.toLowerCase()) ||
-                 videoTitle.toLowerCase().includes(historyTitle.toLowerCase().replace(/\[free\].*?-\s*"|"$/gi, '').trim());
+          const historyTitleLower = historyTitle.toLowerCase();
+          
+          // Try multiple matching strategies
+          // 1. Exact beat name in title
+          if (historyTitleLower.includes(`"${beatName}"`)) return true;
+          
+          // 2. Beat name in filename (e.g., Ice.mp4)
+          const fileName = (h.fileName || '').toLowerCase().replace('.mp4', '').replace('.mov', '');
+          if (fileName === beatName) return true;
+          
+          // 3. Partial match on title
+          if (historyTitleLower.includes(beatName)) return true;
+          
+          // 4. Original full title match
+          if (historyTitleLower.includes(videoTitle.toLowerCase())) return true;
+          
+          return false;
         });
         
-        if (uploadedVideo && (uploadedVideo.status === 'completed' || uploadedVideo.status === 'success')) {
+        if (uploadedVideo) {
           console.log(`[Auto Upload] Found completed upload for: ${videoTitle}`);
           return uploadedVideo.result || uploadedVideo;
+        }
+        
+        // Log recent history items for debugging
+        if (data.history.length > 0) {
+          const elapsed = Math.round((Date.now() - startTime) / 1000);
+          console.log(`[Auto Upload] ${elapsed}s - History has ${data.history.length} items (${completedItems.length} completed), looking for: "${beatName}"`);
+          const recentItems = completedItems.slice(0, 3).map(h => ({
+            title: (h.metadata?.title || h.fileName || '').substring(0, 50),
+            status: h.status
+          }));
+          console.log('[Auto Upload] Recent completed items:', recentItems);
         }
       }
     } catch (error) {

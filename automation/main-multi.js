@@ -607,6 +607,135 @@ app.post('/api/admin/channels/delete', async (req, res) => {
   }
 });
 
+// Retry failed uploads for a channel
+app.post('/api/retry-failed/:channelId', async (req, res) => {
+  const { channelId } = req.params;
+  
+  try {
+    const history = channelHistories.get(channelId) || [];
+    const failedItems = history.filter(item => item.status === 'failed');
+    
+    if (failedItems.length === 0) {
+      return res.json({ success: true, message: 'No failed uploads to retry', retried: 0 });
+    }
+    
+    const uploader = channelUploaders.get(channelId);
+    const logger = channelLoggers.get(channelId);
+    
+    if (!uploader) {
+      return res.status(400).json({ error: 'Channel uploader not found' });
+    }
+    
+    // Reload token from file before retrying
+    console.log(`🔄 [${channelId}] Reloading token before retry...`);
+    await uploader.reloadTokenFromFile();
+    
+    let retriedCount = 0;
+    const results = [];
+    
+    for (const item of failedItems) {
+      // Check if file still exists
+      if (!await fs.pathExists(item.filePath)) {
+        results.push({ fileName: item.fileName, status: 'skipped', reason: 'File not found' });
+        continue;
+      }
+      
+      logger.info(`🔄 Retry upload: ${item.fileName}`);
+      console.log(`🔄 [${channelId}] Retrying: ${item.fileName}`);
+      
+      try {
+        const result = await uploader.uploadVideo(item.filePath, item.metadata, item.scheduleDate);
+        
+        if (result.success) {
+          // Update history item
+          item.status = 'completed';
+          item.result = result;
+          item.retriedAt = new Date().toISOString();
+          
+          const scheduleInfo = item.scheduleDate ? new Date(item.scheduleDate).toLocaleString() : result.publishAt;
+          logger.info(`✅ Retry thành công: ${item.fileName} - Scheduled: ${scheduleInfo}`);
+          
+          results.push({ fileName: item.fileName, status: 'success', scheduleInfo });
+          retriedCount++;
+        } else {
+          logger.error(`❌ Retry thất bại: ${item.fileName} - ${result.error}`);
+          results.push({ fileName: item.fileName, status: 'failed', error: result.error });
+        }
+      } catch (error) {
+        logger.error(`❌ Retry error: ${item.fileName} - ${error.message}`);
+        results.push({ fileName: item.fileName, status: 'error', error: error.message });
+      }
+    }
+    
+    await saveHistoryToFile();
+    
+    res.json({ 
+      success: true, 
+      message: `Retried ${retriedCount}/${failedItems.length} failed uploads`,
+      retried: retriedCount,
+      total: failedItems.length,
+      results 
+    });
+  } catch (error) {
+    console.error(`❌ Retry failed error:`, error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Retry a specific failed upload by ID
+app.post('/api/retry-item/:channelId/:itemId', async (req, res) => {
+  const { channelId, itemId } = req.params;
+  
+  try {
+    const history = channelHistories.get(channelId) || [];
+    const item = history.find(h => h.id === itemId);
+    
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found in history' });
+    }
+    
+    if (item.status !== 'failed') {
+      return res.json({ success: false, message: 'Item is not in failed status' });
+    }
+    
+    const uploader = channelUploaders.get(channelId);
+    const logger = channelLoggers.get(channelId);
+    
+    if (!uploader) {
+      return res.status(400).json({ error: 'Channel uploader not found' });
+    }
+    
+    // Reload token from file
+    await uploader.reloadTokenFromFile();
+    
+    // Check if file exists
+    if (!await fs.pathExists(item.filePath)) {
+      return res.status(400).json({ error: 'Video file not found' });
+    }
+    
+    logger.info(`🔄 Retry upload: ${item.fileName}`);
+    
+    const result = await uploader.uploadVideo(item.filePath, item.metadata, item.scheduleDate);
+    
+    if (result.success) {
+      item.status = 'completed';
+      item.result = result;
+      item.retriedAt = new Date().toISOString();
+      await saveHistoryToFile();
+      
+      const scheduleInfo = item.scheduleDate ? new Date(item.scheduleDate).toLocaleString() : result.publishAt;
+      logger.info(`✅ Retry thành công: ${item.fileName} - Scheduled: ${scheduleInfo}`);
+      
+      res.json({ success: true, message: 'Upload successful', scheduleInfo, result });
+    } else {
+      logger.error(`❌ Retry thất bại: ${item.fileName} - ${result.error}`);
+      res.json({ success: false, error: result.error });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ==================== KHỞI ĐỘNG ====================
 
 async function startServer() {
