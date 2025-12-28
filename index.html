@@ -34,6 +34,10 @@
         <span class="nav-icon">👥</span>
         <span class="nav-label">Customer Database</span>
       </button>
+      <button class="main-nav-tab" data-section="beatstars">
+        <span class="nav-icon">⭐</span>
+        <span class="nav-label">Beatstars</span>
+      </button>
     </div>
     <div class="main-nav-status">
       <span id="youtube-status" class="status-indicator offline">● YouTube: Offline</span>
@@ -923,6 +927,152 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
           <h3>📬 Recent Emails</h3>
           <div class="email-history-list" id="email-history-list">
             <div class="empty-state">No emails sent yet</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: Beatstars -->
+  <div class="app-section" id="beatstars-section">
+    <div class="beatstars-container">
+      <!-- Left Panel - Source Folder -->
+      <div class="beatstars-panel beatstars-source">
+        <div class="panel-header">
+          <h2>📁 Source Folders</h2>
+          <button id="beatstars-select-root-btn" class="btn-secondary">Change Root</button>
+        </div>
+        
+        <div class="beatstars-folder-select">
+          <div class="folder-path-display" id="beatstars-root-path">
+            F:\PlaygroundTest\autodownload\suno-ai-downloader\songs
+          </div>
+        </div>
+        
+        <div class="beatstars-actions">
+          <button id="beatstars-refresh-folders-btn" class="btn-secondary">🔄 Refresh</button>
+          <button id="beatstars-process-all-folders-btn" class="btn-primary" style="margin-left: 8px;">🚀 Process All Folders</button>
+        </div>
+
+        <div class="beatstars-folder-browser" id="beatstars-folder-browser">
+          <div class="empty-state">Loading folders...</div>
+        </div>
+
+        <!-- Selected folder info -->
+        <div class="beatstars-selected-info" id="beatstars-selected-info" style="display: none;">
+          <div class="selected-folder-header">
+            <span class="selected-icon">📂</span>
+            <span class="selected-name" id="beatstars-selected-name">-</span>
+          </div>
+          <div class="selected-folder-stats">
+            <span id="beatstars-selected-count">0</span> audio files
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle Panel - Preview & Settings -->
+      <div class="beatstars-panel beatstars-middle">
+        <div class="panel-header">
+          <h2>⚙️ Processing Settings</h2>
+        </div>
+
+        <div class="beatstars-settings">
+          <div class="setting-group">
+            <label class="setting-label">
+              <input type="checkbox" id="beatstars-remove-silence" checked>
+              <span>Remove silence at start</span>
+            </label>
+            <div class="setting-help">Cuts silent audio at the beginning of the track</div>
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-label">
+              <input type="checkbox" id="beatstars-convert-wav" checked>
+              <span>Convert to WAV (if not already)</span>
+            </label>
+            <div class="setting-help">Converts MP3, FLAC, etc. to WAV format</div>
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-label">
+              <input type="checkbox" id="beatstars-rename" checked>
+              <span>Rename to artist only</span>
+            </label>
+            <div class="setting-help">"City Shadows - Mossen.wav" → "Mossen.wav"</div>
+          </div>
+
+          <div class="setting-group">
+            <label>Silence Threshold (dB):</label>
+            <input type="number" id="beatstars-silence-db" class="filter-input" value="-50" min="-80" max="-20">
+            <div class="setting-help">Audio below this level is considered silence</div>
+          </div>
+
+          <div class="setting-group">
+            <label>Min Silence Duration (seconds):</label>
+            <input type="number" id="beatstars-silence-duration" class="filter-input" value="0.1" min="0.05" max="2" step="0.05">
+            <div class="setting-help">Minimum silence length to detect</div>
+          </div>
+        </div>
+
+        <div class="beatstars-output-folder">
+          <label>Output Folder:</label>
+          <div class="folder-path-display" id="beatstars-output-path">
+            F:\PlaygroundTest\autodownload\suno-ai-downloader\BeatsUpload
+          </div>
+          <div class="output-subfolder-info" id="output-subfolder-info">
+            <span class="subfolder-arrow">→</span>
+            <span id="output-subfolder-name">Select a folder above</span>
+          </div>
+          <button id="beatstars-output-folder-btn" class="btn-secondary">Change Output Root</button>
+        </div>
+
+        <div class="beatstars-preview" id="beatstars-preview" style="display: none;">
+          <h3>📝 Preview Changes</h3>
+          <div class="preview-item">
+            <span class="preview-label">Original:</span>
+            <span class="preview-value" id="preview-original">-</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">New Name:</span>
+            <span class="preview-value" id="preview-new-name">-</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Format:</span>
+            <span class="preview-value" id="preview-format">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Process & Results -->
+      <div class="beatstars-panel beatstars-results">
+        <div class="panel-header">
+          <h2>🚀 Process Files</h2>
+        </div>
+
+        <div class="beatstars-process-actions">
+          <button id="beatstars-process-selected-btn" class="btn-secondary" disabled>
+            ▶️ Process Selected
+          </button>
+          <button id="beatstars-process-all-btn" class="btn-primary btn-large">
+            🚀 Process All Files
+          </button>
+        </div>
+
+        <div class="beatstars-progress" id="beatstars-progress" style="display: none;">
+          <div class="progress-header">
+            <span id="beatstars-progress-text">Processing...</span>
+            <span id="beatstars-progress-count">0/0</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="beatstars-progress-fill"></div>
+          </div>
+          <div class="current-file" id="beatstars-current-file">-</div>
+        </div>
+
+        <div class="beatstars-log" id="beatstars-log">
+          <div class="log-header">📋 Processing Log</div>
+          <div class="log-content" id="beatstars-log-content">
+            <div class="empty-state">Processing results will appear here</div>
           </div>
         </div>
       </div>
