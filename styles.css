@@ -12,9 +12,51 @@ body {
   position: relative;
 }
 
+/* Custom Title Bar */
+.custom-title-bar {
+  -webkit-app-region: drag;
+  height: 32px;
+  background-color: #000000;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  padding-right: 140px;
+  font-family: 'Inter', sans-serif;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.title-bar-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  height: 8px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.title-bar-icon {
+  font-size: 12px;
+  line-height: 1;
+  color: transparent;
+}
+
+.title-bar-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: #e5e5e5;
+  letter-spacing: 0.3px;
+  margin-right: 8px;
+}
+
+.title-bar-badge {
+  display: none;
+}
+
 .container {
   display: flex;
-  height: calc(100vh - 160px);
+  height: calc(100vh - 192px);
   position: relative;
   z-index: 1;
 }
