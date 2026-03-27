@@ -3,6 +3,74 @@ const isElectron = typeof require !== 'undefined' && typeof require('electron') 
 const ipcRenderer = isElectron ? require('electron').ipcRenderer : null;
 
 // =============================================
+// THEME MANAGEMENT
+// =============================================
+const themeManager = {
+  STORAGE_KEY: 'bms-theme',
+
+  init() {
+    const saved = localStorage.getItem(this.STORAGE_KEY) || 'default';
+    this.apply(saved);
+    this.bindEvents();
+  },
+
+  apply(themeName) {
+    if (themeName === 'default') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', themeName);
+    }
+    localStorage.setItem(this.STORAGE_KEY, themeName);
+    this.updateCards(themeName);
+  },
+
+  updateCards(themeName) {
+    document.querySelectorAll('.theme-card').forEach(card => {
+      card.classList.toggle('active', card.dataset.theme === themeName);
+    });
+  },
+
+  bindEvents() {
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const closeBtn = document.getElementById('close-settings-btn');
+
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        settingsModal.style.display = 'flex';
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        settingsModal.style.display = 'none';
+      });
+    }
+
+    if (settingsModal) {
+      settingsModal.addEventListener('click', (e) => {
+        if (e.target === settingsModal) {
+          settingsModal.style.display = 'none';
+        }
+      });
+    }
+
+    document.querySelectorAll('.theme-card').forEach(card => {
+      card.addEventListener('click', () => {
+        this.apply(card.dataset.theme);
+      });
+    });
+  }
+};
+
+// Initialize theme on DOM ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => themeManager.init());
+} else {
+  themeManager.init();
+}
+
+// =============================================
 // NOTIFICATION SOUND
 // =============================================
 const notificationSound = {
@@ -1195,18 +1263,18 @@ function setupAudioPlayer() {
 
   audioElement.addEventListener('ended', () => {
     isPlaying = false;
-    playIcon.textContent = '▶';
+    updatePlayIcons(false);
     updatePlayingState();
   });
 
   audioElement.addEventListener('play', () => {
     isPlaying = true;
-    playIcon.textContent = '❚❚';
+    updatePlayIcons(true);
   });
 
   audioElement.addEventListener('pause', () => {
     isPlaying = false;
-    playIcon.textContent = '▶';
+    updatePlayIcons(false);
   });
 
   // Progress bar
@@ -1226,6 +1294,51 @@ function formatTime(seconds) {
   const secs = Math.floor(seconds % 60);
   return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
+
+function updatePlayIcons(playing) {
+  const iconPlay = document.getElementById('icon-play');
+  const iconPause = document.getElementById('icon-pause');
+  if (iconPlay) iconPlay.style.display = playing ? 'none' : 'block';
+  if (iconPause) iconPause.style.display = playing ? 'block' : 'none';
+}
+
+// Prev / Next beat navigation
+(function initPlayerNav() {
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  if (!prevBtn || !nextBtn) return;
+
+  function getVisibleBeats() {
+    return Array.from(document.querySelectorAll('.beat-item'));
+  }
+
+  function navigateBeat(dir) {
+    const beats = getVisibleBeats();
+    if (!beats.length) return;
+    if (!currentBeat) {
+      playBeatFromItem(beats[0]);
+      return;
+    }
+    const idx = beats.findIndex(el => el.dataset.beatPath === currentBeat.path);
+    const next = beats[idx + dir];
+    if (next) playBeatFromItem(next);
+  }
+
+  function playBeatFromItem(el) {
+    const path = el.dataset.beatPath;
+    const name = el.dataset.beatName || el.querySelector('.beat-name')?.textContent || '';
+    if (path) playBeat(path, name.trim());
+  }
+
+  prevBtn.addEventListener('click', () => navigateBeat(-1));
+  nextBtn.addEventListener('click', () => navigateBeat(1));
+
+  // Enable prev/next when a track loads
+  audioElement.addEventListener('loadedmetadata', () => {
+    prevBtn.disabled = false;
+    nextBtn.disabled = false;
+  });
+})();
 
 function playBeat(beatPath, beatName) {
   currentBeat = { path: beatPath, name: beatName };
