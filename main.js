@@ -1743,7 +1743,7 @@ ipcMain.handle('save-beat-marketing', async (event, data) => {
 ipcMain.handle('analyze-customer-image', async (event, { imageBase64, mimeType, vision_model }) => {
   try {
     const http = require('http');
-    const model = vision_model || 'qwen2-vl:7b';
+    const model = vision_model || 'llava:7b';
 
     const prompt = `You are analyzing a screenshot to extract customer information for a beats producer's CRM database.
 
