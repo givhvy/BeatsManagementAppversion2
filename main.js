@@ -1566,3 +1566,174 @@ ipcMain.handle('beatstars-ensure-folder', async (event, folderPath) => {
     return { success: false, error: error.message };
   }
 });
+
+// ============================
+// EMAIL MARKETING IPC HANDLERS
+// ============================
+
+const MARKETING_BASE = 'F:\\PlaygroundTest\\foronlytestingforbeatsmanagement';
+
+function getResendConfig() {
+  const configPath = path.join(MARKETING_BASE, 'resend-config.json');
+  if (fs.existsSync(configPath)) {
+    try { return JSON.parse(fs.readFileSync(configPath, 'utf8')); } catch (e) {}
+  }
+  return { apiKey: '', fromEmail: 'onboarding@resend.dev', fromName: 'Beats Marketing' };
+}
+
+ipcMain.handle('load-resend-config', async () => {
+  return getResendConfig();
+});
+
+ipcMain.handle('save-resend-config', async (event, config) => {
+  try {
+    if (!fs.existsSync(MARKETING_BASE)) fs.mkdirSync(MARKETING_BASE, { recursive: true });
+    const configPath = path.join(MARKETING_BASE, 'resend-config.json');
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
+ipcMain.handle('get-resend-config-path', async () => {
+  return path.join(MARKETING_BASE, 'resend-config.json');
+});
+
+ipcMain.handle('send-marketing-email', async (event, { to, subject, html }) => {
+  try {
+    const config = getResendConfig();
+    if (!config.apiKey) {
+      return { success: false, error: 'No Resend API key configured. Open Marketing Settings to add your key.' };
+    }
+    const { Resend } = require('resend');
+    const resend = new Resend(config.apiKey);
+    const { data, error } = await resend.emails.send({
+      from: `${config.fromName || 'Beats Marketing'} <${config.fromEmail || 'onboarding@resend.dev'}>`,
+      to: [to],
+      subject,
+      html
+    });
+    if (error) return { success: false, error: error.message };
+    return { success: true, emailId: data.id };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
+ipcMain.handle('get-email-status', async (event, emailId) => {
+  try {
+    const config = getResendConfig();
+    if (!config.apiKey) return { success: false, error: 'No API key' };
+    const { Resend } = require('resend');
+    const resend = new Resend(config.apiKey);
+    const email = await resend.emails.get(emailId);
+    return { success: true, email };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
+ipcMain.handle('check-ollama', async () => {
+  try {
+    const http = require('http');
+    return new Promise((resolve) => {
+      const req = http.get('http://localhost:11434/api/tags', (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(data);
+            resolve({ running: true, models: (parsed.models || []).map(m => m.name) });
+          } catch (e) {
+            resolve({ running: true, models: [] });
+          }
+        });
+      });
+      req.on('error', () => resolve({ running: false, models: [] }));
+      req.setTimeout(3000, () => { req.destroy(); resolve({ running: false, models: [] }); });
+    });
+  } catch (e) {
+    return { running: false, models: [] };
+  }
+});
+
+ipcMain.handle('generate-ai-email', async (event, { customerName, beatNames, discount, prompt, model }) => {
+  try {
+    const http = require('http');
+    const usedModel = model || 'qwen3:4b';
+    const systemPrompt = `You are a professional music marketing copywriter for a beats producer. Write concise, engaging marketing emails under 250 words. Use a conversational, personal tone. Always include a greeting, the value proposition, and a clear call to action. Format the email body in HTML using only <p>, <b>, <br>, and <a> tags. Output the HTML email body only.`;
+    const beatList = Array.isArray(beatNames) ? beatNames.join(', ') : (beatNames || 'exclusive beats');
+    const userPrompt = `Write a marketing email:\n- Customer: ${customerName || 'there'}\n- Beat(s): ${beatList}\n- Offer: ${discount || 'none'}\n- Goal: ${prompt || 'Promote beats and drive sales'}\nOutput HTML body only.`;
+    const postData = JSON.stringify({ model: usedModel, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }], stream: false, options: { temperature: 0.7, num_predict: 600 } });
+    return new Promise((resolve) => {
+      const options = { hostname: 'localhost', port: 11434, path: '/v1/chat/completions', method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postData) } };
+      const req = http.request(options, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(data);
+            let content = parsed.choices[0].message.content;
+            content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+            resolve({ success: true, content });
+          } catch (e) {
+            resolve({ success: false, error: 'Failed to parse Ollama response: ' + e.message });
+          }
+        });
+      });
+      req.on('error', (e) => {
+        if (e.code === 'ECONNREFUSED') {
+          resolve({ success: false, error: 'Ollama is not running. Start it with start-ollama.bat in your testing folder.' });
+        } else {
+          resolve({ success: false, error: e.message });
+        }
+      });
+      req.setTimeout(60000, () => { req.destroy(); resolve({ success: false, error: 'Ollama timed out (60s).' }); });
+      req.write(postData);
+      req.end();
+    });
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
+ipcMain.handle('load-campaigns', async () => {
+  try {
+    const p = path.join(app.getPath('userData'), 'campaigns.json');
+    if (!fs.existsSync(p)) return { campaigns: [] };
+    return JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch (e) {
+    return { campaigns: [] };
+  }
+});
+
+ipcMain.handle('save-campaigns', async (event, data) => {
+  try {
+    const p = path.join(app.getPath('userData'), 'campaigns.json');
+    fs.writeFileSync(p, JSON.stringify(data, null, 2));
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
+ipcMain.handle('load-beat-marketing', async () => {
+  try {
+    const p = path.join(app.getPath('userData'), 'beat-marketing.json');
+    if (!fs.existsSync(p)) return {};
+    return JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch (e) {
+    return {};
+  }
+});
+
+ipcMain.handle('save-beat-marketing', async (event, data) => {
+  try {
+    const p = path.join(app.getPath('userData'), 'beat-marketing.json');
+    fs.writeFileSync(p, JSON.stringify(data, null, 2));
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});

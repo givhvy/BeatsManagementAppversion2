@@ -316,6 +316,8 @@
     <div class="context-menu-divider"></div>
     <div class="context-menu-item" id="auto-upload-beat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Auto Render &amp; Upload</div>
     <div class="context-menu-item" id="auto-upload-6-from-here"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Auto Upload 6 from here</div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item" id="market-this-beat-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.76 12"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M16 4a8 8 0 0 1 0 16"/><line x1="2" y1="2" x2="22" y2="22"/></svg>Market this Beat</div>
   </div>
 
   <!-- Create Channels Modal -->
@@ -942,8 +944,150 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
     </div>
   </div>
 
+  <!-- Campaign Creator Modal -->
+  <div id="campaign-creator-modal" class="modal" style="display: none;">
+    <div class="modal-content campaign-modal-content">
+      <div class="modal-header">
+        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>New Campaign</h3>
+        <button id="close-campaign-modal-btn" class="close-btn" onclick="closeCampaignModal()">×</button>
+      </div>
+      <div class="modal-body campaign-modal-body">
+        <!-- Left: Setup -->
+        <div class="campaign-setup-col">
+          <div class="form-group">
+            <label>Campaign Name</label>
+            <input type="text" id="campaign-name-input" placeholder="e.g. Summer Sale 2025" />
+          </div>
+          <div class="form-group">
+            <label>Special Offer / Discount</label>
+            <input type="text" id="campaign-discount-input" placeholder="e.g. 60% off all beats this weekend" />
+          </div>
+          <div class="form-group">
+            <label>Campaign Goal (for AI)</label>
+            <input type="text" id="campaign-goal-input" placeholder="e.g. Drive sales during sale event" />
+          </div>
+          <div class="form-group">
+            <label>Send to Segment</label>
+            <select id="campaign-segment-select">
+              <option value="all">All Customers</option>
+              <option value="lead">Leads Only</option>
+              <option value="customer">Customers Only</option>
+              <option value="vip">VIP Only</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Featured Beats <span class="label-note">(select one or more)</span></label>
+            <div id="campaign-beat-selector" class="beat-selector-grid"></div>
+          </div>
+          <div class="form-group">
+            <label>Ollama AI Model</label>
+            <div class="ollama-status-row">
+              <select id="campaign-model-select">
+                <option value="qwen3:4b">qwen3:4b (recommended)</option>
+                <option value="qwen3:8b">qwen3:8b (better quality)</option>
+              </select>
+              <span id="ollama-status-badge" class="ollama-badge offline">Checking...</span>
+            </div>
+          </div>
+          <button id="ai-generate-email-btn" class="btn-ai-generate" onclick="generateCampaignEmail()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+            Generate Email with AI
+          </button>
+        </div>
+        <!-- Right: Email Preview & Send -->
+        <div class="campaign-email-col">
+          <div class="form-group">
+            <label>Email Subject</label>
+            <input type="text" id="campaign-subject-input" placeholder="Subject line..." />
+          </div>
+          <div class="form-group campaign-body-group">
+            <label>Email Body (HTML)</label>
+            <textarea id="campaign-body-textarea" placeholder="AI will generate email content here, or write your own..."></textarea>
+          </div>
+          <div class="campaign-send-info">
+            <span id="campaign-recipient-count">0 recipients</span>
+            <span class="send-info-divider">|</span>
+            <span id="campaign-send-status">Ready</span>
+          </div>
+          <div class="campaign-actions">
+            <button id="send-campaign-btn" class="btn-primary" onclick="sendCampaign()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              Send Campaign
+            </button>
+            <button class="btn-secondary" onclick="closeCampaignModal()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resend Marketing Settings Modal -->
+  <div id="resend-settings-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width:480px">
+      <div class="modal-header">
+        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Email Marketing Settings</h3>
+        <button class="close-btn" onclick="document.getElementById('resend-settings-modal').style.display='none'">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="settings-note">Configure your <a href="https://resend.com" target="_blank">Resend.com</a> account to send marketing emails. Free tier: 3,000 emails/month.</p>
+        <div class="form-group">
+          <label>Resend API Key</label>
+          <input type="password" id="resend-api-key-input" placeholder="re_xxxxxxxxxxxxxxxxxx" />
+        </div>
+        <div class="form-group">
+          <label>From Email</label>
+          <input type="text" id="resend-from-email-input" placeholder="you@yourdomain.com" />
+        </div>
+        <div class="form-group">
+          <label>From Name</label>
+          <input type="text" id="resend-from-name-input" placeholder="Your Producer Name" />
+        </div>
+        <div class="form-group">
+          <label>Config File Location</label>
+          <div class="config-path-display" id="resend-config-path-display">Loading...</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-primary" onclick="saveResendConfig()">Save Settings</button>
+          <button class="btn-secondary" onclick="document.getElementById('resend-settings-modal').style.display='none'">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Section: Customer Database -->
   <div class="app-section" id="customers-section">
+    <!-- Customer/Campaigns Tab Switcher -->
+    <div class="customer-view-tabs">
+      <button class="cview-tab active" data-view="customers" onclick="switchCustomerView('customers')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Customers
+      </button>
+      <button class="cview-tab" data-view="campaigns" onclick="switchCustomerView('campaigns')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Campaigns
+      </button>
+      <button class="cview-tab marketing-settings-tab" onclick="openResendSettings()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Marketing Settings
+      </button>
+    </div>
+
+    <!-- Campaigns View -->
+    <div id="campaigns-view" class="customer-view-panel" style="display:none;">
+      <div class="campaigns-header">
+        <h2>Email Campaigns</h2>
+        <button class="btn-primary" onclick="openCampaignCreator(null)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Campaign
+        </button>
+      </div>
+      <div id="campaigns-list" class="campaigns-list">
+        <div class="empty-state">No campaigns yet. Click "New Campaign" to send your first email blast.</div>
+      </div>
+    </div>
+
+    <!-- Customers View -->
+    <div id="customers-view" class="customer-view-panel">
     <div class="customers-container">
       <!-- Left Panel - Customer List -->
       <div class="customers-sidebar">
@@ -1054,7 +1198,8 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
         </div>
       </div>
     </div>
-  </div>
+    </div><!-- end customers-view -->
+    </div><!-- end customers-section -->
 
   <!-- Section: Beatstars -->
   <div class="app-section" id="beatstars-section">

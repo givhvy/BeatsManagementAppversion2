@@ -1790,6 +1790,14 @@ function renderBeats() {
         tagsContainer.appendChild(uploadedTag);
       }
 
+      // Add "Marketed" badge if beat has been marketed
+      if (marketingState && marketingState.beatStatus[beat.path]) {
+        const mktTag = document.createElement('span');
+        mktTag.className = 'pack-tag marketing-tag';
+        mktTag.textContent = 'Marketed';
+        tagsContainer.appendChild(mktTag);
+      }
+
       // Add pack tags
       containingPacks.forEach(pack => {
         const tag = document.createElement('span');
@@ -2131,6 +2139,16 @@ function createPackBeatElement(beat, packId, index) {
     lastUsedBadge.className = 'last-used-badge';
     lastUsedBadge.textContent = 'Last Used';
     contentContainer.appendChild(lastUsedBadge);
+  }
+
+  // Add marketing badge if beat has been marketed
+  if (marketingState && marketingState.beatStatus[beat.path]) {
+    const mktBadge = document.createElement('span');
+    const mktInfo = marketingState.beatStatus[beat.path];
+    mktBadge.className = 'marketing-sent-badge';
+    mktBadge.textContent = 'Marketed';
+    mktBadge.title = `Marketed ${mktInfo.campaignCount}x (last: ${new Date(mktInfo.sentAt).toLocaleDateString()})`;
+    contentContainer.appendChild(mktBadge);
   }
 
   // Add "Uploaded" badge with schedule date if beat has been uploaded to YouTube
@@ -8604,3 +8622,377 @@ if (document.readyState === 'loading') {
 } else {
   initBeatstarsSection();
 }
+
+// =============================================
+// EMAIL MARKETING SYSTEM
+// =============================================
+
+const marketingState = {
+  beatStatus: {},       // beatPath -> { sentAt, campaignIds, campaignCount }
+  campaigns: [],
+  currentCampaignBeats: [],  // selected beat paths in campaign creator
+};
+
+async function loadBeatMarketing() {
+  if (!isElectron) return;
+  try {
+    const data = await ipcRenderer.invoke('load-beat-marketing');
+    marketingState.beatStatus = data || {};
+  } catch (e) {}
+}
+
+async function saveBeatMarketing() {
+  if (!isElectron) return;
+  await ipcRenderer.invoke('save-beat-marketing', marketingState.beatStatus);
+}
+
+async function loadCampaigns() {
+  if (!isElectron) return;
+  try {
+    const data = await ipcRenderer.invoke('load-campaigns');
+    marketingState.campaigns = (data && data.campaigns) ? data.campaigns : [];
+  } catch (e) {}
+}
+
+async function saveCampaigns() {
+  if (!isElectron) return;
+  await ipcRenderer.invoke('save-campaigns', { campaigns: marketingState.campaigns });
+}
+
+// Switch between Customers and Campaigns views
+function switchCustomerView(view) {
+  document.querySelectorAll('.cview-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.view === view);
+  });
+  document.getElementById('customers-view').style.display = (view === 'customers') ? '' : 'none';
+  document.getElementById('campaigns-view').style.display = (view === 'campaigns') ? '' : 'none';
+  if (view === 'campaigns') renderCampaignsList();
+}
+
+// Open Resend settings modal
+async function openResendSettings() {
+  if (!isElectron) return;
+  try {
+    const config = await ipcRenderer.invoke('load-resend-config');
+    document.getElementById('resend-api-key-input').value = config.apiKey || '';
+    document.getElementById('resend-from-email-input').value = config.fromEmail || '';
+    document.getElementById('resend-from-name-input').value = config.fromName || '';
+    const configPath = await ipcRenderer.invoke('get-resend-config-path');
+    document.getElementById('resend-config-path-display').textContent = configPath;
+  } catch (e) {}
+  document.getElementById('resend-settings-modal').style.display = 'flex';
+}
+
+async function saveResendConfig() {
+  if (!isElectron) return;
+  const config = {
+    apiKey: document.getElementById('resend-api-key-input').value.trim(),
+    fromEmail: document.getElementById('resend-from-email-input').value.trim(),
+    fromName: document.getElementById('resend-from-name-input').value.trim(),
+  };
+  const result = await ipcRenderer.invoke('save-resend-config', config);
+  if (result.success) {
+    document.getElementById('resend-settings-modal').style.display = 'none';
+    showNotification('Marketing settings saved!', 'success');
+  } else {
+    showNotification('Error saving settings: ' + result.error, 'error');
+  }
+}
+
+// Open Campaign Creator
+async function openCampaignCreator(preselectedBeatPath) {
+  marketingState.currentCampaignBeats = preselectedBeatPath ? [preselectedBeatPath] : [];
+
+  // Reset form
+  document.getElementById('campaign-name-input').value = '';
+  document.getElementById('campaign-discount-input').value = '';
+  document.getElementById('campaign-goal-input').value = '';
+  document.getElementById('campaign-subject-input').value = '';
+  document.getElementById('campaign-body-textarea').value = '';
+  document.getElementById('campaign-send-status').textContent = 'Ready';
+
+  // Populate beat selector from loaded beats
+  renderBeatSelectorInModal();
+  updateCampaignRecipientCount();
+
+  // Check Ollama status
+  checkOllamaStatus();
+
+  document.getElementById('campaign-creator-modal').style.display = 'flex';
+}
+
+function closeCampaignModal() {
+  document.getElementById('campaign-creator-modal').style.display = 'none';
+}
+
+function renderBeatSelectorInModal() {
+  const container = document.getElementById('campaign-beat-selector');
+  if (!container) return;
+
+  const allBeats = getCurrentBeats ? getCurrentBeats().filter(i => i.type === 'beat' || !i.type) : [];
+  if (allBeats.length === 0) {
+    container.innerHTML = '<div class="empty-state" style="font-size:12px;">Load beats first from the Beats tab</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  allBeats.slice(0, 40).forEach(beat => {
+    const pill = document.createElement('div');
+    pill.className = 'beat-selector-pill' + (marketingState.currentCampaignBeats.includes(beat.path) ? ' selected' : '');
+    pill.textContent = beat.name.replace(/\.[^/.]+$/, '');
+    pill.title = beat.path;
+    pill.addEventListener('click', () => {
+      const idx = marketingState.currentCampaignBeats.indexOf(beat.path);
+      if (idx >= 0) {
+        marketingState.currentCampaignBeats.splice(idx, 1);
+        pill.classList.remove('selected');
+      } else {
+        marketingState.currentCampaignBeats.push(beat.path);
+        pill.classList.add('selected');
+      }
+    });
+    container.appendChild(pill);
+  });
+}
+
+async function checkOllamaStatus() {
+  const badge = document.getElementById('ollama-status-badge');
+  if (!badge || !isElectron) return;
+  badge.textContent = 'Checking...';
+  badge.className = 'ollama-badge checking';
+  try {
+    const result = await ipcRenderer.invoke('check-ollama');
+    if (result.running) {
+      const hasQwen = result.models.some(m => m.includes('qwen3'));
+      badge.textContent = hasQwen ? 'Online' : 'No qwen3 model';
+      badge.className = 'ollama-badge ' + (hasQwen ? 'online' : 'warn');
+    } else {
+      badge.textContent = 'Offline';
+      badge.className = 'ollama-badge offline';
+    }
+  } catch(e) {
+    badge.textContent = 'Offline';
+    badge.className = 'ollama-badge offline';
+  }
+}
+
+async function generateCampaignEmail() {
+  if (!isElectron) return;
+  const btn = document.getElementById('ai-generate-email-btn');
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+
+  const beatNames = marketingState.currentCampaignBeats.map(p => p.split(/[\\/]/).pop().replace(/\.[^/.]+$/, ''));
+  const discount = document.getElementById('campaign-discount-input').value.trim();
+  const goal = document.getElementById('campaign-goal-input').value.trim();
+  const model = document.getElementById('campaign-model-select').value;
+
+  try {
+    const result = await ipcRenderer.invoke('generate-ai-email', {
+      customerName: '{name}',
+      beatNames,
+      discount,
+      prompt: goal,
+      model
+    });
+    if (result.success) {
+      document.getElementById('campaign-body-textarea').value = result.content;
+      // Auto-generate subject if empty
+      if (!document.getElementById('campaign-subject-input').value.trim()) {
+        const subjectHint = discount ? `${discount}  Exclusive Beats` : 'New Beats Drop ';
+        document.getElementById('campaign-subject-input').value = subjectHint;
+      }
+      showNotification('Email generated!', 'success');
+    } else {
+      showNotification('AI Error: ' + result.error, 'error');
+    }
+  } catch (e) {
+    showNotification('Error: ' + e.message, 'error');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>Generate Email with AI';
+}
+
+function updateCampaignRecipientCount() {
+  const segment = document.getElementById('campaign-segment-select');
+  if (!segment) return;
+  const segVal = segment.value;
+  const customers = (customerState && customerState.customers) ? customerState.customers : [];
+  const filtered = segVal === 'all' ? customers : customers.filter(c => c.type === segVal);
+  const withEmail = filtered.filter(c => c.email && c.email.trim());
+  const el = document.getElementById('campaign-recipient-count');
+  if (el) el.textContent = `${withEmail.length} recipient${withEmail.length !== 1 ? 's' : ''}`;
+}
+
+// Send campaign to all recipients
+async function sendCampaign() {
+  if (!isElectron) return;
+  const name = document.getElementById('campaign-name-input').value.trim() || ('Campaign ' + new Date().toLocaleDateString());
+  const subject = document.getElementById('campaign-subject-input').value.trim();
+  const bodyTemplate = document.getElementById('campaign-body-textarea').value.trim();
+  const segment = document.getElementById('campaign-segment-select').value;
+
+  if (!subject) { showNotification('Please enter an email subject.', 'error'); return; }
+  if (!bodyTemplate) { showNotification('Please enter email body content.', 'error'); return; }
+
+  const customers = (customerState && customerState.customers) ? customerState.customers : [];
+  const filtered = segment === 'all' ? customers : customers.filter(c => c.type === segment);
+  const withEmail = filtered.filter(c => c.email && c.email.trim());
+
+  if (withEmail.length === 0) { showNotification('No customers with email addresses in this segment.', 'error'); return; }
+
+  const sendBtn = document.getElementById('send-campaign-btn');
+  sendBtn.disabled = true;
+  const statusEl = document.getElementById('campaign-send-status');
+
+  const campaign = {
+    id: 'cmp_' + Date.now(),
+    name,
+    subject,
+    bodyTemplate,
+    segment,
+    beatPaths: [...marketingState.currentCampaignBeats],
+    createdAt: new Date().toISOString(),
+    sentAt: null,
+    recipients: [],
+    stats: { sent: 0, opened: 0, clicked: 0, failed: 0 }
+  };
+
+  let sent = 0, failed = 0;
+  for (const customer of withEmail) {
+    statusEl.textContent = `Sending ${sent + failed + 1}/${withEmail.length}...`;
+    const personalizedHtml = bodyTemplate.replace(/\{name\}/g, customer.name || 'there').replace(/\{email\}/g, customer.email || '');
+    const result = await ipcRenderer.invoke('send-marketing-email', {
+      to: customer.email,
+      subject,
+      html: personalizedHtml
+    });
+    if (result.success) {
+      sent++;
+      campaign.recipients.push({ customerId: customer.id, email: customer.email, name: customer.name, emailId: result.emailId, sentAt: new Date().toISOString() });
+    } else {
+      failed++;
+      campaign.recipients.push({ customerId: customer.id, email: customer.email, name: customer.name, emailId: null, sentAt: null, error: result.error });
+    }
+  }
+
+  campaign.sentAt = new Date().toISOString();
+  campaign.stats.sent = sent;
+  campaign.stats.failed = failed;
+  marketingState.campaigns.unshift(campaign);
+  await saveCampaigns();
+
+  // Mark beats as marketed
+  for (const beatPath of marketingState.currentCampaignBeats) {
+    if (!marketingState.beatStatus[beatPath]) {
+      marketingState.beatStatus[beatPath] = { sentAt: campaign.sentAt, campaignIds: [], campaignCount: 0 };
+    }
+    marketingState.beatStatus[beatPath].campaignIds.push(campaign.id);
+    marketingState.beatStatus[beatPath].campaignCount = marketingState.beatStatus[beatPath].campaignIds.length;
+    marketingState.beatStatus[beatPath].sentAt = campaign.sentAt;
+  }
+  await saveBeatMarketing();
+
+  statusEl.textContent = `Done! Sent: ${sent}, Failed: ${failed}`;
+  sendBtn.disabled = false;
+  showNotification(`Campaign sent to ${sent} recipient${sent !== 1 ? 's' : ''}!`, 'success');
+
+  if (typeof renderBeats === 'function') renderBeats();
+  setTimeout(() => closeCampaignModal(), 2000);
+}
+
+// Render campaigns list
+function renderCampaignsList() {
+  const list = document.getElementById('campaigns-list');
+  if (!list) return;
+  if (marketingState.campaigns.length === 0) {
+    list.innerHTML = '<div class="empty-state">No campaigns yet. Click "New Campaign" to send your first email blast.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  marketingState.campaigns.forEach(c => {
+    const openRate = c.stats.sent > 0 ? Math.round((c.stats.opened / c.stats.sent) * 100) : 0;
+    const card = document.createElement('div');
+    card.className = 'campaign-card';
+    card.innerHTML = `
+      <div class="campaign-card-top">
+        <div class="campaign-card-name">${escapeHtml(c.name)}</div>
+        <div class="campaign-card-date">${c.sentAt ? new Date(c.sentAt).toLocaleDateString() : 'Draft'}</div>
+      </div>
+      <div class="campaign-card-subject">${escapeHtml(c.subject)}</div>
+      <div class="campaign-card-stats">
+        <span class="cstat"><b>${c.stats.sent}</b> sent</span>
+        <span class="cstat"><b>${c.stats.opened}</b> opened</span>
+        <span class="cstat"><b>${openRate}%</b> open rate</span>
+        ${c.stats.failed > 0 ? `<span class="cstat cstat-err"><b>${c.stats.failed}</b> failed</span>` : ''}
+      </div>
+      <div class="campaign-stats-bar"><div class="campaign-stats-fill" style="width:${openRate}%"></div></div>
+      <button class="btn-secondary btn-xs campaign-refresh-btn" data-id="${c.id}">Refresh Stats</button>
+    `;
+    card.querySelector('.campaign-refresh-btn').addEventListener('click', () => refreshCampaignStats(c.id));
+    list.appendChild(card);
+  });
+}
+
+// Refresh open/click stats from Resend
+async function refreshCampaignStats(campaignId) {
+  if (!isElectron) return;
+  const campaign = marketingState.campaigns.find(c => c.id === campaignId);
+  if (!campaign) return;
+  let opened = 0, clicked = 0;
+  for (const r of campaign.recipients) {
+    if (!r.emailId) continue;
+    const result = await ipcRenderer.invoke('get-email-status', r.emailId);
+    if (result.success && result.email) {
+      if (result.email.opened_at) opened++;
+      if (result.email.clicked_at) clicked++;
+    }
+  }
+  campaign.stats.opened = opened;
+  campaign.stats.clicked = clicked;
+  await saveCampaigns();
+  renderCampaignsList();
+  showNotification('Stats updated!', 'success');
+}
+
+// Helper to escape HTML
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Market this Beat: right-click handler
+const marketThisBeatBtn = document.getElementById('market-this-beat-btn');
+if (marketThisBeatBtn) {
+  marketThisBeatBtn.addEventListener('click', () => {
+    const beatPath = contextMenuTarget ? contextMenuTarget.beatPath : null;
+    hideContextMenu();
+    if (beatPath) {
+      // Switch to customers tab -> campaigns view
+      const tab = document.querySelector('[data-section="customers"]') || document.querySelector('[data-tab="customers"]');
+      if (tab) tab.click();
+      setTimeout(() => {
+        switchCustomerView('campaigns');
+        openCampaignCreator(beatPath);
+      }, 150);
+    }
+  });
+}
+
+// Beat marketing badge helper
+function getBeatMarketingBadge(beatPath) {
+  const status = marketingState.beatStatus[beatPath];
+  if (!status || !status.campaignCount) return '';
+  return `<span class="marketing-sent-badge" title="Marketed ${status.campaignCount}x (last: ${new Date(status.sentAt).toLocaleDateString()})">Marketed</span>`;
+}
+
+// Campaign segment selector
+const segmentSelect = document.getElementById('campaign-segment-select');
+if (segmentSelect) segmentSelect.addEventListener('change', updateCampaignRecipientCount);
+
+// Initialize marketing data on load
+(async () => {
+  await loadBeatMarketing();
+  await loadCampaigns();
+})();

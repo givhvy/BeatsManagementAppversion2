@@ -4766,3 +4766,378 @@ h1, h2, h3, h4, h5, h6 {
   border-color: rgba(245, 158, 11, 0.2);
   background-color: rgba(245, 158, 11, 0.04);
 }
+
+/* =============================================
+   EMAIL MARKETING SYSTEM STYLES
+   ============================================= */
+
+/* Customer/Campaigns View Tabs */
+.customer-view-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 10px 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.15);
+  flex-shrink: 0;
+}
+
+.cview-tab {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  padding: 8px 14px;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+}
+
+.cview-tab:hover {
+  color: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.05);
+}
+
+.cview-tab.active {
+  color: #fff;
+  border-bottom-color: #f59e0b;
+  background: rgba(245,158,11,0.08);
+}
+
+.marketing-settings-tab {
+  margin-left: auto;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+}
+
+.customer-view-panel {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Campaigns View */
+.campaigns-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.campaigns-header h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+}
+
+.campaigns-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Campaign Card */
+.campaign-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.campaign-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.campaign-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.campaign-card-date {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+}
+
+.campaign-card-subject {
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.campaign-card-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.cstat {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+}
+
+.cstat b {
+  color: #e2e8f0;
+}
+
+.cstat-err b {
+  color: #f87171;
+}
+
+.campaign-stats-bar {
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  height: 4px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.campaign-stats-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fcd34d);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.btn-xs {
+  padding: 4px 10px;
+  font-size: 11px;
+  border-radius: 5px;
+}
+
+.campaign-refresh-btn {
+  margin-top: 4px;
+}
+
+/* Marketing badges on beat items */
+.marketing-sent-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  margin-left: 5px;
+}
+
+.marketing-tag {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #10b981 !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Campaign Creator Modal */
+.campaign-modal-content {
+  max-width: 860px;
+  width: 95vw;
+}
+
+.campaign-modal-body {
+  display: flex;
+  gap: 20px;
+  padding: 16px 20px 20px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.campaign-setup-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.campaign-email-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.campaign-body-group {
+  flex: 1;
+}
+
+.campaign-body-group textarea {
+  min-height: 200px;
+  flex: 1;
+  resize: vertical;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.campaign-send-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+}
+
+.send-info-divider {
+  opacity: 0.3;
+}
+
+#campaign-send-status {
+  color: #10b981;
+}
+
+.campaign-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Beat Selector Grid */
+.beat-selector-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 6px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+}
+
+.beat-selector-pill {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.beat-selector-pill:hover {
+  background: rgba(245,158,11,0.1);
+  border-color: rgba(245,158,11,0.3);
+  color: #fcd34d;
+}
+
+.beat-selector-pill.selected {
+  background: rgba(245,158,11,0.2);
+  border-color: #f59e0b;
+  color: #fcd34d;
+}
+
+/* Ollama Status */
+.ollama-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ollama-badge {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ollama-badge.online {
+  background: rgba(16,185,129,0.15);
+  color: #10b981;
+  border: 1px solid rgba(16,185,129,0.3);
+}
+
+.ollama-badge.offline {
+  background: rgba(239,68,68,0.1);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,0.2);
+}
+
+.ollama-badge.warn {
+  background: rgba(245,158,11,0.1);
+  color: #f59e0b;
+  border: 1px solid rgba(245,158,11,0.2);
+}
+
+.ollama-badge.checking {
+  background: rgba(148,163,184,0.1);
+  color: rgba(255,255,255,0.4);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* AI Generate Button */
+.btn-ai-generate {
+  background: linear-gradient(135deg, #b45309, #d97706);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.btn-ai-generate:hover {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(245,158,11,0.3);
+}
+
+.btn-ai-generate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Resend Settings */
+.settings-note {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.settings-note a {
+  color: #f59e0b;
+  text-decoration: none;
+}
+
+.config-path-display {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  font-family: monospace;
+  background: rgba(0,0,0,0.3);
+  padding: 6px 10px;
+  border-radius: 5px;
+  word-break: break-all;
+}
+
+.label-note {
+  font-size: 10px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.35);
+}
