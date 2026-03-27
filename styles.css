@@ -244,6 +244,12 @@ body {
   transform: translateY(-1px);
 }
 
+#refresh-beats-btn {
+  padding: 10px;
+  gap: 0;
+  justify-content: center;
+}
+
 .folder-path {
   background-color: #2a2a2a;
   padding: 10px 15px;
