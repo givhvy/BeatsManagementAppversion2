@@ -8755,24 +8755,80 @@ function renderBeatSelectorInModal() {
   });
 }
 
-async function checkOllamaStatus() {
+async function checkOllamaStatus(retries = 0) {
   const badge = document.getElementById('ollama-status-badge');
+  const toggleBtn = document.getElementById('ollama-toggle-btn');
   if (!badge || !isElectron) return;
   badge.textContent = 'Checking...';
   badge.className = 'ollama-badge checking';
+  if (toggleBtn) { toggleBtn.disabled = true; toggleBtn.textContent = '...'; }
   try {
     const result = await ipcRenderer.invoke('check-ollama');
     if (result.running) {
-      const hasQwen = result.models.some(m => m.includes('qwen3'));
-      badge.textContent = hasQwen ? 'Online' : 'No qwen3 model';
-      badge.className = 'ollama-badge ' + (hasQwen ? 'online' : 'warn');
+      badge.textContent = 'Online';
+      badge.className = 'ollama-badge online';
+      if (toggleBtn) {
+        toggleBtn.textContent = 'Stop AI';
+        toggleBtn.className = 'btn-ollama-toggle btn-ollama-stop';
+        toggleBtn.disabled = false;
+      }
     } else {
+      // If app just launched, Ollama may still be booting — retry a few times
+      if (retries < 5) {
+        setTimeout(() => checkOllamaStatus(retries + 1), 1500);
+        badge.textContent = 'Starting...';
+        badge.className = 'ollama-badge checking';
+        return;
+      }
       badge.textContent = 'Offline';
       badge.className = 'ollama-badge offline';
+      if (toggleBtn) {
+        toggleBtn.textContent = 'Start AI';
+        toggleBtn.className = 'btn-ollama-toggle btn-ollama-start';
+        toggleBtn.disabled = false;
+      }
     }
   } catch(e) {
     badge.textContent = 'Offline';
     badge.className = 'ollama-badge offline';
+    if (toggleBtn) {
+      toggleBtn.textContent = 'Start AI';
+      toggleBtn.className = 'btn-ollama-toggle btn-ollama-start';
+      toggleBtn.disabled = false;
+    }
+  }
+}
+
+async function toggleOllama() {
+  const badge = document.getElementById('ollama-status-badge');
+  const toggleBtn = document.getElementById('ollama-toggle-btn');
+  const isOnline = badge && badge.classList.contains('online');
+
+  if (toggleBtn) { toggleBtn.disabled = true; toggleBtn.textContent = isOnline ? 'Stopping...' : 'Starting...'; }
+  if (badge) { badge.textContent = isOnline ? 'Stopping...' : 'Starting...'; badge.className = 'ollama-badge checking'; }
+
+  try {
+    if (isOnline) {
+      await ipcRenderer.invoke('stop-ollama');
+      if (badge) { badge.textContent = 'Offline'; badge.className = 'ollama-badge offline'; }
+      if (toggleBtn) { toggleBtn.textContent = 'Start AI'; toggleBtn.className = 'btn-ollama-toggle btn-ollama-start'; toggleBtn.disabled = false; }
+      showNotification('Ollama stopped. AI features disabled.', 'info');
+    } else {
+      showNotification('Starting Ollama AI server...', 'info');
+      const result = await ipcRenderer.invoke('start-ollama');
+      if (result.success) {
+        if (badge) { badge.textContent = 'Online'; badge.className = 'ollama-badge online'; }
+        if (toggleBtn) { toggleBtn.textContent = 'Stop AI'; toggleBtn.className = 'btn-ollama-toggle btn-ollama-stop'; toggleBtn.disabled = false; }
+        showNotification('Ollama started! AI features ready.', 'success');
+      } else {
+        if (badge) { badge.textContent = 'Offline'; badge.className = 'ollama-badge offline'; }
+        if (toggleBtn) { toggleBtn.textContent = 'Start AI'; toggleBtn.className = 'btn-ollama-toggle btn-ollama-start'; toggleBtn.disabled = false; }
+        showNotification('Failed to start Ollama: ' + (result.error || 'unknown error'), 'error');
+      }
+    }
+  } catch(e) {
+    if (toggleBtn) { toggleBtn.disabled = false; }
+    showNotification('Error: ' + e.message, 'error');
   }
 }
 

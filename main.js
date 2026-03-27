@@ -108,14 +108,11 @@ let ollamaProcess = null;
 function startOllama() {
   const fs = require('fs');
   if (!fs.existsSync(OLLAMA_EXE)) return;
-  // check if already running
   const http = require('http');
   const req = http.get('http://localhost:11434/', (res) => {
-    // already running — nothing to do
-    res.resume();
+    res.resume(); // already running
   });
   req.on('error', () => {
-    // not running — start it
     const { spawn } = require('child_process');
     ollamaProcess = spawn(OLLAMA_EXE, ['serve'], {
       detached: false,
@@ -127,6 +124,54 @@ function startOllama() {
   });
   req.setTimeout(2000, () => req.destroy());
 }
+
+// Wait for Ollama to be ready (polls up to maxTries times)
+function waitForOllama(maxTries = 15, intervalMs = 1000) {
+  return new Promise((resolve) => {
+    const http = require('http');
+    let tries = 0;
+    const check = () => {
+      tries++;
+      const req = http.get('http://localhost:11434/', (res) => { res.resume(); resolve(true); });
+      req.on('error', () => { if (tries < maxTries) setTimeout(check, intervalMs); else resolve(false); });
+      req.setTimeout(1000, () => { req.destroy(); if (tries < maxTries) setTimeout(check, intervalMs); else resolve(false); });
+    };
+    check();
+  });
+}
+
+ipcMain.handle('start-ollama', async () => {
+  const fs = require('fs');
+  if (!fs.existsSync(OLLAMA_EXE)) return { success: false, error: 'ollama.exe not found at ' + OLLAMA_EXE };
+  const http = require('http');
+  // Check if already running
+  const alreadyRunning = await new Promise((resolve) => {
+    const req = http.get('http://localhost:11434/', (res) => { res.resume(); resolve(true); });
+    req.on('error', () => resolve(false));
+    req.setTimeout(1500, () => { req.destroy(); resolve(false); });
+  });
+  if (alreadyRunning) return { success: true, alreadyRunning: true };
+
+  const { spawn } = require('child_process');
+  ollamaProcess = spawn(OLLAMA_EXE, ['serve'], {
+    detached: false,
+    stdio: 'ignore',
+    env: { ...process.env, OLLAMA_MODELS: OLLAMA_MODELS_PATH, OLLAMA_VULKAN: '1' }
+  });
+  ollamaProcess.unref();
+  const ready = await waitForOllama(15, 1000);
+  return { success: ready, error: ready ? null : 'Ollama started but did not respond in time' };
+});
+
+ipcMain.handle('stop-ollama', async () => {
+  const { exec } = require('child_process');
+  return new Promise((resolve) => {
+    exec('taskkill /IM ollama.exe /F', (err) => {
+      ollamaProcess = null;
+      resolve({ success: !err });
+    });
+  });
+});
 
 app.whenReady().then(() => { startOllama(); createWindow(); });
 
