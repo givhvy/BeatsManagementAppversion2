@@ -406,26 +406,25 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
   <div class="app-section" id="autovid-section">
     <div class="autovid-container">
 
-      <!-- Left Panel - Pinterest Boards -->
+      <!-- Left Panel - Local Image Folder -->
       <div class="autovid-panel autovid-left">
         <div class="panel-header">
           <h2 class="autovid-panel-title">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12a4 4 0 1 0 8 0 4 4 0 0 0-8 0"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-            Pinterest
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Images
           </h2>
-          <button id="load-boards-btn" class="btn-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.12"/></svg>
-            Load Boards
+          <button id="load-boards-btn" class="btn-secondary" title="Refresh folder" style="padding:8px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
           </button>
         </div>
         <div class="autovid-search">
-          <input type="text" id="pinterest-search" placeholder="Search keywords..." class="filter-input">
+          <input type="text" id="pinterest-search" placeholder="Filter images..." class="filter-input">
           <button id="search-pins-btn" class="btn-secondary autovid-icon-btn" title="Search">
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </button>
         </div>
         <div class="autovid-boards-list" id="boards-list">
-          <div class="empty-state">Click "Load Boards" to start</div>
+          <div class="empty-state">Loading images...</div>
         </div>
       </div>
 
@@ -453,7 +452,7 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
           <div class="image-drop-hint" id="image-placeholder">
             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.3"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
             <p class="drop-title">Drop image here</p>
-            <p class="drop-sub">or use Local / Pinterest above</p>
+            <p class="drop-sub">or use Local / Images panel above</p>
           </div>
           <img id="preview-image" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">
           <div class="drop-overlay" id="image-drop-overlay">

@@ -1668,6 +1668,21 @@ h1, h2, h3, h4, h5, h6 {
 .autovid-boards-list {
   flex: 1;
   overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  padding: 4px 2px;
+  align-content: start;
+}
+
+.autovid-boards-list .empty-state {
+  grid-column: 1 / -1;
+}
+
+.pin-item:hover img {
+  opacity: 0.85;
+  outline: 2px solid rgba(245, 158, 11, 0.7);
+  outline-offset: -2px;
 }
 
 /* ── Image Drop Zone ── */

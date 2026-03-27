@@ -844,7 +844,7 @@ async function init() {
   }
 
   // Event listeners
-  selectFolderBtn.addEventListener('click', selectFolder);
+  if (selectFolderBtn) selectFolderBtn.addEventListener('click', selectFolder);
   refreshBeatsBtn.addEventListener('click', refreshBeats);
   createPackBtn.addEventListener('click', createPack);
   filterInput.addEventListener('input', renderBeats);
@@ -3343,16 +3343,17 @@ function initAutoVidSection() {
 
   // Event listeners
   if (loadBoardsBtn) {
-    loadBoardsBtn.addEventListener('click', loadPinterestBoards);
+    loadBoardsBtn.addEventListener('click', loadLocalImageFolder);
   }
 
   if (searchPinsBtn) {
-    searchPinsBtn.addEventListener('click', searchPinterestPins);
+    searchPinsBtn.addEventListener('click', filterLocalImages);
   }
 
   if (pinterestSearchInput) {
+    pinterestSearchInput.addEventListener('input', filterLocalImages);
     pinterestSearchInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') searchPinterestPins();
+      if (e.key === 'Enter') filterLocalImages();
     });
   }
 
@@ -3462,6 +3463,9 @@ function initAutoVidSection() {
   }
 
   updateRenderButton();
+
+  // Auto-load local image folder on first open
+  loadLocalImageFolder();
 }
 
 function handleDroppedImage(file) {
@@ -3562,50 +3566,84 @@ async function selectLocalImage() {
   }
 }
 
-async function loadPinterestBoards() {
+const LOCAL_IMAGE_FOLDER = 'D:\\folderforpinterest';
+let allLocalImages = [];
+
+async function loadLocalImageFolder() {
   if (!isElectron) {
-    alert('Pinterest integration requires Electron');
+    boardsList.innerHTML = '<div class="empty-state">Requires Electron</div>';
     return;
   }
-
-  boardsList.innerHTML = '<div class="empty-state">Loading boards...</div>';
-
+  boardsList.innerHTML = '<div class="empty-state">Loading images...</div>';
   try {
-    // Note: Pinterest API integration would go here
-    // For now, show a placeholder message
-    boardsList.innerHTML = `
-      <div class="empty-state">
-        <p>Pinterest integration requires API setup.</p>
-        <p style="font-size: 12px; margin-top: 10px; opacity: 0.7;">
-          Configure your Pinterest token in .env file
-        </p>
-      </div>
-    `;
+    const files = await ipcRenderer.invoke('read-images-folder', LOCAL_IMAGE_FOLDER);
+    allLocalImages = files || [];
+    renderLocalImages(allLocalImages);
   } catch (error) {
     boardsList.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
   }
 }
 
-async function searchPinterestPins() {
-  const keyword = pinterestSearchInput?.value?.trim();
-  if (!keyword) {
-    alert('Please enter a search keyword');
+function filterLocalImages() {
+  const keyword = (pinterestSearchInput?.value || '').toLowerCase().trim();
+  const filtered = keyword
+    ? allLocalImages.filter(f => f.name.toLowerCase().includes(keyword))
+    : allLocalImages;
+  renderLocalImages(filtered);
+}
+
+function renderLocalImages(files) {
+  if (!boardsList) return;
+  if (!files || files.length === 0) {
+    boardsList.innerHTML = '<div class="empty-state">No images found in folder</div>';
     return;
   }
+  boardsList.innerHTML = '';
+  files.forEach(file => {
+    const item = document.createElement('div');
+    item.className = 'pin-item';
+    item.style.cssText = 'cursor:pointer; padding:4px; border-radius:6px; overflow:hidden; position:relative;';
+    const img = document.createElement('img');
+    img.src = 'file://' + file.path;
+    img.alt = file.name;
+    img.style.cssText = 'width:100%; height:80px; object-fit:cover; border-radius:4px; display:block;';
+    img.onerror = () => { item.style.display = 'none'; };
+    item.appendChild(img);
+    // Click to set as preview
+    item.addEventListener('click', () => selectLocalImage(file));
+    // Drag to image drop zone
+    item.addEventListener('dragstart', (e) => {
+      e.preventDefault();
+      if (isElectron) ipcRenderer.send('drag-files-start', [file.path]);
+    });
+    item.draggable = true;
+    boardsList.appendChild(item);
+  });
+}
 
-  // Placeholder for Pinterest search
-  console.log('Searching Pinterest for:', keyword);
+function selectLocalImage(file) {
+  autovidState.selectedImage = { imageUrl: 'file://' + file.path, title: file.name };
+  autovidState.selectedImagePath = file.path;
+  if (previewImage && imagePlaceholder) {
+    previewImage.src = 'file://' + file.path;
+    previewImage.style.display = 'block';
+    imagePlaceholder.style.display = 'none';
+  }
+  if (imageInfo) {
+    imageInfo.style.display = 'block';
+    if (imageTitle) imageTitle.textContent = file.name;
+    if (imageSource) { imageSource.href = '#'; imageSource.textContent = file.path; }
+  }
+  updateRenderButton();
 }
 
 function randomizePin() {
-  if (autovidState.currentPins.length === 0) {
-    alert('No pins loaded. Load boards and search first.');
+  if (allLocalImages.length === 0) {
+    alert('No images loaded. Click the refresh button first.');
     return;
   }
-
-  const randomIndex = Math.floor(Math.random() * autovidState.currentPins.length);
-  const pin = autovidState.currentPins[randomIndex];
-  selectPin(pin);
+  const randomIndex = Math.floor(Math.random() * allLocalImages.length);
+  selectLocalImage(allLocalImages[randomIndex]);
 }
 
 function selectPin(pin) {
