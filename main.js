@@ -109,7 +109,7 @@ function startOllama() {
   const fs = require('fs');
   if (!fs.existsSync(OLLAMA_EXE)) return;
   const http = require('http');
-  const req = http.get('http://localhost:11434/api/tags', (res) => {
+  const req = http.get('http://127.0.0.1:11434/api/tags', (res) => {
     res.resume(); // already running
   });
   req.on('error', () => {
@@ -132,7 +132,7 @@ function waitForOllama(maxTries = 60, intervalMs = 1500) {
     let tries = 0;
     const check = () => {
       tries++;
-      const req = http.get('http://localhost:11434/api/tags', (res) => { res.resume(); resolve(true); });
+      const req = http.get('http://127.0.0.1:11434/api/tags', (res) => { res.resume(); resolve(true); });
       req.on('error', () => { if (tries < maxTries) setTimeout(check, intervalMs); else resolve(false); });
       req.setTimeout(2000, () => { req.destroy(); if (tries < maxTries) setTimeout(check, intervalMs); else resolve(false); });
     };
@@ -146,7 +146,7 @@ ipcMain.handle('start-ollama', async () => {
   const http = require('http');
   // Check if already running
   const alreadyRunning = await new Promise((resolve) => {
-    const req = http.get('http://localhost:11434/api/tags', (res) => { res.resume(); resolve(true); });
+    const req = http.get('http://127.0.0.1:11434/api/tags', (res) => { res.resume(); resolve(true); });
     req.on('error', () => resolve(false));
     req.setTimeout(2000, () => { req.destroy(); resolve(false); });
   });
@@ -1717,7 +1717,7 @@ ipcMain.handle('check-ollama', async () => {
   try {
     const http = require('http');
     return new Promise((resolve) => {
-      const req = http.get('http://localhost:11434/api/tags', (res) => {
+      const req = http.get('http://127.0.0.1:11434/api/tags', (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);
         res.on('end', () => {
@@ -1746,7 +1746,7 @@ ipcMain.handle('generate-ai-email', async (event, { customerName, beatNames, dis
     const userPrompt = `Write a marketing email:\n- Customer: ${customerName || 'there'}\n- Beat(s): ${beatList}\n- Offer: ${discount || 'none'}\n- Goal: ${prompt || 'Promote beats and drive sales'}\nOutput HTML body only.`;
     const postData = JSON.stringify({ model: usedModel, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }], stream: false, options: { temperature: 0.7, num_predict: 600 } });
     return new Promise((resolve) => {
-      const options = { hostname: 'localhost', port: 11434, path: '/v1/chat/completions', method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postData) } };
+      const options = { hostname: '127.0.0.1', port: 11434, path: '/v1/chat/completions', method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postData) } };
       const req = http.request(options, (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);
@@ -1849,29 +1849,20 @@ Respond ONLY with a valid JSON object in this exact format:
   "confidence": "high|medium|low"
 }`;
 
+    // Use Ollama native /api/generate — images are passed as raw base64 array (no data URL prefix)
     const postData = JSON.stringify({
       model: model,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'image_url',
-              image_url: { url: `data:${mimeType || 'image/jpeg'};base64,${imageBase64}` }
-            },
-            { type: 'text', text: prompt }
-          ]
-        }
-      ],
+      prompt: prompt,
+      images: [imageBase64],
       stream: false,
       options: { temperature: 0.1, num_predict: 500 }
     });
 
     return new Promise((resolve) => {
       const options = {
-        hostname: 'localhost',
+        hostname: '127.0.0.1',  // explicit IPv4 — avoids Windows localhost→::1 IPv6 issue
         port: 11434,
-        path: '/v1/chat/completions',
+        path: '/api/generate',
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postData) }
       };
@@ -1881,12 +1872,10 @@ Respond ONLY with a valid JSON object in this exact format:
         res.on('end', () => {
           try {
             const parsed = JSON.parse(data);
-            let content = parsed.choices[0].message.content;
-            // Strip thinking blocks
-            content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+            let content = (parsed.response || '').trim();
             // Extract JSON from response
             const jsonMatch = content.match(/\{[\s\S]*\}/);
-            if (!jsonMatch) return resolve({ success: false, error: 'AI did not return JSON. Response: ' + content.substring(0, 200) });
+            if (!jsonMatch) return resolve({ success: false, error: 'AI did not return JSON. Response: ' + content.substring(0, 300) });
             const extracted = JSON.parse(jsonMatch[0]);
             resolve({ success: true, data: extracted });
           } catch (e) {
@@ -1896,12 +1885,12 @@ Respond ONLY with a valid JSON object in this exact format:
       });
       req.on('error', (e) => {
         if (e.code === 'ECONNREFUSED') {
-          resolve({ success: false, error: 'Ollama is not running. Start it first using start-ollama.bat in your testing folder.' });
+          resolve({ success: false, error: 'Cannot connect to Ollama on 127.0.0.1:11434. Click Start in the nav bar to start it.' });
         } else {
           resolve({ success: false, error: e.message });
         }
       });
-      req.setTimeout(90000, () => { req.destroy(); resolve({ success: false, error: 'Vision model timed out (90s). The model may still be loading, try again.' }); });
+      req.setTimeout(120000, () => { req.destroy(); resolve({ success: false, error: 'Vision model timed out (120s). Try again — first run loads the model.' }); });
       req.write(postData);
       req.end();
     });
@@ -1915,7 +1904,7 @@ ipcMain.handle('get-ollama-models', async () => {
   try {
     const http = require('http');
     return new Promise((resolve) => {
-      const req = http.get('http://localhost:11434/api/tags', (res) => {
+      const req = http.get('http://127.0.0.1:11434/api/tags', (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);
         res.on('end', () => {
