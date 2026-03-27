@@ -222,12 +222,12 @@ function addToGlobalQueue(beats, pack, channel) {
  */
 async function startGlobalQueueProcessing() {
   if (globalUploadQueue.isProcessing) {
-    showNotification('⚠️ Queue is already processing', 'info');
+    showNotification('Queue is already processing', 'info');
     return;
   }
   
   if (globalUploadQueue.items.length === 0) {
-    showNotification('⚠️ Queue is empty', 'info');
+    showNotification('Queue is empty', 'info');
     return;
   }
   
@@ -241,13 +241,13 @@ async function startGlobalQueueProcessing() {
   
   const queuedItems = globalUploadQueue.items.filter(i => i.status === 'queued');
   
-  showNotification(`🚀 Starting queue processing: ${queuedItems.length} beats`, 'info');
+  showNotification(`Starting queue processing: ${queuedItems.length} beats`, 'info');
   
   // ====== PHASE 1: BATCH RENDER (Parallel) ======
   await processRenderPhase();
   
   if (globalUploadQueue.isPaused) {
-    showNotification('⏸️ Queue paused after render phase', 'info');
+    showNotification('Queue paused after render phase', 'info');
     return;
   }
   
@@ -260,7 +260,7 @@ async function startGlobalQueueProcessing() {
   // Final summary
   const completed = globalUploadQueue.items.filter(i => i.status === 'completed').length;
   const failed = globalUploadQueue.items.filter(i => i.status === 'failed').length;
-  showNotification(`🎉 Queue complete! ${completed} uploaded, ${failed} failed`, completed > 0 ? 'success' : 'error');
+  showNotification(`Queue complete! ${completed} uploaded, ${failed} failed`, completed > 0 ? 'success' : 'error');
   
   // Play completion sound
   if (completed > 0) {
@@ -283,7 +283,7 @@ async function processRenderPhase() {
   
   if (toRender.length === 0) return;
   
-  showNotification(`🎬 Rendering ${toRender.length} videos...`, 'info');
+  showNotification(`Rendering ${toRender.length} videos...`, 'info');
   
   // Process in batches
   for (let i = 0; i < toRender.length; i += globalUploadQueue.CONCURRENT_RENDERS) {
@@ -293,7 +293,7 @@ async function processRenderPhase() {
     const batchNum = Math.floor(i / globalUploadQueue.CONCURRENT_RENDERS) + 1;
     const totalBatches = Math.ceil(toRender.length / globalUploadQueue.CONCURRENT_RENDERS);
     
-    showNotification(`🎬 Render batch ${batchNum}/${totalBatches} (${batch.length} videos)...`, 'info');
+    showNotification(`Render batch ${batchNum}/${totalBatches} (${batch.length} videos)...`, 'info');
     
     const batchPromises = batch.map(async (item) => {
       if (!item.imagePath) {
@@ -317,7 +317,7 @@ async function processRenderPhase() {
         if (renderResult.success) {
           item.status = 'rendered';
           item.videoPath = renderResult.outputPath;
-          showNotification(`✅ Rendered: ${item.cleanBeatName}`, 'success');
+          showNotification(`Rendered: ${item.cleanBeatName}`, 'success');
         } else {
           item.status = 'failed';
           item.error = renderResult.error;
@@ -336,7 +336,7 @@ async function processRenderPhase() {
   
   const rendered = globalUploadQueue.items.filter(i => i.status === 'rendered').length;
   const failed = globalUploadQueue.items.filter(i => i.status === 'failed').length;
-  showNotification(`🎬 Render complete: ${rendered} success, ${failed} failed`, 'info');
+  showNotification(`Render complete: ${rendered} success, ${failed} failed`, 'info');
 }
 
 /**
@@ -347,7 +347,7 @@ async function processUploadPhase() {
   
   if (toUpload.length === 0) return;
   
-  showNotification(`📤 Uploading ${toUpload.length} videos...`, 'info');
+  showNotification(`Uploading ${toUpload.length} videos...`, 'info');
   
   // Group by channel for sequential scheduling
   const byChannel = new Map();
@@ -450,14 +450,14 @@ async function processUploadPhase() {
         const scheduleDateStr = scheduleDate ? scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : null;
         updateProgressItem(item.progressId, PROGRESS_STATUS.COMPLETED, { scheduleDate: scheduleDateStr });
         
-        showNotification(`✅ ${videoTitle} → ${item.channel.name} 📅 ${scheduleDateStr || 'Now'}`, 'success');
+        showNotification(`${videoTitle} → ${item.channel.name} ${scheduleDateStr || 'Now'}`, 'success');
         notificationSound.playSuccess(); // Play success sound
         
       } catch (error) {
         item.status = 'failed';
         item.error = error.message;
         updateProgressItem(item.progressId, PROGRESS_STATUS.FAILED, { error: error.message });
-        showNotification(`❌ Upload failed: ${item.cleanBeatName} - ${error.message}`, 'error');
+        showNotification(`Upload failed: ${item.cleanBeatName} - ${error.message}`, 'error');
         notificationSound.playError(); // Play error sound
       }
       
@@ -476,7 +476,7 @@ async function processUploadPhase() {
  */
 function pauseGlobalQueue() {
   globalUploadQueue.isPaused = true;
-  showNotification('⏸️ Queue paused', 'info');
+  showNotification('Queue paused', 'info');
   updateGlobalQueueUI();
 }
 
@@ -487,7 +487,7 @@ function resumeGlobalQueue() {
   if (!globalUploadQueue.isPaused) return;
   
   globalUploadQueue.isPaused = false;
-  showNotification('▶️ Queue resumed', 'info');
+  showNotification('Queue resumed', 'info');
   
   // Continue processing
   if (globalUploadQueue.isProcessing) {
@@ -507,7 +507,7 @@ function clearGlobalQueue() {
   globalUploadQueue.items = globalUploadQueue.items.filter(i => activeStatuses.includes(i.status));
   globalUploadQueue.channelScheduleCache.clear();
   
-  showNotification('🗑️ Queue cleared', 'info');
+  showNotification('Queue cleared', 'info');
   updateGlobalQueueUI();
 }
 
@@ -534,13 +534,13 @@ function updateGlobalQueueUI() {
   
   if (queueStatusEl) {
     if (globalUploadQueue.isPaused) {
-      queueStatusEl.textContent = '⏸️ Paused';
+      queueStatusEl.textContent = 'Paused';
       queueStatusEl.className = 'queue-status paused';
     } else if (globalUploadQueue.isProcessing) {
-      queueStatusEl.textContent = '🔄 Processing...';
+      queueStatusEl.textContent = 'Processing...';
       queueStatusEl.className = 'queue-status processing';
     } else {
-      queueStatusEl.textContent = queued > 0 ? '⏳ Ready' : '✅ Idle';
+      queueStatusEl.textContent = queued > 0 ? 'Ready' : 'Idle';
       queueStatusEl.className = 'queue-status idle';
     }
   }
@@ -548,7 +548,9 @@ function updateGlobalQueueUI() {
   // Update button states
   if (startQueueBtn) {
     startQueueBtn.disabled = globalUploadQueue.isProcessing || queued === 0;
-    startQueueBtn.textContent = globalUploadQueue.isPaused ? '▶️ Resume' : '🚀 Start Queue';
+    startQueueBtn.innerHTML = globalUploadQueue.isPaused
+      ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Resume`
+      : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Start Queue`;
   }
   if (pauseQueueBtn) {
     pauseQueueBtn.disabled = !globalUploadQueue.isProcessing || globalUploadQueue.isPaused;
@@ -1085,7 +1087,7 @@ function renderPackEmailInfo() {
     // Show existing email/password
     packEmailInfoEl.innerHTML = `
       <div style="margin-bottom: 10px;">
-        <div style="font-weight: bold; color: #3b82f6; font-size: 14px; margin-bottom: 8px;">📧 Account Information</div>
+        <div style="font-weight: bold; color: #3b82f6; font-size: 14px; margin-bottom: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Account Information</div>
         <div style="font-size: 13px; color: #ddd; margin-bottom: 5px;">
           <span style="color: #999;">Email:</span> <span style="font-family: monospace;">${pack.email}</span>
         </div>
@@ -1102,7 +1104,7 @@ function renderPackEmailInfo() {
     // Show form to add email/password
     packEmailInfoEl.innerHTML = `
       <div>
-        <div style="font-weight: bold; color: #f59e0b; font-size: 14px; margin-bottom: 10px;">⚠️ No Email Assigned</div>
+        <div style="font-weight: bold; color: #f59e0b; font-size: 14px; margin-bottom: 10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>No Email Assigned</div>
         <div style="font-size: 12px; color: #999; margin-bottom: 10px;">
           Paste format: <span style="font-family: monospace; color: #3b82f6;">email	password|recovery</span>
         </div>
@@ -1229,11 +1231,11 @@ function toggleHiddenPacksView() {
 
   // Update UI
   if (showingHiddenPacks) {
-    toggleHiddenViewBtn.innerHTML = '👁️ Active';
+    toggleHiddenViewBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Active';
     toggleHiddenViewBtn.title = 'View Active Packs';
     packsHeaderTitle.textContent = 'Hidden Packs';
   } else {
-    toggleHiddenViewBtn.innerHTML = '👁️ Hidden';
+    toggleHiddenViewBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg> Hidden';
     toggleHiddenViewBtn.title = 'View Hidden Packs';
     packsHeaderTitle.textContent = 'Packs';
   }
@@ -1699,7 +1701,7 @@ function renderBeats() {
 
       const iconEl = document.createElement('span');
       iconEl.className = 'folder-icon';
-      iconEl.textContent = '📁';
+      iconEl.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>';
 
       const nameEl = document.createElement('div');
       nameEl.className = 'folder-name';
@@ -1784,7 +1786,7 @@ function renderBeats() {
       if (isUploaded) {
         const uploadedTag = document.createElement('span');
         uploadedTag.className = 'pack-tag uploaded-tag';
-        uploadedTag.textContent = '📺 Uploaded';
+        uploadedTag.textContent = 'Uploaded';
         tagsContainer.appendChild(uploadedTag);
       }
 
@@ -2023,7 +2025,7 @@ function createPackCard(pack, orderNumber) {
   // Add thumbnail button overlay
   const thumbnailBtn = document.createElement('button');
   thumbnailBtn.className = 'pack-thumbnail-btn';
-  thumbnailBtn.innerHTML = '📷';
+  thumbnailBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
   thumbnailBtn.title = 'Change thumbnail';
   thumbnailBtn.addEventListener('click', (e) => {
     e.stopPropagation(); // Don't trigger pack detail view
@@ -2145,10 +2147,10 @@ function createPackBeatElement(beat, packId, index) {
         day: 'numeric',
         year: 'numeric'
       });
-      uploadedBadge.textContent = `📅 ${dateStr}`;
+      uploadedBadge.textContent = `${dateStr}`;
       uploadedBadge.title = `Scheduled to publish on ${dateStr}`;
     } else {
-      uploadedBadge.textContent = '📺 Uploaded';
+      uploadedBadge.textContent = 'Uploaded';
     }
     contentContainer.appendChild(uploadedBadge);
   }
@@ -3779,7 +3781,12 @@ function showNotification(message, type = 'info') {
   const toast = document.createElement('div');
   toast.className = `notification-toast ${type}`;
   toast.innerHTML = `
-    <span class="notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+    <span class="notification-icon">${type === 'success'
+      ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+      : type === 'error'
+      ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+      : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+    }</span>
     <span class="notification-message">${message}</span>
   `;
   document.body.appendChild(toast);
@@ -4368,14 +4375,14 @@ function handleDroppedCredentialsFile(file) {
     try {
       const content = JSON.parse(event.target.result);
       selectedCredentialsContent = content;
-      credentialsFileName.textContent = `✅ ${file.name}`;
+      credentialsFileName.textContent = file.name;
       credentialsFileName.style.color = '#4CAF50';
       if (credentialsDropzone) {
         credentialsDropzone.style.borderColor = '#4CAF50';
       }
     } catch (err) {
       showNotification('Invalid JSON file', 'error');
-      credentialsFileName.textContent = '❌ Invalid file';
+      credentialsFileName.textContent = 'Invalid file';
       credentialsFileName.style.color = '#f44336';
       selectedCredentialsContent = null;
     }
@@ -4732,7 +4739,7 @@ function showAuthCodeDialog(channelId, authUrl) {
 
   dialog.innerHTML = `
     <h3 style="margin: 0 0 16px 0; color: #fff; font-size: 18px;">
-      🔐 YouTube Authorization
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>YouTube Authorization
     </h3>
     <p style="color: #aaa; margin-bottom: 16px; font-size: 14px;">
       1. Một cửa sổ trình duyệt đã mở<br>
@@ -4796,7 +4803,7 @@ function showAuthCodeDialog(channelId, authUrl) {
       const result = await ipcRenderer.invoke('complete-reauth', { channelId, authCode: code });
       
       if (result.success) {
-        showNotification('✅ Token đã được refresh thành công!', 'success');
+      showNotification('Token refreshed successfully!', 'success');
         overlay.remove();
         await refreshYouTubeChannels();
       } else {
@@ -4885,7 +4892,7 @@ async function scanYouTubeChannels() {
     } else {
       youtubeChannelList.innerHTML = `
         <div class="empty-state">
-          <p>⚠️ Automation server offline</p>
+          <p><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Automation server offline</p>
           <p style="font-size: 12px; margin-top: 10px;">
             Start the server: <code>cd automation && npm start</code>
           </p>
@@ -4933,7 +4940,7 @@ function showExpiredTokensNotification(expiredChannels) {
   
   notificationEl.innerHTML = `
     <div class="notification-content">
-      <span class="notification-icon">⚠️</span>
+      <span class="notification-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
       <span class="notification-text">
         <strong>${count} channel${count > 1 ? 's' : ''} có token hết hạn:</strong> 
         ${channelNames.length > 100 ? channelNames.substring(0, 100) + '...' : channelNames}
@@ -4966,7 +4973,7 @@ function showExpiredTokensDetails() {
   
   const modalContent = `
     <div class="modal-header">
-      <h3>⚠️ Channels cần Re-authenticate</h3>
+      <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Channels need Re-authentication</h3>
       <button class="modal-close" onclick="closeModal()">×</button>
     </div>
     <div class="modal-body">
@@ -4981,7 +4988,7 @@ function showExpiredTokensDetails() {
         `).join('')}
       </div>
       <div class="modal-tip" style="margin-top: 15px; padding: 10px; background: #2a2a40; border-radius: 8px;">
-        <strong>💡 Tip:</strong> Google OAuth Testing mode token chỉ có hiệu lực 7 ngày. 
+        <strong><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Tip:</strong> Google OAuth Testing mode token chỉ có hiệu lực 7 ngày. 
         Sau khi re-auth, cần <strong>restart server</strong> để load token mới.
       </div>
     </div>
@@ -5013,13 +5020,13 @@ async function reAuthChannel(channelId) {
     const result = await ipcRenderer.invoke('reauthenticate-youtube', channelPath);
     
     if (result.success) {
-      showNotification(`✅ Đã xác thực ${channel.name}. Hãy restart server để áp dụng!`, 'success');
+      showNotification(`Authenticated ${channel.name}. Please restart server to apply!`, 'success');
       await refreshYouTubeChannels();
     } else {
-      showNotification(`❌ Lỗi xác thực: ${result.error}`, 'error');
+      showNotification(`Auth error: ${result.error}`, 'error');
     }
   } catch (error) {
-    showNotification(`❌ Lỗi: ${error.message}`, 'error');
+    showNotification(`Error: ${error.message}`, 'error');
   }
 }
 
@@ -5042,17 +5049,17 @@ function renderYouTubeChannels() {
     const tokenExpired = !tokenValid && channel.hasToken;
     
     let statusClass = 'offline';
-    let statusText = '⚠ Setup needed';
+    let statusText = 'Setup needed';
     
     if (channel.ready && tokenValid) {
       statusClass = 'ready';
-      statusText = '✓ Ready';
+      statusText = 'Ready';
     } else if (tokenExpired) {
       statusClass = 'expired';
-      statusText = '⛔ Token expired';
+      statusText = 'Token expired';
     } else if (channel.ready) {
       statusClass = 'warning';
-      statusText = '⚠ Token issue';
+      statusText = 'Token issue';
     }
     
     return `
@@ -5286,9 +5293,9 @@ function renderUploadQueue() {
         </div>
       </div>
       <div class="queue-actions">
-        <button class="btn-secondary edit-btn" title="Edit">✏️</button>
-        <button class="btn-secondary upload-btn" title="Upload" ${item.status !== 'draft' ? 'disabled' : ''}>▶️</button>
-        <button class="btn-danger remove-btn" title="Remove">🗑️</button>
+        <button class="btn-secondary edit-btn" title="Edit"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="btn-secondary upload-btn" title="Upload" ${item.status !== 'draft' ? 'disabled' : ''}><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+        <button class="btn-danger remove-btn" title="Remove"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
       </div>
     </div>
   `).join('');
@@ -6010,7 +6017,7 @@ async function autoUploadNextBeats(count = 6) {
   
   // Warn if server is offline but allow proceeding
   if (!youtubeState.serverOnline) {
-    showNotification('⚠️ Server offline - videos will be queued in upload folder. Start server to upload.', 'info');
+    showNotification('Server offline - videos will be queued in upload folder. Start server to upload.', 'info');
   }
   
   // Start progress tracking
@@ -6024,7 +6031,7 @@ async function autoUploadNextBeats(count = 6) {
     progressIds[beat.path] = addProgressItem(cleanBeatName, channel.name);
   });
   
-  showNotification(`🎬 Starting batch render of ${beatsToUpload.length} beats...`, 'info');
+  showNotification(`Starting batch render of ${beatsToUpload.length} beats...`, 'info');
   
   // ====== PHASE 1: BATCH RENDER (Parallel) ======
   const CONCURRENT_RENDERS = 3; // Number of FFmpeg processes to run in parallel
@@ -6043,7 +6050,7 @@ async function autoUploadNextBeats(count = 6) {
   for (let i = 0; i < renderTasks.length; i += CONCURRENT_RENDERS) {
     const batch = renderTasks.slice(i, i + CONCURRENT_RENDERS);
     
-    showNotification(`🎬 Rendering batch ${Math.floor(i/CONCURRENT_RENDERS) + 1}/${Math.ceil(renderTasks.length/CONCURRENT_RENDERS)} (${batch.length} videos)...`, 'info');
+    showNotification(`Rendering batch ${Math.floor(i/CONCURRENT_RENDERS) + 1}/${Math.ceil(renderTasks.length/CONCURRENT_RENDERS)} (${batch.length} videos)...`, 'info');
     
     const batchPromises = batch.map(async (task) => {
       const { beat, imagePath } = task;
@@ -6089,21 +6096,21 @@ async function autoUploadNextBeats(count = 6) {
       if (result.success) {
         renderSuccessCount++;
         renderResults.push(result);
-        showNotification(`✅ Rendered (${renderSuccessCount}/${renderTasks.length}): ${result.cleanBeatName}`, 'success');
+        showNotification(`Rendered (${renderSuccessCount}/${renderTasks.length}): ${result.cleanBeatName}`, 'success');
       } else {
         renderFailCount++;
-        showNotification(`❌ Render failed: ${result.beat.name} - ${result.error}`, 'error');
+        showNotification(`Render failed: ${result.beat.name} - ${result.error}`, 'error');
       }
     }
   }
   
   if (renderResults.length === 0) {
-    showNotification('❌ All renders failed. Check image/audio files.', 'error');
+    showNotification('All renders failed. Check image/audio files.', 'error');
     endProgressBatch();
     return;
   }
   
-  showNotification(`🎬 Render complete: ${renderSuccessCount} success, ${renderFailCount} failed. Now uploading...`, 'info');
+  showNotification(`Render complete: ${renderSuccessCount} success, ${renderFailCount} failed. Now uploading...`, 'info');
   
   // ====== PHASE 2: COPY + UPLOAD (Sequential for correct scheduling) ======
   let uploadSuccessCount = 0;
@@ -6191,8 +6198,8 @@ async function autoUploadNextBeats(count = 6) {
       }
       
       uploadSuccessCount++;
-      let scheduleText = scheduleDate ? ` 📅 ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '';
-      showNotification(`✅ (${uploadSuccessCount}/${renderResults.length}) ${videoTitle} → ${channel.name}${scheduleText}`, 'success');
+      let scheduleText = scheduleDate ? ` ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '';
+      showNotification(`(${uploadSuccessCount}/${renderResults.length}) ${videoTitle} → ${channel.name}${scheduleText}`, 'success');
       
       // Update progress: completed
       const scheduleDateStr = scheduleDate ? scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : null;
@@ -6200,7 +6207,7 @@ async function autoUploadNextBeats(count = 6) {
       
     } catch (error) {
       uploadFailCount++;
-      showNotification(`❌ Upload failed: ${cleanBeatName} - ${error.message}`, 'error');
+      showNotification(`Upload failed: ${cleanBeatName} - ${error.message}`, 'error');
       updateProgressItem(progressId, 'error', 0, null, error.message);
     }
     
@@ -6218,7 +6225,7 @@ async function autoUploadNextBeats(count = 6) {
   // Final summary & finish progress tracking
   endProgressBatch();
   const serverNote = youtubeState.serverOnline ? '' : ' (Server offline - start server to upload)';
-  showNotification(`🎉 Complete: ${uploadSuccessCount} uploaded, ${uploadFailCount + renderFailCount} failed${serverNote}`, uploadSuccessCount > 0 ? 'success' : 'error');
+  showNotification(`Complete: ${uploadSuccessCount} uploaded, ${uploadFailCount + renderFailCount} failed${serverNote}`, uploadSuccessCount > 0 ? 'success' : 'error');
   
   // Refresh beats to update uploaded badges
   renderPackDetailBeats();
@@ -6236,7 +6243,7 @@ async function autoUploadSingleBeat() {
   
   // Warn if server is offline but allow proceeding
   if (!youtubeState.serverOnline) {
-    showNotification('⚠️ Server offline - video will be queued in upload folder', 'info');
+    showNotification('Server offline - video will be queued in upload folder', 'info');
   }
   
   const beatPath = contextMenuTarget.beatPath;
@@ -6248,7 +6255,7 @@ async function autoUploadSingleBeat() {
   
   if (result.success) {
     const serverNote = youtubeState.serverOnline ? '' : ' (queued for upload)';
-    showNotification(`✅ ${result.title} → ${result.channel}${serverNote}`, 'success');
+    showNotification(`${result.title} → ${result.channel}${serverNote}`, 'success');
     
     // Re-render pack detail to update UI
     if (currentPackId) {
@@ -6256,7 +6263,7 @@ async function autoUploadSingleBeat() {
     }
     renderBeats();
   } else {
-    showNotification(`❌ Failed: ${result.error}`, 'error');
+    showNotification(`Failed: ${result.error}`, 'error');
   }
 }
 
@@ -6332,11 +6339,11 @@ async function autoUpload6FromHere() {
   // Add to global queue
   const addedCount = addToGlobalQueue(beatsToQueue, pack, channel);
   
-  showNotification(`📦 Added ${addedCount} beats from "${pack.name}" to queue`, 'success');
+  showNotification(`Added ${addedCount} beats from "${pack.name}" to queue`, 'success');
   
   // Show queue status
   const totalQueued = globalUploadQueue.items.filter(i => i.status === 'queued').length;
-  showNotification(`📋 Total in queue: ${totalQueued} beats | Click "Start Queue" to process`, 'info');
+  showNotification(`Total in queue: ${totalQueued} beats | Click "Start Queue" to process`, 'info');
   
   // Switch to Progress tab to show queue
   const progressTab = document.querySelector('.main-nav-tab[data-section="progress"]');
@@ -6410,7 +6417,7 @@ async function autoUpload6FromHereLegacy() {
   
   // Warn if server is offline
   if (!youtubeState.serverOnline) {
-    showNotification('⚠️ Server offline - videos will be queued', 'info');
+    showNotification('Server offline - videos will be queued', 'info');
   }
   
   // Start progress tracking for 6FromHere
@@ -6424,7 +6431,7 @@ async function autoUpload6FromHereLegacy() {
     progressIds6[beat.path] = addProgressItem(cleanBeatName, channel.name);
   });
   
-  showNotification(`🎬 Starting batch render of ${beatsToUpload.length} beats...`, 'info');
+  showNotification(`Starting batch render of ${beatsToUpload.length} beats...`, 'info');
   
   // ====== PHASE 1: BATCH RENDER (Parallel) ======
   const CONCURRENT_RENDERS = 3;
@@ -6443,7 +6450,7 @@ async function autoUpload6FromHereLegacy() {
   for (let i = 0; i < renderTasks.length; i += CONCURRENT_RENDERS) {
     const batch = renderTasks.slice(i, i + CONCURRENT_RENDERS);
     
-    showNotification(`🎬 Rendering batch ${Math.floor(i/CONCURRENT_RENDERS) + 1}/${Math.ceil(renderTasks.length/CONCURRENT_RENDERS)} (${batch.length} videos)...`, 'info');
+    showNotification(`Rendering batch ${Math.floor(i/CONCURRENT_RENDERS) + 1}/${Math.ceil(renderTasks.length/CONCURRENT_RENDERS)} (${batch.length} videos)...`, 'info');
     
     const batchPromises = batch.map(async (task) => {
       const { beat, imagePath } = task;
@@ -6487,21 +6494,21 @@ async function autoUpload6FromHereLegacy() {
       if (result.success) {
         renderSuccessCount++;
         renderResults.push(result);
-        showNotification(`✅ Rendered (${renderSuccessCount}/${renderTasks.length}): ${result.cleanBeatName}`, 'success');
+        showNotification(`Rendered (${renderSuccessCount}/${renderTasks.length}): ${result.cleanBeatName}`, 'success');
       } else {
         renderFailCount++;
-        showNotification(`❌ Render failed: ${result.beat.name} - ${result.error}`, 'error');
+        showNotification(`Render failed: ${result.beat.name} - ${result.error}`, 'error');
       }
     }
   }
   
   if (renderResults.length === 0) {
-    showNotification('❌ All renders failed', 'error');
+    showNotification('All renders failed', 'error');
     endProgressBatch();
     return;
   }
   
-  showNotification(`🎬 Render complete: ${renderSuccessCount} success. Now uploading...`, 'info');
+  showNotification(`Render complete: ${renderSuccessCount} success. Now uploading...`, 'info');
   
   // ====== PHASE 2: COPY + UPLOAD (Sequential) ======
   let uploadSuccessCount = 0;
@@ -6582,8 +6589,8 @@ async function autoUpload6FromHereLegacy() {
       }
       
       uploadSuccessCount++;
-      let scheduleText = scheduleDate ? ` 📅 ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '';
-      showNotification(`✅ (${uploadSuccessCount}/${renderResults.length}) ${videoTitle}${scheduleText}`, 'success');
+      let scheduleText = scheduleDate ? ` ${scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : '';
+      showNotification(`(${uploadSuccessCount}/${renderResults.length}) ${videoTitle}${scheduleText}`, 'success');
       
       // Update progress: completed
       const scheduleDateStr = scheduleDate ? scheduleDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : null;
@@ -6591,7 +6598,7 @@ async function autoUpload6FromHereLegacy() {
       
     } catch (error) {
       uploadFailCount++;
-      showNotification(`❌ Upload failed: ${cleanBeatName} - ${error.message}`, 'error');
+      showNotification(`Upload failed: ${cleanBeatName} - ${error.message}`, 'error');
       updateProgressItem(progressId, PROGRESS_STATUS.FAILED, { error: error.message });
     }
     
@@ -6607,7 +6614,7 @@ async function autoUpload6FromHereLegacy() {
   // Final summary & finish progress tracking
   endProgressBatch();
   const serverNote = youtubeState.serverOnline ? '' : ' (queued for upload)';
-  showNotification(`🎉 Completed: ${uploadSuccessCount} success, ${uploadFailCount + renderFailCount} failed${serverNote}`, 
+  showNotification(`Completed: ${uploadSuccessCount} success, ${uploadFailCount + renderFailCount} failed${serverNote}`, 
     uploadFailCount + renderFailCount > 0 ? 'warning' : 'success');
   
   // Refresh UI
@@ -6742,7 +6749,7 @@ function checkBatchComplete() {
   const batch = uploadProgress.currentBatch;
   if (batch.completed >= batch.total) {
     // All done!
-    showNotification(`🎉 Batch complete! ${uploadProgress.completedCount} uploaded to ${batch.channelName}`, 'success');
+    showNotification(`Batch complete! ${uploadProgress.completedCount} uploaded to ${batch.channelName}`, 'success');
     
     // Flash the progress tab
     const progressTab = document.querySelector('[data-section="progress"]');
@@ -6845,7 +6852,7 @@ function renderProgressList() {
     
     let errorText = '';
     if (item.error) {
-      errorText = `<div class="progress-item-error" title="${item.error}">⚠️ ${item.error.substring(0, 30)}${item.error.length > 30 ? '...' : ''}</div>`;
+      errorText = `<div class="progress-item-error" title="${item.error}"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:3px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>${item.error.substring(0, 30)}${item.error.length > 30 ? '...' : ''}</div>`;
     }
     
     return `
@@ -7184,9 +7191,9 @@ function updateBatchSummary() {
   
   if (confirmBtn) {
     confirmBtn.disabled = selectedCount === 0;
-    confirmBtn.textContent = selectedCount > 0 
-      ? `🚀 Upload ${totalBeats} beats from ${selectedCount} channels`
-      : '🚀 Continue with Auto Upload 6';
+    confirmBtn.innerHTML = selectedCount > 0 
+      ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Upload ${totalBeats} beats from ${selectedCount} channels`
+      : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Continue with Auto Upload 6`;
   }
 }
 
@@ -7211,11 +7218,11 @@ async function executeBatchUpload() {
   closeBatchUploadModal();
   
   if (totalAdded > 0) {
-    showNotification(`📦 Added ${totalAdded} beats from ${batchUploadState.selectedChannels.size} channels to queue`, 'success');
+    showNotification(`Added ${totalAdded} beats from ${batchUploadState.selectedChannels.size} channels to queue`, 'success');
     
     // Auto-start the queue
     if (!globalUploadQueue.isProcessing) {
-      showNotification('🚀 Starting queue processing...', 'info');
+      showNotification('Starting queue processing...', 'info');
       await startGlobalQueueProcessing();
     }
   } else {
@@ -7547,7 +7554,7 @@ function renderCustomerDetails() {
   if (!customer) {
     customerDetailsContent.innerHTML = `
       <div class="empty-state-large">
-        <span class="empty-icon">👤</span>
+        <span class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
         <h3>Select a customer</h3>
         <p>Choose a customer from the list to view details and send emails</p>
       </div>
@@ -7564,8 +7571,8 @@ function renderCustomerDetails() {
           <div class="customer-email">${customer.email}</div>
         </div>
         <div class="customer-detail-actions">
-          <button class="btn-secondary btn-sm" onclick="editCustomer('${customer.id}')">✏️ Edit</button>
-          <button class="btn-danger btn-sm" onclick="deleteCustomer('${customer.id}')">🗑️ Delete</button>
+          <button class="btn-secondary btn-sm" onclick="editCustomer('${customer.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Edit</button>
+          <button class="btn-danger btn-sm" onclick="deleteCustomer('${customer.id}')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg> Delete</button>
         </div>
       </div>
       
@@ -7689,7 +7696,7 @@ async function saveNewCustomer() {
   closeAddCustomerModal();
   renderCustomerList();
   updateCustomerStats();
-  showNotification(`✅ Customer "${name}" added successfully!`, 'success');
+  showNotification(`Customer "${name}" added successfully!`, 'success');
   notificationSound.playSuccess();
 }
 
@@ -7766,7 +7773,7 @@ async function sendEmail() {
   
   await saveCustomers();
   renderEmailHistory();
-  showNotification(`📧 Email prepared for ${customer.name}`, 'success');
+  showNotification(`Email prepared for ${customer.name}`, 'success');
   notificationSound.playSuccess();
 }
 
@@ -7889,7 +7896,7 @@ async function sendBulkEmails() {
   await saveCustomers();
   closeBulkEmailModal();
   renderEmailHistory();
-  showNotification(`📧 Bulk email prepared for ${recipients.length} recipients`, 'success');
+  showNotification(`Bulk email prepared for ${recipients.length} recipients`, 'success');
   notificationSound.playComplete();
 }
 
@@ -8073,13 +8080,16 @@ function renderBeatstarsFolders() {
     
     return `
       <div class="beatstars-folder-item ${isSelected ? 'selected' : ''} ${isDone ? 'done' : ''}" data-index="${index}" data-path="${folder.path}">
-        <span class="folder-icon">${isDone ? '✅' : '📁'}</span>
+        <span class="folder-icon">${isDone
+          ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>'
+          : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>'
+        }</span>
         <div class="folder-info">
           <div class="folder-name">${folder.name}${isDone ? ' <span class="done-badge">DONE</span>' : ''}</div>
           <div class="folder-count">${folder.audioCount} audio files</div>
         </div>
         <span class="folder-badge ${isDone ? 'done' : ''}">${folder.audioCount}</span>
-        ${isDone ? '<button class="clear-done-btn" data-path="' + folder.path.replace(/\\/g, '\\\\') + '" title="Clear DONE status">↩️</button>' : ''}
+        ${isDone ? '<button class="clear-done-btn" data-path="' + folder.path.replace(/\\/g, '\\\\') + '" title="Clear DONE status"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg></button>' : ''}
       </div>
     `;
   }).join('');
@@ -8156,21 +8166,21 @@ function showFolderContextMenu(event, folder) {
   menu.className = 'beatstars-context-menu';
   menu.innerHTML = `
     <div class="context-menu-item" data-action="select">
-      📂 Select Folder
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Select Folder
     </div>
     <div class="context-menu-divider"></div>
     ${isDone ? `
       <div class="context-menu-item" data-action="clear-done">
-        ↩️ Clear DONE Status
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>Clear DONE Status
       </div>
     ` : `
       <div class="context-menu-item" data-action="mark-done">
-        ✅ Mark as DONE
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Mark as DONE
       </div>
     `}
     <div class="context-menu-divider"></div>
     <div class="context-menu-item" data-action="open-folder">
-      📁 Open in Explorer
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Open in Explorer
     </div>
   `;
   
@@ -8206,13 +8216,13 @@ function showFolderContextMenu(event, folder) {
         case 'mark-done':
           markFolderAsDone(folder.path);
           renderBeatstarsFolders();
-          addBeatstarsLog(`✅ Marked "${folder.name}" as DONE`, 'success');
+          addBeatstarsLog(`Marked "${folder.name}" as DONE`, 'success');
           break;
           
         case 'clear-done':
           clearFolderDone(folder.path);
           renderBeatstarsFolders();
-          addBeatstarsLog(`↩️ Cleared DONE status for "${folder.name}"`, 'info');
+          addBeatstarsLog(`Cleared DONE status for "${folder.name}"`, 'info');
           break;
           
         case 'open-folder':
@@ -8272,16 +8282,16 @@ function updateProcessButtons() {
   
   if (beatstarsProcessSelectedBtn) {
     beatstarsProcessSelectedBtn.disabled = !hasSelection || beatstarsState.isProcessing;
-    beatstarsProcessSelectedBtn.textContent = hasSelection 
-      ? `▶️ Process "${beatstarsState.selectedFolder.name}"`
-      : '▶️ Process Selected';
+    beatstarsProcessSelectedBtn.innerHTML = hasSelection 
+      ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Process "${beatstarsState.selectedFolder.name}"`
+      : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Process Selected`;
   }
   
   if (beatstarsProcessAllBtn) {
     beatstarsProcessAllBtn.disabled = !hasSelection || beatstarsState.isProcessing;
-    beatstarsProcessAllBtn.textContent = hasSelection
-      ? `🚀 Process All (${beatstarsState.selectedFolder.audioCount} files)`
-      : '🚀 Process All Files';
+    beatstarsProcessAllBtn.innerHTML = hasSelection
+      ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Process All (${beatstarsState.selectedFolder.audioCount} files)`
+      : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Process All Files`;
   }
 }
 
@@ -8294,9 +8304,9 @@ function updateProcessAllFoldersButton() {
   const doneCount = beatstarsState.folders.length - pendingFolders.length;
   
   processAllFoldersBtn.disabled = pendingFolders.length === 0 || beatstarsState.isProcessing;
-  processAllFoldersBtn.textContent = pendingFolders.length > 0
-    ? `🚀 Process All Folders (${pendingFolders.length} pending, ${doneCount} done)`
-    : `✅ All Folders Done (${doneCount})`;
+  processAllFoldersBtn.innerHTML = pendingFolders.length > 0
+    ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Process All Folders (${pendingFolders.length} pending, ${doneCount} done)`
+    : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>All Folders Done (${doneCount})`;
 }
 
 // Add log entry
@@ -8380,17 +8390,17 @@ async function processSelectedFolder() {
       if (result.success) {
         successCount++;
         if (result.action === 'skipped') {
-          addBeatstarsLog(`⏭️ ${file.name} - Skipped (no processing needed)`, 'warning');
+          addBeatstarsLog(`${file.name} - Skipped (no processing needed)`, 'warning');
         } else {
-          addBeatstarsLog(`✅ ${result.originalName} → ${result.newName}`, 'success');
+          addBeatstarsLog(`${result.originalName} → ${result.newName}`, 'success');
         }
       } else {
         errorCount++;
-        addBeatstarsLog(`❌ ${file.name}: ${result.error}`, 'error');
+        addBeatstarsLog(`${file.name}: ${result.error}`, 'error');
       }
     } catch (error) {
       errorCount++;
-      addBeatstarsLog(`❌ ${file.name}: ${error.message}`, 'error');
+      addBeatstarsLog(`${file.name}: ${error.message}`, 'error');
     }
   }
   
@@ -8404,7 +8414,7 @@ async function processSelectedFolder() {
   // Mark folder as done if all files processed successfully
   if (errorCount === 0 && successCount > 0) {
     markFolderAsDone(beatstarsState.selectedFolder.path);
-    addBeatstarsLog(`✅ Folder "${beatstarsState.selectedFolder.name}" marked as DONE`, 'success');
+    addBeatstarsLog(`Folder "${beatstarsState.selectedFolder.name}" marked as DONE`, 'success');
     renderBeatstarsFolders(); // Re-render to show DONE status
   }
   
@@ -8454,12 +8464,12 @@ async function processAllFolders() {
   let totalErrors = 0;
   
   for (const folder of pendingFolders) {
-    addBeatstarsLog(`\n📂 Processing folder: ${folder.name}`, 'info');
+    addBeatstarsLog(`Processing folder: ${folder.name}`, 'info');
     
     // Load files for this folder
     const result = await ipcRenderer.invoke('beatstars-scan-folder', folder.path);
     if (!result.success || result.files.length === 0) {
-      addBeatstarsLog(`⚠️ No files found in ${folder.name}, skipping...`, 'warning');
+      addBeatstarsLog(`No files found in ${folder.name}, skipping...`, 'warning');
       continue;
     }
     
@@ -8498,17 +8508,17 @@ async function processAllFolders() {
         if (processResult.success) {
           folderSuccessCount++;
           if (processResult.action === 'skipped') {
-            addBeatstarsLog(`⏭️ ${file.name} - Skipped`, 'warning');
+            addBeatstarsLog(`${file.name} - Skipped`, 'warning');
           } else {
-            addBeatstarsLog(`✅ ${processResult.originalName} → ${processResult.newName}`, 'success');
+            addBeatstarsLog(`${processResult.originalName} → ${processResult.newName}`, 'success');
           }
         } else {
           folderErrorCount++;
-          addBeatstarsLog(`❌ ${file.name}: ${processResult.error}`, 'error');
+          addBeatstarsLog(`${file.name}: ${processResult.error}`, 'error');
         }
       } catch (error) {
         folderErrorCount++;
-        addBeatstarsLog(`❌ ${file.name}: ${error.message}`, 'error');
+        addBeatstarsLog(`${file.name}: ${error.message}`, 'error');
       }
     }
     
@@ -8518,10 +8528,10 @@ async function processAllFolders() {
     // Mark folder as done if no errors
     if (folderErrorCount === 0 && folderSuccessCount > 0) {
       markFolderAsDone(folder.path);
-      addBeatstarsLog(`✅ Folder "${folder.name}" marked as DONE`, 'success');
+      addBeatstarsLog(`Folder "${folder.name}" marked as DONE`, 'success');
       totalFoldersProcessed++;
     } else if (folderErrorCount > 0) {
-      addBeatstarsLog(`⚠️ Folder "${folder.name}" had ${folderErrorCount} error(s), not marked as done`, 'warning');
+      addBeatstarsLog(`Folder "${folder.name}" had ${folderErrorCount} error(s), not marked as done`, 'warning');
     }
     
     // Re-render folders to show updated DONE status
@@ -8533,7 +8543,7 @@ async function processAllFolders() {
   beatstarsCurrentFile.textContent = '';
   beatstarsProgressFill.style.width = '100%';
   
-  addBeatstarsLog(`\n🎉 Batch processing complete!`, 'success');
+  addBeatstarsLog(`Batch processing complete!`, 'success');
   addBeatstarsLog(`   Folders processed: ${totalFoldersProcessed}`, 'info');
   addBeatstarsLog(`   Files processed: ${totalFilesProcessed}`, 'info');
   addBeatstarsLog(`   Errors: ${totalErrors}`, totalErrors > 0 ? 'warning' : 'info');

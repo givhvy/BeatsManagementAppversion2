@@ -29,17 +29,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 8px;
-  height: 8px;
+  width: 20px;
+  height: 20px;
   background-color: #3b82f6;
   border-radius: 50%;
   margin-right: 12px;
 }
 
 .title-bar-icon {
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
-  color: transparent;
+  color: white;
 }
 
 .title-bar-text {
@@ -1414,7 +1416,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-icon {
-  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .main-nav-status {
@@ -2660,7 +2665,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .summary-icon {
-  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .summary-count {
@@ -2762,7 +2769,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .progress-empty .empty-icon {
-  font-size: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 16px;
   opacity: 0.5;
 }
@@ -3271,7 +3280,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .empty-state-large .empty-icon {
-  font-size: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 16px;
   opacity: 0.5;
 }
