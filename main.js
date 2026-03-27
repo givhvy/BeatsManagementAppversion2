@@ -100,7 +100,35 @@ async function startAutomationServerOnStartup() {
 // Variable to track automation server process
 let automationServerProcess = null;
 
-app.whenReady().then(createWindow);
+// ── Ollama auto-start ──────────────────────────────────────────────
+const OLLAMA_EXE = path.join('F:', 'PlaygroundTest', 'foronlytestingforbeatsmanagement', 'ollama', 'ollama.exe');
+const OLLAMA_MODELS_PATH = path.join('F:', 'PlaygroundTest', 'foronlytestingforbeatsmanagement', 'ollama', 'models');
+let ollamaProcess = null;
+
+function startOllama() {
+  const fs = require('fs');
+  if (!fs.existsSync(OLLAMA_EXE)) return;
+  // check if already running
+  const http = require('http');
+  const req = http.get('http://localhost:11434/', (res) => {
+    // already running — nothing to do
+    res.resume();
+  });
+  req.on('error', () => {
+    // not running — start it
+    const { spawn } = require('child_process');
+    ollamaProcess = spawn(OLLAMA_EXE, ['serve'], {
+      detached: false,
+      stdio: 'ignore',
+      env: { ...process.env, OLLAMA_MODELS: OLLAMA_MODELS_PATH }
+    });
+    ollamaProcess.unref();
+    console.log('[Ollama] Started serve process');
+  });
+  req.setTimeout(2000, () => req.destroy());
+}
+
+app.whenReady().then(() => { startOllama(); createWindow(); });
 
 app.on('window-all-closed', () => {
   // Cleanup automation server when app closes
