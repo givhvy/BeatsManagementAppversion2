@@ -120,7 +120,7 @@ function startOllama() {
     ollamaProcess = spawn(OLLAMA_EXE, ['serve'], {
       detached: false,
       stdio: 'ignore',
-      env: { ...process.env, OLLAMA_MODELS: OLLAMA_MODELS_PATH }
+      env: { ...process.env, OLLAMA_MODELS: OLLAMA_MODELS_PATH, OLLAMA_VULKAN: '1' }
     });
     ollamaProcess.unref();
     console.log('[Ollama] Started serve process');
