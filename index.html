@@ -50,6 +50,11 @@
     <div class="main-nav-status">
       <span id="youtube-status" class="status-indicator offline">● YouTube: Offline</span>
       <span id="server-last-check" class="server-last-check" title="Last server check time"></span>
+      <div class="ollama-nav-widget">
+        <span id="ollama-nav-dot" class="ollama-nav-dot offline" title="Ollama AI status"></span>
+        <span id="ollama-nav-label" class="ollama-nav-label">AI Offline</span>
+        <button id="ollama-nav-toggle-btn" class="btn-ollama-nav btn-ollama-start" onclick="toggleOllama()" title="Start or stop Ollama AI">Start</button>
+      </div>
       <button id="settings-btn" class="settings-btn" title="Settings">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
