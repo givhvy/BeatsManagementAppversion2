@@ -8840,7 +8840,7 @@ async function toggleOllama() {
       if (toggleBtn) { toggleBtn.textContent = 'Start AI'; toggleBtn.className = 'btn-ollama-toggle btn-ollama-start'; toggleBtn.disabled = false; }
       showNotification('Ollama stopped. AI features disabled.', 'info');
     } else {
-      showNotification('Starting Ollama AI server...', 'info');
+      showNotification('Starting Ollama AI server... (AMD GPU init can take 30-60s, please wait)', 'info');
       const result = await ipcRenderer.invoke('start-ollama');
       if (result.success) {
         updateOllamaNavWidget('online');

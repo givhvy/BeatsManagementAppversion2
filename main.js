@@ -109,15 +109,15 @@ function startOllama() {
   const fs = require('fs');
   if (!fs.existsSync(OLLAMA_EXE)) return;
   const http = require('http');
-  const req = http.get('http://localhost:11434/', (res) => {
+  const req = http.get('http://localhost:11434/api/tags', (res) => {
     res.resume(); // already running
   });
   req.on('error', () => {
     const { spawn } = require('child_process');
     ollamaProcess = spawn(OLLAMA_EXE, ['serve'], {
-      detached: false,
+      detached: true,
       stdio: 'ignore',
-      env: { ...process.env, OLLAMA_MODELS: OLLAMA_MODELS_PATH, OLLAMA_VULKAN: '1' }
+      env: { ...process.env, OLLAMA_MODELS: OLLAMA_MODELS_PATH, OLLAMA_VULKAN: '1', OLLAMA_HOST: '127.0.0.1:11434' }
     });
     ollamaProcess.unref();
     console.log('[Ollama] Started serve process');
@@ -126,15 +126,15 @@ function startOllama() {
 }
 
 // Wait for Ollama to be ready (polls up to maxTries times)
-function waitForOllama(maxTries = 15, intervalMs = 1000) {
+function waitForOllama(maxTries = 60, intervalMs = 1500) {
   return new Promise((resolve) => {
     const http = require('http');
     let tries = 0;
     const check = () => {
       tries++;
-      const req = http.get('http://localhost:11434/', (res) => { res.resume(); resolve(true); });
+      const req = http.get('http://localhost:11434/api/tags', (res) => { res.resume(); resolve(true); });
       req.on('error', () => { if (tries < maxTries) setTimeout(check, intervalMs); else resolve(false); });
-      req.setTimeout(1000, () => { req.destroy(); if (tries < maxTries) setTimeout(check, intervalMs); else resolve(false); });
+      req.setTimeout(2000, () => { req.destroy(); if (tries < maxTries) setTimeout(check, intervalMs); else resolve(false); });
     };
     check();
   });
@@ -146,21 +146,27 @@ ipcMain.handle('start-ollama', async () => {
   const http = require('http');
   // Check if already running
   const alreadyRunning = await new Promise((resolve) => {
-    const req = http.get('http://localhost:11434/', (res) => { res.resume(); resolve(true); });
+    const req = http.get('http://localhost:11434/api/tags', (res) => { res.resume(); resolve(true); });
     req.on('error', () => resolve(false));
-    req.setTimeout(1500, () => { req.destroy(); resolve(false); });
+    req.setTimeout(2000, () => { req.destroy(); resolve(false); });
   });
   if (alreadyRunning) return { success: true, alreadyRunning: true };
 
   const { spawn } = require('child_process');
+  let spawnError = null;
   ollamaProcess = spawn(OLLAMA_EXE, ['serve'], {
-    detached: false,
+    detached: true,
     stdio: 'ignore',
-    env: { ...process.env, OLLAMA_MODELS: OLLAMA_MODELS_PATH, OLLAMA_VULKAN: '1' }
+    env: { ...process.env, OLLAMA_MODELS: OLLAMA_MODELS_PATH, OLLAMA_VULKAN: '1', OLLAMA_HOST: '127.0.0.1:11434' }
   });
+  ollamaProcess.on('error', (err) => { spawnError = err.message; });
   ollamaProcess.unref();
-  const ready = await waitForOllama(15, 1000);
-  return { success: ready, error: ready ? null : 'Ollama started but did not respond in time' };
+  // Give it a moment to fail fast if exe is bad, then start polling
+  await new Promise(r => setTimeout(r, 1500));
+  if (spawnError) return { success: false, error: 'Failed to spawn Ollama: ' + spawnError };
+  // Poll up to 90 seconds (AMD GPU Vulkan init can take a while)
+  const ready = await waitForOllama(60, 1500);
+  return { success: ready, error: ready ? null : 'Ollama is taking too long to start. Try clicking Start again, or launch ollama.exe manually.' };
 });
 
 ipcMain.handle('stop-ollama', async () => {
