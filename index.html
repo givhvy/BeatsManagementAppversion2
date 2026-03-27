@@ -408,15 +408,24 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
   <!-- Section: Video Creator (AutoVid) -->
   <div class="app-section" id="autovid-section">
     <div class="autovid-container">
+
       <!-- Left Panel - Pinterest Boards -->
       <div class="autovid-panel autovid-left">
         <div class="panel-header">
-          <h2>📌 Pinterest</h2>
-          <button id="load-boards-btn" class="btn-primary">Load Boards</button>
+          <h2 class="autovid-panel-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12a4 4 0 1 0 8 0 4 4 0 0 0-8 0"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            Pinterest
+          </h2>
+          <button id="load-boards-btn" class="btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.12"/></svg>
+            Load Boards
+          </button>
         </div>
         <div class="autovid-search">
           <input type="text" id="pinterest-search" placeholder="Search keywords..." class="filter-input">
-          <button id="search-pins-btn" class="btn-secondary">🔍</button>
+          <button id="search-pins-btn" class="btn-secondary autovid-icon-btn" title="Search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
         </div>
         <div class="autovid-boards-list" id="boards-list">
           <div class="empty-state">Click "Load Boards" to start</div>
@@ -426,19 +435,36 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
       <!-- Center Panel - Image Preview -->
       <div class="autovid-panel autovid-center">
         <div class="panel-header">
-          <h2>🖼️ Image Preview</h2>
+          <h2 class="autovid-panel-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            Image Preview
+          </h2>
           <div style="display: flex; gap: 8px;">
-            <button id="select-local-image-btn" class="btn-secondary">📁 Local</button>
-            <button id="randomize-pin-btn" class="btn-secondary">🎲 Random</button>
+            <button id="select-local-image-btn" class="btn-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              Local
+            </button>
+            <button id="randomize-pin-btn" class="btn-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+              Random
+            </button>
           </div>
         </div>
-        <div class="autovid-image-preview" id="image-preview-container">
-          <div class="empty-state" id="image-placeholder">
-            <span style="font-size: 48px;">🖼️</span>
-            <p>Select a local image or use Pinterest</p>
+
+        <!-- Image Drop Zone -->
+        <div class="autovid-image-drop-zone" id="image-preview-container">
+          <div class="image-drop-hint" id="image-placeholder">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.3"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <p class="drop-title">Drop image here</p>
+            <p class="drop-sub">or use Local / Pinterest above</p>
           </div>
-          <img id="preview-image" style="display: none; max-width: 100%; max-height: 400px; border-radius: 8px;">
+          <img id="preview-image" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">
+          <div class="drop-overlay" id="image-drop-overlay">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Drop to set image</span>
+          </div>
         </div>
+
         <div class="autovid-image-info" id="image-info" style="display: none;">
           <div class="info-row">
             <span class="info-label">Title:</span>
@@ -454,59 +480,109 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
       <!-- Right Panel - Audio & Render -->
       <div class="autovid-panel autovid-right">
         <div class="panel-header">
-          <h2>🎵 Audio & Render</h2>
-        </div>
-        
-        <div class="autovid-section">
-          <label>Audio File</label>
-          <div style="display: flex; gap: 10px;">
-            <input type="text" id="audio-file-path" class="filter-input" readonly placeholder="No audio selected">
-            <button id="select-audio-btn" class="btn-primary">Browse</button>
-          </div>
-          <div class="audio-preview" id="audio-preview-container" style="display: none; margin-top: 10px;">
-            <audio id="autovid-audio-player" controls style="width: 100%;"></audio>
-          </div>
+          <h2 class="autovid-panel-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            Audio &amp; Render
+          </h2>
         </div>
 
-        <div class="autovid-section">
-          <label>Output Name</label>
-          <input type="text" id="output-name" class="filter-input" placeholder="video_output">
-        </div>
+        <div class="autovid-right-scroll">
 
-        <div class="autovid-section">
-          <label>Video Settings</label>
-          <div class="settings-row">
-            <span>Resolution:</span>
-            <select id="video-resolution" class="filter-input" style="width: auto;">
-              <option value="1920x1080" selected>1920x1080 (16:9)</option>
-              <option value="1080">1080x1080 (1:1)</option>
-              <option value="720">1280x720 (16:9)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="autovid-render-section">
-          <button id="render-video-btn" class="btn-primary btn-large" disabled>
-            🎬 Render Video
-          </button>
-          <div class="render-progress" id="render-progress" style="display: none;">
-            <div class="progress-bar">
-              <div class="progress-fill" id="render-progress-fill"></div>
+          <!-- Audio Drop Zone -->
+          <div class="autovid-field-group">
+            <label class="autovid-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></polygon></svg>
+              Audio File
+            </label>
+            <div class="audio-drop-zone" id="audio-drop-zone">
+              <div class="audio-drop-hint" id="audio-drop-hint">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <p class="drop-title">Drop audio here</p>
+                <p class="drop-sub">MP3 · WAV · FLAC · AAC</p>
+              </div>
+              <div class="audio-selected-info" id="audio-selected-info" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: #22c55e; flex-shrink: 0;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <span id="audio-file-name" class="audio-file-name">No file selected</span>
+                <button id="clear-audio-btn" class="audio-clear-btn" title="Clear">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              <div class="drop-overlay" id="audio-drop-overlay">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Drop audio file</span>
+              </div>
             </div>
-            <span id="render-progress-text">0%</span>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <input type="text" id="audio-file-path" class="filter-input" readonly placeholder="No audio selected" style="flex:1; font-size:12px;">
+              <button id="select-audio-btn" class="btn-primary" style="flex-shrink:0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                Browse
+              </button>
+            </div>
+            <div class="audio-preview" id="audio-preview-container" style="display: none; margin-top: 10px;">
+              <audio id="autovid-audio-player" controls style="width: 100%; height: 32px;"></audio>
+            </div>
           </div>
-        </div>
 
-        <div class="autovid-output" id="render-output" style="display: none;">
-          <div class="success-message">
-            <span>✅ Video rendered successfully!</span>
+          <!-- Output Name -->
+          <div class="autovid-field-group">
+            <label class="autovid-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Output Name
+            </label>
+            <input type="text" id="output-name" class="filter-input" placeholder="video_output">
+          </div>
+
+          <!-- Video Settings -->
+          <div class="autovid-field-group">
+            <label class="autovid-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              Video Settings
+            </label>
+            <div class="settings-row">
+              <span>Resolution:</span>
+              <select id="video-resolution" class="filter-input" style="flex:1; min-width:0;">
+                <option value="1920x1080" selected>1920×1080 (16:9)</option>
+                <option value="1080">1080×1080 (1:1)</option>
+                <option value="720">1280×720 (16:9)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Render Button -->
+          <div class="autovid-render-section">
+            <button id="render-video-btn" class="btn-render" disabled>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              Render Video
+            </button>
+            <div class="render-progress" id="render-progress" style="display: none;">
+              <div class="progress-bar">
+                <div class="progress-fill" id="render-progress-fill"></div>
+              </div>
+              <span id="render-progress-text">0%</span>
+            </div>
+          </div>
+
+          <div class="autovid-output" id="render-output" style="display: none;">
+            <div class="success-message">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Video rendered successfully!</span>
+            </div>
             <div style="display: flex; gap: 8px; margin-top: 10px;">
-              <button id="open-output-folder-btn" class="btn-secondary">📁 Open Folder</button>
-              <button id="upload-to-youtube-btn" class="btn-primary">📺 Upload to YouTube</button>
+              <button id="open-output-folder-btn" class="btn-secondary" style="flex:1;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                Open Folder
+              </button>
+              <button id="upload-to-youtube-btn" class="btn-primary" style="flex:1;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                Upload YouTube
+              </button>
             </div>
           </div>
-        </div>
+
+        </div><!-- end autovid-right-scroll -->
       </div>
+
     </div>
   </div>
 

@@ -3381,6 +3381,152 @@ function initAutoVidSection() {
     selectLocalImageBtn.addEventListener('click', selectLocalImage);
   }
 
+  // Clear audio button
+  const clearAudioBtn = document.getElementById('clear-audio-btn');
+  if (clearAudioBtn) {
+    clearAudioBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearAutovidAudio();
+    });
+  }
+
+  // Drag-drop for image preview zone
+  const imageDropZone = document.getElementById('image-preview-container');
+  if (imageDropZone) {
+    imageDropZone.addEventListener('click', () => {
+      if (!autovidState.selectedImagePath) selectLocalImage();
+    });
+    imageDropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      imageDropZone.classList.add('drag-over');
+      const overlay = document.getElementById('image-drop-overlay');
+      if (overlay) overlay.classList.add('visible');
+    });
+    imageDropZone.addEventListener('dragleave', (e) => {
+      if (!imageDropZone.contains(e.relatedTarget)) {
+        imageDropZone.classList.remove('drag-over');
+        const overlay = document.getElementById('image-drop-overlay');
+        if (overlay) overlay.classList.remove('visible');
+      }
+    });
+    imageDropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      imageDropZone.classList.remove('drag-over');
+      const overlay = document.getElementById('image-drop-overlay');
+      if (overlay) overlay.classList.remove('visible');
+      const file = e.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) {
+        handleDroppedImage(file);
+      }
+    });
+  }
+
+  // Drag-drop for audio zone
+  const audioDropZoneEl = document.getElementById('audio-drop-zone');
+  if (audioDropZoneEl) {
+    audioDropZoneEl.addEventListener('click', (e) => {
+      if (!e.target.closest('.audio-clear-btn')) selectAutovidAudio();
+    });
+    audioDropZoneEl.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      audioDropZoneEl.classList.add('drag-over');
+      const overlay = document.getElementById('audio-drop-overlay');
+      if (overlay) overlay.classList.add('visible');
+    });
+    audioDropZoneEl.addEventListener('dragleave', (e) => {
+      if (!audioDropZoneEl.contains(e.relatedTarget)) {
+        audioDropZoneEl.classList.remove('drag-over');
+        const overlay = document.getElementById('audio-drop-overlay');
+        if (overlay) overlay.classList.remove('visible');
+      }
+    });
+    audioDropZoneEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      audioDropZoneEl.classList.remove('drag-over');
+      const overlay = document.getElementById('audio-drop-overlay');
+      if (overlay) overlay.classList.remove('visible');
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (['mp3','wav','flac','m4a','aac','ogg'].includes(ext)) {
+          handleDroppedAudio(file);
+        }
+      }
+    });
+  }
+
+  updateRenderButton();
+}
+
+function handleDroppedImage(file) {
+  // In Electron, file.path is the real FS path
+  const filePath = file.path || '';
+  if (filePath) {
+    autovidState.selectedImagePath = filePath;
+    autovidState.selectedImage = null;
+    if (previewImage && imagePlaceholder) {
+      previewImage.src = `file://${filePath}`;
+      previewImage.style.display = 'block';
+      imagePlaceholder.style.display = 'none';
+    }
+    if (imageInfo) {
+      imageInfo.style.display = 'block';
+      imageTitle.textContent = file.name;
+      imageSource.textContent = 'Local file';
+    }
+  } else {
+    // Browser fallback — use object URL
+    const url = URL.createObjectURL(file);
+    autovidState.selectedImagePath = url;
+    autovidState.selectedImage = null;
+    if (previewImage && imagePlaceholder) {
+      previewImage.src = url;
+      previewImage.style.display = 'block';
+      imagePlaceholder.style.display = 'none';
+    }
+  }
+  updateRenderButton();
+}
+
+function handleDroppedAudio(file) {
+  const filePath = file.path || '';
+  const displayName = file.name;
+  const audioFilePathEl = document.getElementById('audio-file-path');
+  const audioDropHint = document.getElementById('audio-drop-hint');
+  const audioSelectedInfo = document.getElementById('audio-selected-info');
+  const audioFileNameEl = document.getElementById('audio-file-name');
+
+  if (filePath) {
+    autovidState.selectedAudioPath = filePath;
+    if (audioFilePathEl) audioFilePathEl.value = displayName;
+    if (audioDropHint) audioDropHint.style.display = 'none';
+    if (audioSelectedInfo) audioSelectedInfo.style.display = 'flex';
+    if (audioFileNameEl) audioFileNameEl.textContent = displayName;
+    if (audioPreviewContainer) {
+      audioPreviewContainer.style.display = 'block';
+      autovidAudioPlayer.src = `file://${filePath}`;
+    }
+    if (outputNameInput) {
+      const baseName = displayName.replace(/\.[^/.]+$/, '');
+      outputNameInput.value = extractBeatName ? extractBeatName(baseName) : baseName;
+    }
+  }
+  updateRenderButton();
+}
+
+function clearAutovidAudio() {
+  autovidState.selectedAudioPath = null;
+  const audioFilePathEl = document.getElementById('audio-file-path');
+  const audioDropHint = document.getElementById('audio-drop-hint');
+  const audioSelectedInfo = document.getElementById('audio-selected-info');
+  if (audioFilePathEl) audioFilePathEl.value = '';
+  if (audioDropHint) audioDropHint.style.display = 'flex';
+  if (audioSelectedInfo) audioSelectedInfo.style.display = 'none';
+  if (audioPreviewContainer) audioPreviewContainer.style.display = 'none';
   updateRenderButton();
 }
 
@@ -3486,16 +3632,25 @@ async function selectAutovidAudio() {
     const filePath = await ipcRenderer.invoke('select-audio-file');
     if (filePath) {
       autovidState.selectedAudioPath = filePath;
-      audioFilePath.value = filePath.split('\\').pop();
-      
+      const displayName = filePath.split('\\').pop();
+      if (audioFilePath) audioFilePath.value = displayName;
+
+      // Update drop zone UI
+      const audioDropHint = document.getElementById('audio-drop-hint');
+      const audioSelectedInfo = document.getElementById('audio-selected-info');
+      const audioFileNameEl = document.getElementById('audio-file-name');
+      if (audioDropHint) audioDropHint.style.display = 'none';
+      if (audioSelectedInfo) audioSelectedInfo.style.display = 'flex';
+      if (audioFileNameEl) audioFileNameEl.textContent = displayName;
+
       // Set audio preview
-      audioPreviewContainer.style.display = 'block';
-      autovidAudioPlayer.src = `file://${filePath}`;
+      if (audioPreviewContainer) audioPreviewContainer.style.display = 'block';
+      if (autovidAudioPlayer) autovidAudioPlayer.src = `file://${filePath}`;
       
       // Auto-fill output name - extract clean beat name
-      const baseName = filePath.split('\\').pop().replace(/\.[^/.]+$/, '');
+      const baseName = displayName.replace(/\.[^/.]+$/, '');
       const cleanName = extractBeatName(baseName);
-      outputNameInput.value = cleanName;
+      if (outputNameInput) outputNameInput.value = cleanName;
       
       updateRenderButton();
     }
