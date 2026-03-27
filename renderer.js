@@ -9139,6 +9139,27 @@ function setupAIDropZone() {
     if (fileInput.files[0]) loadAIPreview(fileInput.files[0]);
     fileInput.value = '';
   });
+
+  // Ctrl+V paste support — listens on document while modal is open
+  if (!document._aiPasteHandler) {
+    document._aiPasteHandler = (e) => {
+      const modal = document.getElementById('ai-scan-modal');
+      if (!modal || modal.style.display === 'none') return;
+      const items = (e.clipboardData || e.originalEvent && e.originalEvent.clipboardData || {}).items || [];
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          e.preventDefault();
+          const file = item.getAsFile();
+          if (file) {
+            loadAIPreview(file);
+            setAIScanStatus('Screenshot pasted! Click Scan Image to analyze.', 'success');
+          }
+          break;
+        }
+      }
+    };
+    document.addEventListener('paste', document._aiPasteHandler);
+  }
 }
 
 function loadAIPreview(file) {
