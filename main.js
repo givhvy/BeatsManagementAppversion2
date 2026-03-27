@@ -1737,3 +1737,121 @@ ipcMain.handle('save-beat-marketing', async (event, data) => {
     return { success: false, error: e.message };
   }
 });
+
+
+// Analyze customer image via Ollama vision model
+ipcMain.handle('analyze-customer-image', async (event, { imageBase64, mimeType, vision_model }) => {
+  try {
+    const http = require('http');
+    const model = vision_model || 'qwen2-vl:7b';
+
+    const prompt = `You are analyzing a screenshot to extract customer information for a beats producer's CRM database.
+
+Look at this image carefully. It may be:
+- An Instagram direct message conversation
+- An Instagram profile page
+- A purchase receipt or order confirmation
+- A screenshot of someone commenting on or buying beats
+
+Extract the following information (leave blank if not visible, do NOT guess):
+1. Full name (display name or real name if visible)
+2. Instagram username (starts with @, or the handle shown)
+3. Email address (if visible anywhere)
+4. Beats or music they mentioned buying or are interested in (list all beat titles mentioned)
+5. Any notes (genre they like, budget mentioned, any other relevant info)
+
+Respond ONLY with a valid JSON object in this exact format:
+{
+  "name": "",
+  "instagram": "",
+  "email": "",
+  "beats_bought": [],
+  "notes": "",
+  "confidence": "high|medium|low"
+}`;
+
+    const postData = JSON.stringify({
+      model: model,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'image_url',
+              image_url: { url: `data:${mimeType || 'image/jpeg'};base64,${imageBase64}` }
+            },
+            { type: 'text', text: prompt }
+          ]
+        }
+      ],
+      stream: false,
+      options: { temperature: 0.1, num_predict: 500 }
+    });
+
+    return new Promise((resolve) => {
+      const options = {
+        hostname: 'localhost',
+        port: 11434,
+        path: '/v1/chat/completions',
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postData) }
+      };
+      const req = http.request(options, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(data);
+            let content = parsed.choices[0].message.content;
+            // Strip thinking blocks
+            content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+            // Extract JSON from response
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) return resolve({ success: false, error: 'AI did not return JSON. Response: ' + content.substring(0, 200) });
+            const extracted = JSON.parse(jsonMatch[0]);
+            resolve({ success: true, data: extracted });
+          } catch (e) {
+            resolve({ success: false, error: 'Failed to parse AI response: ' + e.message });
+          }
+        });
+      });
+      req.on('error', (e) => {
+        if (e.code === 'ECONNREFUSED') {
+          resolve({ success: false, error: 'Ollama is not running. Start it first using start-ollama.bat in your testing folder.' });
+        } else {
+          resolve({ success: false, error: e.message });
+        }
+      });
+      req.setTimeout(90000, () => { req.destroy(); resolve({ success: false, error: 'Vision model timed out (90s). The model may still be loading, try again.' }); });
+      req.write(postData);
+      req.end();
+    });
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
+// Get available Ollama models
+ipcMain.handle('get-ollama-models', async () => {
+  try {
+    const http = require('http');
+    return new Promise((resolve) => {
+      const req = http.get('http://localhost:11434/api/tags', (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(data);
+            resolve({ success: true, models: (parsed.models || []).map(m => m.name) });
+          } catch (e) {
+            resolve({ success: true, models: [] });
+          }
+        });
+      });
+      req.on('error', () => resolve({ success: false, models: [] }));
+      req.setTimeout(3000, () => { req.destroy(); resolve({ success: false, models: [] }); });
+    });
+  } catch (e) {
+    return { success: false, models: [] };
+  }
+});

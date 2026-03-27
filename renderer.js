@@ -8996,3 +8996,194 @@ if (segmentSelect) segmentSelect.addEventListener('change', updateCampaignRecipi
   await loadBeatMarketing();
   await loadCampaigns();
 })();
+
+// ─────────────────────────────────────────
+// AI Customer Scanner
+// ─────────────────────────────────────────
+
+// State
+let aiScanFile = null;
+
+function openAIScanModal() {
+  document.getElementById('ai-scan-modal').style.display = 'flex';
+  clearAIScan();
+  setupAIDropZone();
+}
+
+function closeAIScanModal() {
+  document.getElementById('ai-scan-modal').style.display = 'none';
+  clearAIScan();
+}
+
+function clearAIScan() {
+  aiScanFile = null;
+  const preview = document.getElementById('ai-preview-img');
+  const inner = document.getElementById('ai-dropzone-inner');
+  if (preview) { preview.style.display = 'none'; preview.src = ''; }
+  if (inner) inner.style.display = 'flex';
+  setAIScanStatus('', '');
+  ['ai-extracted-name','ai-extracted-instagram','ai-extracted-email','ai-extracted-beats'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const notes = document.getElementById('ai-extracted-notes');
+  if (notes) notes.value = '';
+  const badge = document.getElementById('ai-confidence-badge');
+  if (badge) { badge.style.display = 'none'; badge.textContent = ''; }
+  document.getElementById('ai-extracted-type').value = 'lead';
+}
+
+function setupAIDropZone() {
+  const zone = document.getElementById('ai-image-dropzone');
+  const fileInput = document.getElementById('ai-image-file-input');
+  if (!zone || zone._aiSetup) return;
+  zone._aiSetup = true;
+
+  zone.addEventListener('dragover', e => {
+    e.preventDefault();
+    zone.classList.add('drag-over');
+  });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadAIPreview(file);
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) loadAIPreview(fileInput.files[0]);
+    fileInput.value = '';
+  });
+}
+
+function loadAIPreview(file) {
+  aiScanFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById('ai-preview-img');
+    const inner = document.getElementById('ai-dropzone-inner');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    inner.style.display = 'none';
+    setAIScanStatus('', '');
+  };
+  reader.readAsDataURL(file);
+}
+
+function setAIScanStatus(msg, type) {
+  const el = document.getElementById('ai-scan-status');
+  if (!el) return;
+  if (!msg) { el.style.display = 'none'; return; }
+  el.style.display = 'flex';
+  el.className = 'ai-scan-status ' + (type || '');
+  if (type === 'scanning') {
+    el.innerHTML = `<div class="ai-spinner"></div><span>${msg}</span>`;
+  } else {
+    el.textContent = msg;
+  }
+}
+
+async function runAIScan() {
+  if (!aiScanFile) {
+    setAIScanStatus('Please drop or select an image first.', 'error');
+    return;
+  }
+  const model = document.getElementById('ai-vision-model-select').value;
+  const btn = document.getElementById('ai-scan-analyze-btn');
+  btn.disabled = true;
+  setAIScanStatus('Analyzing image with ' + model + ' ...', 'scanning');
+
+  try {
+    const reader = new FileReader();
+    const imageBase64 = await new Promise((resolve, reject) => {
+      reader.onload = e => {
+        const dataUrl = e.target.result;
+        resolve(dataUrl.split(',')[1]);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(aiScanFile);
+    });
+
+    const result = await ipcRenderer.invoke('analyze-customer-image', {
+      imageBase64,
+      mimeType: aiScanFile.type || 'image/jpeg',
+      vision_model: model
+    });
+
+    if (!result.success) {
+      setAIScanStatus('Error: ' + (result.error || 'Unknown error'), 'error');
+      return;
+    }
+
+    const d = result.data || {};
+    document.getElementById('ai-extracted-name').value = d.name || '';
+    document.getElementById('ai-extracted-instagram').value = d.username || d.instagram || '';
+    document.getElementById('ai-extracted-email').value = d.email || '';
+    document.getElementById('ai-extracted-beats').value = Array.isArray(d.beats_bought) ? d.beats_bought.join(', ') : (d.beats_bought || '');
+    document.getElementById('ai-extracted-notes').value = d.notes || '';
+
+    // Confidence badge
+    const badge = document.getElementById('ai-confidence-badge');
+    if (d.confidence !== undefined) {
+      const pct = Math.round(parseFloat(d.confidence) * 100);
+      const cls = pct >= 75 ? 'high' : pct >= 45 ? 'medium' : 'low';
+      badge.textContent = `AI Confidence: ${pct}%`;
+      badge.className = 'ai-confidence-badge ' + cls;
+      badge.style.display = 'block';
+    }
+
+    setAIScanStatus('Scan complete! Review and edit the fields, then click Add to Database.', 'success');
+  } catch (err) {
+    setAIScanStatus('Error: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function saveAIScannedCustomer() {
+  const name = document.getElementById('ai-extracted-name').value.trim();
+  const instagram = document.getElementById('ai-extracted-instagram').value.trim();
+  const email = document.getElementById('ai-extracted-email').value.trim();
+  const beatsText = document.getElementById('ai-extracted-beats').value.trim();
+  const notes = document.getElementById('ai-extracted-notes').value.trim();
+  const type = document.getElementById('ai-extracted-type').value;
+
+  if (!name && !instagram && !email) {
+    setAIScanStatus('Please fill in at least a name, username, or email.', 'error');
+    return;
+  }
+
+  // Build customer object matching the app's schema
+  const newCustomer = {
+    id: Date.now().toString(),
+    name: name || instagram || email,
+    email: email || '',
+    instagram: instagram.replace(/^@/, '') || '',
+    phone: '',
+    type: type,
+    tags: beatsText ? beatsText.split(',').map(s => s.trim()).filter(Boolean) : [],
+    notes: notes || '',
+    totalSpent: 0,
+    beatsInterested: beatsText ? beatsText.split(',').map(s => s.trim()).filter(Boolean) : [],
+    dateAdded: new Date().toISOString(),
+    lastContact: null,
+    source: 'ai-scan'
+  };
+
+  // Use existing save mechanism
+  customerState.customers.push(newCustomer);
+  await saveCustomers();
+  renderCustomerList();
+  updateCustomerStats();
+  closeAIScanModal();
+  showNotification(`Customer "${newCustomer.name}" added via AI scan`, 'success');
+  // Select the new customer
+  setTimeout(() => selectCustomer(newCustomer.id), 200);
+}
+
+// Close AI scan modal on backdrop click
+document.addEventListener('click', e => {
+  const modal = document.getElementById('ai-scan-modal');
+  if (e.target === modal) closeAIScanModal();
+});
