@@ -9816,7 +9816,8 @@ let moneyState = {
   platformFilter: 'all',
   searchQuery: '',
   sortOrder: 'date-desc',
-  initialized: false
+  initialized: false,
+  editingId: null        // id of transaction being edited, or null
 };
 
 // ------- Init -------
@@ -9890,11 +9891,15 @@ function bindMoneyEvents() {
     });
   }
 
-  // Add button
+  // Add / Save button
   const addBtn = document.getElementById('money-add-btn');
   if (addBtn) addBtn.addEventListener('click', handleMoneyAdd);
 
-  // Enter key on inputs triggers add
+  // Cancel edit button
+  const cancelBtn = document.getElementById('money-cancel-btn');
+  if (cancelBtn) cancelBtn.addEventListener('click', cancelMoneyEdit);
+
+  // Enter key on inputs triggers add/save
   ['money-beat-name', 'money-customer-input', 'money-notes-input'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') handleMoneyAdd(); });
@@ -9924,6 +9929,23 @@ async function handleMoneyAdd() {
   const customer = (customerInput?.value || '').trim();
   const notes = (notesInput?.value || '').trim();
 
+  if (moneyState.editingId) {
+    // Update existing transaction
+    const idx = moneyState.transactions.findIndex(t => t.id === moneyState.editingId);
+    if (idx !== -1) {
+      moneyState.transactions[idx] = {
+        ...moneyState.transactions[idx],
+        beatName, type, platform, amount, date, customer, notes
+      };
+    }
+    moneyState.editingId = null;
+    await saveMoneyData();
+    resetMoneyForm();
+    showNotification(`Transaction updated: ${beatName}`, 'success');
+    renderMoney();
+    return;
+  }
+
   const tx = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
     beatName,
@@ -9938,16 +9960,77 @@ async function handleMoneyAdd() {
 
   moneyState.transactions.push(tx);
   await saveMoneyData();
+  resetMoneyForm();
+  showNotification(`Transaction added: ${beatName}`, 'success');
+  renderMoney();
+}
 
-  // Clear form
+function resetMoneyForm() {
   if (document.getElementById('money-beat-name')) document.getElementById('money-beat-name').value = '';
+  const amountInput = document.getElementById('money-amount-input');
+  const customerInput = document.getElementById('money-customer-input');
+  const notesInput = document.getElementById('money-notes-input');
+  const dateInput = document.getElementById('money-date-input');
   if (amountInput) amountInput.value = '';
   if (customerInput) customerInput.value = '';
   if (notesInput) notesInput.value = '';
   if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+  // Reset type/platform selects to defaults
+  const typeInput = document.getElementById('money-type-input');
+  const platformInput = document.getElementById('money-platform-input');
+  if (typeInput) typeInput.value = 'lease';
+  if (platformInput) platformInput.value = 'beatstars';
+  setMoneyFormMode('add');
+}
 
-  showNotification(`Transaction added: ${beatName}`, 'success');
-  renderMoney();
+function setMoneyFormMode(mode) {
+  const addBtn = document.getElementById('money-add-btn');
+  const cancelBtn = document.getElementById('money-cancel-btn');
+  const form = document.getElementById('money-form-block');
+  if (mode === 'edit') {
+    if (addBtn) {
+      addBtn.querySelector('.money-btn-label').textContent = 'Save Changes';
+      addBtn.querySelector('svg').innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+    }
+    if (cancelBtn) cancelBtn.style.display = 'flex';
+    if (form) form.classList.add('money-form--editing');
+  } else {
+    if (addBtn) {
+      addBtn.querySelector('.money-btn-label').textContent = 'Add Transaction';
+      addBtn.querySelector('svg').innerHTML = '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>';
+    }
+    if (cancelBtn) cancelBtn.style.display = 'none';
+    if (form) form.classList.remove('money-form--editing');
+  }
+}
+
+function handleMoneyEdit(id) {
+  const tx = moneyState.transactions.find(t => t.id === id);
+  if (!tx) return;
+
+  moneyState.editingId = id;
+
+  // Populate form
+  const set = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val; };
+  set('money-beat-name', tx.beatName);
+  set('money-type-input', tx.type);
+  set('money-platform-input', tx.platform);
+  set('money-amount-input', tx.type === 'free' ? '0' : (tx.amount || 0));
+  set('money-date-input', tx.date);
+  set('money-customer-input', tx.customer || '');
+  set('money-notes-input', tx.notes || '');
+
+  setMoneyFormMode('edit');
+
+  // Scroll right panel to top so form is visible
+  const inner = document.querySelector('.money-right-inner');
+  if (inner) inner.scrollTop = 0;
+  document.getElementById('money-beat-name')?.focus();
+}
+
+function cancelMoneyEdit() {
+  moneyState.editingId = null;
+  resetMoneyForm();
 }
 
 async function handleMoneyDelete(id) {
@@ -10153,7 +10236,7 @@ function renderMoneyChart(periodTxs) {
 
   container.innerHTML = groupTotals.map(g => {
     const stackHeightPct = ((g.lease + g.exclusive + g.stem) / maxTotal) * 100;
-    const stackH = Math.max(stackHeightPct * 0.87, g.total > 0 ? 3 : 1); // max 87px for 90px container
+    const stackH = Math.max(stackHeightPct * 1.06, g.total > 0 ? 3 : 1); // max 106px for 110px container
     const leaseH  = g.total > 0 ? (g.lease / (g.lease + g.exclusive + g.stem || 1)) * stackH : 0;
     const exclH   = g.total > 0 ? (g.exclusive / (g.lease + g.exclusive + g.stem || 1)) * stackH : 0;
     const stemH   = g.total > 0 ? (g.stem / (g.lease + g.exclusive + g.stem || 1)) * stackH : 0;
@@ -10205,10 +10288,25 @@ function renderMoneyTxList(txs) {
       <div class="money-tx-right">
         <span class="money-tx-amount">${amountDisplay}</span>
         <span class="money-tx-date">${dateDisplay}</span>
-        <button class="money-tx-delete" data-id="${tx.id}" title="Delete"></button>
+        <div class="money-tx-actions">
+          <button class="money-tx-edit" data-id="${tx.id}" title="Edit">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="money-tx-delete" data-id="${tx.id}" title="Delete">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
       </div>
     </div>`;
   }).join('');
+
+  // Bind edit buttons
+  list.querySelectorAll('.money-tx-edit').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      handleMoneyEdit(btn.dataset.id);
+    });
+  });
 
   // Bind delete buttons
   list.querySelectorAll('.money-tx-delete').forEach(btn => {

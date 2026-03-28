@@ -2005,7 +2005,7 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
         <div class="money-right-inner">
 
           <!-- Add Transaction -->
-          <div class="money-block">
+          <div class="money-block" id="money-form-block">
             <div class="money-block-label">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
               Add Transaction
@@ -2037,7 +2037,10 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
               <input type="text" id="money-notes-input" class="money-input" placeholder="Notes (optional)" autocomplete="off" />
               <button id="money-add-btn" class="money-add-btn">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                Add Transaction
+                <span class="money-btn-label">Add Transaction</span>
+              </button>
+              <button id="money-cancel-btn" class="money-cancel-btn" style="display:none;">
+                Cancel Edit
               </button>
             </div>
           </div>

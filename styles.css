@@ -7325,7 +7325,7 @@ select.setting-control {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 .money-chart-title {
   font-size: 12px;
@@ -7355,7 +7355,7 @@ select.setting-control {
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  height: 90px;
+  height: 110px;
 }
 .money-bar-group {
   flex: 1;
@@ -7513,7 +7513,7 @@ select.setting-control {
   min-width: 0;
 }
 .money-tx-beat {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: rgba(255,255,255,0.85);
   white-space: nowrap;
@@ -7528,7 +7528,7 @@ select.setting-control {
 }
 .money-tx-tag {
   font-size: 11px;
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: 4px;
   font-weight: 500;
 }
@@ -7548,28 +7548,42 @@ select.setting-control {
   flex-shrink: 0;
 }
 .money-tx-amount {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: #F59E0B;
   letter-spacing: -0.3px;
 }
 .money-tx-card[data-type="free"] .money-tx-amount { color: rgba(255,255,255,0.3); }
 .money-tx-date {
-  font-size: 10px;
+  font-size: 11px;
   color: rgba(255,255,255,0.25);
 }
+.money-tx-actions {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.money-tx-card:hover .money-tx-actions {
+  opacity: 1;
+}
+.money-tx-edit,
 .money-tx-delete {
   background: none;
   border: none;
-  color: rgba(255,255,255,0.15);
   cursor: pointer;
-  padding: 2px 4px;
-  border-radius: 4px;
-  font-size: 12px;
+  padding: 4px 5px;
+  border-radius: 5px;
   line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: color 0.15s, background 0.15s;
+  color: rgba(255,255,255,0.25);
 }
-.money-tx-delete:hover { color: #EF4444; background: rgba(239,68,68,0.1); }
+.money-tx-edit:hover   { color: #F59E0B; background: rgba(245,158,11,0.12); }
+.money-tx-delete:hover { color: #EF4444; background: rgba(239,68,68,0.10); }
 
 /* ----- Right Panel ----- */
 .money-right {
@@ -7669,11 +7683,11 @@ select.setting-control {
   justify-content: center;
   gap: 7px;
   width: 100%;
-  padding: 10px;
+  padding: 11px;
   border-radius: 10px;
   border: none;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: #381E02;
   margin-top: 2px;
@@ -7687,6 +7701,40 @@ select.setting-control {
 }
 .money-add-btn:hover { opacity: 0.9; }
 .money-add-btn:active { transform: scale(0.98); }
+
+.money-cancel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 9px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  margin-top: 4px;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+.money-cancel-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.8);
+}
+
+/* Editing state: amber border on form block */
+.money-form--editing {
+  border-radius: 10px;
+  outline: 1.5px solid rgba(245,158,11,0.35);
+  padding: 10px;
+  margin: -10px;
+}
+.money-form--editing .money-block-label {
+  color: #F59E0B;
+}
 
 /* Breakdown List */
 .money-breakdown-list {
