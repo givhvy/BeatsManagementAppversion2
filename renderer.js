@@ -4799,7 +4799,9 @@ function clearSessionScheduledDates() {
 }
 
 function showAuthCodeDialog(channelId, authUrl) {
-  // Create modal overlay
+  // Remove any existing dialog
+  document.getElementById('auth-code-overlay')?.remove();
+
   const overlay = document.createElement('div');
   overlay.id = 'auth-code-overlay';
   overlay.style.cssText = `
@@ -4808,7 +4810,7 @@ function showAuthCodeDialog(channelId, authUrl) {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0,0,0,0.85);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -4817,36 +4819,121 @@ function showAuthCodeDialog(channelId, authUrl) {
 
   const dialog = document.createElement('div');
   dialog.style.cssText = `
-    background: linear-gradient(135deg, #1e1e2e 0%, #2d2d3d 100%);
-    border-radius: 16px;
-    padding: 24px;
-    max-width: 500px;
+    background: linear-gradient(180deg, #1c1c1c 0%, #131313 100%);
+    border-radius: 18px;
+    padding: 28px;
+    max-width: 480px;
     width: 90%;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 24px 64px rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.07);
   `;
 
   dialog.innerHTML = `
-    <h3 style="margin: 0 0 16px 0; color: #fff; font-size: 18px;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>YouTube Authorization
-    </h3>
-    <p style="color: #aaa; margin-bottom: 16px; font-size: 14px;">
-      1. Một cửa sổ trình duyệt đã mở<br>
-      2. Đăng nhập và cho phép quyền truy cập<br>
-      3. Copy code và dán vào ô bên dưới
-    </p>
-    <input type="text" id="auth-code-input" placeholder="Dán authorization code vào đây..." style="
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <h3 style="margin:0;color:#fff;font-size:16px;font-weight:600">YouTube Re-Authorization</h3>
+    </div>
+    <div style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:10px;padding:14px;margin-bottom:18px">
+      <p style="color:rgba(255,255,255,0.75);margin:0;font-size:13px;line-height:1.7">
+        <span style="color:#F59E0B;font-weight:600">Step 1:</span> A browser window has opened — sign in to Google and allow access.<br>
+        <span style="color:#F59E0B;font-weight:600">Step 2:</span> Google will show you a code. Copy it.<br>
+        <span style="color:#F59E0B;font-weight:600">Step 3:</span> Paste the code below and click Confirm.
+      </p>
+    </div>
+    ${authUrl ? `<p style="margin:0 0 14px;font-size:11px;color:rgba(255,255,255,0.3)">If the browser didn't open, <a href="#" id="open-auth-link" style="color:#F59E0B;text-decoration:none">click here</a>.</p>` : ''}
+    <input type="text" id="auth-code-input" placeholder="Paste the authorization code here..." style="
       width: 100%;
-      padding: 12px;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 8px;
-      background: rgba(0,0,0,0.3);
+      padding: 11px 14px;
+      border: none;
+      border-radius: 10px;
+      background: #050505;
       color: #fff;
-      font-size: 14px;
-      margin-bottom: 16px;
+      font-size: 13px;
+      margin-bottom: 14px;
       box-sizing: border-box;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.05);
+      outline: none;
+      font-family: monospace;
     ">
-    <div style="display: flex; gap: 12px;">
+    <div style="display:flex;gap:10px">
+      <button id="auth-submit-btn" style="
+        flex: 1;
+        padding: 11px;
+        background: linear-gradient(180deg, #FCD34D 0%, #D97706 100%);
+        border: none;
+        border-radius: 10px;
+        color: #381E02;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(217,119,6,0.3);
+      ">Confirm Code</button>
+      <button id="auth-cancel-btn" style="
+        padding: 11px 18px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 10px;
+        color: rgba(255,255,255,0.6);
+        font-size: 13px;
+        cursor: pointer;
+      ">Cancel</button>
+    </div>
+  `;
+
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+
+  const input = dialog.querySelector('#auth-code-input');
+  const submitBtn = dialog.querySelector('#auth-submit-btn');
+  const cancelBtn = dialog.querySelector('#auth-cancel-btn');
+  const openLink = dialog.querySelector('#open-auth-link');
+
+  if (openLink) {
+    openLink.onclick = (e) => {
+      e.preventDefault();
+      ipcRenderer.invoke('open-external-url', authUrl);
+    };
+  }
+
+  input.focus();
+
+  submitBtn.onclick = async () => {
+    const code = input.value.trim();
+    if (!code) {
+      showNotification('Please paste the authorization code first', 'error');
+      return;
+    }
+
+    submitBtn.textContent = 'Processing...';
+    submitBtn.disabled = true;
+
+    try {
+      const result = await ipcRenderer.invoke('complete-reauth', { channelId, authCode: code });
+      
+      if (result.success) {
+        showNotification('Token refreshed successfully!', 'success');
+        overlay.remove();
+        await refreshYouTubeChannels();
+      } else {
+        showNotification('Error: ' + result.error, 'error');
+        submitBtn.textContent = 'Confirm Code';
+        submitBtn.disabled = false;
+      }
+    } catch (error) {
+      showNotification('Error: ' + error.message, 'error');
+      submitBtn.textContent = 'Confirm Code';
+      submitBtn.disabled = false;
+    }
+  };
+
+  // Submit on Enter
+  input.onkeydown = (e) => {
+    if (e.key === 'Enter') submitBtn.click();
+  };
+
+  cancelBtn.onclick = () => overlay.remove();
+  overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
+}
       <button id="auth-submit-btn" style="
         flex: 1;
         padding: 12px;
@@ -5101,17 +5188,15 @@ async function reAuthChannel(channelId) {
   if (!channel) return;
   
   try {
-    closeModal();
-    showNotification(`Đang mở trình duyệt để xác thực ${channel.name}...`, 'info');
+    showNotification(`Opening browser for ${channel.name}...`, 'info');
     
-    // Use configPath (account/channelId) for re-auth
     const channelPath = channel.configPath || channelId;
     const result = await ipcRenderer.invoke('reauthenticate-youtube', channelPath);
     
-    if (result.success) {
-      showNotification(`Authenticated ${channel.name}. Please restart server to apply!`, 'success');
-      await refreshYouTubeChannels();
-    } else {
+    if (result.success && result.needsCode) {
+      // Browser opened — now show code input dialog
+      showAuthCodeDialog(result.channelId, result.authUrl);
+    } else if (!result.success) {
       showNotification(`Auth error: ${result.error}`, 'error');
     }
   } catch (error) {
@@ -5154,10 +5239,11 @@ function renderYouTubeChannels() {
     return `
       <div class="channel-item ${youtubeState.selectedChannel?.id === channel.id ? 'selected' : ''} ${tokenExpired ? 'token-expired' : ''}" 
            data-channel-id="${channel.id}"
+           data-token-expired="${tokenExpired}"
            title="${tokenMessage}">
         <span class="channel-name">${channel.name}</span>
         <span class="channel-status ${statusClass}">
-          ${statusText}
+          ${tokenExpired ? '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:3px"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>' : ''}${statusText}
         </span>
       </div>
     `;
@@ -5167,7 +5253,11 @@ function renderYouTubeChannels() {
   youtubeChannelList.querySelectorAll('.channel-item').forEach(item => {
     item.addEventListener('click', () => {
       const channelId = item.dataset.channelId;
-      selectYouTubeChannel(channelId);
+      if (item.dataset.tokenExpired === 'true') {
+        reAuthChannel(channelId);
+      } else {
+        selectYouTubeChannel(channelId);
+      }
     });
   });
 }

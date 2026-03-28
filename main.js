@@ -1324,6 +1324,16 @@ ipcMain.handle('copy-video-for-upload', async (event, { videoPath, channelId, me
   }
 });
 
+// Open an external URL in the default browser
+ipcMain.handle('open-external-url', async (event, url) => {
+  const { shell } = require('electron');
+  if (url && (url.startsWith('https://') || url.startsWith('http://'))) {
+    await shell.openExternal(url);
+    return { success: true };
+  }
+  return { success: false, error: 'Invalid URL' };
+});
+
 // Re-authenticate YouTube token for a channel
 // This will generate auth URL, open browser, and return URL for code input
 ipcMain.handle('reauthenticate-youtube', async (event, channelId) => {

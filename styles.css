@@ -1750,6 +1750,16 @@ h1, h2, h3, h4, h5, h6 {
 .channel-item.token-expired {
   border-left: 3px solid #ef4444;
   background: rgba(239, 68, 68, 0.05);
+  cursor: pointer;
+}
+
+.channel-item.token-expired:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-left-color: #fca5a5;
+}
+
+.channel-item.token-expired:hover .channel-status.expired {
+  color: #fca5a5 !important;
 }
 
 .channel-status.expired {
