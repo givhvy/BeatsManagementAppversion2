@@ -1824,25 +1824,20 @@ ipcMain.handle('analyze-customer-image', async (event, { imageBase64, mimeType, 
     const http = require('http');
     const model = vision_model || 'qwen3.5:9b';
 
-    const prompt = `You are an OCR assistant. Look at this image carefully.
+    const prompt = `/no_think You are an OCR assistant. Look at this image carefully.
 
 This is most likely an Instagram screenshot. In Instagram, the person's display name appears at the TOP in larger/bold text, and their username (handle) appears directly below in smaller text starting with @.
 
+CRITICAL: Social media names/handles are intentionally creative with unusual or repeated characters (e.g. "Luuuiyyyi", "xxtentacion", "iilovemakonnen"). Read EVERY character exactly as it appears on screen — do NOT autocorrect, normalize, or guess at the spelling. Copy character by character.
+
 Extract ONLY:
-1. The display name (the real name or chosen display name shown at the top)
-2. The Instagram username/handle (the @handle shown below the display name, or anywhere visible)
+1. The display name at the top (copy it exactly, character by character)
+2. The Instagram @handle below it (copy exactly, character by character)
 3. Email address only if explicitly visible
 4. Any beat titles or music mentioned
 
-Respond ONLY with valid JSON:
-{
-  "name": "",
-  "instagram": "",
-  "email": "",
-  "beats_bought": [],
-  "notes": "",
-  "confidence": "high|medium|low"
-}`;
+Respond ONLY with valid JSON, no markdown, no explanation:
+{"name":"","instagram":"","email":"","beats_bought":[],"notes":"","confidence":"high|medium|low"}`;
 
     // Use Ollama native /api/generate — images are passed as raw base64 array (no data URL prefix)
     const postData = JSON.stringify({
@@ -1850,7 +1845,8 @@ Respond ONLY with valid JSON:
       prompt: prompt,
       images: [imageBase64],
       stream: false,
-      options: { temperature: 0.1, num_predict: 500 }
+      think: false,
+      options: { temperature: 0.1, num_predict: 2000 }
     });
 
     return new Promise((resolve) => {
@@ -1868,6 +1864,10 @@ Respond ONLY with valid JSON:
           try {
             const parsed = JSON.parse(data);
             let content = (parsed.response || '').trim();
+            // Strip thinking mode tags (qwen3.5 outputs <think>...</think> before JSON)
+            content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+            // Strip markdown code fences (```json ... ``` or ``` ... ```)
+            content = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/i, '').trim();
             // Extract JSON from response
             const jsonMatch = content.match(/\{[\s\S]*\}/);
             if (!jsonMatch) return resolve({ success: false, error: 'AI did not return JSON. Response: ' + content.substring(0, 300) });

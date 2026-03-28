@@ -990,43 +990,69 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
 
           <!-- Left: Drop Zone -->
           <div class="ai-scan-left">
-            <div id="ai-image-dropzone" class="ai-image-dropzone" onclick="document.getElementById('ai-image-file-input').click()">
-              <div class="ai-dropzone-inner" id="ai-dropzone-inner">
-                <div class="ai-dropzone-icon-ring">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" ry="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                </div>
-                <p class="dropzone-label">Drop screenshot here</p>
-                <p class="dropzone-sub">or click to choose a file</p>
-                <div class="dropzone-paste-hint">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                  <span><b>Ctrl+V</b> to paste</span>
-                </div>
-                <p class="dropzone-formats">PNG · JPG · WEBP</p>
-              </div>
-              <img id="ai-preview-img" style="display:none;width:100%;height:100%;object-fit:contain;border-radius:14px;" />
+            <!-- Mode toggle -->
+            <div class="ai-mode-toggle">
+              <button id="ai-mode-single-btn" class="ai-mode-btn active" onclick="switchAIMode('single')">Single</button>
+              <button id="ai-mode-batch-btn" class="ai-mode-btn" onclick="switchAIMode('batch')">Batch (up to 5)</button>
             </div>
-            <input type="file" id="ai-image-file-input" accept="image/png,image/jpeg,image/webp" style="display:none" />
 
-            <!-- Model select -->
+            <!-- Shared: Model select -->
             <div class="ai-model-row">
               <label class="ai-model-label">Model</label>
               <select id="ai-vision-model-select" class="ai-model-select">
-                <option value="gemma3:12b">gemma3:12b ⭐ best quality</option>
+                <option value="qwen3.5:9b" selected>qwen3.5:9b ⭐ best quality</option>
                 <option value="llava:13b">llava:13b — good quality</option>
                 <option value="moondream">moondream — fast &amp; light</option>
               </select>
             </div>
 
-            <!-- Scan button (skeuomorphic amber) -->
-            <div class="ai-scan-btn-wrap">
-              <div class="ai-scan-btn-halo"></div>
-              <div class="ai-scan-btn-border">
-                <div class="ai-scan-btn-spin"></div>
-                <div class="ai-scan-btn-inset"></div>
-                <button id="ai-scan-analyze-btn" class="ai-scan-btn-inner" onclick="runAIScan()">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                  Scan Image
-                </button>
+            <!-- Single mode content -->
+            <div id="ai-single-mode-left" style="display:flex;flex-direction:column;gap:12px;flex:1">
+              <div id="ai-image-dropzone" class="ai-image-dropzone" onclick="document.getElementById('ai-image-file-input').click()">
+                <div class="ai-dropzone-inner" id="ai-dropzone-inner">
+                  <div class="ai-dropzone-icon-ring">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3" ry="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  </div>
+                  <p class="dropzone-label">Drop screenshot here</p>
+                  <p class="dropzone-sub">or click to choose a file</p>
+                  <div class="dropzone-paste-hint">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    <span><b>Ctrl+V</b> to paste</span>
+                  </div>
+                  <p class="dropzone-formats">PNG · JPG · WEBP</p>
+                </div>
+                <img id="ai-preview-img" style="display:none;width:100%;height:100%;object-fit:contain;border-radius:14px;" />
+              </div>
+              <input type="file" id="ai-image-file-input" accept="image/png,image/jpeg,image/webp" style="display:none" />
+              <!-- Scan button (skeuomorphic amber) -->
+              <div class="ai-scan-btn-wrap">
+                <div class="ai-scan-btn-halo"></div>
+                <div class="ai-scan-btn-border">
+                  <div class="ai-scan-btn-spin"></div>
+                  <div class="ai-scan-btn-inset"></div>
+                  <button id="ai-scan-analyze-btn" class="ai-scan-btn-inner" onclick="runAIScan()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    Scan Image
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Batch mode content -->
+            <div id="ai-batch-mode-left" style="display:none;flex-direction:column;gap:12px;flex:1">
+              <div class="ai-batch-grid" id="ai-batch-grid"></div>
+              <input type="file" id="ai-batch-file-input" accept="image/png,image/jpeg,image/webp" style="display:none" />
+              <!-- Scan all button -->
+              <div class="ai-scan-btn-wrap">
+                <div class="ai-scan-btn-halo"></div>
+                <div class="ai-scan-btn-border">
+                  <div class="ai-scan-btn-spin"></div>
+                  <div class="ai-scan-btn-inset"></div>
+                  <button id="ai-batch-scan-btn" class="ai-scan-btn-inner" onclick="runBatchScan()" disabled>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span id="ai-batch-btn-text">Scan All Images</span>
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -1038,6 +1064,9 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
 
           <!-- Right: Extracted Data -->
           <div class="ai-scan-right">
+
+            <!-- Single mode right panel -->
+            <div id="ai-single-mode-right" style="display:flex;flex-direction:column;gap:10px;flex:1">
             <div class="ai-extracted-header">
               <span class="ai-extracted-title">Extracted Information</span>
               <div id="ai-confidence-badge" class="ai-confidence-badge" style="display:none"></div>
@@ -1107,6 +1136,18 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
                 </div>
               </div>
               <button class="ai-clear-btn" onclick="clearAIScan()">Clear</button>
+            </div>
+            </div><!-- end ai-single-mode-right -->
+
+            <!-- Batch mode right panel -->
+            <div id="ai-batch-mode-right" style="display:none;flex-direction:column;gap:10px;flex:1">
+              <div class="ai-extracted-header">
+                <span class="ai-extracted-title">Batch Results</span>
+                <button class="ai-batch-add-all-btn" onclick="addAllBatchResults()">Add All</button>
+              </div>
+              <div id="ai-batch-results-list" class="ai-batch-results-list">
+                <p class="ai-batch-results-empty">Add images on the left, then click Scan All.</p>
+              </div>
             </div>
 
           </div>
