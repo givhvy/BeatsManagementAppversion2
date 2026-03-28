@@ -309,24 +309,45 @@ body {
   margin-bottom: 15px;
 }
 
+/* ── Global: dark option backgrounds for every <select> in Electron/Chromium ── */
+select option {
+  background: #0f0f0f;
+  color: rgba(255,255,255,0.9);
+}
+
+/* ── Shared amber chevron data-URI ── */
+/* Used via select.anything or explicit select* rules below */
+
 .filter-input {
   width: 100%;
-  background-color: #2a2a2a;
-  border: 1px solid #404040;
-  color: #ffffff;
+  background: #050505;
+  border: none;
+  color: rgba(255,255,255,0.9);
   padding: 10px 15px;
-  border-radius: 6px;
+  border-radius: 9px;
   font-size: 14px;
+  font-family: 'Inter', sans-serif;
   outline: none;
-  transition: border-color 0.2s;
+  transition: box-shadow 0.2s;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+select.filter-input {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(245,158,11,0.6)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
 }
 
 .filter-input:focus {
-  border-color: #0066ff;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(245,158,11,0.4);
 }
 
 .filter-input::placeholder {
-  color: #666;
+  color: rgba(255,255,255,0.2);
 }
 
 .beats-list {
@@ -1481,18 +1502,32 @@ body {
 
 .modal-input {
   width: 100%;
-  background-color: #1a1a1a;
-  border: 1px solid #404040;
-  color: #ffffff;
+  background: #050505;
+  border: none;
+  color: rgba(255,255,255,0.9);
   padding: 10px 15px;
-  border-radius: 6px;
+  border-radius: 10px;
   font-size: 14px;
+  font-family: 'Inter', sans-serif;
   outline: none;
-  transition: border-color 0.2s;
+  transition: box-shadow 0.2s;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04);
 }
 
+select.modal-input {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(245,158,11,0.6)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
+}
+
+.modal-input::placeholder { color: rgba(255,255,255,0.2); }
+
 .modal-input:focus {
-  border-color: #0066ff;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(245,158,11,0.4);
 }
 
 /* Scrollbar styling */
@@ -2446,17 +2481,18 @@ h1, h2, h3, h4, h5, h6 {
 #add-channel-modal .modal-input {
   width: 100%;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  color: #fff;
+  background: #050505;
+  border: none;
+  border-radius: 10px;
+  color: rgba(255,255,255,0.9);
   font-size: 14px;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04);
 }
 
 #add-channel-modal .modal-input:focus {
   outline: none;
-  border-color: #3b82f6;
-  background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(245,158,11,0.4);
+  background: #050505;
 }
 
 #add-channel-modal label {
@@ -2652,6 +2688,16 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04);
 }
 
+select.setting-control {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(245,158,11,0.6)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  cursor: pointer;
+}
+
 .setting-control option { background: #1a1a1a; }
 
 .setting-control:focus {
@@ -2760,12 +2806,13 @@ h1, h2, h3, h4, h5, h6 {
 #edit-templates-modal textarea {
   width: 100%;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  color: #fff;
+  background: #050505;
+  border: none;
+  border-radius: 10px;
+  color: rgba(255,255,255,0.9);
   font-size: 14px;
   font-family: inherit;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04);
 }
 
 #edit-templates-modal textarea {
@@ -2776,7 +2823,7 @@ h1, h2, h3, h4, h5, h6 {
 #edit-templates-modal .modal-input:focus,
 #edit-templates-modal textarea:focus {
   outline: none;
-  border-color: #3b82f6;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(245,158,11,0.4);
 }
 
 #edit-templates-modal small {
@@ -3766,12 +3813,27 @@ h1, h2, h3, h4, h5, h6 {
 
 .email-templates select {
   width: 100%;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #fff;
+  padding: 10px 34px 10px 14px;
+  background: #050505;
+  border: none;
+  border-radius: 10px;
+  color: rgba(255,255,255,0.9);
   font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(245,158,11,0.6)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04);
+  transition: box-shadow 0.2s;
+}
+
+.email-templates select:focus {
+  outline: none;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(245,158,11,0.4);
 }
 
 .email-form {
@@ -3795,18 +3857,21 @@ h1, h2, h3, h4, h5, h6 {
 .email-form textarea {
   width: 100%;
   padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #fff;
+  background: #050505;
+  border: none;
+  border-radius: 10px;
+  color: rgba(255,255,255,0.9);
   font-size: 14px;
+  font-family: 'Inter', sans-serif;
   resize: none;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04);
+  transition: box-shadow 0.2s;
 }
 
 .email-form input:focus,
 .email-form textarea:focus {
   outline: none;
-  border-color: #3b82f6;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(245,158,11,0.4);
 }
 
 .email-form textarea {
@@ -3906,18 +3971,32 @@ h1, h2, h3, h4, h5, h6 {
 .customer-modal textarea {
   width: 100%;
   padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #fff;
+  background: #050505;
+  border: none;
+  border-radius: 10px;
+  color: rgba(255,255,255,0.9);
   font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04);
+  transition: box-shadow 0.2s;
+}
+
+.customer-modal select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba(245,158,11,0.6)' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
 }
 
 .customer-modal input:focus,
 .customer-modal select:focus,
 .customer-modal textarea:focus {
   outline: none;
-  border-color: #3b82f6;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(245,158,11,0.4);
 }
 
 /* Bulk Email Modal */
