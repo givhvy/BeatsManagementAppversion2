@@ -10153,7 +10153,7 @@ function renderMoneyChart(periodTxs) {
 
   container.innerHTML = groupTotals.map(g => {
     const stackHeightPct = ((g.lease + g.exclusive + g.stem) / maxTotal) * 100;
-    const stackH = Math.max(stackHeightPct * 0.58, g.total > 0 ? 3 : 1); // max 58px for 60px container
+    const stackH = Math.max(stackHeightPct * 0.87, g.total > 0 ? 3 : 1); // max 87px for 90px container
     const leaseH  = g.total > 0 ? (g.lease / (g.lease + g.exclusive + g.stem || 1)) * stackH : 0;
     const exclH   = g.total > 0 ? (g.exclusive / (g.lease + g.exclusive + g.stem || 1)) * stackH : 0;
     const stemH   = g.total > 0 ? (g.stem / (g.lease + g.exclusive + g.stem || 1)) * stackH : 0;
