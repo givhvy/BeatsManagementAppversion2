@@ -3474,16 +3474,17 @@ select.setting-control {
 .customers-container {
   display: flex;
   height: calc(100vh - 60px);
-  background: #1a1a1a;
+  background: #0a0a0a;
 }
 
 .customers-sidebar {
-  width: 300px;
+  width: 240px;
   display: flex;
   flex-direction: column;
   padding: 20px;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.02);
+  border-right: 1px solid rgba(255,255,255,0.05);
+  background: #0f0f0f;
+  box-shadow: inset -1px 0 0 rgba(255,255,255,0.03);
 }
 
 .customers-sidebar .panel-header {
@@ -3504,55 +3505,65 @@ select.setting-control {
 
 .customer-search input {
   width: 100%;
-  padding: 10px 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #fff;
-  font-size: 14px;
+  padding: 9px 14px;
+  background: #050505;
+  border: none;
+  border-radius: 10px;
+  color: rgba(255,255,255,0.9);
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04);
+  transition: box-shadow 0.2s;
 }
 
 .customer-search input:focus {
   outline: none;
-  border-color: #3b82f6;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(245,158,11,0.35);
 }
 
 .customer-filters {
   display: flex;
-  gap: 6px;
-  margin-bottom: 16px;
+  gap: 5px;
+  margin-bottom: 14px;
   flex-wrap: wrap;
 }
 
 .filter-btn {
-  padding: 6px 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  color: #999;
-  font-size: 12px;
+  padding: 5px 11px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  color: rgba(255,255,255,0.4);
+  font-size: 11px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
 }
 
 .filter-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.8);
+  border-color: rgba(255,255,255,0.12);
 }
 
 .filter-btn.active {
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(180deg, #FCD34D 0%, #D97706 100%);
   border-color: transparent;
-  color: #fff;
+  color: #381E02;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(217,119,6,0.3);
 }
 
 .customer-stats {
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 12px 10px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #111 100%);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), inset 0 0 0 1px rgba(255,255,255,0.04);
 }
 
 .customer-stats .stat-item {
@@ -3564,13 +3575,17 @@ select.setting-control {
   display: block;
   font-size: 20px;
   font-weight: 700;
-  color: #3b82f6;
+  color: #F59E0B;
+  line-height: 1;
+  margin-bottom: 3px;
 }
 
 .customer-stats .stat-label {
-  font-size: 11px;
-  color: #888;
+  font-size: 10px;
+  color: rgba(255,255,255,0.3);
   text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
 }
 
 .customer-list {
@@ -3581,37 +3596,41 @@ select.setting-control {
 .customer-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 12px;
+  margin-bottom: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.18s;
 }
 
 .customer-item:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.08);
 }
 
 .customer-item.selected {
-  background: rgba(59, 130, 246, 0.15);
-  border-color: #3b82f6;
+  background: rgba(245,158,11,0.07);
+  border-color: rgba(245,158,11,0.28);
+  box-shadow: 0 0 0 0.5px rgba(245,158,11,0.15);
 }
 
 .customer-avatar {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(180deg, #2a2a24 0%, #1a1a14 100%);
+  border: 1px solid rgba(245,158,11,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  font-size: 16px;
+  font-weight: 700;
+  font-size: 14px;
   flex-shrink: 0;
+  color: #F59E0B;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
 .customer-info {
@@ -3663,7 +3682,7 @@ select.setting-control {
   flex: 1;
   padding: 24px;
   overflow-y: auto;
-  background: rgba(0, 0, 0, 0.2);
+  background: #0a0a0a;
 }
 
 .empty-state-large {
@@ -3696,9 +3715,12 @@ select.setting-control {
 }
 
 .customer-detail-card {
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
+  background: linear-gradient(180deg, #1c1c1c 0%, #131313 100%);
+  border-radius: 16px;
   padding: 24px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06),
+              inset 0 0 0 1px rgba(255,255,255,0.04),
+              0 8px 24px rgba(0,0,0,0.5);
 }
 
 .customer-detail-header {
@@ -3711,15 +3733,18 @@ select.setting-control {
 }
 
 .customer-detail-avatar {
-  width: 80px;
-  height: 80px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: linear-gradient(180deg, #2a2a24 0%, #1a1a14 100%);
+  border: 1px solid rgba(245,158,11,0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 32px;
+  font-size: 28px;
+  color: #F59E0B;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 4px 12px rgba(0,0,0,0.4);
 }
 
 .customer-detail-info h2 {
@@ -4406,12 +4431,39 @@ select.setting-control {
   align-items: center;
   gap: 10px;
   cursor: pointer;
+  user-select: none;
 }
 
 .setting-label input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: #3b82f6;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 5px;
+  background: #050505;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.09);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.setting-label input[type="checkbox"]:checked {
+  background: linear-gradient(180deg, #FCD34D 0%, #D97706 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 0 8px rgba(245,158,11,0.3), inset 0 0 0 1px rgba(180,83,9,0.4);
+}
+
+.setting-label input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 9px;
+  border: 2px solid #381E02;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
 }
 
 .setting-help {
@@ -5208,9 +5260,10 @@ select.setting-control {
 }
 
 .cview-tab.active {
-  color: #fff;
-  border-bottom-color: #f59e0b;
+  color: #F59E0B;
+  border-bottom-color: #F59E0B;
   background: rgba(245,158,11,0.08);
+  font-weight: 600;
 }
 
 .marketing-settings-tab {
