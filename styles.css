@@ -2501,16 +2501,6 @@ h1, h2, h3, h4, h5, h6 {
   color: #ef4444;
 }
 
-.channel-actions {
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  flex-shrink: 0;
-}
-
-.channel-actions .btn-primary {
-  width: 100%;
-}
-
 .channel-mgmt-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2518,7 +2508,8 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 10px;
 }
 
-.channel-mgmt-buttons .btn-secondary {
+.channel-mgmt-buttons .btn-secondary,
+.channel-mgmt-buttons .btn-primary {
   padding: 9px 10px;
   font-size: 12px;
   justify-content: center;
