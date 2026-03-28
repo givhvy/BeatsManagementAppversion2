@@ -1334,6 +1334,35 @@ ipcMain.handle('open-external-url', async (event, url) => {
   return { success: false, error: 'Invalid URL' };
 });
 
+// Money Management data
+ipcMain.handle('save-money-data', async (event, data) => {
+  const dataPath = path.join(app.getPath('userData'), 'money-data.json');
+  try {
+    const json = JSON.stringify(data, null, 2);
+    fs.writeFileSync(dataPath, json);
+    const mirrorPath = path.join(__dirname, 'data', 'money-data.json');
+    try { fs.writeFileSync(mirrorPath, json); } catch (e) { /* non-critical */ }
+    return true;
+  } catch (error) {
+    console.error('Error saving money data:', error);
+    return false;
+  }
+});
+
+ipcMain.handle('load-money-data', async () => {
+  const dataPath = path.join(app.getPath('userData'), 'money-data.json');
+  try {
+    if (fs.existsSync(dataPath)) {
+      const data = fs.readFileSync(dataPath, 'utf8');
+      return JSON.parse(data);
+    }
+    return null;
+  } catch (error) {
+    console.error('Error loading money data:', error);
+    return null;
+  }
+});
+
 // Re-authenticate YouTube token for a channel
 // This will generate auth URL, open browser, and return URL for code input
 ipcMain.handle('reauthenticate-youtube', async (event, channelId) => {
