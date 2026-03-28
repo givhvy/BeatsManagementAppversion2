@@ -2504,22 +2504,27 @@ h1, h2, h3, h4, h5, h6 {
 .channel-actions {
   padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
   flex-shrink: 0;
 }
 
 .channel-actions .btn-primary {
-  grid-column: 1 / -1;
+  width: 100%;
 }
 
-.channel-actions .btn-secondary {
-  padding: 7px 8px;
-  font-size: 11px;
+.channel-mgmt-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.channel-mgmt-buttons .btn-secondary {
+  padding: 9px 10px;
+  font-size: 12px;
   justify-content: center;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 #add-channel-modal .modal-input {
