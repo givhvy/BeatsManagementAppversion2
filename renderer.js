@@ -1278,16 +1278,22 @@ function setupAudioPlayer() {
     isPlaying = false;
     updatePlayIcons(false);
     updatePlayingState();
+    const artImg = document.querySelector('#player-art .player-art-img');
+    if (artImg) artImg.style.animationPlayState = 'paused';
   });
 
   audioElement.addEventListener('play', () => {
     isPlaying = true;
     updatePlayIcons(true);
+    const artImg = document.querySelector('#player-art .player-art-img');
+    if (artImg) artImg.style.animationPlayState = 'running';
   });
 
   audioElement.addEventListener('pause', () => {
     isPlaying = false;
     updatePlayIcons(false);
+    const artImg = document.querySelector('#player-art .player-art-img');
+    if (artImg) artImg.style.animationPlayState = 'paused';
   });
 
   // Progress bar
@@ -1362,6 +1368,22 @@ function playBeat(beatPath, beatName) {
   nowPlayingEl.textContent = displayName;
   playPauseBtn.disabled = false;
   updatePlayingState();
+
+  // Update player art in the bottom bar
+  const playerArtEl = document.getElementById('player-art');
+  if (playerArtEl) {
+    const imgPath = beatImages[beatPath];
+    playerArtEl.innerHTML = '';
+    if (imgPath) {
+      const img = document.createElement('img');
+      img.src = 'file://' + imgPath; // set programmatically so Electron normalizes Windows backslash paths
+      img.alt = '';
+      img.className = 'player-art-img spinning';
+      playerArtEl.appendChild(img);
+    } else {
+      playerArtEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`;
+    }
+  }
 
   // Show image and prompt if available
   const imagePath = beatImages[beatPath];
@@ -7402,11 +7424,9 @@ Check out my latest beats: [YOUR LINK HERE]
 /**
  * Initialize customer database
  */
-function initCustomerDatabase() {
-  loadCustomers();
+async function initCustomerDatabase() {
   setupCustomerEventListeners();
-  renderCustomerList();
-  updateCustomerStats();
+  await loadCustomers();
 }
 
 /**
@@ -8917,7 +8937,9 @@ function updateCampaignRecipientCount() {
   const filtered = segVal === 'all' ? customers : customers.filter(c => c.type === segVal);
   const withEmail = filtered.filter(c => c.email && c.email.trim());
   const el = document.getElementById('campaign-recipient-count');
-  if (el) el.textContent = `${withEmail.length} recipient${withEmail.length !== 1 ? 's' : ''}`;
+  if (el) el.textContent = withEmail.length;
+  const unitEl = el ? el.nextElementSibling : null;
+  if (unitEl && unitEl.classList.contains('cm-stat-unit')) unitEl.textContent = withEmail.length !== 1 ? 'contacts' : 'contact';
 }
 
 // Send campaign to all recipients
@@ -9272,7 +9294,13 @@ async function runAIScan() {
     // Confidence badge
     const badge = document.getElementById('ai-confidence-badge');
     if (d.confidence !== undefined) {
-      const pct = Math.round(parseFloat(d.confidence) * 100);
+      const conf = String(d.confidence).toLowerCase().trim();
+      let pct;
+      if (conf === 'high') pct = 90;
+      else if (conf === 'medium') pct = 60;
+      else if (conf === 'low') pct = 30;
+      else pct = Math.round(parseFloat(conf) * 100);
+      if (isNaN(pct)) pct = 60;
       const cls = pct >= 75 ? 'high' : pct >= 45 ? 'medium' : 'low';
       badge.textContent = `AI Confidence: ${pct}%`;
       badge.className = 'ai-confidence-badge ' + cls;
@@ -9581,3 +9609,145 @@ async function addAllBatchResults() {
     }
   }
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI AGENT PANEL
+// ─────────────────────────────────────────────────────────────────────────────
+(function initAiPanel() {
+  const fab       = document.getElementById('ai-agent-fab');
+  const panel     = document.getElementById('ai-agent-panel');
+  const closeBtn  = document.getElementById('ai-panel-close');
+  const messages  = document.getElementById('ai-panel-messages');
+  const input     = document.getElementById('ai-panel-input');
+  const sendBtn   = document.getElementById('ai-panel-send');
+  if (!fab || !panel) return;
+
+  let chatHistory = []; // [{role:'user'|'assistant', content}]
+
+  // Toggle panel
+  fab.addEventListener('click', () => {
+    panel.classList.toggle('ai-panel-open');
+    if (panel.classList.contains('ai-panel-open') && input) input.focus();
+  });
+  closeBtn.addEventListener('click', () => panel.classList.remove('ai-panel-open'));
+
+  // Example chips
+  messages.addEventListener('click', (e) => {
+    const chip = e.target.closest('.ai-example-chip');
+    if (chip) {
+      input.value = chip.dataset.msg || '';
+      input.focus();
+    }
+  });
+
+  // Send on Enter
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendCommand(); }
+  });
+  sendBtn.addEventListener('click', sendCommand);
+
+  function removeWelcome() {
+    const w = messages.querySelector('.ai-welcome');
+    if (w) w.remove();
+  }
+
+  function appendUserMsg(text) {
+    removeWelcome();
+    const el = document.createElement('div');
+    el.className = 'ai-msg ai-msg-user';
+    el.textContent = text;
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function appendAssistantMsg(text, log) {
+    const el = document.createElement('div');
+    el.className = 'ai-msg ai-msg-assistant';
+    if (log && log.length) {
+      const toolsWrap = document.createElement('div');
+      toolsWrap.className = 'ai-tool-calls';
+      log.forEach(t => {
+        const badge = document.createElement('div');
+        badge.className = 'ai-tool-badge';
+        const resultText = String(t.result).substring(0, 100);
+        badge.innerHTML = `<span class="ai-tool-name">&#9881; ${t.tool}</span><span class="ai-tool-result">${resultText}</span>`;
+        toolsWrap.appendChild(badge);
+      });
+      el.appendChild(toolsWrap);
+    }
+    const textEl = document.createElement('div');
+    textEl.className = 'ai-msg-text';
+    textEl.textContent = text;
+    el.appendChild(textEl);
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function appendThinking() {
+    const el = document.createElement('div');
+    el.className = 'ai-msg ai-msg-thinking';
+    el.id = 'ai-thinking-indicator';
+    el.innerHTML = '<span></span><span></span><span></span>';
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+    return el;
+  }
+
+  async function sendCommand() {
+    if (!input || !isElectron) return;
+    const msg = input.value.trim();
+    if (!msg) return;
+    input.value = '';
+    input.disabled = true;
+    sendBtn.disabled = true;
+    appendUserMsg(msg);
+    chatHistory.push({ role: 'user', content: msg });
+    const thinking = appendThinking();
+    try {
+      const result = await ipcRenderer.invoke('ai-command', {
+        message: msg,
+        history: chatHistory.slice(-12) // last 6 exchanges
+      });
+      thinking.remove();
+      if (result.success) {
+        appendAssistantMsg(result.response, result.log);
+        chatHistory.push({ role: 'assistant', content: result.response });
+      } else {
+        appendAssistantMsg('⚠ ' + result.error, []);
+      }
+    } catch (e) {
+      thinking.remove();
+      appendAssistantMsg('⚠ Error: ' + e.message, []);
+    }
+    input.disabled = false;
+    sendBtn.disabled = false;
+    input.focus();
+  }
+
+  // Reload packs/data when AI modifies them
+  if (isElectron) {
+    ipcRenderer.on('ai-data-updated', async () => {
+      try {
+        const savedData = await ipcRenderer.invoke('load-data');
+        if (savedData && savedData.packs) {
+          packs = savedData.packs;
+          renderPacks();
+          showNotification('App data updated by AI agent', 'success');
+        }
+      } catch (_) {}
+    });
+
+    ipcRenderer.on('ai-customers-updated', async () => {
+      try {
+        const data = await ipcRenderer.invoke('load-customers');
+        if (data && data.customers) {
+          customerState.customers = data.customers;
+          customerState.emailHistory = data.emailHistory || [];
+          renderCustomerList();
+          updateCustomerStats();
+          showNotification('Customer database updated by AI agent', 'success');
+        }
+      } catch (_) {}
+    });
+  }
+})();

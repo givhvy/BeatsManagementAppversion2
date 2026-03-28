@@ -306,7 +306,11 @@ ipcMain.handle('read-folder-contents', async (event, folderPath) => {
 ipcMain.handle('save-data', async (event, data) => {
   const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
   try {
-    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+    const json = JSON.stringify(data, null, 2);
+    fs.writeFileSync(dataPath, json);
+    // Mirror to data/ folder so git can track it
+    const mirrorPath = path.join(__dirname, 'data', 'beats-data.json');
+    try { fs.writeFileSync(mirrorPath, json); } catch (e) { /* non-critical */ }
     return true;
   } catch (error) {
     console.error('Error saving data:', error);
@@ -845,13 +849,23 @@ ipcMain.handle('save-global-settings', async (event, settings) => {
 ipcMain.handle('load-customers', async () => {
   try {
     const customersPath = path.join(app.getPath('userData'), 'customers.json');
-    
     if (!fs.existsSync(customersPath)) {
       return { customers: [], emailHistory: [] };
     }
-    
-    const data = JSON.parse(fs.readFileSync(customersPath, 'utf8'));
-    return data;
+    // Strip BOM in case file was written by PowerShell
+    let raw = fs.readFileSync(customersPath, 'utf8');
+    if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
+    const data = JSON.parse(raw);
+    // Unwrap PowerShell "value" serialization artifact if present
+    let customers = data.customers;
+    if (customers && !Array.isArray(customers) && Array.isArray(customers.value)) {
+      customers = customers.value;
+    }
+    let emailHistory = data.emailHistory || [];
+    if (emailHistory && !Array.isArray(emailHistory) && Array.isArray(emailHistory.value)) {
+      emailHistory = emailHistory.value;
+    }
+    return { customers: Array.isArray(customers) ? customers : [], emailHistory };
   } catch (error) {
     console.error('Error loading customers:', error);
     return { customers: [], emailHistory: [] };
@@ -862,7 +876,11 @@ ipcMain.handle('load-customers', async () => {
 ipcMain.handle('save-customers', async (event, data) => {
   try {
     const customersPath = path.join(app.getPath('userData'), 'customers.json');
-    fs.writeFileSync(customersPath, JSON.stringify(data, null, 2));
+    const json = JSON.stringify(data, null, 2);
+    fs.writeFileSync(customersPath, json);
+    // Mirror to data/ folder so git can track it
+    const mirrorPath = path.join(__dirname, 'data', 'customers.json');
+    try { fs.writeFileSync(mirrorPath, json); } catch (e) { /* non-critical */ }
     return { success: true };
   } catch (error) {
     console.error('Error saving customers:', error);
@@ -1744,16 +1762,18 @@ ipcMain.handle('generate-ai-email', async (event, { customerName, beatNames, dis
     const systemPrompt = `You are a professional music marketing copywriter for a beats producer. Write concise, engaging marketing emails under 250 words. Use a conversational, personal tone. Always include a greeting, the value proposition, and a clear call to action. Format the email body in HTML using only <p>, <b>, <br>, and <a> tags. Output the HTML email body only.`;
     const beatList = Array.isArray(beatNames) ? beatNames.join(', ') : (beatNames || 'exclusive beats');
     const userPrompt = `Write a marketing email:\n- Customer: ${customerName || 'there'}\n- Beat(s): ${beatList}\n- Offer: ${discount || 'none'}\n- Goal: ${prompt || 'Promote beats and drive sales'}\nOutput HTML body only.`;
-    const postData = JSON.stringify({ model: usedModel, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }], stream: false, options: { temperature: 0.7, num_predict: 600 } });
+    const postData = JSON.stringify({ model: usedModel, messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userPrompt }], stream: false, think: false, options: { temperature: 0.7, num_predict: 800 } });
     return new Promise((resolve) => {
-      const options = { hostname: '127.0.0.1', port: 11434, path: '/v1/chat/completions', method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postData) } };
+      const options = { hostname: '127.0.0.1', port: 11434, path: '/api/chat', method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postData) } };
       const req = http.request(options, (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);
         res.on('end', () => {
           try {
             const parsed = JSON.parse(data);
-            let content = parsed.choices[0].message.content;
+            if (parsed.error) return resolve({ success: false, error: 'Ollama error: ' + parsed.error });
+            if (!parsed.message || !parsed.message.content) return resolve({ success: false, error: 'Unexpected Ollama response format.' });
+            let content = parsed.message.content;
             content = content.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
             resolve({ success: true, content });
           } catch (e) {
@@ -1790,7 +1810,10 @@ ipcMain.handle('load-campaigns', async () => {
 ipcMain.handle('save-campaigns', async (event, data) => {
   try {
     const p = path.join(app.getPath('userData'), 'campaigns.json');
-    fs.writeFileSync(p, JSON.stringify(data, null, 2));
+    const json = JSON.stringify(data, null, 2);
+    fs.writeFileSync(p, json);
+    // Mirror to data/ folder so git can track it
+    try { fs.writeFileSync(path.join(__dirname, 'data', 'campaigns.json'), json); } catch (e) { /* non-critical */ }
     return { success: true };
   } catch (e) {
     return { success: false, error: e.message };
@@ -1810,7 +1833,10 @@ ipcMain.handle('load-beat-marketing', async () => {
 ipcMain.handle('save-beat-marketing', async (event, data) => {
   try {
     const p = path.join(app.getPath('userData'), 'beat-marketing.json');
-    fs.writeFileSync(p, JSON.stringify(data, null, 2));
+    const json = JSON.stringify(data, null, 2);
+    fs.writeFileSync(p, json);
+    // Mirror to data/ folder so git can track it
+    try { fs.writeFileSync(path.join(__dirname, 'data', 'beat-marketing.json'), json); } catch (e) { /* non-critical */ }
     return { success: true };
   } catch (e) {
     return { success: false, error: e.message };
@@ -1824,20 +1850,26 @@ ipcMain.handle('analyze-customer-image', async (event, { imageBase64, mimeType, 
     const http = require('http');
     const model = vision_model || 'qwen3.5:9b';
 
-    const prompt = `/no_think You are an OCR assistant. Look at this image carefully.
+    const prompt = `/no_think You are a precise OCR assistant. Look at this image carefully.
 
-This is most likely an Instagram screenshot. In Instagram, the person's display name appears at the TOP in larger/bold text, and their username (handle) appears directly below in smaller text starting with @.
+This is most likely an Instagram screenshot. The person's display name appears at the TOP in larger/bold text, and their username (handle) appears directly below in smaller, lighter text.
 
-CRITICAL: Social media names/handles are intentionally creative with unusual or repeated characters (e.g. "Luuuiyyyi", "xxtentacion", "iilovemakonnen"). Read EVERY character exactly as it appears on screen — do NOT autocorrect, normalize, or guess at the spelling. Copy character by character.
+CRITICAL OCR RULES:
+- Social media names use intentionally creative spellings with repeated characters (e.g. "Luuuiyyyi", "xxtentacion", "iilovemakonnen").
+- Read EVERY character exactly as it appears — never autocorrect or normalize.
+- For names with repeated similar characters (multiple u, i, y, l, o etc): count each character one by one before writing. Get the exact count right.
+- The letters u, i, y can look similar at small sizes — look carefully at each one.
+- Do NOT add or remove characters from what you see.
 
 Extract ONLY:
-1. The display name at the top (copy it exactly, character by character)
-2. The Instagram @handle below it (copy exactly, character by character)
-3. Email address only if explicitly visible
-4. Any beat titles or music mentioned
+1. The display name at the top (copy exactly — count repeated chars carefully)
+2. The Instagram handle below it (copy exactly)
+3. Email address ONLY if explicitly typed out and visible
+4. Any beat titles or music track names mentioned
 
 Respond ONLY with valid JSON, no markdown, no explanation:
 {"name":"","instagram":"","email":"","beats_bought":[],"notes":"","confidence":"high|medium|low"}`;
+
 
     // Use Ollama native /api/generate — images are passed as raw base64 array (no data URL prefix)
     const postData = JSON.stringify({
@@ -1916,5 +1948,232 @@ ipcMain.handle('get-ollama-models', async () => {
     });
   } catch (e) {
     return { success: false, models: [] };
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI AGENT — Ollama function-calling loop
+// ─────────────────────────────────────────────────────────────────────────────
+const AI_AGENT_TOOLS = [
+  { type: 'function', function: { name: 'get_stats', description: 'Get overall app stats: total packs, beats across all packs, and customers.', parameters: { type: 'object', properties: {} } } },
+  { type: 'function', function: { name: 'list_packs', description: 'List all beat packs with their names and how many beats each contains.', parameters: { type: 'object', properties: {} } } },
+  { type: 'function', function: { name: 'list_beats_in_pack', description: 'List all beats (audio files) inside a specific pack.', parameters: { type: 'object', required: ['pack_name'], properties: { pack_name: { type: 'string', description: 'Pack name or partial name to look up' } } } } },
+  { type: 'function', function: { name: 'create_pack', description: 'Create a new empty beat pack with the given name.', parameters: { type: 'object', required: ['name'], properties: { name: { type: 'string', description: 'Name for the new pack' } } } } },
+  { type: 'function', function: { name: 'rename_pack', description: 'Rename an existing beat pack.', parameters: { type: 'object', required: ['current_name', 'new_name'], properties: { current_name: { type: 'string', description: 'Current pack name (partial match ok)' }, new_name: { type: 'string', description: 'New name for the pack' } } } } },
+  { type: 'function', function: { name: 'add_beats_to_pack', description: 'Scan a folder on disk for audio files (.wav, .mp3, .flac, etc.) and add them all to an existing pack.', parameters: { type: 'object', required: ['pack_name', 'folder_path'], properties: { pack_name: { type: 'string', description: 'Name of the pack to add beats into (partial match ok)' }, folder_path: { type: 'string', description: 'Full file system path to the folder containing the audio files' } } } } },
+  { type: 'function', function: { name: 'get_folders', description: 'Get the list of beat source folders configured in the app.', parameters: { type: 'object', properties: {} } } },
+  { type: 'function', function: { name: 'list_customers', description: 'List all customers in the database. Optionally filter by type.', parameters: { type: 'object', properties: { type: { type: 'string', description: 'Filter by: lead | customer | vip (optional)' } } } } },
+  { type: 'function', function: { name: 'add_customer', description: 'Add a new customer to the customer database.', parameters: { type: 'object', required: ['email'], properties: { email: { type: 'string', description: 'Customer email address' }, instagram: { type: 'string', description: 'Instagram handle, include the @' }, type: { type: 'string', description: 'lead | customer | vip (default: lead)' }, notes: { type: 'string', description: 'Optional notes' } } } } },
+  { type: 'function', function: { name: 'navigate_tab', description: 'Switch the visible tab in the Beats Management app UI.', parameters: { type: 'object', required: ['tab'], properties: { tab: { type: 'string', description: 'Tab to navigate to: beats | video | youtube | progress | customers | beatstars' } } } } }
+];
+
+async function executeAgentTool(toolName, toolArgs) {
+  const beatsDataPath = path.join(app.getPath('userData'), 'beats-data.json');
+  const customersDataPath = path.join(app.getPath('userData'), 'customers.json');
+  const readBeats = () => fs.existsSync(beatsDataPath) ? JSON.parse(fs.readFileSync(beatsDataPath, 'utf8')) : { packs: [], folders: [] };
+  const writeBeats = (data) => {
+    const json = JSON.stringify(data, null, 2);
+    fs.writeFileSync(beatsDataPath, json);
+    // Mirror to data/ folder for git tracking
+    try { fs.writeFileSync(path.join(__dirname, 'data', 'beats-data.json'), json); } catch (e) { /* non-critical */ }
+  };
+  const readCustomersFile = () => {
+    if (!fs.existsSync(customersDataPath)) return { customers: [], emailHistory: [] };
+    const raw = JSON.parse(fs.readFileSync(customersDataPath, 'utf8'));
+    // Handle both formats: plain array (legacy) and correct { customers, emailHistory } object
+    if (Array.isArray(raw)) return { customers: raw, emailHistory: [] };
+    return { customers: raw.customers || [], emailHistory: raw.emailHistory || [] };
+  };
+  const readCustomers = () => readCustomersFile().customers;
+  const writeCustomers = (arr, emailHistory) => {
+    const existing = readCustomersFile();
+    const data = { customers: arr, emailHistory: emailHistory !== undefined ? emailHistory : existing.emailHistory };
+    const json = JSON.stringify(data, null, 2);
+    fs.writeFileSync(customersDataPath, json);
+    // Mirror to data/ folder for git tracking
+    try { fs.writeFileSync(path.join(__dirname, 'data', 'customers.json'), json); } catch (e) { /* non-critical */ }
+  };
+
+  switch (toolName) {
+    case 'get_stats': {
+      const data = readBeats();
+      const customers = readCustomers();
+      const packs = data.packs || [];
+      const totalBeats = packs.reduce((sum, p) => sum + (p.beats || []).length, 0);
+      return JSON.stringify({ packs: packs.length, beats_in_packs: totalBeats, customers: customers.length });
+    }
+
+    case 'list_packs': {
+      const data = readBeats();
+      return JSON.stringify((data.packs || []).map(p => ({ id: p.id, name: p.name, beats: (p.beats || []).length })));
+    }
+
+    case 'list_beats_in_pack': {
+      const data = readBeats();
+      const pack = (data.packs || []).find(p => p.name.toLowerCase().includes(toolArgs.pack_name.toLowerCase()));
+      if (!pack) return `No pack found matching "${toolArgs.pack_name}"`;
+      return JSON.stringify({ pack: pack.name, beats: (pack.beats || []).map(b => b.name) });
+    }
+
+    case 'create_pack': {
+      const data = readBeats();
+      if (!data.packs) data.packs = [];
+      const exists = data.packs.find(p => p.name.toLowerCase() === toolArgs.name.toLowerCase());
+      if (exists) return `Pack "${toolArgs.name}" already exists.`;
+      const newPack = { id: Date.now().toString(), name: toolArgs.name, beats: [], thumbnail: null };
+      data.packs.push(newPack);
+      writeBeats(data);
+      return `Created pack "${toolArgs.name}"`;
+    }
+
+    case 'rename_pack': {
+      const data = readBeats();
+      const pack = (data.packs || []).find(p => p.name.toLowerCase().includes(toolArgs.current_name.toLowerCase()));
+      if (!pack) return `No pack found matching "${toolArgs.current_name}"`;
+      const old = pack.name;
+      pack.name = toolArgs.new_name;
+      writeBeats(data);
+      return `Renamed "${old}" → "${toolArgs.new_name}"`;
+    }
+
+    case 'add_beats_to_pack': {
+      const data = readBeats();
+      const pack = (data.packs || []).find(p => p.name.toLowerCase().includes(toolArgs.pack_name.toLowerCase()));
+      if (!pack) return `No pack found matching "${toolArgs.pack_name}"`;
+      if (!fs.existsSync(toolArgs.folder_path)) return `Folder not found: ${toolArgs.folder_path}`;
+      const audioExts = new Set(['.mp3', '.wav', '.flac', '.m4a', '.aac', '.ogg', '.wma']);
+      const files = fs.readdirSync(toolArgs.folder_path).filter(f => audioExts.has(path.extname(f).toLowerCase()));
+      if (!files.length) return `No audio files found in "${toolArgs.folder_path}"`;
+      const existing = new Set((pack.beats || []).map(b => b.path));
+      const toAdd = files
+        .map(f => ({ name: f, path: path.join(toolArgs.folder_path, f), lastUsed: false }))
+        .filter(b => !existing.has(b.path));
+      if (!toAdd.length) return `All ${files.length} audio files already in "${pack.name}"`;
+      pack.beats = [...(pack.beats || []), ...toAdd];
+      writeBeats(data);
+      return `Added ${toAdd.length} beats to "${pack.name}" (${files.length - toAdd.length} already existed)`;
+    }
+
+    case 'get_folders': {
+      const data = readBeats();
+      return JSON.stringify(data.folders || []);
+    }
+
+    case 'list_customers': {
+      let c = readCustomers();
+      if (toolArgs.type) c = c.filter(x => x.type === toolArgs.type);
+      return JSON.stringify(c.map(x => ({ name: x.instagram || x.email, email: x.email, type: x.type, notes: x.notes })));
+    }
+
+    case 'add_customer': {
+      const c = readCustomers();
+      if (c.find(x => x.email && x.email === toolArgs.email)) return `Customer ${toolArgs.email} already exists.`;
+      const newC = {
+        id: Date.now().toString(),
+        name: toolArgs.instagram ? toolArgs.instagram.replace('@', '') : toolArgs.email.split('@')[0],
+        email: toolArgs.email,
+        instagram: toolArgs.instagram || '',
+        phone: '',
+        type: toolArgs.type || 'lead',
+        tags: [],
+        notes: toolArgs.notes || '',
+        totalSpent: 0,
+        beatsInterested: [],
+        dateAdded: new Date().toISOString(),
+        lastContact: null,
+        source: 'ai-agent'
+      };
+      c.push(newC);
+      writeCustomers(c);
+      return `Added customer: ${newC.instagram || newC.email} (type: ${newC.type})`;
+    }
+
+    case 'navigate_tab': {
+      const tabMap = { beats: 0, video: 1, youtube: 2, progress: 3, customers: 4, beatstars: 5 };
+      const idx = tabMap[toolArgs.tab];
+      if (idx === undefined) return `Unknown tab: ${toolArgs.tab}`;
+      if (mainWindow) {
+        mainWindow.webContents.executeJavaScript(
+          `const tabs = document.querySelectorAll('.main-nav-tab'); if (tabs[${idx}]) tabs[${idx}].click();`
+        ).catch(() => {});
+      }
+      return `Switched to ${toolArgs.tab} tab`;
+    }
+
+    default:
+      return `Unknown tool: ${toolName}`;
+  }
+}
+
+const AI_DATA_MODIFYING = new Set(['create_pack', 'rename_pack', 'add_beats_to_pack', 'add_customer']);
+
+ipcMain.handle('ai-command', async (event, { message, history }) => {
+  try {
+    const http = require('http');
+    const messages = [
+      {
+        role: 'system',
+        content: `You are an AI assistant built into Beats Management Studio — a music producer app for managing beat packs, customers, and marketing campaigns. You control the app directly using the available tools. Be concise and action-oriented. After completing tasks, briefly summarize what you did.`
+      },
+      ...(history || []),
+      { role: 'user', content: message }
+    ];
+    let dataModified = false;
+    let customersModified = false;
+    const log = [];
+
+    for (let iter = 0; iter < 8; iter++) {
+      const postData = JSON.stringify({
+        model: 'qwen3.5:9b',
+        messages,
+        tools: AI_AGENT_TOOLS,
+        stream: false,
+        think: false,
+        options: { temperature: 0.2, num_predict: 800 }
+      });
+
+      const parsed = await new Promise((resolve, reject) => {
+        const opts = {
+          hostname: '127.0.0.1', port: 11434, path: '/api/chat', method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(postData) }
+        };
+        const req = http.request(opts, (res) => {
+          let d = ''; res.on('data', c => d += c);
+          res.on('end', () => { try { resolve(JSON.parse(d)); } catch(e) { reject(e); } });
+        });
+        req.on('error', reject);
+        req.setTimeout(90000, () => { req.destroy(); reject(new Error('Ollama timeout (90s)')); });
+        req.write(postData); req.end();
+      });
+
+      if (parsed.error) throw new Error(parsed.error);
+      const assistantMsg = parsed.message;
+      messages.push(assistantMsg);
+
+      if (!assistantMsg.tool_calls || assistantMsg.tool_calls.length === 0) {
+        let content = (assistantMsg.content || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+        if (dataModified && mainWindow) mainWindow.webContents.send('ai-data-updated');
+        if (customersModified && mainWindow) mainWindow.webContents.send('ai-customers-updated');
+        return { success: true, response: content, log };
+      }
+
+      for (const tc of assistantMsg.tool_calls) {
+        const name = tc.function.name;
+        const args = typeof tc.function.arguments === 'string'
+          ? JSON.parse(tc.function.arguments)
+          : (tc.function.arguments || {});
+        let result;
+        try { result = await executeAgentTool(name, args); }
+        catch (e) { result = 'Error: ' + e.message; }
+        log.push({ tool: name, args, result });
+        if (AI_DATA_MODIFYING.has(name)) dataModified = true;
+        if (name === 'add_customer') customersModified = true;
+        messages.push({ role: 'tool', content: String(result) });
+      }
+    }
+
+    return { success: false, error: 'Agent exceeded maximum iterations.' };
+  } catch (e) {
+    return { success: false, error: e.message };
   }
 });

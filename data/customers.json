@@ -1,0 +1,93 @@
+{
+  "customers": [
+    {
+      "id": "cust_1764938427210",
+      "name": "shaun_holt_",
+      "email": "shaun_holt_@gmail.com",
+      "instagram": "shaun_holt_",
+      "type": "lead",
+      "notes": "",
+      "createdAt": "2025-12-05T12:40:27.210Z"
+    },
+    {
+      "id": "cust_1773507462277",
+      "name": "Claw",
+      "email": "claw@clawly.ai",
+      "instagram": "@Claw",
+      "type": "lead",
+      "notes": "",
+      "createdAt": "2026-03-14T16:57:42.277Z"
+    },
+    {
+      "id": "1774628667723",
+      "name": "Andrew Gleasure",
+      "email": "andrewgleasure@gmail.com",
+      "instagram": "andrewgleasure",
+      "phone": "",
+      "type": "lead",
+      "tags": [
+        "Google Chrome"
+      ],
+      "notes": "Wants to buy beats for a song, interested in hip hop and trap beats, budget is $50-$100",
+      "totalSpent": 0,
+      "beatsInterested": [
+        "Google Chrome"
+      ],
+      "dateAdded": "2026-03-27T16:24:27.723Z",
+      "lastContact": null,
+      "source": "ai-scan"
+    },
+    {
+      "id": "1774660460476",
+      "name": "Luuiiyyyi",
+      "email": "",
+      "instagram": "dominguezplus",
+      "phone": "",
+      "type": "lead",
+      "tags": [],
+      "notes": "You can download app for easier access",
+      "totalSpent": 0,
+      "beatsInterested": [],
+      "dateAdded": "2026-03-28T01:14:20.476Z",
+      "lastContact": null,
+      "source": "ai-scan"
+    },
+    {
+      "id": "1774668788027",
+      "name": "Beryl Simpson",
+      "email": "bouma26198@gmail.com",
+      "instagram": "berylsimpson390",
+      "phone": "",
+      "type": "lead",
+      "tags": [
+        "LOOK BACK beat",
+        "LOOK BACK 122 BPM UNTAGGED.wav"
+      ],
+      "notes": "",
+      "totalSpent": 0,
+      "beatsInterested": [
+        "LOOK BACK beat",
+        "LOOK BACK 122 BPM UNTAGGED.wav"
+      ],
+      "dateAdded": "2026-03-28T03:33:08.027Z",
+      "lastContact": null,
+      "source": "ai-scan"
+    },
+    {
+      "id": "1774674386522",
+      "name": "testleadcustomer",
+      "email": "testleadcustomer@example.com",
+      "instagram": "",
+      "phone": "",
+      "type": "lead",
+      "tags": [],
+      "notes": "",
+      "totalSpent": 0,
+      "beatsInterested": [],
+      "dateAdded": "2026-03-28T05:06:26.522Z",
+      "lastContact": null,
+      "source": "ai-agent"
+    }
+  ],
+  "emailHistory": []
+}
