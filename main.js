@@ -1822,24 +1822,19 @@ ipcMain.handle('save-beat-marketing', async (event, data) => {
 ipcMain.handle('analyze-customer-image', async (event, { imageBase64, mimeType, vision_model }) => {
   try {
     const http = require('http');
-    const model = vision_model || 'gemma3:12b';
+    const model = vision_model || 'qwen3.5:9b';
 
-    const prompt = `You are analyzing a screenshot to extract customer information for a beats producer's CRM database.
+    const prompt = `You are an OCR assistant. Look at this image carefully.
 
-Look at this image carefully. It may be:
-- An Instagram direct message conversation
-- An Instagram profile page
-- A purchase receipt or order confirmation
-- A screenshot of someone commenting on or buying beats
+This is most likely an Instagram screenshot. In Instagram, the person's display name appears at the TOP in larger/bold text, and their username (handle) appears directly below in smaller text starting with @.
 
-Extract the following information (leave blank if not visible, do NOT guess):
-1. Full name (display name or real name if visible)
-2. Instagram username (starts with @, or the handle shown)
-3. Email address (if visible anywhere)
-4. Beats or music they mentioned buying or are interested in (list all beat titles mentioned)
-5. Any notes (genre they like, budget mentioned, any other relevant info)
+Extract ONLY:
+1. The display name (the real name or chosen display name shown at the top)
+2. The Instagram username/handle (the @handle shown below the display name, or anywhere visible)
+3. Email address only if explicitly visible
+4. Any beat titles or music mentioned
 
-Respond ONLY with a valid JSON object in this exact format:
+Respond ONLY with valid JSON:
 {
   "name": "",
   "instagram": "",

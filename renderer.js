@@ -1085,33 +1085,44 @@ function renderPackEmailInfo() {
 
   if (hasEmail) {
     // Show existing email/password
+    const recoveryCode = pack.description && pack.description.includes(':') ? (pack.description.split(':')[2] || '') : '';
     packEmailInfoEl.innerHTML = `
-      <div style="margin-bottom: 10px;">
-        <div style="font-weight: bold; color: #3b82f6; font-size: 14px; margin-bottom: 8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Account Information</div>
-        <div style="font-size: 13px; color: #ddd; margin-bottom: 5px;">
-          <span style="color: #999;">Email:</span> <span style="font-family: monospace;">${pack.email}</span>
+      <div class="account-info-card">
+        <div class="account-info-header">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          ACCOUNT
         </div>
-        <div style="font-size: 13px; color: #ddd; margin-bottom: 5px;">
-          <span style="color: #999;">Password:</span> <span style="font-family: monospace;">${pack.password || 'N/A'}</span>
+        <div class="account-info-rows">
+          <div class="account-info-row">
+            <span class="account-info-field">EMAIL</span>
+            <span class="account-info-value mono">${pack.email}</span>
+          </div>
+          <div class="account-info-row">
+            <span class="account-info-field">PASSWORD</span>
+            <span class="account-info-value mono">${pack.password || '—'}</span>
+          </div>
+          ${recoveryCode ? `<div class="account-info-row">
+            <span class="account-info-field">RECOVERY</span>
+            <span class="account-info-value mono">${recoveryCode}</span>
+          </div>` : ''}
         </div>
-        ${pack.description && pack.description.includes(':') ? `
-        <div style="font-size: 11px; color: #666; margin-top: 5px;">
-          <span style="color: #888;">Recovery:</span> ${pack.description.split(':')[2] || 'N/A'}
-        </div>` : ''}
       </div>
     `;
   } else {
     // Show form to add email/password
     packEmailInfoEl.innerHTML = `
-      <div>
-        <div style="font-weight: bold; color: #f59e0b; font-size: 14px; margin-bottom: 10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>No Email Assigned</div>
-        <div style="font-size: 12px; color: #999; margin-bottom: 10px;">
-          Paste format: <span style="font-family: monospace; color: #3b82f6;">email	password|recovery</span>
+      <div class="account-info-card">
+        <div class="account-info-header no-email">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          NO ACCOUNT
         </div>
-        <input type="text" id="pack-email-input" placeholder="email@example.com" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 8px; font-size: 13px;">
-        <input type="text" id="pack-password-input" placeholder="password" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 8px; font-size: 13px;">
-        <input type="text" id="pack-recovery-input" placeholder="recovery email (optional)" style="width: 100%; padding: 8px; background: #1a1a1a; border: 1px solid #404040; border-radius: 4px; color: white; margin-bottom: 10px; font-size: 13px;">
-        <button id="save-pack-email-btn" class="btn-primary" style="width: 100%; padding: 8px;">Save Email</button>
+        <div class="account-form">
+          <div class="account-form-hint">Paste: <span class="mono">email⇥password|recovery</span></div>
+          <input type="text" id="pack-email-input" placeholder="email@example.com" class="account-input">
+          <input type="text" id="pack-password-input" placeholder="password" class="account-input">
+          <input type="text" id="pack-recovery-input" placeholder="recovery (optional)" class="account-input">
+          <button id="save-pack-email-btn" class="btn-primary" style="width: 100%; padding: 8px; font-size: 13px; margin-top: 4px;">Save</button>
+        </div>
       </div>
     `;
 

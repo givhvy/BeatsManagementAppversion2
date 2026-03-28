@@ -128,7 +128,7 @@ body {
   cursor: pointer;
   font-size: 13px;
   font-weight: 500;
-  font-family: 'Geist', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
   white-space: nowrap;
 }
@@ -195,7 +195,7 @@ body {
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  font-family: 'Geist', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
   box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
 }
@@ -219,7 +219,7 @@ body {
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  font-family: 'Geist', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
 }
@@ -608,7 +608,7 @@ body {
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  font-family: 'Geist', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
 }
@@ -634,7 +634,7 @@ body {
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  font-family: 'Geist', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(255,59,48,0.3);
 }
@@ -699,6 +699,12 @@ body {
   gap: 8px;
   padding: 5px 0;
   min-width: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.pack-detail-beats::-webkit-scrollbar {
+  display: none;
 }
 
 .pack-detail-right {
@@ -707,9 +713,26 @@ body {
   max-width: 300px;
   display: flex;
   flex-direction: column;
+  gap: 10px;
   overflow-y: auto;
   overflow-x: hidden;
   flex-shrink: 0;
+  padding: 4px 2px 4px 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.pack-detail-right::-webkit-scrollbar {
+  display: none;
+}
+
+/* Beat image preview card */
+.beat-image-preview {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 10px;
 }
 
 .pack-email-info * {
@@ -718,26 +741,179 @@ body {
 }
 
 .pack-email-info {
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
-  font-family: 'Geist', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
-.pack-email-info::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  background: linear-gradient(225deg, rgba(56,189,248,0.0) 0%, rgba(56,189,248,0.3) 50%, rgba(56,189,248,0.0) 100%);
-  pointer-events: none;
+/* ── Account Info Card ── */
+.account-info-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.account-info-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(56, 189, 248, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(56, 189, 248, 0.8);
+}
+
+.account-info-header.no-email {
+  background: rgba(245, 158, 11, 0.06);
+  color: rgba(245, 158, 11, 0.8);
+}
+
+.account-info-rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.account-info-row:last-child {
+  border-bottom: none;
+}
+
+.account-info-field {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.3);
+  min-width: 68px;
+  flex-shrink: 0;
+}
+
+.account-info-value {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.account-form {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.account-form-hint {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-bottom: 4px;
+}
+
+.account-input {
+  width: 100%;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.account-input:focus {
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.account-input::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Right Panel Cards (prompt section) ── */
+.right-panel-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.right-panel-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.right-panel-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.btn-icon-sm {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+}
+
+.btn-icon-sm:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.prompt-display-box {
+  padding: 12px 14px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  max-height: 140px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.prompt-display-box::-webkit-scrollbar {
+  display: none;
+}
+
+.prompt-editor-box {
+  width: 100%;
+  min-height: 110px;
+  background: rgba(255, 255, 255, 0.04);
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 12px 14px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Inter', sans-serif;
+  resize: vertical;
+  outline: none;
+  line-height: 1.6;
+}
+
+/* monospace utility */
+.mono {
+  font-family: 'Courier New', monospace;
 }
 
 .pack-detail-info {
@@ -750,7 +926,7 @@ body {
   font-size: 14px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
-  font-family: 'Geist', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
@@ -1363,11 +1539,11 @@ body {
 
 /* Text styles with Geist font */
 .font-geist {
-  font-family: 'Geist', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Geist', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
@@ -1406,7 +1582,7 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  font-family: 'Geist', 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   transition: all 0.3s ease;
 }
 
