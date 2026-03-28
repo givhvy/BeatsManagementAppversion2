@@ -642,10 +642,13 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
 
       <!-- Right Panel - Upload History & Settings -->
       <div class="youtube-panel youtube-history">
-        <div class="panel-header">
-          <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>History</h2>
+
+        <!-- History Section -->
+        <div class="yt-section-label">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          History
         </div>
-        
+
         <div class="history-stats">
           <div class="stat-box">
             <span class="stat-number" id="uploads-today">0</span>
@@ -655,7 +658,7 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
             <span class="stat-number" id="uploads-total">0</span>
             <span class="stat-label">Total</span>
           </div>
-          <div class="stat-box">
+          <div class="stat-box stat-box--failed">
             <span class="stat-number" id="uploads-failed">0</span>
             <span class="stat-label">Failed</span>
           </div>
@@ -665,51 +668,80 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
           <div class="empty-state">No upload history</div>
         </div>
 
+        <!-- Settings -->
         <div class="youtube-settings">
-          <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</h3>
-          <div class="setting-row">
-            <label>Publish Time:</label>
-            <input type="time" id="publish-time" value="12:00" class="filter-input">
+
+          <!-- Upload Settings -->
+          <div class="yt-section-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Upload Settings
           </div>
-          <div class="setting-row">
-            <label>Default Privacy:</label>
-            <select id="default-privacy" class="filter-input">
-              <option value="private">Private</option>
-              <option value="unlisted">Unlisted</option>
-              <option value="public">Public</option>
-            </select>
+          <div class="settings-card">
+            <div class="setting-field">
+              <span class="setting-field-label">Publish Time</span>
+              <input type="time" id="publish-time" value="12:00" class="setting-control">
+            </div>
+            <div class="setting-field">
+              <span class="setting-field-label">Default Privacy</span>
+              <select id="default-privacy" class="setting-control">
+                <option value="private">Private</option>
+                <option value="unlisted">Unlisted</option>
+                <option value="public">Public</option>
+              </select>
+            </div>
+            <div class="setting-toggle-row">
+              <span class="setting-field-label">Auto-upload on add</span>
+              <label class="yt-toggle">
+                <input type="checkbox" id="auto-upload" checked>
+                <span class="yt-toggle-track"></span>
+              </label>
+            </div>
           </div>
-          <div class="setting-row">
-            <label>
-              <input type="checkbox" id="auto-upload" checked>
-              Auto upload when video added
-            </label>
+
+          <!-- Global Templates -->
+          <div class="yt-section-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Global Templates
           </div>
-          <div class="setting-divider"></div>
-          <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Global Templates</h3>
-          <div class="setting-row">
-            <label>Active Template:</label>
-            <select id="active-template" class="filter-input">
-              <option value="template1">Default LVMH Template</option>
-              <option value="template2">Simple Template</option>
-            </select>
+          <div class="settings-card">
+            <div class="setting-field">
+              <span class="setting-field-label">Active Template</span>
+              <select id="active-template" class="setting-control">
+                <option value="template1">Default LVMH Template</option>
+                <option value="template2">Simple Template</option>
+              </select>
+            </div>
+            <div class="settings-card-actions">
+              <button id="edit-templates-btn" class="btn-secondary btn-small">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit Templates
+              </button>
+              <button id="apply-template-all-btn" class="btn-primary btn-small settings-btn-full">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                Apply to All Channels
+              </button>
+            </div>
           </div>
-          <div class="setting-row">
-            <button id="edit-templates-btn" class="btn-secondary btn-small"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit Templates</button>
-            <button id="apply-template-all-btn" class="btn-primary btn-small"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>Apply to All Channels</button>
+
+          <!-- Auto Scheduling -->
+          <div class="yt-section-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Auto Scheduling
           </div>
-          <div class="setting-divider"></div>
-          <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Auto Scheduling</h3>
-          <div class="setting-row">
-            <label>
-              <input type="checkbox" id="auto-schedule" checked>
-              Auto schedule +1 day between uploads
-            </label>
+          <div class="settings-card">
+            <div class="setting-toggle-row">
+              <span class="setting-field-label">Auto +1 day between uploads</span>
+              <label class="yt-toggle">
+                <input type="checkbox" id="auto-schedule" checked>
+                <span class="yt-toggle-track"></span>
+              </label>
+            </div>
+            <div class="setting-field">
+              <span class="setting-field-label">Days between uploads</span>
+              <input type="number" id="days-between-uploads" value="1" min="1" max="30" class="setting-control setting-control--narrow">
+            </div>
           </div>
-          <div class="setting-row">
-            <label>Days between uploads:</label>
-            <input type="number" id="days-between-uploads" value="1" min="1" max="30" class="filter-input" style="width: 60px;">
-          </div>
+
         </div>
       </div>
     </div>
@@ -1157,78 +1189,135 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
   </div>
 
   <!-- Campaign Creator Modal -->
-  <div id="campaign-creator-modal" class="modal" style="display: none;">
-    <div class="modal-content campaign-modal-content">
-      <div class="modal-header">
-        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>New Campaign</h3>
-        <button id="close-campaign-modal-btn" class="close-btn" onclick="closeCampaignModal()">×</button>
-      </div>
-      <div class="modal-body campaign-modal-body">
-        <!-- Left: Setup -->
-        <div class="campaign-setup-col">
-          <div class="form-group">
-            <label>Campaign Name</label>
-            <input type="text" id="campaign-name-input" placeholder="e.g. Summer Sale 2025" />
+  <div id="campaign-creator-modal" class="modal cm-overlay" style="display: none;">
+    <div class="cm-frame">
+      <div class="cm-card">
+        <!-- Ambient glow -->
+        <div class="cm-glow-bg"></div>
+
+        <!-- Header -->
+        <div class="cm-header">
+          <div class="cm-header-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
           </div>
-          <div class="form-group">
-            <label>Special Offer / Discount</label>
-            <input type="text" id="campaign-discount-input" placeholder="e.g. 60% off all beats this weekend" />
+          <div class="cm-header-text">
+            <div class="cm-title">New Campaign</div>
+            <div class="cm-subtitle">Configure and send an email blast to your customers</div>
           </div>
-          <div class="form-group">
-            <label>Campaign Goal (for AI)</label>
-            <input type="text" id="campaign-goal-input" placeholder="e.g. Drive sales during sale event" />
-          </div>
-          <div class="form-group">
-            <label>Send to Segment</label>
-            <select id="campaign-segment-select">
-              <option value="all">All Customers</option>
-              <option value="lead">Leads Only</option>
-              <option value="customer">Customers Only</option>
-              <option value="vip">VIP Only</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Featured Beats <span class="label-note">(select one or more)</span></label>
-            <div id="campaign-beat-selector" class="beat-selector-grid"></div>
-          </div>
-          <div class="form-group">
-            <label>Ollama AI Model</label>
-            <div class="ollama-status-row">
-              <select id="campaign-model-select">
-                <option value="qwen3:4b">qwen3:4b (recommended)</option>
-                <option value="qwen3:8b">qwen3:8b (better quality)</option>
-              </select>
-              <span id="ollama-status-badge" class="ollama-badge offline">Checking...</span>
-              <button id="ollama-toggle-btn" class="btn-ollama-toggle btn-ollama-start" onclick="toggleOllama()" title="Start or stop the Ollama AI server">Start AI</button>
-            </div>
-          </div>
-          <button id="ai-generate-email-btn" class="btn-ai-generate" onclick="generateCampaignEmail()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-            Generate Email with AI
+          <button id="close-campaign-modal-btn" class="cm-close-btn" onclick="closeCampaignModal()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
-        <!-- Right: Email Preview & Send -->
-        <div class="campaign-email-col">
-          <div class="form-group">
-            <label>Email Subject</label>
-            <input type="text" id="campaign-subject-input" placeholder="Subject line..." />
-          </div>
-          <div class="form-group campaign-body-group">
-            <label>Email Body (HTML)</label>
-            <textarea id="campaign-body-textarea" placeholder="AI will generate email content here, or write your own..."></textarea>
-          </div>
-          <div class="campaign-send-info">
-            <span id="campaign-recipient-count">0 recipients</span>
-            <span class="send-info-divider">|</span>
-            <span id="campaign-send-status">Ready</span>
-          </div>
-          <div class="campaign-actions">
-            <button id="send-campaign-btn" class="btn-primary" onclick="sendCampaign()">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              Send Campaign
+
+        <!-- Body -->
+        <div class="cm-body">
+
+          <!-- Left: Setup -->
+          <div class="cm-left">
+            <div class="cm-section-label">Campaign Details</div>
+
+            <div class="cm-field">
+              <label class="cm-field-label">Campaign Name</label>
+              <input type="text" id="campaign-name-input" class="cm-input" placeholder="e.g. Summer Sale 2025" />
+            </div>
+
+            <div class="cm-field">
+              <label class="cm-field-label">Special Offer / Discount</label>
+              <input type="text" id="campaign-discount-input" class="cm-input" placeholder="e.g. 60% off all beats this weekend" />
+            </div>
+
+            <div class="cm-field">
+              <label class="cm-field-label">Campaign Goal <span class="cm-field-hint">for AI</span></label>
+              <input type="text" id="campaign-goal-input" class="cm-input" placeholder="e.g. Drive sales during sale event" />
+            </div>
+
+            <div class="cm-row-fields">
+              <div class="cm-field cm-field-flex">
+                <label class="cm-field-label">Audience</label>
+                <select id="campaign-segment-select" class="cm-input cm-select">
+                  <option value="all">All Customers</option>
+                  <option value="lead">Leads Only</option>
+                  <option value="customer">Customers Only</option>
+                  <option value="vip">VIP Only</option>
+                </select>
+              </div>
+              <div class="cm-field cm-field-stat">
+                <label class="cm-field-label">Recipients</label>
+                <div class="cm-stat-pill">
+                  <span id="campaign-recipient-count">0</span>
+                  <span class="cm-stat-unit">contacts</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="cm-field">
+              <label class="cm-field-label">Featured Beats <span class="cm-field-hint">select one or more</span></label>
+              <div id="campaign-beat-selector" class="beat-selector-grid"></div>
+            </div>
+
+            <!-- AI Panel -->
+            <div class="campaign-ai-panel">
+              <div class="campaign-ai-header">
+                <div class="campaign-ai-title">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                  AI Engine
+                </div>
+                <div class="campaign-ai-status-wrap">
+                  <span id="ollama-status-badge" class="ollama-badge offline">Checking...</span>
+                  <button id="ollama-toggle-btn" class="btn-ollama-toggle btn-ollama-start" onclick="toggleOllama()" title="Start or stop the Ollama AI server">Start AI</button>
+                </div>
+              </div>
+              <div class="ai-model-row">
+                <label class="ai-model-label">Model</label>
+                <select id="campaign-model-select" class="ai-model-select">
+                  <option value="qwen3.5:9b" selected>qwen3.5:9b ⭐ best quality</option>
+                  <option value="qwen3:8b">qwen3:8b — good quality</option>
+                  <option value="qwen3:4b">qwen3:4b — fast</option>
+                </select>
+              </div>
+            </div>
+
+            <button id="ai-generate-email-btn" class="btn-ai-generate" onclick="generateCampaignEmail()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+              Generate Email with AI
             </button>
-            <button class="btn-secondary" onclick="closeCampaignModal()">Cancel</button>
           </div>
+
+          <!-- Divider -->
+          <div class="cm-divider"></div>
+
+          <!-- Right: Email -->
+          <div class="cm-right">
+            <div class="cm-section-label">Email Preview</div>
+
+            <div class="cm-field">
+              <label class="cm-field-label">Subject Line</label>
+              <input type="text" id="campaign-subject-input" class="cm-input" placeholder="Subject line..." />
+            </div>
+
+            <div class="cm-field cm-body-field">
+              <label class="cm-field-label">
+                Email Body
+                <span class="cm-field-hint">HTML</span>
+              </label>
+              <textarea id="campaign-body-textarea" class="cm-textarea" placeholder="AI will generate email content here, or write your own..."></textarea>
+            </div>
+
+            <!-- Footer actions -->
+            <div class="cm-footer">
+              <div class="cm-send-status">
+                <span id="campaign-send-status" class="cm-status-text">Ready</span>
+              </div>
+              <div class="cm-footer-actions">
+                <button class="cm-cancel-btn" onclick="closeCampaignModal()">Cancel</button>
+                <button id="send-campaign-btn" class="cm-send-btn" onclick="sendCampaign()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  Send Campaign
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -1691,6 +1780,50 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ── AI Agent FAB + Panel ──────────────────────────────────────────── -->
+  <button id="ai-agent-fab" class="ai-agent-fab" title="AI Agent (Qwen 3.5)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    </svg>
+  </button>
+
+  <div id="ai-agent-panel" class="ai-panel">
+    <div class="ai-panel-header">
+      <div class="ai-panel-title-wrap">
+        <div class="ai-panel-icon-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <div>
+          <div class="ai-panel-title">AI Agent</div>
+          <div class="ai-panel-subtitle">qwen3.5:9b &middot; controls the app</div>
+        </div>
+      </div>
+      <button id="ai-panel-close" class="ai-panel-close-btn">&#x2715;</button>
+    </div>
+
+    <div id="ai-panel-messages" class="ai-panel-messages">
+      <div class="ai-welcome">
+        <div class="ai-welcome-glow"></div>
+        <div class="ai-welcome-title">What can I do for you?</div>
+        <div class="ai-welcome-examples">
+          <div class="ai-example-chip" data-msg="Show me all my packs and stats">Show packs &amp; stats</div>
+          <div class="ai-example-chip" data-msg="Create a new pack called LOOPS PACK">Create LOOPS PACK</div>
+          <div class="ai-example-chip" data-msg="Add a new lead customer: test@example.com">Add a customer</div>
+          <div class="ai-example-chip" data-msg="List all customers">List customers</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-panel-input-row">
+      <input type="text" id="ai-panel-input" class="ai-panel-input" placeholder="Tell me what to do..." autocomplete="off" />
+      <button id="ai-panel-send" class="ai-panel-send-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
     </div>
   </div>
 
