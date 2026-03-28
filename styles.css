@@ -2441,6 +2441,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .channel-list {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   margin-bottom: 10px;
   scrollbar-width: thin;
