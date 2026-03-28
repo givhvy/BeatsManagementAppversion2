@@ -1393,15 +1393,12 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
     <div class="customers-container">
       <!-- Left Panel - Customer List -->
       <div class="customers-sidebar">
-        <div class="panel-header">
-          <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Customers</h2>
-          <div style="display:flex;gap:5px">
-            <button id="ai-scan-customer-btn" class="btn-ai-scan" onclick="openAIScanModal()" title="AI: Scan Instagram screenshot to add customer">
+        <div class="customer-action-bar">
+          <button id="ai-scan-customer-btn" class="btn-ai-scan" onclick="openAIScanModal()" title="AI: Scan Instagram screenshot to add customer">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
               AI Scan
             </button>
-            <button id="add-customer-btn" class="btn-primary btn-sm" onclick="openAddCustomerModal()">+ Add</button>
-          </div>
+          <button id="add-customer-btn" class="btn-primary btn-sm" onclick="openAddCustomerModal()">+ Add</button>
         </div>
         
         <div class="customer-search">

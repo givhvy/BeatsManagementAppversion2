@@ -3475,28 +3475,30 @@ select.setting-control {
   display: flex;
   height: calc(100vh - 60px);
   background: #0a0a0a;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .customers-sidebar {
-  width: 240px;
+  width: 22%;
+  min-width: 195px;
+  max-width: 260px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 16px;
   border-right: 1px solid rgba(255,255,255,0.05);
   background: #0f0f0f;
   box-shadow: inset -1px 0 0 rgba(255,255,255,0.03);
+  overflow-y: auto;
 }
 
-.customers-sidebar .panel-header {
+.customer-action-bar {
   display: flex;
-  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 12px;
   align-items: center;
-  margin-bottom: 16px;
-}
-
-.customers-sidebar .panel-header h2 {
-  font-size: 18px;
-  font-weight: 600;
+  justify-content: flex-end;
 }
 
 .customer-search {
@@ -3680,7 +3682,8 @@ select.setting-control {
 /* Customer Details Panel */
 .customer-details-panel {
   flex: 1;
-  padding: 24px;
+  min-width: 0;
+  padding: 20px 24px;
   overflow-y: auto;
   background: #0a0a0a;
 }
@@ -3809,12 +3812,16 @@ select.setting-control {
 
 /* Email Panel */
 .email-panel {
-  width: 400px;
+  width: 28%;
+  min-width: 260px;
+  max-width: 380px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   padding: 20px;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.02);
+  border-left: 1px solid rgba(255,255,255,0.05);
+  background: #0f0f0f;
+  overflow-y: auto;
 }
 
 .email-panel .panel-header {
