@@ -7733,3 +7733,576 @@ select.setting-control {
   text-align: right;
   flex-shrink: 0;
 }
+
+/* ================================================
+   SETTINGS — COLOR SCHEME CARDS
+================================================ */
+
+.settings-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 18px 0 16px;
+}
+
+.cs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.cs-card {
+  background: rgba(255,255,255,0.04);
+  border: 1.5px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 10px 10px 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  user-select: none;
+}
+
+.cs-card:hover {
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.07);
+}
+
+.cs-card.active {
+  border-color: #F59E0B;
+  background: rgba(245,158,11,0.06);
+}
+
+.cs-card.active .theme-card-check {
+  opacity: 1;
+}
+
+.cs-preview {
+  border-radius: 6px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.cs-preview-dark {
+  background: #0f0f0f;
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.7);
+}
+
+.cs-preview-light {
+  background: #f5f3f0;
+  border: 1px solid rgba(0,0,0,0.09);
+  color: rgba(0,0,0,0.55);
+}
+
+/* ================================================
+   MONEY CHART — EMPTY STATE
+================================================ */
+
+.money-chart-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 6px;
+}
+
+.money-chart-empty-labels {
+  display: flex;
+  gap: 0;
+  width: 100%;
+  justify-content: space-around;
+  padding: 0 4px;
+}
+
+.money-chart-empty-labels span {
+  font-size: 9px;
+  color: rgba(255,255,255,0.18);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.money-chart-empty-msg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  color: rgba(255,255,255,0.18);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  font-style: italic;
+}
+
+/* ================================================
+   LIGHT MODE  [data-colorscheme="light"]
+================================================ */
+
+/* Base */
+[data-colorscheme="light"] body {
+  background-color: #ede9e3;
+  color: #1c1c1c;
+}
+
+/* Title Bar */
+[data-colorscheme="light"] .custom-title-bar {
+  background: #e5e1db;
+  border-bottom-color: rgba(0,0,0,0.08);
+}
+[data-colorscheme="light"] .title-bar-text {
+  color: rgba(0,0,0,0.55);
+}
+[data-colorscheme="light"] .title-bar-btn {
+  color: rgba(0,0,0,0.45);
+}
+[data-colorscheme="light"] .title-bar-btn:hover {
+  background: rgba(0,0,0,0.07);
+  color: rgba(0,0,0,0.75);
+}
+[data-colorscheme="light"] .title-bar-btn.close-btn:hover {
+  background: #e53935;
+  color: #fff;
+}
+
+/* Nav */
+[data-colorscheme="light"] .main-nav {
+  background: #e5e1db;
+  border-bottom-color: rgba(0,0,0,0.08);
+}
+[data-colorscheme="light"] .main-nav-tab {
+  color: rgba(0,0,0,0.45);
+}
+[data-colorscheme="light"] .main-nav-tab:hover {
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.75);
+}
+[data-colorscheme="light"] .main-nav-tab.active {
+  background: linear-gradient(180deg, #FCD34D 0%, #D97706 100%);
+  color: #381E02;
+}
+[data-colorscheme="light"] .main-nav-tab svg {
+  opacity: 0.55;
+}
+[data-colorscheme="light"] .main-nav-tab.active svg {
+  opacity: 1;
+}
+
+/* Settings button */
+[data-colorscheme="light"] .settings-icon-btn {
+  color: rgba(0,0,0,0.45);
+}
+[data-colorscheme="light"] .settings-icon-btn:hover {
+  color: rgba(0,0,0,0.75);
+  background: rgba(0,0,0,0.06);
+}
+
+/* Panels */
+[data-colorscheme="light"] .left-panel,
+[data-colorscheme="light"] .right-panel {
+  background: #f8f5f1;
+  border-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .middle-panel {
+  background: #ede9e3;
+}
+[data-colorscheme="light"] .panel-header {
+  background: #f2ede7;
+  border-bottom-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .panel-header h2,
+[data-colorscheme="light"] .panel-header h3 {
+  color: rgba(0,0,0,0.75);
+}
+
+/* Section containers */
+[data-colorscheme="light"] .app-section {
+  background: #ede9e3;
+}
+
+/* Inputs / selects / textareas */
+[data-colorscheme="light"] input[type="text"],
+[data-colorscheme="light"] input[type="number"],
+[data-colorscheme="light"] input[type="date"],
+[data-colorscheme="light"] input[type="email"],
+[data-colorscheme="light"] input[type="password"],
+[data-colorscheme="light"] input[type="url"],
+[data-colorscheme="light"] select,
+[data-colorscheme="light"] textarea {
+  background: #e8e4de;
+  border-color: rgba(0,0,0,0.1);
+  color: rgba(0,0,0,0.82);
+}
+[data-colorscheme="light"] input::placeholder,
+[data-colorscheme="light"] textarea::placeholder {
+  color: rgba(0,0,0,0.3);
+}
+[data-colorscheme="light"] input:focus,
+[data-colorscheme="light"] select:focus,
+[data-colorscheme="light"] textarea:focus {
+  border-color: #D97706;
+  background: #ede9e3;
+}
+
+/* Buttons */
+[data-colorscheme="light"] .btn-secondary {
+  background: rgba(0,0,0,0.06);
+  border-color: rgba(0,0,0,0.12);
+  color: rgba(0,0,0,0.7);
+}
+[data-colorscheme="light"] .btn-secondary:hover {
+  background: rgba(0,0,0,0.10);
+}
+
+/* Scrollbars */
+[data-colorscheme="light"] ::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.04);
+}
+[data-colorscheme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.15);
+}
+[data-colorscheme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.25);
+}
+
+/* ---- Beats Section ---- */
+[data-colorscheme="light"] .beat-item {
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.06);
+}
+[data-colorscheme="light"] .beat-item:hover {
+  background: #f4f0ea;
+  border-color: rgba(0,0,0,0.1);
+}
+[data-colorscheme="light"] .beat-item.selected {
+  background: rgba(217,119,6,0.08);
+  border-color: rgba(217,119,6,0.35);
+}
+[data-colorscheme="light"] .beat-name {
+  color: rgba(0,0,0,0.84);
+}
+[data-colorscheme="light"] .beat-info,
+[data-colorscheme="light"] .beat-meta {
+  color: rgba(0,0,0,0.42);
+}
+[data-colorscheme="light"] .beat-bpm,
+[data-colorscheme="light"] .beat-key {
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.5);
+}
+
+/* ---- Audio Player ---- */
+[data-colorscheme="light"] .audio-player-bar {
+  background: #e5e1db;
+  border-top-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .player-title {
+  color: rgba(0,0,0,0.75);
+}
+[data-colorscheme="light"] .player-time {
+  color: rgba(0,0,0,0.4);
+}
+[data-colorscheme="light"] #progress-bar,
+[data-colorscheme="light"] #volume-slider {
+  background: rgba(0,0,0,0.12);
+}
+
+/* ---- YouTube Section ---- */
+[data-colorscheme="light"] .youtube-container {
+  background: #ede9e3;
+}
+[data-colorscheme="light"] .youtube-channels,
+[data-colorscheme="light"] .youtube-history {
+  background: #f8f5f1;
+  border-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .yt-right-panel {
+  background: #f8f5f1;
+  border-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .channel-item {
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.06);
+}
+[data-colorscheme="light"] .channel-item:hover {
+  background: #f4f0ea;
+}
+[data-colorscheme="light"] .channel-name {
+  color: rgba(0,0,0,0.8);
+}
+[data-colorscheme="light"] .channel-meta {
+  color: rgba(0,0,0,0.42);
+}
+[data-colorscheme="light"] .upload-card {
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.06);
+}
+[data-colorscheme="light"] .upload-card:hover {
+  background: #f4f0ea;
+}
+
+/* ---- Progress Section ---- */
+[data-colorscheme="light"] .progress-container {
+  background: #ede9e3;
+}
+[data-colorscheme="light"] .progress-track-item {
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.06);
+}
+[data-colorscheme="light"] .progress-track-item:hover {
+  background: #f4f0ea;
+}
+[data-colorscheme="light"] .progress-label {
+  color: rgba(0,0,0,0.75);
+}
+[data-colorscheme="light"] .progress-stage-label {
+  color: rgba(0,0,0,0.45);
+}
+
+/* ---- Customer Section ---- */
+[data-colorscheme="light"] .customers-container {
+  background: #ede9e3;
+}
+[data-colorscheme="light"] .customers-sidebar,
+[data-colorscheme="light"] .customer-detail-panel {
+  background: #f8f5f1;
+  border-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .customer-item {
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.06);
+}
+[data-colorscheme="light"] .customer-item:hover {
+  background: #f4f0ea;
+}
+[data-colorscheme="light"] .customer-name {
+  color: rgba(0,0,0,0.82);
+}
+[data-colorscheme="light"] .customer-email,
+[data-colorscheme="light"] .customer-meta {
+  color: rgba(0,0,0,0.42);
+}
+
+/* ---- Beatstars Section ---- */
+[data-colorscheme="light"] .beatstars-container {
+  background: #ede9e3;
+}
+[data-colorscheme="light"] .beatstars-panel {
+  background: #f8f5f1;
+  border-color: rgba(0,0,0,0.07);
+}
+
+/* ---- AutoVid Section ---- */
+[data-colorscheme="light"] .autovid-container {
+  background: #ede9e3;
+}
+[data-colorscheme="light"] .autovid-panel {
+  background: #f8f5f1;
+  border-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .autovid-image-drop-zone,
+[data-colorscheme="light"] .audio-drop-zone {
+  background: #f0ece6;
+  border-color: rgba(0,0,0,0.13);
+}
+
+/* ---- Money Section ---- */
+[data-colorscheme="light"] #money-section {
+  background: #ede9e3;
+}
+[data-colorscheme="light"] .money-container {
+  background: #ede9e3;
+}
+[data-colorscheme="light"] .money-sidebar {
+  background: #f8f5f1;
+  border-right-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .money-main {
+  background: #ede9e3;
+}
+[data-colorscheme="light"] .money-right {
+  background: #f8f5f1;
+  border-left-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .money-chart-strip {
+  background: #f8f5f1;
+  border-bottom-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .money-chart-header {
+  border-bottom-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .money-chart-title {
+  color: rgba(0,0,0,0.55);
+}
+[data-colorscheme="light"] .money-legend-dot {
+  opacity: 0.8;
+}
+[data-colorscheme="light"] .money-legend-label {
+  color: rgba(0,0,0,0.45);
+}
+[data-colorscheme="light"] .money-bar-label {
+  color: rgba(0,0,0,0.35);
+}
+[data-colorscheme="light"] .money-bar-amt {
+  color: rgba(0,0,0,0.55);
+}
+[data-colorscheme="light"] .money-chart-empty-labels span {
+  color: rgba(0,0,0,0.2);
+}
+[data-colorscheme="light"] .money-chart-empty-msg {
+  color: rgba(0,0,0,0.25);
+}
+[data-colorscheme="light"] .money-tx-toolbar {
+  background: #f2ede7;
+  border-bottom-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .money-search-input {
+  background: #e8e4de;
+  border-color: rgba(0,0,0,0.1);
+  color: rgba(0,0,0,0.75);
+}
+[data-colorscheme="light"] .money-tx-list {
+  background: #ede9e3;
+}
+[data-colorscheme="light"] .money-tx-card {
+  background: #ffffff;
+  border-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .money-tx-card:hover {
+  background: #f7f4f0;
+}
+[data-colorscheme="light"] .money-tx-beat {
+  color: rgba(0,0,0,0.82);
+}
+[data-colorscheme="light"] .money-tx-meta {
+  color: rgba(0,0,0,0.42);
+}
+[data-colorscheme="light"] .money-tx-amount {
+  color: #B45309;
+}
+[data-colorscheme="light"] .money-empty-state {
+  color: rgba(0,0,0,0.28);
+}
+[data-colorscheme="light"] .money-kpi-label {
+  color: rgba(0,0,0,0.42);
+}
+[data-colorscheme="light"] .money-kpi-value {
+  color: #B45309;
+}
+[data-colorscheme="light"] .money-stat-label {
+  color: rgba(0,0,0,0.42);
+}
+[data-colorscheme="light"] .money-stat-value {
+  color: rgba(0,0,0,0.75);
+}
+[data-colorscheme="light"] .money-sidebar-section {
+  border-bottom-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .money-top-beat-name {
+  color: rgba(0,0,0,0.7);
+}
+[data-colorscheme="light"] .money-top-beat-amt {
+  color: #B45309;
+}
+[data-colorscheme="light"] .money-pill {
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.5);
+  border-color: rgba(0,0,0,0.06);
+}
+[data-colorscheme="light"] .money-pill.active {
+  background: rgba(217,119,6,0.12);
+  color: #92400E;
+  border-color: rgba(217,119,6,0.3);
+}
+[data-colorscheme="light"] .money-block-label {
+  color: rgba(0,0,0,0.38);
+}
+[data-colorscheme="light"] .money-input {
+  background: #e8e4de !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: rgba(0,0,0,0.82) !important;
+}
+[data-colorscheme="light"] .money-select {
+  background: #e8e4de !important;
+  border-color: rgba(0,0,0,0.1) !important;
+  color: rgba(0,0,0,0.82) !important;
+}
+[data-colorscheme="light"] .money-breakdown-bar-bg {
+  background: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .money-breakdown-label {
+  color: rgba(0,0,0,0.6);
+}
+[data-colorscheme="light"] .money-breakdown-amount {
+  color: rgba(0,0,0,0.5);
+}
+[data-colorscheme="light"] .money-breakdown-count {
+  color: rgba(0,0,0,0.3);
+}
+[data-colorscheme="light"] .money-right-block {
+  border-bottom-color: rgba(0,0,0,0.06);
+}
+
+/* ---- Settings Modal in Light mode ---- */
+[data-colorscheme="light"] .settings-overlay {
+  background: rgba(0,0,0,0.35);
+}
+[data-colorscheme="light"] .settings-panel {
+  background: #f8f5f1;
+  border-color: rgba(0,0,0,0.09);
+}
+[data-colorscheme="light"] .settings-header {
+  border-bottom-color: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .settings-header h2 {
+  color: rgba(0,0,0,0.8);
+}
+[data-colorscheme="light"] .settings-close-btn {
+  color: rgba(0,0,0,0.45);
+}
+[data-colorscheme="light"] .settings-close-btn:hover {
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.75);
+}
+[data-colorscheme="light"] .theme-section-title {
+  color: rgba(0,0,0,0.42);
+}
+[data-colorscheme="light"] .settings-divider {
+  background: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .settings-section-label {
+  color: rgba(0,0,0,0.38);
+}
+[data-colorscheme="light"] .theme-card {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.08);
+}
+[data-colorscheme="light"] .theme-card:hover {
+  border-color: rgba(0,0,0,0.18);
+  background: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .theme-card.active {
+  border-color: #D97706;
+  background: rgba(217,119,6,0.06);
+}
+[data-colorscheme="light"] .theme-card-name {
+  color: rgba(0,0,0,0.7);
+}
+[data-colorscheme="light"] .cs-card {
+  background: rgba(0,0,0,0.04);
+  border-color: rgba(0,0,0,0.08);
+}
+[data-colorscheme="light"] .cs-card:hover {
+  border-color: rgba(0,0,0,0.18);
+  background: rgba(0,0,0,0.07);
+}
+[data-colorscheme="light"] .cs-card.active {
+  border-color: #D97706;
+  background: rgba(217,119,6,0.06);
+}
+[data-colorscheme="light"] .theme-card-name {
+  color: rgba(0,0,0,0.7);
+}

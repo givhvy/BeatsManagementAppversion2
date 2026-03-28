@@ -7,10 +7,15 @@ const ipcRenderer = isElectron ? require('electron').ipcRenderer : null;
 // =============================================
 const themeManager = {
   STORAGE_KEY: 'bms-theme',
+  COLOR_SCHEME_KEY: 'bms-color-scheme',
 
   init() {
     const saved = localStorage.getItem(this.STORAGE_KEY) || 'default';
     this.apply(saved);
+
+    const savedScheme = localStorage.getItem(this.COLOR_SCHEME_KEY) || 'dark';
+    this.applyColorScheme(savedScheme);
+
     this.bindEvents();
   },
 
@@ -27,6 +32,22 @@ const themeManager = {
   updateCards(themeName) {
     document.querySelectorAll('.theme-card').forEach(card => {
       card.classList.toggle('active', card.dataset.theme === themeName);
+    });
+  },
+
+  applyColorScheme(scheme) {
+    if (scheme === 'light') {
+      document.documentElement.setAttribute('data-colorscheme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-colorscheme');
+    }
+    localStorage.setItem(this.COLOR_SCHEME_KEY, scheme);
+    this.updateCSCards(scheme);
+  },
+
+  updateCSCards(scheme) {
+    document.querySelectorAll('.cs-card').forEach(card => {
+      card.classList.toggle('active', card.dataset.scheme === scheme);
     });
   },
 
@@ -58,6 +79,12 @@ const themeManager = {
     document.querySelectorAll('.theme-card').forEach(card => {
       card.addEventListener('click', () => {
         this.apply(card.dataset.theme);
+      });
+    });
+
+    document.querySelectorAll('.cs-card').forEach(card => {
+      card.addEventListener('click', () => {
+        this.applyColorScheme(card.dataset.scheme);
       });
     });
   }
@@ -10111,6 +10138,18 @@ function renderMoneyChart(periodTxs) {
   });
 
   const maxTotal = Math.max(...groupTotals.map(g => g.lease + g.exclusive + g.stem), 1);
+
+  // Empty state: all groups have zero revenue
+  const hasAnyData = groupTotals.some(g => g.total > 0);
+  if (!hasAnyData) {
+    container.innerHTML = `<div class="money-chart-empty">
+      <div class="money-chart-empty-labels">
+        ${groupTotals.map(g => `<span>${g.label}</span>`).join('')}
+      </div>
+      <div class="money-chart-empty-msg">No revenue data yet</div>
+    </div>`;
+    return;
+  }
 
   container.innerHTML = groupTotals.map(g => {
     const stackHeightPct = ((g.lease + g.exclusive + g.stem) / maxTotal) * 100;
