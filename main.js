@@ -2,6 +2,27 @@ const { app, BrowserWindow, ipcMain, dialog, nativeImage, clipboard, shell, Menu
 const path = require('path');
 const fs = require('fs');
 
+// Pre-cached drag icon (populated once app is ready)
+let cachedDragIcon = null;
+
+async function loadDragIcon() {
+  try {
+    // Write a temp empty .mp4 just to get its system icon
+    const tmpMp4 = path.join(app.getPath('temp'), '_bms_icon_probe.mp4');
+    fs.writeFileSync(tmpMp4, '');
+    const icon = await app.getFileIcon(tmpMp4, { size: 'normal' });
+    if (icon && !icon.isEmpty()) {
+      cachedDragIcon = icon;
+      console.log('[Main] Drag icon loaded successfully');
+    } else {
+      console.log('[Main] Drag icon probe returned empty, will use fallback');
+    }
+    fs.unlinkSync(tmpMp4);
+  } catch (e) {
+    console.log('[Main] Could not load drag icon:', e.message);
+  }
+}
+
 // Video renderer for AutoVid functionality
 let videoRenderer = null;
 try {
@@ -34,6 +55,18 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html');
+
+  // Kick off icon pre-load (needed for drag-files-start)
+  loadDragIcon();
+
+  // Open DevTools automatically so renderer logs are visible
+  mainWindow.webContents.openDevTools({ mode: 'detach' });
+
+  // Forward ALL renderer console.log/warn/error to main process terminal
+  mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
+    const label = ['verbose', 'info', 'warn', 'error'][level] || 'log';
+    console.log(`[renderer:${label}] ${message}`);
+  });
 
   // Auto-start automation server when app starts
   startAutomationServerOnStartup();
@@ -514,6 +547,21 @@ ipcMain.handle('get-page-folders', async () => {
   }
 });
 
+// Reveal a file in Windows Explorer (select it, don't just open the folder)
+ipcMain.handle('reveal-in-explorer', async (event, filePath) => {
+  try {
+    shell.showItemInFolder(filePath);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
+// Debug IPC: renderer can send arbitrary debug messages to main terminal
+ipcMain.on('renderer-debug', (event, msg) => {
+  console.log('[RENDERER DEBUG]', msg);
+});
+
 // Handle drag multiple files to external apps (beat + image)
 ipcMain.on('drag-files-start', (event, data) => {
   // Handle both old format (array) and new format (object with files and beatName)
@@ -537,25 +585,31 @@ ipcMain.on('drag-files-start', (event, data) => {
   }
 
   // Use first file as icon (audio or image)
-  const iconPath = filePaths[0];
   let icon;
 
   try {
-    // Try to create icon from image if available
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
     const hasImage = filePaths.some(p => imageExtensions.includes(path.extname(p).toLowerCase()));
 
     if (hasImage) {
       const imagePath = filePaths.find(p => imageExtensions.includes(path.extname(p).toLowerCase()));
-      icon = nativeImage.createFromPath(imagePath);
-      if (icon.isEmpty()) icon = nativeImage.createEmpty();
-      else icon = icon.resize({ width: 64, height: 64 });
+      const img = nativeImage.createFromPath(imagePath);
+      icon = (img && !img.isEmpty()) ? img.resize({ width: 64, height: 64 }) : (cachedDragIcon || nativeImage.createEmpty());
     } else {
-      icon = nativeImage.createEmpty();
+      // Use the pre-cached system icon for MP4/audio files
+      // Falls back to app.getFileIcon for this specific file if cache isn't ready
+      if (cachedDragIcon) {
+        icon = cachedDragIcon;
+      } else {
+        // Try to get file icon synchronously via a pre-loaded version
+        icon = nativeImage.createEmpty();
+        // Async fallback: pre-load for next time
+        app.getFileIcon(filePaths[0], { size: 'normal' }).then(i => { if (i && !i.isEmpty()) cachedDragIcon = i; }).catch(() => {});
+      }
     }
   } catch (error) {
     console.error('[drag-files-start] icon error:', error.message);
-    icon = nativeImage.createEmpty();
+    icon = cachedDragIcon || nativeImage.createEmpty();
   }
 
   // Drag single file or multiple files

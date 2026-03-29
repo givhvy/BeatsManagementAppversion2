@@ -3997,25 +3997,34 @@ function showRenderedVideoCard(outputPath) {
   card.style.display = 'block';
   item.ondragstart = (e) => {
     const currentOutputPath = item.dataset.outputPath || outputPath;
-    console.log('[rendered-video drag] ondragstart path:', currentOutputPath);
+    const debugInfo = `ondragstart fired | path=${currentOutputPath} | nodeFs=${!!nodeFs}`;
+    console.log('[rendered-video drag]', debugInfo);
+    if (isElectron) ipcRenderer.send('renderer-debug', debugInfo);
 
     if (!currentOutputPath) {
       e.preventDefault();
       showNotification('No rendered video path found', 'error');
+      if (isElectron) ipcRenderer.send('renderer-debug', 'BLOCKED: no path');
       return;
     }
 
-    if (nodeFs && !nodeFs.existsSync(currentOutputPath)) {
+    // Normalise slashes for existsSync on Windows
+    const normPath = currentOutputPath.replace(/\//g, '\\');
+    const fileExists = nodeFs ? (nodeFs.existsSync(normPath) || nodeFs.existsSync(currentOutputPath)) : true;
+    if (isElectron) ipcRenderer.send('renderer-debug', `existsSync(${normPath}) = ${fileExists}`);
+
+    if (nodeFs && !fileExists) {
       e.preventDefault();
-      showNotification('Rendered video file was not found on disk', 'error');
-      console.warn('[rendered-video drag] file not found:', currentOutputPath);
+      showNotification('Rendered video file was not found on disk: ' + normPath, 'error');
+      console.warn('[rendered-video drag] file not found:', normPath);
       return;
     }
 
     e.preventDefault();
     if (isElectron) {
-      console.log('[rendered-video drag] sending drag-files-start');
-      ipcRenderer.send('drag-files-start', [currentOutputPath]);
+      console.log('[rendered-video drag] sending drag-files-start for', normPath);
+      ipcRenderer.send('renderer-debug', 'Sending drag-files-start for ' + normPath);
+      ipcRenderer.send('drag-files-start', [normPath]);
     }
   };
 }
@@ -4028,6 +4037,21 @@ function getCurrentRenderedVideoPath() {
   if (!nodeFs?.existsSync(outputPath)) return null;
 
   return outputPath;
+}
+
+async function revealRenderedVideo() {
+  const filePath = getCurrentRenderedVideoPath();
+  if (!filePath) {
+    showToast('No rendered video found', 'error');
+    return;
+  }
+  if (isElectron) {
+    try {
+      await ipcRenderer.invoke('reveal-in-explorer', filePath);
+    } catch (e) {
+      showToast('Could not open folder: ' + e.message, 'error');
+    }
+  }
 }
 
 // Listen for render progress updates from main process

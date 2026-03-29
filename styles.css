@@ -2038,6 +2038,26 @@ h1, h2, h3, h4, h5, h6 {
   flex: 1;
   min-width: 0;
 }
+.reveal-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  width: 100%;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  color: rgba(255,255,255,0.55);
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.reveal-btn:hover {
+  background: rgba(96,165,250,0.1);
+  border-color: rgba(96,165,250,0.35);
+  color: #93c5fd;
+}
 
 .pin-item:hover img {
   opacity: 0.85;
