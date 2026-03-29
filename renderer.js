@@ -3385,7 +3385,10 @@ let autovidState = {
   selectedImage: null,
   selectedImagePath: null,
   selectedAudioPath: null,
-  isRendering: false
+  isRendering: false,
+  allBeats: [],
+  currentLeftTab: 'images', // 'images' | 'beats'
+  selectedBeatPath: null
 };
 
 // AutoVid DOM Elements
@@ -3423,7 +3426,26 @@ function initAutoVidSection() {
 
   // Event listeners
   if (loadBoardsBtn) {
-    loadBoardsBtn.addEventListener('click', loadLocalImageFolder);
+    loadBoardsBtn.addEventListener('click', () => {
+      if (autovidState.currentLeftTab === 'beats') {
+        loadAutovidBeats();
+      } else {
+        loadLocalImageFolder();
+      }
+    });
+  }
+
+  // Left panel tabs (Images / Beats)
+  document.querySelectorAll('.autovid-left-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchAutovidLeftTab(btn.dataset.avtab);
+    });
+  });
+
+  // Beats filter
+  const beatsFilterInput = document.getElementById('autovid-beats-filter');
+  if (beatsFilterInput) {
+    beatsFilterInput.addEventListener('input', filterAutovidBeats);
   }
 
   if (searchPinsBtn) {
@@ -3787,6 +3809,120 @@ function updateRenderButton() {
   }
 }
 
+// ── Left-panel tab switching ──
+function switchAutovidLeftTab(tab) {
+  autovidState.currentLeftTab = tab;
+  const imagesSearch = document.getElementById('autovid-images-search');
+  const imagesList   = document.getElementById('boards-list');
+  const beatsSearch  = document.getElementById('autovid-beats-search');
+  const beatsList    = document.getElementById('autovid-beats-list');
+
+  const isImages = tab === 'images';
+  if (imagesSearch) imagesSearch.style.display = isImages ? '' : 'none';
+  if (imagesList)   imagesList.style.display   = isImages ? '' : 'none';
+  if (beatsSearch)  beatsSearch.style.display  = isImages ? 'none' : '';
+  if (beatsList)    beatsList.style.display    = isImages ? 'none' : '';
+
+  document.querySelectorAll('.autovid-left-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.avtab === tab);
+  });
+
+  if (tab === 'beats' && autovidState.allBeats.length === 0) {
+    loadAutovidBeats();
+  }
+}
+
+// ── Load beats from the same folder as the main Beats tab ──
+async function loadAutovidBeats() {
+  if (!isElectron) return;
+  const beatsList = document.getElementById('autovid-beats-list');
+  if (beatsList) beatsList.innerHTML = '<div class="empty-state">Loading beats...</div>';
+  try {
+    const folder = (folders.all && folders.all.path) ? folders.all.path : 'D:\\Beats';
+    const beats = await ipcRenderer.invoke('read-beats-folder', folder);
+    autovidState.allBeats = beats || [];
+    renderAutovidBeats(autovidState.allBeats);
+  } catch (err) {
+    const beatsList = document.getElementById('autovid-beats-list');
+    if (beatsList) beatsList.innerHTML = `<div class="empty-state">Error: ${err.message}</div>`;
+  }
+}
+
+function filterAutovidBeats() {
+  const q = (document.getElementById('autovid-beats-filter')?.value || '').toLowerCase();
+  const filtered = q
+    ? autovidState.allBeats.filter(b => b.name.toLowerCase().includes(q))
+    : autovidState.allBeats;
+  renderAutovidBeats(filtered);
+}
+
+function renderAutovidBeats(beats) {
+  const listEl = document.getElementById('autovid-beats-list');
+  if (!listEl) return;
+  if (!beats || beats.length === 0) {
+    listEl.innerHTML = '<div class="empty-state">No beats found</div>';
+    return;
+  }
+  // Sort same way as main beats tab
+  const sorted = sortBeatsByNumber ? sortBeatsByNumber(beats) : beats;
+  listEl.innerHTML = '';
+  sorted.forEach(beat => {
+    const item = document.createElement('div');
+    item.className = 'autovid-beat-item';
+    if (autovidState.selectedBeatPath === beat.path) item.classList.add('selected');
+    item.innerHTML = `
+      <svg class="autovid-beat-item-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <span class="autovid-beat-item-name">${beat.name.replace(/\.[^/.]+$/, '')}</span>
+    `;
+    item.addEventListener('click', () => setAutovidAudioFromBeat(beat));
+    listEl.appendChild(item);
+  });
+}
+
+function setAutovidAudioFromBeat(beat) {
+  autovidState.selectedAudioPath = beat.path;
+  autovidState.selectedBeatPath  = beat.path;
+
+  const displayName  = beat.name;
+  const audioDropHint    = document.getElementById('audio-drop-hint');
+  const audioSelectedInfo = document.getElementById('audio-selected-info');
+  const audioFileNameEl  = document.getElementById('audio-file-name');
+  const audioFilePathEl  = document.getElementById('audio-file-path');
+
+  if (audioDropHint)     audioDropHint.style.display     = 'none';
+  if (audioSelectedInfo) audioSelectedInfo.style.display = 'flex';
+  if (audioFileNameEl)   audioFileNameEl.textContent     = displayName;
+  if (audioFilePathEl)   audioFilePathEl.value           = displayName;
+
+  if (audioPreviewContainer) audioPreviewContainer.style.display = 'block';
+  if (autovidAudioPlayer)    autovidAudioPlayer.src = `file://${beat.path}`;
+
+  const baseName  = displayName.replace(/\.[^/.]+$/, '');
+  const cleanName = typeof extractBeatName === 'function' ? extractBeatName(baseName) : baseName;
+  if (outputNameInput) outputNameInput.value = cleanName;
+
+  // Highlight selected item
+  document.querySelectorAll('.autovid-beat-item').forEach(el => el.classList.remove('selected'));
+  event?.currentTarget?.classList.add('selected');
+
+  updateRenderButton();
+}
+
+// ── Show draggable rendered video card ──
+function showRenderedVideoCard(outputPath) {
+  const card   = document.getElementById('rendered-video-card');
+  const item   = document.getElementById('rendered-video-item');
+  const nameEl = document.getElementById('rendered-video-name');
+  if (!card || !item || !nameEl) return;
+  const fileName = outputPath.split('\\').pop();
+  nameEl.textContent = fileName;
+  card.style.display = 'block';
+  item.ondragstart = (e) => {
+    e.preventDefault();
+    if (isElectron) ipcRenderer.send('drag-files-start', [outputPath]);
+  };
+}
+
 // Listen for render progress updates from main process
 if (isElectron) {
   ipcRenderer.on('render-progress', (event, progress) => {
@@ -3837,6 +3973,9 @@ async function renderVideo() {
   renderVideoBtn.disabled = true;
   renderProgress.style.display = 'block';
   renderOutput.style.display = 'none';
+  // Hide stale video card from previous render
+  const staleCard = document.getElementById('rendered-video-card');
+  if (staleCard) staleCard.style.display = 'none';
   renderProgressFill.style.width = '0%';
   renderProgressText.textContent = '0%';
 
@@ -3854,6 +3993,7 @@ async function renderVideo() {
     if (result.success) {
       autovidState.lastOutputPath = result.outputPath;
       renderOutput.style.display = 'block';
+      showRenderedVideoCard(result.outputPath);
     } else {
       alert(`Render error: ${result.error}`);
     }
@@ -10236,7 +10376,7 @@ function renderMoneyChart(periodTxs) {
 
   container.innerHTML = groupTotals.map(g => {
     const stackHeightPct = ((g.lease + g.exclusive + g.stem) / maxTotal) * 100;
-    const stackH = Math.max(stackHeightPct * 1.06, g.total > 0 ? 3 : 1); // max 106px for 110px container
+    const stackH = Math.max(stackHeightPct * 1.34, g.total > 0 ? 3 : 1); // max 134px for 140px container
     const leaseH  = g.total > 0 ? (g.lease / (g.lease + g.exclusive + g.stem || 1)) * stackH : 0;
     const exclH   = g.total > 0 ? (g.exclusive / (g.lease + g.exclusive + g.stem || 1)) * stackH : 0;
     const stemH   = g.total > 0 ? (g.stem / (g.lease + g.exclusive + g.stem || 1)) * stackH : 0;
