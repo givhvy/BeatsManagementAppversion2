@@ -548,25 +548,27 @@ ipcMain.on('drag-files-start', (event, data) => {
     if (hasImage) {
       const imagePath = filePaths.find(p => imageExtensions.includes(path.extname(p).toLowerCase()));
       icon = nativeImage.createFromPath(imagePath);
-      icon = icon.resize({ width: 64, height: 64 });
+      if (icon.isEmpty()) icon = nativeImage.createEmpty();
+      else icon = icon.resize({ width: 64, height: 64 });
     } else {
       icon = nativeImage.createEmpty();
     }
   } catch (error) {
+    console.error('[drag-files-start] icon error:', error.message);
     icon = nativeImage.createEmpty();
   }
 
   // Drag single file or multiple files
-  if (filePaths.length === 1) {
-    event.sender.startDrag({
-      file: filePaths[0],
-      icon: icon
-    });
-  } else {
-    event.sender.startDrag({
-      files: filePaths,
-      icon: icon
-    });
+  try {
+    const dragItem = filePaths.length === 1
+      ? { file: filePaths[0], icon }
+      : { files: filePaths, icon };
+
+    console.log('[drag-files-start] startDrag:', JSON.stringify(filePaths));
+    event.sender.startDrag(dragItem);
+    console.log('[drag-files-start] startDrag OK');
+  } catch (err) {
+    console.error('[drag-files-start] startDrag FAILED:', err.message);
   }
 });
 

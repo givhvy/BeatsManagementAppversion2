@@ -1,6 +1,8 @@
 // Check if running in Electron or browser
 const isElectron = typeof require !== 'undefined' && typeof require('electron') !== 'undefined';
 const ipcRenderer = isElectron ? require('electron').ipcRenderer : null;
+const nodeFs = isElectron ? require('fs') : null;
+const nodePath = isElectron ? require('path') : null;
 
 // =============================================
 // THEME MANAGEMENT
@@ -3990,12 +3992,42 @@ function showRenderedVideoCard(outputPath) {
   const nameEl = document.getElementById('rendered-video-name');
   if (!card || !item || !nameEl) return;
   const fileName = outputPath.split('\\').pop();
+  item.dataset.outputPath = outputPath;
   nameEl.textContent = fileName;
   card.style.display = 'block';
   item.ondragstart = (e) => {
+    const currentOutputPath = item.dataset.outputPath || outputPath;
+    console.log('[rendered-video drag] ondragstart path:', currentOutputPath);
+
+    if (!currentOutputPath) {
+      e.preventDefault();
+      showNotification('No rendered video path found', 'error');
+      return;
+    }
+
+    if (nodeFs && !nodeFs.existsSync(currentOutputPath)) {
+      e.preventDefault();
+      showNotification('Rendered video file was not found on disk', 'error');
+      console.warn('[rendered-video drag] file not found:', currentOutputPath);
+      return;
+    }
+
     e.preventDefault();
-    if (isElectron) ipcRenderer.send('drag-files-start', [outputPath]);
+    if (isElectron) {
+      console.log('[rendered-video drag] sending drag-files-start');
+      ipcRenderer.send('drag-files-start', [currentOutputPath]);
+    }
   };
+}
+
+function getCurrentRenderedVideoPath() {
+  const cardItem = document.getElementById('rendered-video-item');
+  const outputPath = cardItem?.dataset.outputPath || autovidState.lastOutputPath;
+
+  if (!outputPath) return null;
+  if (!nodeFs?.existsSync(outputPath)) return null;
+
+  return outputPath;
 }
 
 // Listen for render progress updates from main process
@@ -5622,9 +5654,15 @@ async function addVideoToQueue(videoData) {
     if (result.success) {
       youtubeState.queue.push(result.item);
       renderUploadQueue();
+      return result.item;
     }
+
+    showNotification(result.error || 'Failed to add video to queue', 'error');
+    return null;
   } catch (error) {
     console.error('Error adding to queue:', error);
+    showNotification('Error adding video to queue', 'error');
+    return null;
   }
 }
 
@@ -5949,7 +5987,9 @@ function extractBeatName(fullName) {
  * Upload video to YouTube from current selection
  */
 async function uploadCurrentVideoToYouTube() {
-  if (!autovidState.lastOutputPath) {
+  const currentVideoPath = getCurrentRenderedVideoPath();
+
+  if (!currentVideoPath) {
     alert('Please render a video first');
     return;
   }
@@ -5961,17 +6001,36 @@ async function uploadCurrentVideoToYouTube() {
   await new Promise(r => setTimeout(r, 100));
 
   // Add video to queue
-  const fileName = autovidState.lastOutputPath.split('\\').pop();
+  const fileName = nodePath ? nodePath.basename(currentVideoPath) : currentVideoPath.split('\\').pop();
   const title = fileName.replace(/\.(mp4|mov|avi|mkv|webm)$/i, '');
 
-  addVideoToQueue({
-    filePath: autovidState.lastOutputPath,
+  const queueItem = await addVideoToQueue({
+    filePath: currentVideoPath,
     fileName: fileName,
     title: title,
     description: '',
     tags: [],
     privacy: defaultPrivacySelect?.value || 'private'
   });
+
+  if (!queueItem) return;
+
+  if (!youtubeState.selectedChannel) {
+    showNotification('Video added to queue. Select a YouTube channel to upload it.', 'info');
+    return;
+  }
+
+  if (!youtubeState.selectedChannel.ready) {
+    showNotification('Video added to queue. Authenticate the selected channel to upload it.', 'info');
+    return;
+  }
+
+  if (!youtubeState.serverOnline) {
+    showNotification('Video added to queue. Start the automation server to upload it.', 'info');
+    return;
+  }
+
+  await startUpload(queueItem.id);
 }
 
 // Make functions globally available
