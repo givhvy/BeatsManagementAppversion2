@@ -2153,6 +2153,98 @@ h1, h2, h3, h4, h5, h6 {
   color: #ef4444;
 }
 
+/* ── Custom audio player ── */
+.ap-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #0d0d0d;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+.ap-play-btn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(160deg, #FCD34D 0%, #D97706 100%);
+  color: #381E02;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.35);
+}
+.ap-play-btn:hover  { opacity: 0.88; }
+.ap-play-btn:active { transform: scale(0.93); }
+.ap-times {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  min-width: 30px;
+}
+.ap-duration { text-align: right; }
+.ap-progress-wrap {
+  flex: 1;
+  cursor: pointer;
+  padding: 8px 0;
+  position: relative;
+}
+.ap-progress-bg {
+  position: relative;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.10);
+  overflow: visible;
+}
+.ap-progress-fill {
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #F59E0B, #FCD34D);
+  width: 0%;
+  transition: width 0.1s linear;
+  pointer-events: none;
+}
+.ap-progress-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #FCD34D;
+  box-shadow: 0 0 0 2px rgba(252,211,77,0.25);
+  left: 0%;
+  pointer-events: none;
+  transition: left 0.1s linear;
+  opacity: 0;
+}
+.ap-progress-wrap:hover .ap-progress-thumb { opacity: 1; }
+.ap-progress-wrap:hover .ap-progress-bg { height: 5px; }
+.ap-vol-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+.ap-vol-btn:hover {
+  color: rgba(255,255,255,0.8);
+  background: rgba(255,255,255,0.06);
+}
+
 /* Drop overlay (shows on drag-enter) */
 .drop-overlay {
   position: absolute;

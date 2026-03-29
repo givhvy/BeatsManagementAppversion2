@@ -542,8 +542,32 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
                 Browse
               </button>
             </div>
-            <div class="audio-preview" id="audio-preview-container" style="display: none; margin-top: 10px;">
-              <audio id="autovid-audio-player" controls style="width: 100%; height: 32px;"></audio>
+            <div class="audio-preview" id="audio-preview-container" style="display: none; margin-top: 12px;">
+              <!-- hidden native audio for playback -->
+              <audio id="autovid-audio-player" style="display:none;"></audio>
+              <!-- custom player UI -->
+              <div class="ap-player">
+                <button class="ap-play-btn" id="ap-play-btn" title="Play / Pause">
+                  <svg id="ap-play-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <svg id="ap-pause-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                </button>
+                <div class="ap-times">
+                  <span id="ap-current">0:00</span>
+                </div>
+                <div class="ap-progress-wrap" id="ap-progress-wrap">
+                  <div class="ap-progress-bg">
+                    <div class="ap-progress-fill" id="ap-progress-fill"></div>
+                    <div class="ap-progress-thumb" id="ap-progress-thumb"></div>
+                  </div>
+                </div>
+                <div class="ap-times ap-duration">
+                  <span id="ap-duration">0:00</span>
+                </div>
+                <button class="ap-vol-btn" id="ap-vol-btn" title="Mute / Unmute">
+                  <svg id="ap-vol-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  <svg id="ap-mute-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                </button>
+              </div>
             </div>
           </div>
 
