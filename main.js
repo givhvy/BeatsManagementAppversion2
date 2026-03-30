@@ -23,6 +23,9 @@ async function loadDragIcon() {
   }
 }
 
+// Set App User Model ID so Windows groups taskbar correctly and allows 'Pin to taskbar'
+app.setAppUserModelId('com.givhvy.beatsmanagementstudio');
+
 // Video renderer for AutoVid functionality
 let videoRenderer = null;
 try {
@@ -33,6 +36,37 @@ try {
 }
 
 let mainWindow;
+
+// Create a desktop .lnk shortcut that can be pinned to the Windows taskbar
+function createDesktopShortcut() {
+  try {
+    const desktopPath = app.getPath('desktop');
+    const shortcutPath = path.join(desktopPath, 'Beats Management Studio.lnk');
+    const exePath = app.getPath('exe');
+    const appDir = app.getAppPath();
+
+    const options = {
+      target: exePath,
+      // In dev mode electron.exe needs the app folder as argument; packaged = no args needed
+      args: app.isPackaged ? '' : `"${appDir}"`,
+      cwd: app.isPackaged ? path.dirname(exePath) : appDir,
+      description: 'Beats Management Studio',
+      // appUserModelId links the shortcut to this app so 'Pin to taskbar' works correctly
+      appUserModelId: 'com.givhvy.beatsmanagementstudio'
+    };
+
+    const ok = shell.writeShortcutLink(shortcutPath, 'create', options);
+    if (!ok) {
+      // Overwrite if already exists
+      shell.writeShortcutLink(shortcutPath, 'update', options);
+    }
+    console.log('[Main] Desktop shortcut created:', shortcutPath);
+    return { success: true, path: shortcutPath };
+  } catch (e) {
+    console.log('[Main] Could not create shortcut:', e.message);
+    return { success: false, error: e.message };
+  }
+}
 
 function createWindow() {
   // Remove the menu bar for a cleaner look
@@ -545,6 +579,11 @@ ipcMain.handle('get-page-folders', async () => {
     console.error('Error reading page folders:', error);
     return [];
   }
+});
+
+// Create a desktop shortcut that can be pinned to the Windows taskbar
+ipcMain.handle('create-shortcut', async () => {
+  return createDesktopShortcut();
 });
 
 // Reveal a file in Windows Explorer (select it, don't just open the folder)

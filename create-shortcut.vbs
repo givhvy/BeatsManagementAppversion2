@@ -1,8 +1,8 @@
 Set oWS = WScript.CreateObject("WScript.Shell")
-sLinkFile = oWS.SpecialFolders("Desktop") & "\Beats Management.lnk"
+sLinkFile = oWS.SpecialFolders("Desktop") & "\Beats Management Studio.lnk"
 Set oLink = oWS.CreateShortcut(sLinkFile)
-oLink.TargetPath = "F:\PlaygroundTest\BeatsManagement\node_modules\.bin\electron.cmd"
-oLink.Arguments = "F:\PlaygroundTest\BeatsManagement"
-oLink.WorkingDirectory = "F:\PlaygroundTest\BeatsManagement"
-oLink.Description = "Beats Management App"
+oLink.TargetPath = "F:\PlaygroundTest\BeatsManagementVersion2\node_modules\electron\dist\electron.exe"
+oLink.Arguments = """F:\PlaygroundTest\BeatsManagementVersion2"""
+oLink.WorkingDirectory = "F:\PlaygroundTest\BeatsManagementVersion2"
+oLink.Description = "Beats Management Studio"
 oLink.Save

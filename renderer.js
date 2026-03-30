@@ -4054,6 +4054,20 @@ async function revealRenderedVideo() {
   }
 }
 
+async function createDesktopShortcut() {
+  if (!isElectron) return;
+  try {
+    const result = await ipcRenderer.invoke('create-shortcut');
+    if (result.success) {
+      showToast('Shortcut created on Desktop — right-click the taskbar icon to pin it!', 'success');
+    } else {
+      showToast('Could not create shortcut: ' + result.error, 'error');
+    }
+  } catch (e) {
+    showToast('Shortcut error: ' + e.message, 'error');
+  }
+}
+
 // Listen for render progress updates from main process
 if (isElectron) {
   ipcRenderer.on('render-progress', (event, progress) => {
