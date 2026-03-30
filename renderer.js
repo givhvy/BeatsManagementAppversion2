@@ -4042,14 +4042,14 @@ function getCurrentRenderedVideoPath() {
 async function revealRenderedVideo() {
   const filePath = getCurrentRenderedVideoPath();
   if (!filePath) {
-    showToast('No rendered video found', 'error');
+    showNotification('No rendered video found', 'error');
     return;
   }
   if (isElectron) {
     try {
       await ipcRenderer.invoke('reveal-in-explorer', filePath);
     } catch (e) {
-      showToast('Could not open folder: ' + e.message, 'error');
+      showNotification('Could not open folder: ' + e.message, 'error');
     }
   }
 }
@@ -4059,12 +4059,12 @@ async function createDesktopShortcut() {
   try {
     const result = await ipcRenderer.invoke('create-shortcut');
     if (result.success) {
-      showToast('Shortcut created on Desktop — right-click the taskbar icon to pin it!', 'success');
+      showNotification('Shortcut created on Desktop — right-click taskbar icon to pin it!', 'success');
     } else {
-      showToast('Could not create shortcut: ' + result.error, 'error');
+      showNotification('Could not create shortcut: ' + result.error, 'error');
     }
   } catch (e) {
-    showToast('Shortcut error: ' + e.message, 'error');
+    showNotification('Shortcut error: ' + e.message, 'error');
   }
 }
 
