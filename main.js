@@ -45,25 +45,43 @@ function createDesktopShortcut() {
     const exePath = app.getPath('exe');
     const appDir = app.getAppPath();
 
+    console.log('[Main] createDesktopShortcut -> desktopPath:', desktopPath);
+    console.log('[Main] createDesktopShortcut -> exePath:', exePath);
+    console.log('[Main] createDesktopShortcut -> appDir:', appDir);
+
     const options = {
       target: exePath,
-      // In dev mode electron.exe needs the app folder as argument; packaged = no args needed
       args: app.isPackaged ? '' : `"${appDir}"`,
       cwd: app.isPackaged ? path.dirname(exePath) : appDir,
       description: 'Beats Management Studio',
-      // appUserModelId links the shortcut to this app so 'Pin to taskbar' works correctly
       appUserModelId: 'com.givhvy.beatsmanagementstudio'
     };
 
-    const ok = shell.writeShortcutLink(shortcutPath, 'create', options);
+    // Try Electron's built-in method first
+    let ok = shell.writeShortcutLink(shortcutPath, 'create', options);
+    if (!ok) ok = shell.writeShortcutLink(shortcutPath, 'update', options);
+    console.log('[Main] writeShortcutLink result:', ok, '-> path:', shortcutPath);
+
     if (!ok) {
-      // Overwrite if already exists
-      shell.writeShortcutLink(shortcutPath, 'update', options);
+      // Fallback: use PowerShell to create the shortcut
+      const { execSync } = require('child_process');
+      const psScript = `
+$ws = New-Object -ComObject WScript.Shell
+$sc = $ws.CreateShortcut('${shortcutPath.replace(/'/g, "''")}')
+$sc.TargetPath = '${exePath.replace(/'/g, "''")}'
+$sc.Arguments = '"${appDir.replace(/\\/g, '\\\\').replace(/'/g, "''")}"'
+$sc.WorkingDirectory = '${appDir.replace(/'/g, "''")}'
+$sc.Description = 'Beats Management Studio'
+$sc.Save()
+`.trim();
+      execSync(`powershell -NoProfile -Command "${psScript.replace(/"/g, '\\"').replace(/\n/g, ' ')}"`, { timeout: 8000 });
+      console.log('[Main] PowerShell shortcut fallback succeeded');
     }
+
     console.log('[Main] Desktop shortcut created:', shortcutPath);
     return { success: true, path: shortcutPath };
   } catch (e) {
-    console.log('[Main] Could not create shortcut:', e.message);
+    console.error('[Main] Could not create shortcut:', e.message);
     return { success: false, error: e.message };
   }
 }
