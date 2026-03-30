@@ -49,11 +49,14 @@ function createDesktopShortcut() {
     console.log('[Main] createDesktopShortcut -> exePath:', exePath);
     console.log('[Main] createDesktopShortcut -> appDir:', appDir);
 
+    const iconFile = path.join(appDir, 'build', 'icon.ico');
     const options = {
       target: exePath,
       args: app.isPackaged ? '' : `"${appDir}"`,
       cwd: app.isPackaged ? path.dirname(exePath) : appDir,
       description: 'Beats Management Studio',
+      icon: fs.existsSync(iconFile) ? iconFile : undefined,
+      iconIndex: 0,
       appUserModelId: 'com.givhvy.beatsmanagementstudio'
     };
 
@@ -90,9 +93,12 @@ function createWindow() {
   // Remove the menu bar for a cleaner look
   Menu.setApplicationMenu(null);
   
+  const iconPath = path.join(__dirname, 'build', 'icon.ico');
+
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
+    icon: fs.existsSync(iconPath) ? iconPath : undefined,
     autoHideMenuBar: true,
     titleBarStyle: 'hidden',
     titleBarOverlay: {
@@ -110,9 +116,6 @@ function createWindow() {
 
   // Kick off icon pre-load (needed for drag-files-start)
   loadDragIcon();
-
-  // Open DevTools automatically so renderer logs are visible
-  mainWindow.webContents.openDevTools({ mode: 'detach' });
 
   // Forward ALL renderer console.log/warn/error to main process terminal
   mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
