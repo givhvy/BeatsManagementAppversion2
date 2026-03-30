@@ -47,44 +47,26 @@ function createDesktopShortcut() {
     const shortcutPath = path.join(desktopPath, 'Beats Management Studio.lnk');
     const exePath = app.getPath('exe');
     const appDir = app.getAppPath();
-
-    console.log('[Main] createDesktopShortcut -> desktopPath:', desktopPath);
-    console.log('[Main] createDesktopShortcut -> exePath:', exePath);
-    console.log('[Main] createDesktopShortcut -> appDir:', appDir);
-
     const iconFile = path.join(appDir, 'build', 'icon.ico');
-    const options = {
-      target: exePath,
-      args: app.isPackaged ? '' : `"${appDir}"`,
-      cwd: app.isPackaged ? path.dirname(exePath) : appDir,
-      description: 'Beats Management Studio',
-      icon: fs.existsSync(iconFile) ? iconFile : undefined,
-      iconIndex: 0,
-      appUserModelId: 'com.givhvy.beatsmanagementstudio'
-    };
 
-    // Try Electron's built-in method first
-    let ok = shell.writeShortcutLink(shortcutPath, 'create', options);
-    if (!ok) ok = shell.writeShortcutLink(shortcutPath, 'update', options);
-    console.log('[Main] writeShortcutLink result:', ok, '-> path:', shortcutPath);
+    const hasIcon = fs.existsSync(iconFile);
 
-    if (!ok) {
-      // Fallback: use PowerShell to create the shortcut
-      const { execSync } = require('child_process');
-      const psScript = `
-$ws = New-Object -ComObject WScript.Shell
-$sc = $ws.CreateShortcut('${shortcutPath.replace(/'/g, "''")}')
-$sc.TargetPath = '${exePath.replace(/'/g, "''")}'
-$sc.Arguments = '"${appDir.replace(/\\/g, '\\\\').replace(/'/g, "''")}"'
-$sc.WorkingDirectory = '${appDir.replace(/'/g, "''")}'
-$sc.Description = 'Beats Management Studio'
-$sc.Save()
-`.trim();
-      execSync(`powershell -NoProfile -Command "${psScript.replace(/"/g, '\\"').replace(/\n/g, ' ')}"`, { timeout: 8000 });
-      console.log('[Main] PowerShell shortcut fallback succeeded');
-    }
+    // Use PowerShell WScript to set IconLocation reliably on Windows
+    const { execSync } = require('child_process');
+    const iconLine = hasIcon ? `$sc.IconLocation = '${iconFile.replace(/\\/g, '\\\\')}`, 0'` : '';
+    const ps = [
+      `$ws = New-Object -ComObject WScript.Shell`,
+      `$sc = $ws.CreateShortcut('${shortcutPath.replace(/\\/g, '\\\\')}')`,
+      `$sc.TargetPath = '${exePath.replace(/\\/g, '\\\\')}'`,
+      `$sc.Arguments = '"${appDir.replace(/\\/g, '\\\\')}"'`,
+      `$sc.WorkingDirectory = '${appDir.replace(/\\/g, '\\\\')}'`,
+      `$sc.Description = 'Beats Management Studio'`,
+      hasIcon ? `$sc.IconLocation = '${iconFile.replace(/\\/g, '\\\\')}`, 0'` : '',
+      `$sc.Save()`
+    ].filter(Boolean).join('; ');
 
-    console.log('[Main] Desktop shortcut created:', shortcutPath);
+    execSync(`powershell -NoProfile -Command "${ps}"`, { timeout: 10000 });
+    console.log('[Main] Desktop shortcut created:', shortcutPath, '| icon:', hasIcon ? iconFile : 'none');
     return { success: true, path: shortcutPath };
   } catch (e) {
     console.error('[Main] Could not create shortcut:', e.message);
