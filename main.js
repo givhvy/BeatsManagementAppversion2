@@ -53,16 +53,16 @@ function createDesktopShortcut() {
 
     // Use PowerShell WScript to set IconLocation reliably on Windows
     const { execSync } = require('child_process');
-    const iconLine = hasIcon ? `$sc.IconLocation = '${iconFile.replace(/\\/g, '\\\\')}`, 0'` : '';
+    const iconLocLine = hasIcon ? "$sc.IconLocation = '" + iconFile.replace(/\\/g, '\\\\') + ", 0'" : '';
     const ps = [
-      `$ws = New-Object -ComObject WScript.Shell`,
-      `$sc = $ws.CreateShortcut('${shortcutPath.replace(/\\/g, '\\\\')}')`,
-      `$sc.TargetPath = '${exePath.replace(/\\/g, '\\\\')}'`,
-      `$sc.Arguments = '"${appDir.replace(/\\/g, '\\\\')}"'`,
-      `$sc.WorkingDirectory = '${appDir.replace(/\\/g, '\\\\')}'`,
-      `$sc.Description = 'Beats Management Studio'`,
-      hasIcon ? `$sc.IconLocation = '${iconFile.replace(/\\/g, '\\\\')}`, 0'` : '',
-      `$sc.Save()`
+      "$ws = New-Object -ComObject WScript.Shell",
+      "$sc = $ws.CreateShortcut('" + shortcutPath.replace(/\\/g, '\\\\') + "')",
+      "$sc.TargetPath = '" + exePath.replace(/\\/g, '\\\\') + "'",
+      "$sc.Arguments = '\"" + appDir.replace(/\\/g, '\\\\') + "\"'",
+      "$sc.WorkingDirectory = '" + appDir.replace(/\\/g, '\\\\') + "'",
+      "$sc.Description = 'Beats Management Studio'",
+      iconLocLine,
+      "$sc.Save()"
     ].filter(Boolean).join('; ');
 
     execSync(`powershell -NoProfile -Command "${ps}"`, { timeout: 10000 });
