@@ -2,6 +2,9 @@ const { app, BrowserWindow, ipcMain, dialog, nativeImage, clipboard, shell, Menu
 const path = require('path');
 const fs = require('fs');
 
+// MUST be called before app is ready for taskbar icon + pin to work on Windows
+app.setAppUserModelId('com.givhvy.beatsmanagementstudio');
+
 // Pre-cached drag icon (populated once app is ready)
 let cachedDragIcon = null;
 
@@ -24,7 +27,7 @@ async function loadDragIcon() {
 }
 
 // Set App User Model ID so Windows groups taskbar correctly and allows 'Pin to taskbar'
-app.setAppUserModelId('com.givhvy.beatsmanagementstudio');
+// (already set at top of file before app ready)
 
 // Video renderer for AutoVid functionality
 let videoRenderer = null;
@@ -113,6 +116,12 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html');
+
+  // Explicitly set window + taskbar icon on Windows
+  const appIcon = nativeImage.createFromPath(iconPath);
+  if (!appIcon.isEmpty()) {
+    mainWindow.setIcon(appIcon);
+  }
 
   // Kick off icon pre-load (needed for drag-files-start)
   loadDragIcon();
