@@ -4,9 +4,53 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Beats Management Studio</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Geist Font Family */
+    @font-face {
+      font-family: 'Geist';
+      src: url('./fonts/Geist-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Geist';
+      src: url('./fonts/Geist-Medium.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Geist';
+      src: url('./fonts/Geist-SemiBold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Geist';
+      src: url('./fonts/Geist-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    
+    /* Geist Mono Font Family */
+    @font-face {
+      font-family: 'Geist Mono';
+      src: url('./fonts/GeistMono-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Geist Mono';
+      src: url('./fonts/GeistMono-Medium.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -50,10 +94,22 @@
         <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
         <span class="nav-label">Money</span>
       </button>
+      <button class="main-nav-tab" data-section="titles">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span>
+        <span class="nav-label">Titles</span>
+      </button>
+      <button class="main-nav-tab" data-section="background">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M9 5v13"/></svg></span>
+        <span class="nav-label">Background</span>
+      </button>
+      <button class="main-nav-tab" data-section="midi">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M8 12v4"/><path d="M12 12v4"/><path d="M16 12v4"/></svg></span>
+        <span class="nav-label">MIDI</span>
+      </button>
     </div>
     <div class="main-nav-status">
-      <span id="youtube-status" class="status-indicator offline">● YouTube: Offline</span>
-      <span id="server-last-check" class="server-last-check" title="Last server check time"></span>
+      <span id="youtube-status" class="status-indicator offline" title="Last server check time">● YT: Offline</span>
+      <span id="server-last-check" style="display:none"></span>
       <div class="ollama-nav-widget">
         <span id="ollama-nav-dot" class="ollama-nav-dot offline" title="Ollama AI status"></span>
         <span id="ollama-nav-label" class="ollama-nav-label">AI Offline</span>
@@ -65,9 +121,7 @@
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
       </button>
-      <button id="pin-shortcut-btn" class="pin-btn" title="Create Desktop Shortcut (can be pinned to taskbar)" onclick="createDesktopShortcut()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z"/></svg>
-      </button>
+
     </div>
   </div>
 
@@ -131,6 +185,8 @@
           <button id="images-manager-btn" class="btn-secondary" title="Image Database"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> Images</button>
           <button id="database-info-btn" class="btn-secondary" title="Database Info"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></button>
           <button id="create-pack-btn" class="btn-primary">+ Create Pack</button>
+          <button id="packs-zoom-out" class="btn-secondary btn-small" title="Zoom Out" style="padding:3px 9px;font-size:16px;line-height:1;">−</button>
+          <button id="packs-zoom-in" class="btn-secondary btn-small" title="Zoom In" style="padding:3px 9px;font-size:16px;line-height:1;">+</button>
         </div>
       </div>
       <!-- Total Beats Counter -->
@@ -666,9 +722,9 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
         <div class="server-status-box" id="server-status-box">
           <div class="server-status-indicator">
             <span id="server-status-dot" class="status-dot offline">●</span>
-            <span id="server-status-text">Server Offline</span>
+            <span id="server-status-text">Server</span>
           </div>
-          <button id="start-server-btn" class="btn-primary btn-small"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Start Server</button>
+          <button id="start-server-btn" class="btn-primary btn-small"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Start</button>
         </div>
         
         <div class="channel-list" id="youtube-channel-list">
@@ -1393,32 +1449,80 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
 
   <!-- Resend Marketing Settings Modal -->
   <div id="resend-settings-modal" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width:480px">
-      <div class="modal-header">
-        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Email Marketing Settings</h3>
-        <button class="close-btn" onclick="document.getElementById('resend-settings-modal').style.display='none'">×</button>
+    <div class="modal-content" style="max-width: 540px; background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%); border: 1px solid #333; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+      <div class="modal-header" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 24px 30px; border-radius: 12px 12px 0 0; border-bottom: none;">
+        <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 12px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.9;">
+            <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/>
+          </svg>
+          Email Marketing Settings
+        </h3>
+        <button class="close-btn" onclick="document.getElementById('resend-settings-modal').style.display='none'" style="background: rgba(255,255,255,0.1); color: #fff; border: none; width: 32px; height: 32px; border-radius: 6px; font-size: 20px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">×</button>
       </div>
-      <div class="modal-body">
-        <p class="settings-note">Configure your <a href="https://resend.com" target="_blank">Resend.com</a> account to send marketing emails. Free tier: 3,000 emails/month.</p>
-        <div class="form-group">
-          <label>Resend API Key</label>
-          <input type="password" id="resend-api-key-input" placeholder="re_xxxxxxxxxxxxxxxxxx" />
+      <div class="modal-body" style="padding: 30px;">
+        <!-- Info Banner -->
+        <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 10px; padding: 16px 20px; margin-bottom: 28px; display: flex; align-items: start; gap: 12px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <div style="flex: 1;">
+            <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #a0aec0;">
+              Configure your <a href="https://resend.com" target="_blank" style="color: #3b82f6; text-decoration: none; font-weight: 500; border-bottom: 1px solid rgba(59, 130, 246, 0.3);">Resend.com</a> account to send marketing emails.
+              <span style="display: block; margin-top: 4px; color: #10b981; font-weight: 500;">✓ Free tier: 3,000 emails/month</span>
+            </p>
+          </div>
         </div>
-        <div class="form-group">
-          <label>From Email</label>
-          <input type="text" id="resend-from-email-input" placeholder="you@yourdomain.com" />
+
+        <!-- Form Fields -->
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: #e2e8f0; text-transform: uppercase; letter-spacing: 0.5px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px; opacity: 0.7;">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            API Key
+          </label>
+          <input type="password" id="resend-api-key-input" placeholder="re_xxxxxxxxxxxxxxxxxx" style="width: 100%; padding: 12px 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 14px; font-family: 'Geist Mono', monospace; transition: all 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'" onblur="this.style.borderColor='#333'; this.style.boxShadow='none'" />
         </div>
-        <div class="form-group">
-          <label>From Name</label>
-          <input type="text" id="resend-from-name-input" placeholder="Your Producer Name" />
+
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: #e2e8f0; text-transform: uppercase; letter-spacing: 0.5px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px; opacity: 0.7;">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+            From Email
+          </label>
+          <input type="text" id="resend-from-email-input" placeholder="onboarding@resend.dev" style="width: 100%; padding: 12px 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 14px; transition: all 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'" onblur="this.style.borderColor='#333'; this.style.boxShadow='none'" />
         </div>
-        <div class="form-group">
-          <label>Config File Location</label>
-          <div class="config-path-display" id="resend-config-path-display">Loading...</div>
+
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: #e2e8f0; text-transform: uppercase; letter-spacing: 0.5px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px; opacity: 0.7;">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            From Name
+          </label>
+          <input type="text" id="resend-from-name-input" placeholder="Beats Marketing" style="width: 100%; padding: 12px 16px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 14px; transition: all 0.2s;" onfocus="this.style.borderColor='#3b82f6'; this.style.boxShadow='0 0 0 3px rgba(59, 130, 246, 0.1)'" onblur="this.style.borderColor='#333'; this.style.boxShadow='none'" />
         </div>
-        <div class="modal-footer">
-          <button class="btn-primary" onclick="saveResendConfig()">Save Settings</button>
-          <button class="btn-secondary" onclick="document.getElementById('resend-settings-modal').style.display='none'">Cancel</button>
+
+        <div class="form-group" style="margin-bottom: 28px;">
+          <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: #e2e8f0; text-transform: uppercase; letter-spacing: 0.5px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 6px; opacity: 0.7;">
+              <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/>
+            </svg>
+            Config File Location
+          </label>
+          <div id="resend-config-path-display" style="padding: 12px 16px; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 8px; color: #94a3b8; font-size: 12px; font-family: 'Geist Mono', monospace; word-break: break-all; line-height: 1.5;">Loading...</div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="modal-footer" style="display: flex; gap: 12px; padding-top: 8px; border-top: 1px solid #333; margin-top: 28px;">
+          <button class="btn-primary" onclick="saveResendConfig()" style="flex: 1; padding: 14px 24px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 16px rgba(59, 130, 246, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Save Settings
+          </button>
+          <button class="btn-secondary" onclick="document.getElementById('resend-settings-modal').style.display='none'" style="padding: 14px 24px; background: #2a2a2a; border: 1px solid #333; border-radius: 8px; color: #94a3b8; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#333'; this.style.borderColor='#444'" onmouseout="this.style.background='#2a2a2a'; this.style.borderColor='#333'">Cancel</button>
         </div>
       </div>
     </div>
@@ -1843,6 +1947,22 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
               <span class="theme-card-check">✓</span>
             </div>
           </div>
+          <!-- Theme: System Override -->
+          <div class="theme-card" data-theme="override">
+            <div class="theme-preview theme-preview-override">
+              <div class="tp-titlebar"></div>
+              <div class="tp-nav"></div>
+              <div class="tp-cards">
+                <div class="tp-card"></div>
+                <div class="tp-card"></div>
+                <div class="tp-card"></div>
+              </div>
+            </div>
+            <div class="theme-card-info">
+              <span class="theme-card-name">System Override</span>
+              <span class="theme-card-check">✓</span>
+            </div>
+          </div>
         </div>
 
         <!-- Color Scheme -->
@@ -2127,6 +2247,405 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
     </div>
   </div>
   <!-- END MONEY SECTION -->
+
+  <!-- ============================
+       TITLES AND TAGS SECTION
+       ============================ -->
+  <div class="app-section" id="titles-section">
+    <div class="tt-container">
+
+      <!-- LEFT SIDEBAR: Channel Branding -->
+      <div class="tt-sidebar">
+        <div class="tt-sidebar-inner">
+
+          <div class="tt-sidebar-heading">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Channel Branding
+          </div>
+          <p class="tt-sidebar-sub">Drop your default channel images here to drag them into YouTube when setting up new channels.</p>
+
+          <!-- Profile Image -->
+          <div class="tt-branding-block">
+            <div class="tt-branding-label">Profile Image
+              <span class="tt-branding-dim">800 × 800</span>
+            </div>
+            <div class="tt-dropzone" id="tt-profile-drop" ondragover="ttDragOver(event)" ondragleave="ttDragLeave(event)" ondrop="ttDropImage(event,'profile')" onclick="ttClickBrowse('profile')">
+              <div class="tt-dropzone-placeholder" id="tt-profile-placeholder">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span class="tt-drop-main">Drop profile image</span>
+                <span class="tt-drop-hint">or click to browse</span>
+              </div>
+              <img class="tt-dropzone-img" id="tt-profile-img" style="display:none" draggable="true" ondragstart="ttDragOutImage(event,'profile')" title="Drag this image to YouTube">
+            </div>
+            <div class="tt-dropzone-footer" id="tt-profile-footer" style="display:none">
+              <span class="tt-dropzone-path" id="tt-profile-path"></span>
+              <button class="tt-icon-btn tt-icon-btn-danger" onclick="ttClearImage('profile')" title="Remove image">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              </button>
+            </div>
+            <input type="file" id="tt-profile-file" accept="image/*" style="display:none" onchange="ttFileChosen(event,'profile')">
+          </div>
+
+          <!-- Banner Image -->
+          <div class="tt-branding-block">
+            <div class="tt-branding-label">Channel Banner
+              <span class="tt-branding-dim">2560 × 1440</span>
+            </div>
+            <div class="tt-dropzone tt-dropzone-banner" id="tt-banner-drop" ondragover="ttDragOver(event)" ondragleave="ttDragLeave(event)" ondrop="ttDropImage(event,'banner')" onclick="ttClickBrowse('banner')">
+              <div class="tt-dropzone-placeholder" id="tt-banner-placeholder">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8"/></svg>
+                <span class="tt-drop-main">Drop banner image</span>
+                <span class="tt-drop-hint">or click to browse</span>
+              </div>
+              <img class="tt-dropzone-img tt-dropzone-img-wide" id="tt-banner-img" style="display:none" draggable="true" ondragstart="ttDragOutImage(event,'banner')" title="Drag this image to YouTube">
+            </div>
+            <div class="tt-dropzone-footer" id="tt-banner-footer" style="display:none">
+              <span class="tt-dropzone-path" id="tt-banner-path"></span>
+              <button class="tt-icon-btn tt-icon-btn-danger" onclick="ttClearImage('banner')" title="Remove image">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              </button>
+            </div>
+            <input type="file" id="tt-banner-file" accept="image/*" style="display:none" onchange="ttFileChosen(event,'banner')">
+          </div>
+
+          <div class="tt-drag-hint">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Drag the saved images directly into YouTube's upload fields.
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MAIN: Title Templates Library -->
+      <div class="tt-main">
+
+        <div class="tt-main-header">
+          <div class="tt-main-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            Title Templates
+          </div>
+          <div class="tt-main-controls">
+            <div class="tt-search-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="tt-search" class="tt-search-input" placeholder="Search titles, tags…" oninput="ttRenderTemplates()">
+            </div>
+            <button class="tt-add-btn" onclick="ttOpenModal(null)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Template
+            </button>
+          </div>
+        </div>
+
+        <div class="tt-templates-grid" id="tt-templates-grid">
+          <!-- Cards rendered by JS -->
+        </div>
+
+        <div class="tt-empty-state" id="tt-empty-state" style="display:none">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <p>No templates yet</p>
+          <span>Click "New Template" to save your first title &amp; description.</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- END TITLES AND TAGS SECTION -->
+
+  <!-- ============================
+       BACKGROUND MUSIC SECTION
+       ============================ -->
+  <div class="app-section" id="background-section">
+  <div class="container">
+    <!-- Left Panel - All Background Music -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <h2>Background Music</h2>
+        <button id="refresh-bgmusic-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+      </div>
+      <!-- Tab Buttons -->
+      <div class="tabs-container">
+        <button class="tab-btn active" data-bgmusic-type="all">All Music</button>
+        <button class="tab-btn" data-bgmusic-type="untagged">Untagged</button>
+        <button class="tab-btn" data-bgmusic-type="tagged">Tagged</button>
+      </div>
+      <div class="folder-path" id="bgmusic-folder-path">No folder selected</div>
+      <div class="filter-container" id="bgmusic-filter-container">
+        <input type="text" id="bgmusic-filter-input" placeholder="Filter by name..." class="filter-input">
+      </div>
+      <div class="beats-list" id="bgmusic-list" 
+           ondrop="handleBackgroundMusicDrop(event)" 
+           ondragover="handleBackgroundMusicDragOver(event)"
+           ondragleave="handleBackgroundMusicDragLeave(event)">
+        <!-- Background music files will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Middle Panel - Background Music Packs Grid -->
+    <div class="middle-panel" id="bgmusic-middle-panel">
+      <div class="panel-header">
+        <h2 id="bgmusic-packs-header-title">Background Music Packs</h2>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="bgmusic-toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
+          <button id="bgmusic-create-pack-btn" class="btn-primary">+ Create Pack</button>
+          <button id="bgmusic-packs-zoom-out" class="btn-secondary btn-small" title="Zoom Out" style="padding:3px 9px;font-size:16px;line-height:1;">−</button>
+          <button id="bgmusic-packs-zoom-in" class="btn-secondary btn-small" title="Zoom In" style="padding:3px 9px;font-size:16px;line-height:1;">+</button>
+        </div>
+      </div>
+      <!-- Total Background Music Counter -->
+      <div class="total-beats-container">
+        <div class="total-beats-header">
+          <span class="total-beats-label">Total Background Music in All Packs</span>
+          <span class="total-beats-count" id="total-bgmusic-count">0/10000</span>
+        </div>
+        <div class="total-beats-progress-bar">
+          <div class="total-beats-progress-fill" id="total-bgmusic-progress-fill"></div>
+        </div>
+      </div>
+      <div class="filter-container">
+        <input type="text" id="bgmusic-pack-filter-input" placeholder="Filter by pack number (e.g., BG1, BG2, 1, 2...)" class="filter-input">
+      </div>
+      <div class="packs-grid" id="bgmusic-packs-grid">
+        <!-- Pack cards will be created here -->
+      </div>
+    </div>
+
+    <!-- Right Panel - Pack Details -->
+    <div class="right-panel" id="bgmusic-right-panel" style="display: none;">
+      <div class="panel-header">
+        <button id="bgmusic-back-to-packs-btn" class="btn-back">← Back</button>
+        <input type="text" id="bgmusic-pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
+        <div style="display: flex; gap: 8px;">
+          <button id="bgmusic-toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
+          <button id="bgmusic-delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+        </div>
+      </div>
+      <div class="pack-detail-content">
+        <div class="pack-detail-beats" id="bgmusic-pack-detail-list">
+          <div class="pack-detail-count" id="bgmusic-pack-detail-count">0 tracks</div>
+          <!-- Pack background music will be shown here -->
+        </div>
+        <div class="resize-handle" id="bgmusic-resize-handle"></div>
+        <div class="pack-detail-right" id="bgmusic-pack-detail-right-panel">
+          <!-- Background Music Waveform Preview -->
+          <div class="beat-image-preview" id="bgmusic-waveform-preview" style="display: none;">
+            <div id="bgmusic-waveform-container" style="position: relative; aspect-ratio: 16/9; background: #111; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+              <canvas id="bgmusic-waveform-canvas" style="width: 100%; height: 100%;"></canvas>
+            </div>
+          </div>
+
+          <!-- Background Music Info -->
+          <div class="beat-prompt-section" id="bgmusic-info-section" style="display: none;">
+            <div class="right-panel-card">
+              <div class="right-panel-card-header">
+                <span class="right-panel-label">TRACK INFO</span>
+                <button id="bgmusic-edit-info-btn" class="btn-icon-sm">Edit</button>
+              </div>
+              <div id="bgmusic-info-display" class="prompt-display-box">
+                No info available
+              </div>
+              <textarea id="bgmusic-info-editor" class="prompt-editor-box" style="display: none;" placeholder="Enter info for this track..."></textarea>
+              <div id="bgmusic-info-edit-actions" style="display: none; flex-direction: row; gap: 8px; margin-top: 8px;">
+                <button id="bgmusic-save-info-btn" class="btn-primary" style="padding: 5px 14px; font-size: 12px;">Save</button>
+                <button id="bgmusic-cancel-info-btn" class="btn-secondary" style="padding: 5px 14px; font-size: 12px;">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mixer Settings -->
+          <div class="beat-prompt-section" id="bgmusic-mixer-section" style="display: none;">
+            <div class="right-panel-card">
+              <div class="right-panel-card-header">
+                <span class="right-panel-label">MIXER SETTINGS</span>
+              </div>
+              <div style="padding: 15px;">
+                <!-- Volume Control -->
+                <div style="margin-bottom: 20px;">
+                  <label style="display: block; color: #999; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    Volume
+                  </label>
+                  <div style="display: flex; align-items: center; gap: 15px;">
+                    <input type="range" id="bgmusic-volume-slider" min="0" max="100" value="30" style="flex: 1; height: 6px; background: #333; border-radius: 3px; outline: none;">
+                    <span id="bgmusic-volume-display" style="color: #fff; font-weight: 600; min-width: 45px; text-align: right; font-size: 13px;">30%</span>
+                  </div>
+                </div>
+
+                <!-- Fade Options -->
+                <div style="margin-bottom: 20px;">
+                  <label style="display: block; color: #999; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    Fade In/Out (seconds)
+                  </label>
+                  <div style="display: flex; gap: 10px;">
+                    <input type="number" id="bgmusic-fade-in" min="0" max="10" value="2" step="0.5" class="modal-input" placeholder="Fade in" style="font-size: 12px; padding: 6px 10px;">
+                    <input type="number" id="bgmusic-fade-out" min="0" max="10" value="2" step="0.5" class="modal-input" placeholder="Fade out" style="font-size: 12px; padding: 6px 10px;">
+                  </div>
+                </div>
+
+                <!-- Loop Option -->
+                <div style="margin-bottom: 15px;">
+                  <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" id="bgmusic-loop" checked style="width: 16px; height: 16px; cursor: pointer;">
+                    <span style="color: #ccc; font-size: 12px;">Loop if longer than beat</span>
+                  </label>
+                </div>
+
+                <!-- Apply Button -->
+                <button class="btn-primary" id="bgmusic-apply-to-beats-btn" style="width: 100%; padding: 10px; font-size: 13px; margin-top: 10px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                  Apply to Beats Pack
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- END BACKGROUND MUSIC SECTION -->
+
+  <!-- ============================
+       MIDI SECTION
+       ============================ -->
+  <div class="app-section" id="midi-section">
+  <div class="container">
+    <!-- Left Panel - All MIDI Files -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <h2>MIDI Files</h2>
+        <button id="refresh-midi-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+      </div>
+      <!-- Tab Buttons -->
+      <div class="tabs-container">
+        <button class="tab-btn active" data-midi-type="all">All MIDI</button>
+        <button class="tab-btn" data-midi-type="untagged">Untagged</button>
+        <button class="tab-btn" data-midi-type="tagged">Tagged</button>
+      </div>
+      <div class="folder-path" id="midi-folder-path">No folder selected</div>
+      <div class="filter-container" id="midi-filter-container">
+        <input type="text" id="midi-filter-input" placeholder="Filter by name..." class="filter-input">
+      </div>
+      <div class="beats-list" id="midi-list" 
+           ondrop="handleMidiDrop(event)" 
+           ondragover="handleMidiDragOver(event)"
+           ondragleave="handleMidiDragLeave(event)">
+        <!-- MIDI files will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Middle Panel - MIDI Packs Grid -->
+    <div class="middle-panel" id="midi-middle-panel">
+      <div class="panel-header">
+        <h2 id="midi-packs-header-title">MIDI Packs</h2>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="midi-toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
+          <button id="midi-create-pack-btn" class="btn-primary">+ Create Pack</button>
+          <button id="midi-packs-zoom-out" class="btn-secondary btn-small" title="Zoom Out" style="padding:3px 9px;font-size:16px;line-height:1;">−</button>
+          <button id="midi-packs-zoom-in" class="btn-secondary btn-small" title="Zoom In" style="padding:3px 9px;font-size:16px;line-height:1;">+</button>
+        </div>
+      </div>
+      <!-- Total MIDI Counter -->
+      <div class="total-beats-container">
+        <div class="total-beats-header">
+          <span class="total-beats-label">Total MIDI Files in All Packs</span>
+          <span class="total-beats-count" id="total-midi-count">0/10000</span>
+        </div>
+        <div class="total-beats-progress-bar">
+          <div class="total-beats-progress-fill" id="total-midi-progress-fill"></div>
+        </div>
+      </div>
+      <div class="filter-container">
+        <input type="text" id="midi-pack-filter-input" placeholder="Filter by pack number (e.g., M1, M2, 1, 2...)" class="filter-input">
+      </div>
+      <div class="packs-grid" id="midi-packs-grid">
+        <!-- Pack cards will be created here -->
+      </div>
+    </div>
+
+    <!-- Right Panel - Pack Details -->
+    <div class="right-panel" id="midi-right-panel" style="display: none;">
+      <div class="panel-header">
+        <button id="midi-back-to-packs-btn" class="btn-back">← Back</button>
+        <input type="text" id="midi-pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
+        <div style="display: flex; gap: 8px;">
+          <button id="midi-toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
+          <button id="midi-delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+        </div>
+      </div>
+      <div class="pack-detail-content">
+        <div class="pack-detail-beats" id="midi-pack-detail-list">
+          <div class="pack-detail-count" id="midi-pack-detail-count">0 files</div>
+          <!-- Pack MIDI files will be shown here -->
+        </div>
+        <div class="resize-handle" id="midi-resize-handle"></div>
+        <div class="pack-detail-right" id="midi-pack-detail-right-panel">
+          <!-- MIDI Info -->
+          <div class="beat-prompt-section" id="midi-info-section" style="display: none;">
+            <div class="right-panel-card">
+              <div class="right-panel-card-header">
+                <span class="right-panel-label">MIDI INFO</span>
+                <button id="midi-edit-info-btn" class="btn-icon-sm">Edit</button>
+              </div>
+              <div id="midi-info-display" class="prompt-display-box">
+                No info available
+              </div>
+              <textarea id="midi-info-editor" class="prompt-editor-box" style="display: none;" placeholder="Enter info for this MIDI file..."></textarea>
+              <div id="midi-info-edit-actions" style="display: none; flex-direction: row; gap: 8px; margin-top: 8px;">
+                <button id="midi-save-info-btn" class="btn-primary" style="padding: 5px 14px; font-size: 12px;">Save</button>
+                <button id="midi-cancel-info-btn" class="btn-secondary" style="padding: 5px 14px; font-size: 12px;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- END MIDI SECTION -->
+
+  <!-- MODAL: Add / Edit Title Template -->
+  <div class="tt-modal-overlay" id="tt-modal-overlay" style="display:none" onclick="ttModalOverlayClick(event)">
+    <div class="tt-modal">
+      <div class="tt-modal-header">
+        <span id="tt-modal-heading">New Template</span>
+        <button class="tt-modal-close" onclick="ttCloseModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="tt-modal-body">
+        <input type="hidden" id="tt-modal-edit-id">
+
+        <div class="tt-form-row">
+          <label class="tt-form-label">Title</label>
+          <input type="text" id="tt-modal-title-input" class="tt-form-input" placeholder="YouTube video title…" maxlength="100">
+          <span class="tt-char-count" id="tt-title-count">0 / 100</span>
+        </div>
+
+        <div class="tt-form-row">
+          <label class="tt-form-label">Description</label>
+          <textarea id="tt-modal-desc-input" class="tt-form-textarea" placeholder="YouTube video description…" rows="7" maxlength="5000"></textarea>
+          <span class="tt-char-count" id="tt-desc-count">0 / 5000</span>
+        </div>
+
+        <div class="tt-form-row">
+          <label class="tt-form-label">Tags <span class="tt-form-hint">comma-separated</span></label>
+          <input type="text" id="tt-modal-tags-input" class="tt-form-input" placeholder="beats, trap, hip hop, type beat…">
+        </div>
+
+        <div class="tt-form-row">
+          <label class="tt-form-label">Category Label</label>
+          <input type="text" id="tt-modal-label-input" class="tt-form-input" placeholder="e.g. Trap, Chill, Promo, Default…">
+        </div>
+      </div>
+      <div class="tt-modal-footer">
+        <button class="tt-modal-cancel-btn" onclick="ttCloseModal()">Cancel</button>
+        <button class="tt-modal-save-btn" onclick="ttSaveTemplate()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Template
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- END MODAL -->
 
   <script src="renderer.js"></script>
 </body>
