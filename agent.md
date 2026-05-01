@@ -25,13 +25,22 @@ if (Get-Process -Name "electron" -ErrorAction SilentlyContinue) { Stop-Process -
 ### 3. Design System
 - **Font**: Geist by Vercel (main UI) and Geist Mono (monospace/code)
 - **Theme**: Dark theme with modern gradients
+- **Design Tokens**: All styling uses CSS variables from `design-tokens.css`
+- **Spacing**: 8px grid system (4px, 8px, 12px, 16px, 20px, 24px)
+- **Typography**: 7 consistent sizes (11px to 24px)
 - **Colors**: 
-  - Primary: #3b82f6 (blue)
-  - Success: #10b981 (green)
-  - Warning: #f59e0b (orange)
-  - Danger: #ef4444 (red)
-  - Background: #1a1a1a
-  - Secondary BG: #2a2a2a
+  - Primary: #3b82f6 (blue) → var(--primary)
+  - Success: #10b981 (green) → var(--success)
+  - Warning: #f59e0b (orange) → var(--warning)
+  - Danger: #ef4444 (red) → var(--danger)
+  - Background: #1a1a1a → var(--gray-850)
+  - Secondary BG: #2a2a2a → var(--gray-800)
+  - All grays: var(--gray-950) through var(--gray-100)
+- **Consistency**: All components follow the same design system
+  - Buttons: 36px (small), 40px (medium), 44px (large)
+  - Inputs: 40px height, 12px 16px padding
+  - Cards: 12px border radius, consistent padding
+  - Modals: 24px border radius, consistent backdrop
 
 ### 4. Key Features
 - **Beats Tab**: Main beats management with packs
@@ -50,6 +59,10 @@ if (Get-Process -Name "electron" -ErrorAction SilentlyContinue) { Stop-Process -
 - Drag & drop should copy files to dedicated folders
 - Pack management follows the same pattern across tabs
 - IPC handlers in `main.js` for file operations
+- **Always use design tokens**: Never hardcode colors, spacing, or font sizes
+- **Follow the 8px grid**: Use var(--space-1) through var(--space-6)
+- **Use semantic colors**: var(--primary), var(--success), var(--danger), etc.
+- **Consistent components**: All buttons, inputs, cards follow the design system
 
 ### 6. When Adding New Features
 1. Add HTML section with proper IDs
@@ -58,7 +71,16 @@ if (Get-Process -Name "electron" -ErrorAction SilentlyContinue) { Stop-Process -
 4. Add state management object
 5. Implement render functions
 6. Add event handlers
-7. **RELOAD THE APP**
+7. **Use design tokens for all styling** (never hardcode values)
+8. **Follow existing component patterns** (buttons, inputs, cards)
+9. **RELOAD THE APP**
+
+## Design System Files
+- `design-tokens.css` - All CSS variables (colors, spacing, typography, etc.)
+- `DESIGN_SYSTEM.md` - Complete design system documentation
+- `DESIGN_AUDIT.md` - List of inconsistencies (now resolved)
+- `DESIGN_CONSISTENCY_UPDATE.md` - Summary of consistency improvements
+- `BEFORE_AFTER_COMPARISON.md` - Detailed before/after comparison
 
 ## Remember
 - User wants to see changes immediately
@@ -66,3 +88,5 @@ if (Get-Process -Name "electron" -ErrorAction SilentlyContinue) { Stop-Process -
 - Keep the design modern and consistent
 - Use Geist font family
 - Follow existing patterns in the codebase
+- **Always use design tokens** - never hardcode spacing, colors, or typography
+- The entire app now follows a professional design system

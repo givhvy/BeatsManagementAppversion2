@@ -1586,21 +1586,25 @@ async function switchFolder(folderType) {
 
   currentFolderType = folderType;
 
-  // Reset to base path when switching tabs
-  const basePath = getBasePath();
-  setCurrentPath(basePath);
+  // Use requestAnimationFrame for smooth transition
+  requestAnimationFrame(() => {
+    // Reset to base path when switching tabs
+    const basePath = getBasePath();
+    setCurrentPath(basePath);
 
-  updateFolderDisplay();
+    updateFolderDisplay();
+  });
 
-  // Load beats/folders based on type
+  // Load beats/folders based on type (async, won't block UI)
   if (folderType === 'tagged' || folderType === 'untagged') {
     await loadFolderContents(getCurrentFolder());
   } else {
     await loadBeats(getCurrentFolder());
   }
 
-  // Save the current folder type
-  await saveData();
+  // Debounce save to avoid blocking
+  if (window.saveFolderTimeout) clearTimeout(window.saveFolderTimeout);
+  window.saveFolderTimeout = setTimeout(() => saveData(), 500);
 }
 
 // Load folder contents (folders + beats) for tagged/untagged tabs
@@ -1725,8 +1729,6 @@ function formatPackTag(packName) {
 }
 
 function renderBeats() {
-  beatsListEl.innerHTML = '';
-
   const allItems = getCurrentBeats();
 
   if (allItems.length === 0) {
@@ -1752,6 +1754,9 @@ function renderBeats() {
   // Sort beats by number (high to low)
   const sortedBeats = sortBeatsByNumber(beats);
 
+  // Use DocumentFragment for better performance
+  const fragment = document.createDocumentFragment();
+
   // Render folders first (for tagged/untagged tabs)
   if (currentFolderType === 'tagged' || currentFolderType === 'untagged') {
     folders.forEach(folder => {
@@ -1771,7 +1776,7 @@ function renderBeats() {
 
       folderEl.appendChild(iconEl);
       folderEl.appendChild(nameEl);
-      beatsListEl.appendChild(folderEl);
+      fragment.appendChild(folderEl);
 
       // Click to navigate into folder
       folderEl.addEventListener('click', async (e) => {
@@ -1880,7 +1885,7 @@ function renderBeats() {
     }
 
     beatEl.appendChild(beatContentEl);
-    beatsListEl.appendChild(beatEl);
+    fragment.appendChild(beatEl);
 
     // Click to play
     beatEl.addEventListener('click', (e) => {
@@ -1934,6 +1939,10 @@ function renderBeats() {
     });
     beatEl.addEventListener('dragend', handleDragEnd);
   });
+
+  // Clear and append fragment in one operation for better performance
+  beatsListEl.innerHTML = '';
+  beatsListEl.appendChild(fragment);
 }
 
 function createPack() {
@@ -3481,6 +3490,12 @@ function initAutoVidSection() {
     openOutputFolderBtn.addEventListener('click', openAutovidOutput);
   }
 
+  // Reset workspace button
+  const resetWorkspaceBtn = document.getElementById('reset-workspace-btn');
+  if (resetWorkspaceBtn) {
+    resetWorkspaceBtn.addEventListener('click', resetAutovidWorkspace);
+  }
+
   // Upload to YouTube button
   const uploadToYoutubeBtn = document.getElementById('upload-to-youtube-btn');
   if (uploadToYoutubeBtn) {
@@ -3643,6 +3658,52 @@ function clearAutovidAudio() {
   if (audioSelectedInfo) audioSelectedInfo.style.display = 'none';
   if (audioPreviewContainer) audioPreviewContainer.style.display = 'none';
   updateRenderButton();
+}
+
+function resetAutovidWorkspace() {
+  // Reset audio
+  autovidState.selectedAudioPath = null;
+  autovidState.selectedBeatPath = null;
+  const audioFilePathEl = document.getElementById('audio-file-path');
+  const audioDropHint = document.getElementById('audio-drop-hint');
+  const audioSelectedInfo = document.getElementById('audio-selected-info');
+  const audioFileName = document.getElementById('audio-file-name');
+  if (audioFilePathEl) audioFilePathEl.value = '';
+  if (audioFileName) audioFileName.textContent = 'No file selected';
+  if (audioDropHint) audioDropHint.style.display = 'flex';
+  if (audioSelectedInfo) audioSelectedInfo.style.display = 'none';
+  if (audioPreviewContainer) audioPreviewContainer.style.display = 'none';
+  
+  // Stop audio if playing
+  if (autovidAudioPlayer) {
+    autovidAudioPlayer.pause();
+    autovidAudioPlayer.currentTime = 0;
+  }
+
+  // Reset image
+  autovidState.selectedImage = null;
+  autovidState.selectedImagePath = null;
+  const previewImage = document.getElementById('preview-image');
+  const imagePlaceholder = document.getElementById('image-placeholder');
+  if (previewImage) previewImage.src = '';
+  if (imagePlaceholder) imagePlaceholder.style.display = 'flex';
+  if (previewImage) previewImage.style.display = 'none';
+
+  // Reset output name
+  if (outputNameInput) outputNameInput.value = '';
+
+  // Hide rendered video card
+  const renderedVideoCard = document.getElementById('rendered-video-card');
+  if (renderedVideoCard) renderedVideoCard.style.display = 'none';
+
+  // Hide render output
+  if (renderOutput) renderOutput.style.display = 'none';
+
+  // Update render button state
+  updateRenderButton();
+
+  // Show notification
+  showNotification('Workspace reset successfully', 'success');
 }
 
 async function selectLocalImage() {
@@ -4579,7 +4640,7 @@ async function checkYouTubeServer() {
     lastServerCheckTime = new Date();
     updateLastCheckTimeUI();
     
-    // Update main status
+    // Update main status (hidden)
     if (youtubeStatusEl) {
       if (response.ok) {
         youtubeStatusEl.textContent = '● YouTube: Online';
@@ -4592,6 +4653,20 @@ async function checkYouTubeServer() {
       }
     }
     
+    // Update settings modal status
+    const youtubeStatusSettings = document.getElementById('youtube-status-settings');
+    if (youtubeStatusSettings) {
+      if (response.ok) {
+        youtubeStatusSettings.textContent = '● Online';
+        youtubeStatusSettings.classList.remove('offline');
+        youtubeStatusSettings.classList.add('online');
+      } else {
+        youtubeStatusSettings.textContent = '● Offline';
+        youtubeStatusSettings.classList.remove('online');
+        youtubeStatusSettings.classList.add('offline');
+      }
+    }
+    
     // Update server status box
     updateServerStatusUI(response.ok);
     
@@ -4600,11 +4675,22 @@ async function checkYouTubeServer() {
     youtubeState.serverOnline = false;
     lastServerCheckTime = new Date();
     updateLastCheckTimeUI();
+    
+    // Update main status (hidden)
     if (youtubeStatusEl) {
       youtubeStatusEl.textContent = '● YouTube: Offline';
       youtubeStatusEl.classList.remove('online');
       youtubeStatusEl.classList.add('offline');
     }
+    
+    // Update settings modal status
+    const youtubeStatusSettings = document.getElementById('youtube-status-settings');
+    if (youtubeStatusSettings) {
+      youtubeStatusSettings.textContent = '● Offline';
+      youtubeStatusSettings.classList.remove('online');
+      youtubeStatusSettings.classList.add('offline');
+    }
+    
     updateServerStatusUI(false);
     return false;
   }
@@ -9162,17 +9248,26 @@ function updateOllamaNavWidget(state) {
   const dot = document.getElementById('ollama-nav-dot');
   const label = document.getElementById('ollama-nav-label');
   const navBtn = document.getElementById('ollama-nav-toggle-btn');
-  if (!dot) return;
-  dot.className = 'ollama-nav-dot ' + state;
+  const settingsStatus = document.getElementById('ollama-status-settings');
+  const settingsBtn = document.getElementById('ollama-toggle-settings-btn');
+  
+  if (dot) dot.className = 'ollama-nav-dot ' + state;
+  
   if (state === 'online') {
     if (label) label.textContent = 'AI Online';
     if (navBtn) { navBtn.textContent = 'Stop'; navBtn.className = 'btn-ollama-nav btn-ollama-stop'; navBtn.disabled = false; }
+    if (settingsStatus) { settingsStatus.textContent = '● Online'; settingsStatus.classList.remove('offline'); settingsStatus.classList.add('online'); }
+    if (settingsBtn) { settingsBtn.textContent = 'Stop'; settingsBtn.className = 'btn-settings-action btn-ollama-stop'; settingsBtn.disabled = false; }
   } else if (state === 'offline') {
     if (label) label.textContent = 'AI Offline';
     if (navBtn) { navBtn.textContent = 'Start'; navBtn.className = 'btn-ollama-nav btn-ollama-start'; navBtn.disabled = false; }
+    if (settingsStatus) { settingsStatus.textContent = '● Offline'; settingsStatus.classList.remove('online'); settingsStatus.classList.add('offline'); }
+    if (settingsBtn) { settingsBtn.textContent = 'Start'; settingsBtn.className = 'btn-settings-action btn-ollama-start'; settingsBtn.disabled = false; }
   } else {
     if (label) label.textContent = 'AI...';
     if (navBtn) navBtn.disabled = true;
+    if (settingsStatus) { settingsStatus.textContent = '● Checking...'; settingsStatus.classList.remove('online', 'offline'); }
+    if (settingsBtn) settingsBtn.disabled = true;
   }
 }
 
@@ -10996,8 +11091,6 @@ function renderBackgroundMusicPacks() {
   }
   
   grid.innerHTML = filteredPacks.map((pack, index) => {
-    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
-    const color = colors[index % colors.length];
     const musicCount = pack.music ? pack.music.length : 0;
     
     return `
@@ -11005,18 +11098,21 @@ function renderBackgroundMusicPacks() {
            ondragover="handleBgMusicPackDragOver(event, '${pack.id}')"
            ondragleave="handleBgMusicPackDragLeave(event)"
            ondrop="handleBgMusicPackDrop(event, '${pack.id}')">
-        <div class="pack-card-header" style="background: ${color};">
-          <div class="pack-number">#${index + 1}</div>
-          <div class="pack-name">${pack.name}</div>
-          <div class="pack-count">${musicCount}</div>
-        </div>
-        <div class="pack-card-body">
-          <div class="pack-info">
-            <div class="pack-info-label">${pack.name}</div>
-            <div class="pack-info-value">${musicCount} tracks</div>
+        <div class="pack-card-image">
+          <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+            ${pack.name}
           </div>
-          <div class="pack-progress">
-            <div class="pack-progress-bar" style="width: ${Math.min(100, (musicCount / 40) * 100)}%; background: ${color};"></div>
+          <div class="pack-card-count">${musicCount}</div>
+          <div class="pack-card-order">#${index + 1}</div>
+        </div>
+        <div class="pack-card-info">
+          <div class="pack-card-title">${pack.name}</div>
+          <div class="pack-card-subtitle">${musicCount === 1 ? '1 track' : `${musicCount} tracks`}</div>
+          <div class="pack-progress-container">
+            <div class="pack-progress-bar">
+              <div class="pack-progress-fill" style="width: ${Math.min(100, (musicCount / 40) * 100)}%;"></div>
+            </div>
+            <div class="pack-progress-text">${musicCount}/40</div>
           </div>
         </div>
       </div>
@@ -11873,8 +11969,6 @@ function renderMidiPacks() {
   }
   
   grid.innerHTML = filteredPacks.map((pack, index) => {
-    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
-    const color = colors[index % colors.length];
     const midiCount = pack.midi ? pack.midi.length : 0;
     
     return `
@@ -11882,18 +11976,21 @@ function renderMidiPacks() {
            ondragover="handleMidiPackDragOver(event, '${pack.id}')"
            ondragleave="handleMidiPackDragLeave(event)"
            ondrop="handleMidiPackDrop(event, '${pack.id}')">
-        <div class="pack-card-header" style="background: ${color};">
-          <div class="pack-number">#${index + 1}</div>
-          <div class="pack-name">${pack.name}</div>
-          <div class="pack-count">${midiCount}</div>
-        </div>
-        <div class="pack-card-body">
-          <div class="pack-info">
-            <div class="pack-info-label">${pack.name}</div>
-            <div class="pack-info-value">${midiCount} files</div>
+        <div class="pack-card-image">
+          <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+            ${pack.name}
           </div>
-          <div class="pack-progress">
-            <div class="pack-progress-bar" style="width: ${Math.min(100, (midiCount / 40) * 100)}%; background: ${color};"></div>
+          <div class="pack-card-count">${midiCount}</div>
+          <div class="pack-card-order">#${index + 1}</div>
+        </div>
+        <div class="pack-card-info">
+          <div class="pack-card-title">${pack.name}</div>
+          <div class="pack-card-subtitle">${midiCount === 1 ? '1 file' : `${midiCount} files`}</div>
+          <div class="pack-progress-container">
+            <div class="pack-progress-bar">
+              <div class="pack-progress-fill" style="width: ${Math.min(100, (midiCount / 40) * 100)}%;"></div>
+            </div>
+            <div class="pack-progress-text">${midiCount}/40</div>
           </div>
         </div>
       </div>
