@@ -110,8 +110,7 @@ function createWindow() {
     }
   });
 
-  // Load the modular app
-  mainWindow.loadFile('src/renderer/index.html');
+  mainWindow.loadFile('index.html');
 
   // Explicitly set window + taskbar icon on Windows
   const appIcon = nativeImage.createFromPath(iconPath);
