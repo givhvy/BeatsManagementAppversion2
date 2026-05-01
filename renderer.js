@@ -610,6 +610,8 @@ let folders = {
 };
 let currentFolderType = 'all'; // 'all', 'tagged', or 'untagged'
 let packs = [];
+let genrePacks = []; // Genre-based packs (separate from channel packs)
+let currentPackView = 'channel'; // 'channel' or 'genre'
 let fileObjectsCache = new Map(); // Cache file objects by path
 
 // Channel management state
@@ -826,6 +828,8 @@ async function init() {
         currentFolderType = savedData.currentFolderType;
       }
       packs = savedData.packs || [];
+      genrePacks = savedData.genrePacks || [];
+      currentPackView = savedData.currentPackView || 'channel';
 
       // Load image data
       imageFolder = savedData.imageFolder || '';
@@ -843,6 +847,19 @@ async function init() {
       await loadBeats(getCurrentFolder());
 
       renderPacks();
+      
+      // Update view toggle button states
+      const channelViewBtn = document.getElementById('channel-view-btn');
+      const genreViewBtn = document.getElementById('genre-view-btn');
+      if (channelViewBtn && genreViewBtn) {
+        if (currentPackView === 'genre') {
+          channelViewBtn.classList.remove('active');
+          genreViewBtn.classList.add('active');
+        } else {
+          channelViewBtn.classList.add('active');
+          genreViewBtn.classList.remove('active');
+        }
+      }
     } else {
       // First time - load default folder
       updateFolderDisplay();
@@ -860,6 +877,8 @@ async function init() {
         currentFolderType = data.currentFolderType;
       }
       packs = data.packs || [];
+      genrePacks = data.genrePacks || [];
+      currentPackView = data.currentPackView || 'channel';
 
       // Load image data
       imageFolder = data.imageFolder || '';
@@ -869,6 +888,19 @@ async function init() {
 
       updateFolderDisplay();
       renderPacks();
+      
+      // Update view toggle button states
+      const channelViewBtn = document.getElementById('channel-view-btn');
+      const genreViewBtn = document.getElementById('genre-view-btn');
+      if (channelViewBtn && genreViewBtn) {
+        if (currentPackView === 'genre') {
+          channelViewBtn.classList.remove('active');
+          genreViewBtn.classList.add('active');
+        } else {
+          channelViewBtn.classList.add('active');
+          genreViewBtn.classList.remove('active');
+        }
+      }
     }
   }
 
@@ -882,6 +914,12 @@ async function init() {
   deleteCurrentPackBtn.addEventListener('click', deleteCurrentPack);
   toggleHidePackBtn.addEventListener('click', toggleCurrentPackHidden);
   toggleHiddenViewBtn.addEventListener('click', toggleHiddenPacksView);
+
+  // Pack view toggle listeners
+  const channelViewBtn = document.getElementById('channel-view-btn');
+  const genreViewBtn = document.getElementById('genre-view-btn');
+  if (channelViewBtn) channelViewBtn.addEventListener('click', () => switchPackView('channel'));
+  if (genreViewBtn) genreViewBtn.addEventListener('click', () => switchPackView('genre'));
 
   // Tab button listeners
   tabButtons.forEach(btn => {
@@ -927,7 +965,9 @@ async function init() {
 
   packDetailTitleEl.addEventListener('input', (e) => {
     if (currentPackId) {
-      const pack = packs.find(p => p.id === currentPackId);
+      // Find pack in the appropriate array based on current view
+      const currentPacks = currentPackView === 'genre' ? genrePacks : packs;
+      const pack = currentPacks.find(p => p.id === currentPackId);
       if (pack) {
         pack.name = e.target.value;
         renderPacks();
@@ -1057,7 +1097,9 @@ function showPacksGrid() {
 
 function showPackDetail(packId) {
   currentPackId = packId;
-  const pack = packs.find(p => p.id === packId);
+  // Find pack in the appropriate array based on current view
+  const currentPacks = currentPackView === 'genre' ? genrePacks : packs;
+  const pack = currentPacks.find(p => p.id === packId);
   if (!pack) return;
 
   middlePanelEl.style.display = 'none';
@@ -1075,7 +1117,9 @@ function showPackDetail(packId) {
 function renderPackDetailBeats() {
   packDetailBeatsEl.innerHTML = '';
 
-  const pack = packs.find(p => p.id === currentPackId);
+  // Find pack in the appropriate array based on current view
+  const currentPacks = currentPackView === 'genre' ? genrePacks : packs;
+  const pack = currentPacks.find(p => p.id === currentPackId);
   if (!pack) return;
 
   // Add beat count at the top
@@ -1235,7 +1279,12 @@ function renderPackEmailInfo() {
 
 function deleteCurrentPack() {
   if (currentPackId && confirm('Are you sure you want to delete this pack?')) {
-    packs = packs.filter(p => p.id !== currentPackId);
+    // Delete from the appropriate array based on current view
+    if (currentPackView === 'genre') {
+      genrePacks = genrePacks.filter(p => p.id !== currentPackId);
+    } else {
+      packs = packs.filter(p => p.id !== currentPackId);
+    }
     showPacksGrid();
     renderPacks();
     renderBeats(); // Update beats list to remove deleted pack tags
@@ -1246,7 +1295,9 @@ function deleteCurrentPack() {
 function toggleCurrentPackHidden() {
   if (!currentPackId) return;
 
-  const pack = packs.find(p => p.id === currentPackId);
+  // Find pack in the appropriate array based on current view
+  const currentPacks = currentPackView === 'genre' ? genrePacks : packs;
+  const pack = currentPacks.find(p => p.id === currentPackId);
   if (!pack) return;
 
   // Toggle hidden status
@@ -1946,14 +1997,21 @@ function renderBeats() {
 }
 
 function createPack() {
+  const packName = currentPackView === 'genre' ? 'New Genre Pack' : 'New Pack';
   const pack = {
     id: Date.now().toString(),
-    name: 'New Pack',
+    name: packName,
     beats: [],
     thumbnail: null // Add thumbnail field
   };
 
-  packs.push(pack);
+  // Add to the appropriate array based on current view
+  if (currentPackView === 'genre') {
+    genrePacks.push(pack);
+  } else {
+    packs.push(pack);
+  }
+  
   renderPacks();
   saveData();
 }
@@ -2008,6 +2066,28 @@ function updateTotalBeatsCounter() {
   totalBeatsProgressFillEl.style.width = `${percentage}%`;
 }
 
+function switchPackView(view) {
+  currentPackView = view;
+  
+  // Update button states
+  const channelViewBtn = document.getElementById('channel-view-btn');
+  const genreViewBtn = document.getElementById('genre-view-btn');
+  
+  if (channelViewBtn && genreViewBtn) {
+    if (view === 'channel') {
+      channelViewBtn.classList.add('active');
+      genreViewBtn.classList.remove('active');
+    } else {
+      channelViewBtn.classList.remove('active');
+      genreViewBtn.classList.add('active');
+    }
+  }
+  
+  // Re-render packs with the new view
+  renderPacks();
+  saveData();
+}
+
 function renderPacks() {
   packsGridEl.innerHTML = '';
 
@@ -2019,13 +2099,19 @@ function renderPacks() {
     updateChannelStats();
   }
 
-  if (packs.length === 0) {
-    packsGridEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">No packs yet. Create one to organize your beats!</div>';
+  // Get the appropriate packs array based on current view
+  const currentPacks = currentPackView === 'genre' ? genrePacks : packs;
+
+  if (currentPacks.length === 0) {
+    const message = currentPackView === 'genre' 
+      ? 'No genre packs yet. Create one to organize your beats by genre!'
+      : 'No packs yet. Create one to organize your beats!';
+    packsGridEl.innerHTML = `<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">${message}</div>`;
     return;
   }
 
   // Filter by hidden status based on view mode
-  let visiblePacks = packs.filter(pack => {
+  let visiblePacks = currentPacks.filter(pack => {
     const isHidden = pack.hidden === true;
     return showingHiddenPacks ? isHidden : !isHidden;
   });
@@ -2701,6 +2787,8 @@ async function saveData() {
     folders,
     currentFolderType,
     packs,
+    genrePacks,
+    currentPackView,
     emails,
     channels,
     folderTags,
@@ -2723,10 +2811,20 @@ async function saveData() {
       }))
     }));
 
+    const genrePacksToSave = genrePacks.map(pack => ({
+      ...pack,
+      beats: pack.beats.map(beat => ({
+        name: beat.name,
+        path: beat.path
+      }))
+    }));
+
     localStorage.setItem('beats-data', JSON.stringify({
       folders,
       currentFolderType,
       packs: packsToSave,
+      genrePacks: genrePacksToSave,
+      currentPackView,
       emails,
       channels,
       folderTags,
@@ -3378,6 +3476,8 @@ mainNavTabs.forEach(tab => {
       initYouTubeSection();
     } else if (section === 'autovid') {
       initAutoVidSection();
+    } else if (section === 'videos') {
+      initVideosSection();
     } else if (section === 'beatstars') {
       initBeatstarsSection();
     } else if (section === 'money') {
@@ -4935,6 +5035,203 @@ async function createNewChannel() {
     showNotification('Error: ' + error.message, 'error');
   }
 }
+
+// ============================
+// VIDEO FOLDER VIEWER SECTION
+// ============================
+
+const VIDEO_OUTPUT_PATH = 'F:\\PlaygroundTest\\BeatsManagementVersion2\\output';
+
+let videosState = {
+  videos: [],
+  initialized: false
+};
+
+function initVideosSection() {
+  if (videosState.initialized) return;
+  videosState.initialized = true;
+
+  const refreshVideosBtn = document.getElementById('refresh-videos-btn');
+  const openVideosFolderBtn = document.getElementById('open-videos-folder-btn');
+
+  if (refreshVideosBtn) {
+    refreshVideosBtn.addEventListener('click', loadVideos);
+  }
+
+  if (openVideosFolderBtn) {
+    openVideosFolderBtn.addEventListener('click', openVideosFolder);
+  }
+
+  // Load videos on init
+  loadVideos();
+}
+
+async function loadVideos() {
+  if (!isElectron) {
+    console.log('Not running in Electron mode');
+    return;
+  }
+
+  const videosGrid = document.getElementById('videos-grid');
+  if (!videosGrid) {
+    console.error('videos-grid element not found');
+    return;
+  }
+
+  videosGrid.innerHTML = '<div class="empty-state">Loading videos...</div>';
+
+  try {
+    console.log('Loading videos from:', VIDEO_OUTPUT_PATH);
+    const result = await ipcRenderer.invoke('load-videos', VIDEO_OUTPUT_PATH);
+    console.log('Load videos result:', result);
+    
+    if (result.success && result.videos) {
+      videosState.videos = result.videos;
+      renderVideosGrid();
+    } else {
+      videosGrid.innerHTML = `<div class="empty-state">${result.error || 'No videos found'}</div>`;
+    }
+  } catch (error) {
+    console.error('Error loading videos:', error);
+    videosGrid.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
+  }
+}
+
+function renderVideosGrid() {
+  const videosGrid = document.getElementById('videos-grid');
+  if (!videosGrid) return;
+
+  if (videosState.videos.length === 0) {
+    videosGrid.innerHTML = '<div class="empty-state">No videos found in output folder</div>';
+    return;
+  }
+
+  videosGrid.innerHTML = videosState.videos.map(video => `
+    <div class="video-card" data-path="${video.path}">
+      <div class="video-thumbnail" data-video-path="${video.path}">
+        <div class="video-thumbnail-placeholder">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="23 7 16 12 23 17 23 7"/>
+            <rect x="1" y="5" width="15" height="14" rx="2"/>
+          </svg>
+        </div>
+        <img class="video-thumbnail-img" style="display: none;" />
+        <div class="video-play-overlay">
+          <div class="video-play-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="video-info">
+        <div class="video-name" title="${video.name}">${video.name}</div>
+        <div class="video-meta">
+          <div class="video-meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            ${video.date}
+          </div>
+          <div class="video-meta-item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            ${video.size}
+          </div>
+        </div>
+      </div>
+      <div class="video-actions">
+        <button class="video-action-btn" onclick="playVideo('${video.path.replace(/\\/g, '\\\\')}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          Play
+        </button>
+        <button class="video-action-btn" onclick="revealVideo('${video.path.replace(/\\/g, '\\\\')}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          Show
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  // Load thumbnails asynchronously
+  loadVideoThumbnails();
+}
+
+async function loadVideoThumbnails() {
+  if (!isElectron) return;
+
+  const thumbnailContainers = document.querySelectorAll('.video-thumbnail[data-video-path]');
+  
+  // Process thumbnails in batches of 3 to avoid overwhelming FFmpeg
+  const batchSize = 3;
+  for (let i = 0; i < thumbnailContainers.length; i += batchSize) {
+    const batch = Array.from(thumbnailContainers).slice(i, i + batchSize);
+    
+    await Promise.all(batch.map(async (container) => {
+      const videoPath = container.getAttribute('data-video-path');
+      const img = container.querySelector('.video-thumbnail-img');
+      const placeholder = container.querySelector('.video-thumbnail-placeholder');
+      
+      try {
+        const result = await ipcRenderer.invoke('generate-video-thumbnail', videoPath);
+        
+        if (result.success && result.thumbnailPath) {
+          img.src = result.thumbnailPath;
+          img.onload = () => {
+            img.style.display = 'block';
+            if (placeholder) placeholder.style.display = 'none';
+          };
+        }
+      } catch (error) {
+        console.error('Error loading thumbnail:', error);
+      }
+    }));
+  }
+}
+
+async function playVideo(videoPath) {
+  if (!isElectron) return;
+  
+  try {
+    await ipcRenderer.invoke('open-video', videoPath);
+  } catch (error) {
+    console.error('Error playing video:', error);
+    showNotification('Error playing video', 'error');
+  }
+}
+
+async function revealVideo(videoPath) {
+  if (!isElectron) return;
+  
+  try {
+    await ipcRenderer.invoke('reveal-video', videoPath);
+  } catch (error) {
+    console.error('Error revealing video:', error);
+    showNotification('Error showing video in explorer', 'error');
+  }
+}
+
+async function openVideosFolder() {
+  if (!isElectron) return;
+  
+  try {
+    await ipcRenderer.invoke('open-videos-folder', VIDEO_OUTPUT_PATH);
+  } catch (error) {
+    console.error('Error opening videos folder:', error);
+    showNotification('Error opening folder', 'error');
+  }
+}
+
+// Make functions global
+window.playVideo = playVideo;
+window.revealVideo = revealVideo;
 
 // =============================================
 // GLOBAL SETTINGS FUNCTIONS
