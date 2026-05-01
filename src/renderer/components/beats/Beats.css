@@ -6,6 +6,24 @@
   padding: var(--space-6);
 }
 
+.audio-player-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--white-10);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.audio-player-header {
+  margin-bottom: var(--space-3);
+}
+
+.audio-player-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--white);
+}
+
 .beats-header {
   display: flex;
   justify-content: space-between;
@@ -165,6 +183,7 @@
   padding: var(--space-4);
   transition: var(--transition-base);
   cursor: pointer;
+  position: relative;
 }
 
 .pack-card:hover {
@@ -177,6 +196,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: var(--space-3);
 }
 
 .pack-card-header h3 {
@@ -184,6 +204,42 @@
   font-weight: var(--font-semibold);
   color: var(--white);
   margin: 0;
+  flex: 1;
+}
+
+.pack-actions {
+  display: flex;
+  gap: var(--space-2);
+  opacity: 0;
+  transition: var(--transition-base);
+}
+
+.pack-card:hover .pack-actions {
+  opacity: 1;
+}
+
+.pack-action-btn {
+  background: var(--white-5);
+  border: 1px solid var(--white-10);
+  color: var(--gray-300);
+  padding: var(--space-1);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pack-action-btn:hover {
+  background: var(--white-10);
+  color: var(--white);
+}
+
+.pack-action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
 }
 
 .pack-count {
@@ -192,6 +248,23 @@
   background: var(--white-5);
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
+  display: inline-block;
+}
+
+.pack-drop-hint {
+  font-size: var(--text-xs);
+  color: var(--gray-500);
+  text-align: center;
+  padding: var(--space-2);
+  border: 1px dashed var(--white-10);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-3);
+  opacity: 0;
+  transition: var(--transition-base);
+}
+
+.pack-card:hover .pack-drop-hint {
+  opacity: 1;
 }
 
 /* Buttons */

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAppStore } from '../../shared/store';
 import { electron } from '../../shared/electron';
 import { showNotification } from '../../shared/notifications';
+import AudioPlayer from '../AudioPlayer';
 import './Beats.css';
 
 function Beats() {
@@ -20,6 +21,7 @@ function Beats() {
 
   const [filterValue, setFilterValue] = useState('');
   const [currentBeats, setCurrentBeats] = useState([]);
+  const [playingBeat, setPlayingBeat] = useState(null);
 
   // Load data on mount
   useEffect(() => {
@@ -68,6 +70,57 @@ function Beats() {
     return beat.name.toLowerCase().includes(filterValue.toLowerCase());
   });
 
+  // Drag and drop state
+  const [draggedBeat, setDraggedBeat] = useState(null);
+
+  // Handle beat drag start
+  const handleBeatDragStart = (beat, e) => {
+    setDraggedBeat(beat);
+    e.dataTransfer.effectAllowed = 'copy';
+    
+    // For external drag (to desktop/other apps)
+    if (electron.isElectron && beat.path) {
+      e.preventDefault();
+      const beatName = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, '');
+      electron.startDrag([beat.path], beatName);
+    }
+  };
+
+  // Handle beat drag end
+  const handleBeatDragEnd = () => {
+    setDraggedBeat(null);
+  };
+
+  // Handle pack drop
+  const handlePackDrop = (packId, e) => {
+    e.preventDefault();
+    if (!draggedBeat) return;
+
+    const pack = packs.find(p => p.id === packId);
+    if (!pack) return;
+
+    // Check if beat already in pack
+    if (pack.beats.some(b => b.path === draggedBeat.path)) {
+      showNotification('Beat already in pack', 'info');
+      return;
+    }
+
+    // Add beat to pack
+    const updatedPacks = packs.map(p => {
+      if (p.id === packId) {
+        return {
+          ...p,
+          beats: [...p.beats, draggedBeat]
+        };
+      }
+      return p;
+    });
+
+    setPacks(updatedPacks);
+    saveData();
+    showNotification(`Added "${draggedBeat.name}" to pack`, 'success');
+  };
+
   // Create new pack
   const handleCreatePack = () => {
     const newPack = {
@@ -81,8 +134,58 @@ function Beats() {
     showNotification('Pack created successfully', 'success');
   };
 
+  // Delete pack
+  const handleDeletePack = (packId, e) => {
+    e.stopPropagation();
+    if (confirm('Are you sure you want to delete this pack?')) {
+      const updatedPacks = packs.filter(p => p.id !== packId);
+      setPacks(updatedPacks);
+      saveData();
+      showNotification('Pack deleted', 'success');
+    }
+  };
+
+  // Rename pack
+  const handleRenamePack = (packId, e) => {
+    e.stopPropagation();
+    const pack = packs.find(p => p.id === packId);
+    if (!pack) return;
+
+    const newName = prompt('Enter new pack name:', pack.name);
+    if (newName && newName.trim()) {
+      const updatedPacks = packs.map(p => {
+        if (p.id === packId) {
+          return { ...p, name: newName.trim() };
+        }
+        return p;
+      });
+      setPacks(updatedPacks);
+      saveData();
+      showNotification('Pack renamed', 'success');
+    }
+  };
+
+  // Handle beat click to play
+  const handleBeatClick = (beat) => {
+    if (beat.type === 'folder') return;
+    setPlayingBeat(beat);
+  };
+
   return (
     <div className="beats-section">
+      {/* Audio Player */}
+      {playingBeat && (
+        <div className="audio-player-container">
+          <div className="audio-player-header">
+            <span className="audio-player-title">{playingBeat.name}</span>
+          </div>
+          <AudioPlayer
+            audioPath={playingBeat.path}
+            onClose={() => setPlayingBeat(null)}
+          />
+        </div>
+      )}
+
       {/* Header */}
       <div className="beats-header">
         <h1>Beats Management</h1>
@@ -155,7 +258,14 @@ function Beats() {
           </div>
         ) : (
           filteredBeats.map((beat) => (
-            <div key={beat.path} className="beat-item">
+            <div
+              key={beat.path}
+              className="beat-item"
+              draggable
+              onDragStart={(e) => handleBeatDragStart(beat, e)}
+              onDragEnd={handleBeatDragEnd}
+              onClick={() => handleBeatClick(beat)}
+            >
               <div className="beat-icon">
                 {beat.type === 'folder' ? (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -180,11 +290,39 @@ function Beats() {
         <h2>Packs ({packs.length})</h2>
         <div className="packs-grid">
           {packs.map((pack) => (
-            <div key={pack.id} className="pack-card">
+            <div
+              key={pack.id}
+              className="pack-card"
+              onDrop={(e) => handlePackDrop(pack.id, e)}
+              onDragOver={(e) => e.preventDefault()}
+            >
               <div className="pack-card-header">
                 <h3>{pack.name}</h3>
-                <span className="pack-count">{pack.beats?.length || 0} beats</span>
+                <div className="pack-actions">
+                  <button
+                    className="pack-action-btn"
+                    onClick={(e) => handleRenamePack(pack.id, e)}
+                    title="Rename"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                  </button>
+                  <button
+                    className="pack-action-btn delete"
+                    onClick={(e) => handleDeletePack(pack.id, e)}
+                    title="Delete"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
+              <div className="pack-count">{pack.beats?.length || 0} beats</div>
+              <div className="pack-drop-hint">Drop beats here</div>
             </div>
           ))}
         </div>
