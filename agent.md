@@ -90,3 +90,27 @@ if (Get-Process -Name "electron" -ErrorAction SilentlyContinue) { Stop-Process -
 - Follow existing patterns in the codebase
 - **Always use design tokens** - never hardcode spacing, colors, or typography
 - The entire app now follows a professional design system
+
+
+## Refactoring Status 🚧
+
+**Current Work**: Migrating from monolithic to modular architecture
+
+### Architecture Change
+- **From**: Single 12000+ line `renderer.js` file
+- **To**: Modular page-based structure in `src/renderer/pages/`
+- **Approach**: Vanilla HTML/CSS/JS (NO React, NO build step)
+- **Goal**: Better maintainability and easier feature development
+
+### Refactoring Plan
+See `src/README.md` for complete details.
+
+**Current Phase**: Phase 2 - Extracting Money page as proof of concept
+- Created folder structure in `src/`
+- Money page files created in `src/renderer/pages/money/`
+- Next: Create app router and test Money page loads dynamically
+
+### Important Notes
+- Keep old files working until migration is complete
+- Test each page after extraction
+- Migrate one page at a time to minimize risk

@@ -2,6 +2,19 @@ const { app, BrowserWindow, ipcMain, dialog, nativeImage, clipboard, shell, Menu
 const path = require('path');
 const fs = require('fs');
 
+// Enable hot reload in development
+try {
+  require('electron-reload')(__dirname, {
+    electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
+    hardResetMethod: 'exit',
+    // Ignore: node_modules, hidden files, automation folders, JSON data files, and output folder
+    ignored: /node_modules|[\/\\]\.|automation|autovid|autodownload|.*\.json$|output/
+  });
+  console.log('🔥 Hot reload enabled!');
+} catch (e) {
+  console.log('Hot reload not available:', e.message);
+}
+
 // MUST be called before app is ready for taskbar icon + pin to work on Windows
 app.setAppUserModelId('com.givhvy.beatsmanagementstudio');
 
@@ -97,7 +110,7 @@ function createWindow() {
     }
   });
 
-  mainWindow.loadFile('dist/index.html');
+  mainWindow.loadFile('index.html');
 
   // Explicitly set window + taskbar icon on Windows
   const appIcon = nativeImage.createFromPath(iconPath);

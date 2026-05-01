@@ -44,6 +44,10 @@
   --black-35: rgba(0, 0, 0, 0.35);
   --black-50: rgba(0, 0, 0, 0.5);
   
+  /* Background Colors */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #0f0f0f;
+  
   /* Spacing Scale */
   --space-1: 4px;
   --space-2: 8px;
