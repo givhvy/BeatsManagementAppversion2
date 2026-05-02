@@ -266,7 +266,27 @@ async function loadDrumkitData() {
     }
   }
 
-  // Fallback: try localStorage if dedicated file is empty (migration from old shared file)
+  // Fallback 1: try old beats-data.json file via IPC (migration from shared file)
+  if (isElectron && (!loaded || drumkitPacks.length === 0)) {
+    try {
+      const oldData = await ipcRenderer.invoke('load-data');
+      console.log('[Drum Kit] Old file migration fallback:', oldData?.drumkitPacks?.length || 0, 'packs');
+      if (oldData && oldData.drumkitPacks && oldData.drumkitPacks.length > 0) {
+        drumkitFolders = oldData.drumkitFolders || drumkitFolders;
+        currentDrumkitFolderType = oldData.currentDrumkitFolderType || 'all';
+        drumkitPacks = oldData.drumkitPacks;
+        drumkitInfos = oldData.drumkitInfos || {};
+        loaded = true;
+        // Migrate to dedicated file immediately
+        await saveDrumkitData();
+        console.log('[Drum Kit] Migrated from beats-data.json to drumkit-data.json');
+      }
+    } catch (e) {
+      console.error('[Drum Kit] Error loading old file data:', e);
+    }
+  }
+
+  // Fallback 2: try localStorage (browser mode or very old data)
   if (!loaded || drumkitPacks.length === 0) {
     const savedData = localStorage.getItem('beats-data');
     if (savedData) {
