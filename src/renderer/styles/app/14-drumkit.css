@@ -1,0 +1,111 @@
+/* ============================
+   DRUM KIT TAB STYLES
+   Scoped to #drumkit-section only
+   ============================ */
+
+#drumkit-section .container {
+  height: 100%;
+}
+
+#drumkit-section .middle-panel {
+  padding-bottom: var(--panel-padding);
+}
+
+/* Pack cards: 1:1 square images */
+#drumkit-section .pack-card-image {
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+}
+
+/* Minimal card design (no background/border) */
+#drumkit-section .pack-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+#drumkit-section .pack-card:hover {
+  background: transparent;
+  border-color: transparent;
+  transform: translateY(-3px);
+  box-shadow: none;
+}
+
+#drumkit-section .pack-card::before {
+  display: none;
+}
+
+/* Text info below image */
+#drumkit-section .pack-card-info {
+  padding: 8px 0 0 0;
+  background: transparent;
+  border-top: none;
+}
+
+#drumkit-section .pack-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+#drumkit-section .pack-card-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ============================
+   CREATE PACK MODAL
+   ============================ */
+.dk-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.dk-modal {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  width: min(360px, 90vw);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dk-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dk-modal-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.dk-modal-input:focus {
+  border-color: var(--primary);
+}
+
+.dk-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

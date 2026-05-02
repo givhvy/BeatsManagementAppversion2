@@ -33,6 +33,7 @@ const totalDrumkitProgressFillEl = document.getElementById('total-drumkit-progre
 
 // Buttons
 const refreshDrumkitBtn = document.getElementById('refresh-drumkit-btn');
+const drumkitSelectFolderBtn = document.getElementById('drumkit-select-folder-btn');
 const drumkitCreatePackBtn = document.getElementById('drumkit-create-pack-btn');
 const drumkitChangeThumbnailHeaderBtn = document.getElementById('drumkit-change-thumbnail-header-btn');
 const drumkitBackToPacksBtn = document.getElementById('drumkit-back-to-packs-btn');
@@ -111,6 +112,11 @@ async function initDrumkitSection() {
   // Toggle hidden packs view
   if (drumkitToggleHiddenViewBtn) {
     drumkitToggleHiddenViewBtn.addEventListener('click', toggleDrumkitHiddenView);
+  }
+
+  // Select drum kit folder
+  if (drumkitSelectFolderBtn) {
+    drumkitSelectFolderBtn.addEventListener('click', selectDrumkitFolder);
   }
 
   // Refresh drum kit files
@@ -198,6 +204,19 @@ async function initDrumkitSection() {
   console.log('[Drum Kit] Section initialized. Packs:', drumkitPacks.length);
 }
 
+async function selectDrumkitFolder() {
+  if (!isElectron) return;
+  const folderPath = await ipcRenderer.invoke('select-folder');
+  if (folderPath) {
+    drumkitFolders[currentDrumkitFolderType].basePath = folderPath;
+    drumkitFolders[currentDrumkitFolderType].currentPath = folderPath;
+    drumkitFolders[currentDrumkitFolderType].path = folderPath;
+    await refreshDrumkitFiles();
+    await saveDrumkitData();
+    showNotification('Folder selected: ' + folderPath, 'success');
+  }
+}
+
 async function refreshDrumkitFiles() {
   if (!isElectron) return;
   const currentPath = drumkitFolders[currentDrumkitFolderType].currentPath;
@@ -227,14 +246,14 @@ window.toggleDrumkitPackHidden = toggleDrumkitPackHidden;
 window.toggleDrumkitHiddenView = toggleDrumkitHiddenView;
 window.removeDrumkitFromPack = removeDrumkitFromPack;
 
-// Load saved data
+// Load saved data (dedicated drumkit-data.json — no cross-tab conflicts)
 async function loadDrumkitData() {
   let loaded = false;
 
   if (isElectron) {
     try {
-      const savedData = await ipcRenderer.invoke('load-data');
-      console.log('[Drum Kit] File data loaded:', savedData ? 'yes' : 'none', '| drumkitPacks:', savedData?.drumkitPacks?.length || 0);
+      const savedData = await ipcRenderer.invoke('load-drumkit-data');
+      console.log('[Drum Kit] Loaded from drumkit-data.json:', savedData ? 'yes' : 'none', '| packs:', savedData?.drumkitPacks?.length || 0);
       if (savedData) {
         drumkitFolders = savedData.drumkitFolders || drumkitFolders;
         currentDrumkitFolderType = savedData.currentDrumkitFolderType || 'all';
@@ -243,23 +262,23 @@ async function loadDrumkitData() {
         loaded = true;
       }
     } catch (e) {
-      console.error('[Drum Kit] Error loading file data:', e);
+      console.error('[Drum Kit] Error loading drumkit data:', e);
     }
   }
 
-  // Fallback: try localStorage if file load failed or returned empty packs
+  // Fallback: try localStorage if dedicated file is empty (migration from old shared file)
   if (!loaded || drumkitPacks.length === 0) {
     const savedData = localStorage.getItem('beats-data');
     if (savedData) {
       try {
         const data = JSON.parse(savedData);
-        console.log('[Drum Kit] localStorage fallback:', data.drumkitPacks?.length || 0, 'packs');
+        console.log('[Drum Kit] localStorage migration fallback:', data.drumkitPacks?.length || 0, 'packs');
         if (data.drumkitPacks && data.drumkitPacks.length > 0) {
           drumkitFolders = data.drumkitFolders || drumkitFolders;
           currentDrumkitFolderType = data.currentDrumkitFolderType || 'all';
           drumkitPacks = data.drumkitPacks;
           drumkitInfos = data.drumkitInfos || {};
-          // Persist back to file so it doesn't get lost again
+          // Migrate to dedicated file
           await saveDrumkitData();
         }
       } catch (e) {
@@ -271,27 +290,23 @@ async function loadDrumkitData() {
   console.log('[Drum Kit] Final loaded packs:', drumkitPacks.length);
 }
 
-// Save data
+// Save data (dedicated drumkit-data.json — no cross-tab conflicts)
 async function saveDrumkitData() {
   console.log('[Drum Kit] Saving data...', drumkitPacks.length, 'packs');
-  
+
   try {
+    const payload = {
+      drumkitPacks,
+      drumkitFolders,
+      currentDrumkitFolderType,
+      drumkitInfos
+    };
     if (isElectron) {
-      const savedData = await ipcRenderer.invoke('load-data') || {};
-      savedData.drumkitPacks = drumkitPacks;
-      savedData.drumkitFolders = drumkitFolders;
-      savedData.currentDrumkitFolderType = currentDrumkitFolderType;
-      savedData.drumkitInfos = drumkitInfos;
-      await ipcRenderer.invoke('save-data', savedData);
+      await ipcRenderer.invoke('save-drumkit-data', payload);
     } else {
-      const savedData = JSON.parse(localStorage.getItem('beats-data') || '{}');
-      savedData.drumkitPacks = drumkitPacks;
-      savedData.drumkitFolders = drumkitFolders;
-      savedData.currentDrumkitFolderType = currentDrumkitFolderType;
-      savedData.drumkitInfos = drumkitInfos;
-      localStorage.setItem('beats-data', JSON.stringify(savedData));
+      localStorage.setItem('drumkit-data', JSON.stringify(payload));
     }
-    console.log('[Drum Kit] Data saved successfully');
+    console.log('[Drum Kit] Data saved to drumkit-data.json');
   } catch (e) {
     console.error('[Drum Kit] Error saving data:', e);
   }

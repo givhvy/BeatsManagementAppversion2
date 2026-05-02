@@ -456,6 +456,36 @@ ipcMain.handle('save-data', async (event, data) => {
   }
 });
 
+// Drum Kit separate data file (prevents cross-tab data loss)
+ipcMain.handle('save-drumkit-data', async (event, data) => {
+  const dataPath = path.join(app.getPath('userData'), 'drumkit-data.json');
+  try {
+    const json = JSON.stringify(data, null, 2);
+    fs.writeFileSync(dataPath, json);
+    // Mirror to data/ folder so git can track it
+    const mirrorPath = path.join(APP_ROOT, 'data', 'drumkit-data.json');
+    try { fs.writeFileSync(mirrorPath, json); } catch (e) { /* non-critical */ }
+    return true;
+  } catch (error) {
+    console.error('Error saving drumkit data:', error);
+    return false;
+  }
+});
+
+ipcMain.handle('load-drumkit-data', async () => {
+  const dataPath = path.join(app.getPath('userData'), 'drumkit-data.json');
+  try {
+    if (fs.existsSync(dataPath)) {
+      const raw = fs.readFileSync(dataPath, 'utf8');
+      return JSON.parse(raw);
+    }
+    return null;
+  } catch (error) {
+    console.error('Error loading drumkit data:', error);
+    return null;
+  }
+});
+
 ipcMain.handle('load-data', async () => {
   const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
   console.log('ðŸ“‚ Database file location:', dataPath);
