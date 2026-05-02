@@ -10094,14 +10094,21 @@ select.setting-control {
 }
 
 /* =============================================
-   DISTROKID SECTION - ELEVENLABS STYLE
+   DISTROKID SECTION - ELEVENLABS DARK THEME
    ============================================= */
 
+#distro-section {
+  background: #0a0a0a;
+  min-height: 100vh;
+  padding: 0;
+}
+
 .distro-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: var(--space-8);
-  background: #fdfcfc;
+  max-width: 100%;
+  margin: 0;
+  padding: 48px 64px;
+  background: #0a0a0a;
+  min-height: 100vh;
 }
 
 .distro-header {
@@ -10109,7 +10116,7 @@ select.setting-control {
   align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 64px;
-  padding-top: 48px;
+  padding-top: 24px;
 }
 
 .distro-header h2 {
@@ -10119,7 +10126,7 @@ select.setting-control {
   font-weight: 300;
   letter-spacing: -0.96px;
   line-height: 1.08;
-  color: #000000;
+  color: #fdfcfc;
 }
 
 .distro-subtitle {
@@ -10131,49 +10138,52 @@ select.setting-control {
 }
 
 #new-release-btn {
-  background: #000000;
-  color: #fdfcfc;
-  border: 1px solid #e5e5e5;
+  background: #fdfcfc;
+  color: #0a0a0a;
+  border: 1px solid #2a2a2a;
   border-radius: 9999px;
   padding: 10px 20px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: rgba(0, 0, 0, 0.06) 0px 0px 0px 1px, 
-              rgba(0, 0, 0, 0.04) 0px 1px 2px, 
-              rgba(0, 0, 0, 0.04) 0px 2px 4px;
+  box-shadow: rgba(255, 255, 255, 0.1) 0px 0px 0px 1px, 
+              rgba(255, 255, 255, 0.05) 0px 1px 2px, 
+              rgba(255, 255, 255, 0.05) 0px 2px 4px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 #new-release-btn:hover {
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 0px 1px, 
-              rgba(0, 0, 0, 0.06) 0px 2px 4px, 
-              rgba(0, 0, 0, 0.06) 0px 4px 8px;
+  background: #ffffff;
+  box-shadow: rgba(255, 255, 255, 0.15) 0px 0px 0px 1px, 
+              rgba(255, 255, 255, 0.08) 0px 2px 4px, 
+              rgba(255, 255, 255, 0.08) 0px 4px 8px;
 }
 
 .distro-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  gap: 20px;
   margin-bottom: 80px;
 }
 
 .distro-stats .stat-card {
-  background: #ffffff;
-  border: 1px solid #e5e5e5;
+  background: #141414;
+  border: 1px solid #2a2a2a;
   border-radius: 16px;
   padding: 24px;
   box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 1px 0px, 
-              rgba(0, 0, 0, 0.04) 0px 2px 4px;
+              rgba(0, 0, 0, 0.2) 0px 2px 4px;
   transition: all 0.2s;
 }
 
 .distro-stats .stat-card:hover {
+  background: #1a1a1a;
+  border-color: #3a3a3a;
   box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 1px 0px, 
-              rgba(0, 0, 0, 0.06) 0px 4px 8px;
+              rgba(0, 0, 0, 0.3) 0px 4px 8px;
 }
 
 .distro-stats .stat-icon {
@@ -10190,7 +10200,7 @@ select.setting-control {
 .distro-stats .stat-value {
   font-size: 32px;
   font-weight: 300;
-  color: #000000;
+  color: #fdfcfc;
   line-height: 1;
   margin-bottom: 8px;
   letter-spacing: -0.64px;
@@ -10204,12 +10214,12 @@ select.setting-control {
 }
 
 .distro-releases {
-  background: #ffffff;
-  border: 1px solid #e5e5e5;
+  background: #141414;
+  border: 1px solid #2a2a2a;
   border-radius: 16px;
   padding: 32px;
   box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 1px 0px, 
-              rgba(0, 0, 0, 0.04) 0px 2px 4px;
+              rgba(0, 0, 0, 0.2) 0px 2px 4px;
 }
 
 .distro-releases-header {
@@ -10218,14 +10228,14 @@ select.setting-control {
   justify-content: space-between;
   margin-bottom: 32px;
   padding-bottom: 24px;
-  border-bottom: 1px solid #e5e5e5;
+  border-bottom: 1px solid #2a2a2a;
 }
 
 .distro-releases-header h3 {
   margin: 0;
   font-size: 20px;
   font-weight: 500;
-  color: #000000;
+  color: #fdfcfc;
   line-height: 1.4;
 }
 
@@ -10237,9 +10247,9 @@ select.setting-control {
 .filter-btn {
   padding: 8px 16px;
   background: transparent;
-  border: 1px solid #e5e5e5;
+  border: 1px solid #2a2a2a;
   border-radius: 9999px;
-  color: #000000;
+  color: #a59f97;
   font-size: 14px;
   font-weight: 400;
   cursor: pointer;
@@ -10247,13 +10257,15 @@ select.setting-control {
 }
 
 .filter-btn:hover {
-  background: #f5f3f1;
+  background: #1a1a1a;
+  color: #fdfcfc;
+  border-color: #3a3a3a;
 }
 
 .filter-btn.active {
-  background: #000000;
-  border-color: #000000;
-  color: #fdfcfc;
+  background: #fdfcfc;
+  border-color: #fdfcfc;
+  color: #0a0a0a;
   font-weight: 500;
 }
 
@@ -10265,8 +10277,8 @@ select.setting-control {
 }
 
 .release-card {
-  background: #fdfcfc;
-  border: 1px solid #e5e5e5;
+  background: #0a0a0a;
+  border: 1px solid #2a2a2a;
   border-radius: 12px;
   padding: 16px;
   transition: all 0.2s;
@@ -10274,22 +10286,22 @@ select.setting-control {
 }
 
 .release-card:hover {
-  background: #f5f3f1;
-  border-color: #000000;
-  box-shadow: rgba(0, 0, 0, 0.075) 0px 0px 0px 0.5px inset;
+  background: #141414;
+  border-color: #fdfcfc;
+  box-shadow: rgba(253, 252, 252, 0.075) 0px 0px 0px 0.5px inset;
 }
 
 .release-artwork {
   width: 100%;
   aspect-ratio: 1;
-  background: #f5f3f1;
+  background: #141414;
   border-radius: 8px;
   margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 1px solid #e5e5e5;
+  border: 1px solid #2a2a2a;
 }
 
 .release-artwork img {
@@ -10299,7 +10311,7 @@ select.setting-control {
 }
 
 .release-artwork svg {
-  opacity: 0.2;
+  opacity: 0.15;
 }
 
 .release-info {
@@ -10309,7 +10321,7 @@ select.setting-control {
 .release-title {
   font-size: 16px;
   font-weight: 500;
-  color: #000000;
+  color: #fdfcfc;
   margin-bottom: 4px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -10331,7 +10343,7 @@ select.setting-control {
   align-items: center;
   justify-content: space-between;
   font-size: 12px;
-  color: #a59f97;
+  color: #57534e;
 }
 
 .release-status {
@@ -10343,21 +10355,21 @@ select.setting-control {
 }
 
 .release-status.published {
-  background: rgba(34, 197, 94, 0.1);
-  color: #16a34a;
-  border: 1px solid rgba(34, 197, 94, 0.2);
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
 .release-status.pending {
-  background: rgba(251, 146, 60, 0.1);
-  color: #ea580c;
-  border: 1px solid rgba(251, 146, 60, 0.2);
+  background: rgba(251, 146, 60, 0.15);
+  color: #fb923c;
+  border: 1px solid rgba(251, 146, 60, 0.3);
 }
 
 .release-status.draft {
-  background: #f5f3f1;
+  background: #1a1a1a;
   color: #777169;
-  border: 1px solid #e5e5e5;
+  border: 1px solid #2a2a2a;
 }
 
 .releases-grid .empty-state {
@@ -10371,14 +10383,15 @@ select.setting-control {
 }
 
 .releases-grid .empty-state svg {
-  opacity: 0.15;
+  opacity: 0.1;
   margin-bottom: 24px;
+  stroke: #fdfcfc;
 }
 
 .releases-grid .empty-state p {
   margin: 0;
   font-size: 16px;
-  color: #000000;
+  color: #fdfcfc;
   font-weight: 400;
 }
 
@@ -10388,7 +10401,11 @@ select.setting-control {
   margin-top: 8px;
 }
 
-/* Light theme adjustments */
+/* Light theme adjustments - keep original light theme */
+[data-colorscheme="light"] #distro-section {
+  background: #fdfcfc;
+}
+
 [data-colorscheme="light"] .distro-container {
   background: #fdfcfc;
 }
@@ -10401,9 +10418,24 @@ select.setting-control {
   color: #777169;
 }
 
+[data-colorscheme="light"] #new-release-btn {
+  background: #000000;
+  color: #fdfcfc;
+  border-color: #e5e5e5;
+}
+
+[data-colorscheme="light"] #new-release-btn:hover {
+  background: #1a1a1a;
+}
+
 [data-colorscheme="light"] .distro-stats .stat-card {
   background: #ffffff;
   border-color: #e5e5e5;
+}
+
+[data-colorscheme="light"] .distro-stats .stat-card:hover {
+  background: #ffffff;
+  border-color: #000000;
 }
 
 [data-colorscheme="light"] .distro-stats .stat-value {
@@ -10413,6 +10445,14 @@ select.setting-control {
 [data-colorscheme="light"] .distro-releases {
   background: #ffffff;
   border-color: #e5e5e5;
+}
+
+[data-colorscheme="light"] .distro-releases-header {
+  border-bottom-color: #e5e5e5;
+}
+
+[data-colorscheme="light"] .distro-releases-header h3 {
+  color: #000000;
 }
 
 [data-colorscheme="light"] .release-card {
@@ -10441,6 +10481,30 @@ select.setting-control {
 
 [data-colorscheme="light"] .filter-btn:hover {
   background: #f5f3f1;
+}
+
+[data-colorscheme="light"] .filter-btn.active {
+  background: #000000;
+  color: #fdfcfc;
+  border-color: #000000;
+}
+
+[data-colorscheme="light"] .release-artwork {
+  background: #f5f3f1;
+  border-color: #e5e5e5;
+}
+
+[data-colorscheme="light"] .release-status.draft {
+  background: #f5f3f1;
+  border-color: #e5e5e5;
+}
+
+[data-colorscheme="light"] .releases-grid .empty-state svg {
+  stroke: #000000;
+}
+
+[data-colorscheme="light"] .releases-grid .empty-state p:first-of-type {
+  color: #000000;
 }
 
 
