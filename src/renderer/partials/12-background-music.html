@@ -1,0 +1,153 @@
+<!-- ============================
+
+  <!-- ============================
+       BACKGROUND MUSIC SECTION
+       ============================ -->
+  <div class="app-section" id="background-section">
+  <div class="container">
+    <!-- Left Panel - All Background Music -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <h2>Background Music</h2>
+        <button id="refresh-bgmusic-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+      </div>
+      <!-- Tab Buttons -->
+      <div class="tabs-container">
+        <button class="tab-btn active" data-bgmusic-type="all">All Music</button>
+        <button class="tab-btn" data-bgmusic-type="untagged">Untagged</button>
+        <button class="tab-btn" data-bgmusic-type="tagged">Tagged</button>
+      </div>
+      <div class="folder-path" id="bgmusic-folder-path">No folder selected</div>
+      <div class="filter-container" id="bgmusic-filter-container">
+        <input type="text" id="bgmusic-filter-input" placeholder="Filter by name..." class="filter-input">
+      </div>
+      <div class="beats-list" id="bgmusic-list"
+           ondrop="handleBackgroundMusicDrop(event)"
+           ondragover="handleBackgroundMusicDragOver(event)"
+           ondragleave="handleBackgroundMusicDragLeave(event)">
+        <!-- Background music files will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Middle Panel - Background Music Packs Grid -->
+    <div class="middle-panel" id="bgmusic-middle-panel">
+      <div class="panel-header">
+        <h2 id="bgmusic-packs-header-title">Background Music Packs</h2>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="bgmusic-toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
+          <button id="bgmusic-create-pack-btn" class="btn-primary">+ Create Pack</button>
+          <button id="bgmusic-packs-zoom-out" class="btn-secondary btn-small" title="Zoom Out" style="padding:3px 9px;font-size:16px;line-height:1;">-</button>
+          <button id="bgmusic-packs-zoom-in" class="btn-secondary btn-small" title="Zoom In" style="padding:3px 9px;font-size:16px;line-height:1;">+</button>
+        </div>
+      </div>
+      <!-- Total Background Music Counter -->
+      <div class="total-beats-container">
+        <div class="total-beats-header">
+          <span class="total-beats-label">Total Background Music in All Packs</span>
+          <span class="total-beats-count" id="total-bgmusic-count">0/10000</span>
+        </div>
+        <div class="total-beats-progress-bar">
+          <div class="total-beats-progress-fill" id="total-bgmusic-progress-fill"></div>
+        </div>
+      </div>
+      <div class="filter-container">
+        <input type="text" id="bgmusic-pack-filter-input" placeholder="Filter by pack number (e.g., BG1, BG2, 1, 2...)" class="filter-input">
+      </div>
+      <div class="packs-grid" id="bgmusic-packs-grid">
+        <!-- Pack cards will be created here -->
+      </div>
+    </div>
+
+    <!-- Right Panel - Pack Details -->
+    <div class="right-panel" id="bgmusic-right-panel" style="display: none;">
+      <div class="panel-header">
+        <button id="bgmusic-back-to-packs-btn" class="btn-back">Back</button>
+        <input type="text" id="bgmusic-pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
+        <div style="display: flex; gap: 8px;">
+          <button id="bgmusic-toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
+          <button id="bgmusic-delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+        </div>
+      </div>
+      <div class="pack-detail-content">
+        <div class="pack-detail-beats" id="bgmusic-pack-detail-list">
+          <div class="pack-detail-count" id="bgmusic-pack-detail-count">0 tracks</div>
+          <!-- Pack background music will be shown here -->
+        </div>
+        <div class="resize-handle" id="bgmusic-resize-handle"></div>
+        <div class="pack-detail-right" id="bgmusic-pack-detail-right-panel">
+          <!-- Background Music Waveform Preview -->
+          <div class="beat-image-preview" id="bgmusic-waveform-preview" style="display: none;">
+            <div id="bgmusic-waveform-container" style="position: relative; aspect-ratio: 16/9; background: #111; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+              <canvas id="bgmusic-waveform-canvas" style="width: 100%; height: 100%;"></canvas>
+            </div>
+          </div>
+
+          <!-- Background Music Info -->
+          <div class="beat-prompt-section" id="bgmusic-info-section" style="display: none;">
+            <div class="right-panel-card">
+              <div class="right-panel-card-header">
+                <span class="right-panel-label">TRACK INFO</span>
+                <button id="bgmusic-edit-info-btn" class="btn-icon-sm">Edit</button>
+              </div>
+              <div id="bgmusic-info-display" class="prompt-display-box">
+                No info available
+              </div>
+              <textarea id="bgmusic-info-editor" class="prompt-editor-box" style="display: none;" placeholder="Enter info for this track..."></textarea>
+              <div id="bgmusic-info-edit-actions" style="display: none; flex-direction: row; gap: 8px; margin-top: 8px;">
+                <button id="bgmusic-save-info-btn" class="btn-primary" style="padding: 5px 14px; font-size: 12px;">Save</button>
+                <button id="bgmusic-cancel-info-btn" class="btn-secondary" style="padding: 5px 14px; font-size: 12px;">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mixer Settings -->
+          <div class="beat-prompt-section" id="bgmusic-mixer-section" style="display: none;">
+            <div class="right-panel-card">
+              <div class="right-panel-card-header">
+                <span class="right-panel-label">MIXER SETTINGS</span>
+              </div>
+              <div style="padding: 15px;">
+                <!-- Volume Control -->
+                <div style="margin-bottom: 20px;">
+                  <label style="display: block; color: #999; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    Volume
+                  </label>
+                  <div style="display: flex; align-items: center; gap: 15px;">
+                    <input type="range" id="bgmusic-volume-slider" min="0" max="100" value="30" style="flex: 1; height: 6px; background: #333; border-radius: 3px; outline: none;">
+                    <span id="bgmusic-volume-display" style="color: #fff; font-weight: 600; min-width: 45px; text-align: right; font-size: 13px;">30%</span>
+                  </div>
+                </div>
+
+                <!-- Fade Options -->
+                <div style="margin-bottom: 20px;">
+                  <label style="display: block; color: #999; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">
+                    Fade In/Out (seconds)
+                  </label>
+                  <div style="display: flex; gap: 10px;">
+                    <input type="number" id="bgmusic-fade-in" min="0" max="10" value="2" step="0.5" class="modal-input" placeholder="Fade in" style="font-size: 12px; padding: 6px 10px;">
+                    <input type="number" id="bgmusic-fade-out" min="0" max="10" value="2" step="0.5" class="modal-input" placeholder="Fade out" style="font-size: 12px; padding: 6px 10px;">
+                  </div>
+                </div>
+
+                <!-- Loop Option -->
+                <div style="margin-bottom: 15px;">
+                  <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="checkbox" id="bgmusic-loop" checked style="width: 16px; height: 16px; cursor: pointer;">
+                    <span style="color: #ccc; font-size: 12px;">Loop if longer than beat</span>
+                  </label>
+                </div>
+
+                <!-- Apply Button -->
+                <button class="btn-primary" id="bgmusic-apply-to-beats-btn" style="width: 100%; padding: 10px; font-size: 13px; margin-top: 10px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                  Apply to Beats Pack
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- END BACKGROUND MUSIC SECTION -->

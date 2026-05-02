@@ -1,0 +1,237 @@
+  <!-- Section: Video Creator (AutoVid) -->
+  <div class="app-section" id="autovid-section">
+    <div class="autovid-container">
+
+      <!-- Left Panel - Images / Beats -->
+      <div class="autovid-panel autovid-left">
+        <!-- Tab bar -->
+        <div class="autovid-left-tabbar">
+          <button class="autovid-left-tab active" id="tab-images-btn" data-avtab="images">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            Images
+          </button>
+          <button class="autovid-left-tab" id="tab-beats-btn" data-avtab="beats">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            Beats
+          </button>
+          <button id="load-boards-btn" class="autovid-left-refresh" title="Refresh">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </button>
+        </div>
+
+        <!-- Images search + list -->
+        <div class="autovid-search" id="autovid-images-search">
+          <input type="text" id="pinterest-search" placeholder="Filter images..." class="filter-input">
+          <button id="search-pins-btn" class="btn-secondary autovid-icon-btn" title="Search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </button>
+        </div>
+        <div class="autovid-boards-list" id="boards-list">
+          <div class="empty-state">Loading images...</div>
+        </div>
+
+        <!-- Beats search + list -->
+        <div class="autovid-search" id="autovid-beats-search" style="display:none;">
+          <input type="text" id="autovid-beats-filter" placeholder="Filter beats..." class="filter-input">
+        </div>
+        <div class="autovid-beats-list" id="autovid-beats-list" style="display:none;">
+          <div class="empty-state">Click refresh to load beats</div>
+        </div>
+      </div>
+
+      <!-- Center Panel - Image Preview -->
+      <div class="autovid-panel autovid-center">
+        <div class="panel-header">
+          <h2 class="autovid-panel-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            Image Preview
+          </h2>
+          <div style="display: flex; gap: 8px;">
+            <button id="select-local-image-btn" class="btn-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              Local
+            </button>
+            <button id="randomize-pin-btn" class="btn-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg>
+              Random
+            </button>
+          </div>
+        </div>
+
+        <!-- Image Drop Zone -->
+        <div class="autovid-image-drop-zone" id="image-preview-container">
+          <div class="image-drop-hint" id="image-placeholder">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.3"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+            <p class="drop-title">Drop image here</p>
+            <p class="drop-sub">or use Local / Images panel above</p>
+          </div>
+          <img id="preview-image" style="display: none; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">
+          <div class="drop-overlay" id="image-drop-overlay">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Drop to set image</span>
+          </div>
+        </div>
+
+        <div class="autovid-image-info" id="image-info" style="display: none;">
+          <div class="info-row">
+            <span class="info-label">Title:</span>
+            <span id="image-title">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Source:</span>
+            <span id="image-source">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Audio & Render -->
+      <div class="autovid-panel autovid-right">
+        <div class="panel-header">
+          <h2 class="autovid-panel-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            Audio &amp; Render
+          </h2>
+          <button id="reset-workspace-btn" class="reset-workspace-btn" title="Reset workspace">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+          </button>
+        </div>
+
+        <div class="autovid-right-scroll">
+
+          <!-- Audio Drop Zone -->
+          <div class="autovid-field-group">
+            <label class="autovid-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></polygon></svg>
+              Audio File
+            </label>
+            <div class="audio-drop-zone" id="audio-drop-zone">
+              <div class="audio-drop-hint" id="audio-drop-hint">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <p class="drop-title">Drop audio here</p>
+                <p class="drop-sub">MP3  WAV  FLAC  AAC</p>
+              </div>
+              <div class="audio-selected-info" id="audio-selected-info" style="display: none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: #22c55e; flex-shrink: 0;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                <span id="audio-file-name" class="audio-file-name">No file selected</span>
+                <button id="clear-audio-btn" class="audio-clear-btn" title="Clear">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              <div class="drop-overlay" id="audio-drop-overlay">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <span>Drop audio file</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <input type="text" id="audio-file-path" class="filter-input" readonly placeholder="No audio selected" style="flex:1; font-size:12px;">
+              <button id="select-audio-btn" class="btn-primary" style="flex-shrink:0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                Browse
+              </button>
+            </div>
+            <div class="audio-preview" id="audio-preview-container" style="display: none; margin-top: 12px;">
+              <!-- hidden native audio for playback -->
+              <audio id="autovid-audio-player" style="display:none;"></audio>
+              <!-- custom player UI -->
+              <div class="ap-player">
+                <button class="ap-play-btn" id="ap-play-btn" title="Play / Pause">
+                  <svg id="ap-play-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <svg id="ap-pause-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                </button>
+                <div class="ap-times">
+                  <span id="ap-current">0:00</span>
+                </div>
+                <div class="ap-progress-wrap" id="ap-progress-wrap">
+                  <div class="ap-progress-bg">
+                    <div class="ap-progress-fill" id="ap-progress-fill"></div>
+                    <div class="ap-progress-thumb" id="ap-progress-thumb"></div>
+                  </div>
+                </div>
+                <div class="ap-times ap-duration">
+                  <span id="ap-duration">0:00</span>
+                </div>
+                <button class="ap-vol-btn" id="ap-vol-btn" title="Mute / Unmute">
+                  <svg id="ap-vol-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  <svg id="ap-mute-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Output Name -->
+          <div class="autovid-field-group">
+            <label class="autovid-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Output Name
+            </label>
+            <input type="text" id="output-name" class="filter-input" placeholder="video_output">
+          </div>
+
+          <!-- Video Settings -->
+          <div class="autovid-field-group">
+            <label class="autovid-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              Video Settings
+            </label>
+            <div class="settings-row">
+              <span>Resolution:</span>
+              <select id="video-resolution" class="filter-input" style="flex:1; min-width:0;">
+                <option value="1920x1080" selected>19201080 (16:9)</option>
+                <option value="1080">10801080 (1:1)</option>
+                <option value="720">1280720 (16:9)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Render Button -->
+          <div class="autovid-render-section">
+            <button id="render-video-btn" class="btn-render" disabled>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              Render Video
+            </button>
+            <div class="render-progress" id="render-progress" style="display: none;">
+              <div class="progress-bar">
+                <div class="progress-fill" id="render-progress-fill"></div>
+              </div>
+              <span id="render-progress-text">0%</span>
+            </div>
+          </div>
+
+          <div class="autovid-output" id="render-output" style="display: none;">
+            <div class="success-message">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Video rendered successfully!</span>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 10px;">
+              <button id="open-output-folder-btn" class="btn-secondary" style="flex:1;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                Open Folder
+              </button>
+              <button id="upload-to-youtube-btn" class="btn-primary" style="flex:1;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                Upload YouTube
+              </button>
+            </div>
+            <!-- Draggable rendered video file -->
+            <div id="rendered-video-card" style="display:none; margin-top:12px;">
+              <p class="autovid-label" style="margin-bottom:6px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:4px;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                Drag to upload
+              </p>
+              <div class="rendered-video-item" id="rendered-video-item" draggable="true" title="Drag this file anywhere">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; color:#60a5fa;"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                <span id="rendered-video-name" class="rendered-video-name">video.mp4</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; color:rgba(255,255,255,0.25); margin-left:auto;"><circle cx="9" cy="12" r="1"/><circle cx="9" cy="5" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+              </div>
+              <button id="reveal-in-explorer-btn" class="reveal-btn" title="Open file location in Windows Explorer" onclick="revealRenderedVideo()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                Show in Explorer
+              </button>
+            </div>
+          </div>
+
+        </div><!-- end autovid-right-scroll -->
+      </div>
+
+    </div>
+  </div>

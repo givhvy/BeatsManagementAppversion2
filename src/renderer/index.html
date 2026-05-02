@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beats Management Studio</title>
+  <style>
+    /* Geist Font Family */
+    @font-face {
+      font-family: 'Geist';
+      src: url('../../fonts/Geist-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Geist';
+      src: url('../../fonts/Geist-Medium.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Geist';
+      src: url('../../fonts/Geist-SemiBold.woff2') format('woff2');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Geist';
+      src: url('../../fonts/Geist-Bold.woff2') format('woff2');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    /* Geist Mono Font Family */
+    @font-face {
+      font-family: 'Geist Mono';
+      src: url('../../fonts/GeistMono-Regular.woff2') format('woff2');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Geist Mono';
+      src: url('../../fonts/GeistMono-Medium.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
+  <link rel="stylesheet" href="styles/design-tokens.css">
+  <link rel="stylesheet" href="styles/app/00-base-beats.css">
+  <link rel="stylesheet" href="styles/app/01-autovid.css">
+  <link rel="stylesheet" href="styles/app/02-youtube.css">
+  <link rel="stylesheet" href="styles/app/03-progress.css">
+  <link rel="stylesheet" href="styles/app/04-customers.css">
+  <link rel="stylesheet" href="styles/app/05-beatstars-settings.css">
+  <link rel="stylesheet" href="styles/app/06-marketing-ai.css">
+  <link rel="stylesheet" href="styles/app/07-money-and-themes.css">
+  <link rel="stylesheet" href="styles/app/08-titles.css">
+  <link rel="stylesheet" href="styles/app/09-videos.css">
+  <link rel="stylesheet" href="styles/app/10-consistency.css">
+  <link rel="stylesheet" href="styles/app/11-distro.css">
+  <link rel="stylesheet" href="styles/app/12-video-badges.css">
+</head>
+<body>
+  <div data-include="partials/00-shell.html"></div>
+  <div data-include="partials/01-beats.html"></div>
+  <div data-include="partials/02-autovid.html"></div>
+  <div data-include="partials/03-videos.html"></div>
+  <div data-include="partials/04-consistency.html"></div>
+  <div data-include="partials/05-distro.html"></div>
+  <div data-include="partials/06-youtube.html"></div>
+  <div data-include="partials/07-progress-and-upload-modals.html"></div>
+  <div data-include="partials/08-customers.html"></div>
+  <div data-include="partials/09-beatstars.html"></div>
+  <div data-include="partials/10-settings-and-money.html"></div>
+  <div data-include="partials/11-titles.html"></div>
+  <div data-include="partials/12-background-music.html"></div>
+  <div data-include="partials/13-midi.html"></div>
+  <div data-include="partials/14-title-template-modal.html"></div>
+
+  <script src="bootstrap/include-html.js"></script>
+  <script>loadHtmlIncludes();</script>
+
+  <script src="app/00-platform-theme.js"></script>
+  <script src="app/01-beats-library.js"></script>
+  <script src="app/02-navigation.js"></script>
+  <script src="app/03-autovid.js"></script>
+  <script src="app/04-youtube-uploader.js"></script>
+  <script src="app/05-progress-queue.js"></script>
+  <script src="app/06-customers.js"></script>
+  <script src="app/07-beatstars.js"></script>
+  <script src="app/08-marketing-ai.js"></script>
+  <script src="app/09-money.js"></script>
+  <script src="app/10-background-music.js"></script>
+  <script src="app/11-midi.js"></script>
+  <script src="app/12-consistency.js"></script>
+  <script src="app/13-distro.js"></script>
+</body>
+</html>

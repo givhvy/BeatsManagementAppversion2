@@ -1,0 +1,291 @@
+/* =============================================
+   DISTROKID SECTION - ELEVENLABS DARK THEME
+   ============================================= */
+
+#distro-section {
+  background: #0a0a0a;
+  height: calc(100vh - 60px);
+  min-height: 0;
+  padding: 0;
+}
+
+.distro-container {
+  max-width: 100%;
+  margin: 0;
+  padding: 16px 48px 28px;
+  background: #0a0a0a;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.distro-releases {
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 0px 1px 0px,
+              rgba(0, 0, 0, 0.2) 0px 2px 4px;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.distro-releases-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.distro-releases-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: #fdfcfc;
+  line-height: 1.4;
+}
+
+.distro-filters {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #2a2a2a;
+  border-radius: 9999px;
+  color: #a59f97;
+  font-size: 14px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-btn:hover {
+  background: #1a1a1a;
+  color: #fdfcfc;
+  border-color: #3a3a3a;
+}
+
+.filter-btn.active {
+  background: #fdfcfc;
+  border-color: #fdfcfc;
+  color: #0a0a0a;
+  font-weight: 500;
+}
+
+.releases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  flex: 1;
+  min-height: 0;
+}
+
+.release-card {
+  background: #0a0a0a;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 16px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.release-card:hover {
+  background: #141414;
+  border-color: #fdfcfc;
+  box-shadow: rgba(253, 252, 252, 0.075) 0px 0px 0px 0.5px inset;
+}
+
+.release-artwork {
+  width: 100%;
+  aspect-ratio: 1;
+  background: #141414;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #2a2a2a;
+}
+
+.release-artwork img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.release-artwork svg {
+  opacity: 0.15;
+}
+
+.release-info {
+  margin-bottom: 12px;
+}
+
+.release-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #fdfcfc;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+.release-artist {
+  font-size: 14px;
+  color: #777169;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.43;
+}
+
+.release-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #57534e;
+}
+
+.release-status {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.release-status.published {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.release-status.pending {
+  background: rgba(251, 146, 60, 0.15);
+  color: #fb923c;
+  border: 1px solid rgba(251, 146, 60, 0.3);
+}
+
+.release-status.draft {
+  background: #1a1a1a;
+  color: #777169;
+  border: 1px solid #2a2a2a;
+}
+
+.releases-grid .empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  color: #777169;
+}
+
+.releases-grid .empty-state svg {
+  opacity: 0.1;
+  margin-bottom: 24px;
+  stroke: #fdfcfc;
+}
+
+.releases-grid .empty-state p {
+  margin: 0;
+  font-size: 16px;
+  color: #fdfcfc;
+  font-weight: 400;
+}
+
+.releases-grid .empty-state p:last-child {
+  font-size: 14px;
+  color: #777169;
+  margin-top: 8px;
+}
+
+/* Light theme adjustments - keep original light theme */
+[data-colorscheme="light"] #distro-section {
+  background: #fdfcfc;
+}
+
+[data-colorscheme="light"] .distro-container {
+  background: #fdfcfc;
+}
+
+[data-colorscheme="light"] .distro-releases {
+  background: #ffffff;
+  border-color: #e5e5e5;
+}
+
+[data-colorscheme="light"] .distro-releases-header {
+  border-bottom-color: #e5e5e5;
+}
+
+[data-colorscheme="light"] .distro-releases-header h3 {
+  color: #000000;
+}
+
+[data-colorscheme="light"] .release-card {
+  background: #fdfcfc;
+  border-color: #e5e5e5;
+}
+
+[data-colorscheme="light"] .release-card:hover {
+  background: #f5f3f1;
+  border-color: #000000;
+}
+
+[data-colorscheme="light"] .release-title {
+  color: #000000;
+}
+
+[data-colorscheme="light"] .release-artist {
+  color: #777169;
+}
+
+[data-colorscheme="light"] .filter-btn {
+  background: transparent;
+  border-color: #e5e5e5;
+  color: #000000;
+}
+
+[data-colorscheme="light"] .filter-btn:hover {
+  background: #f5f3f1;
+}
+
+[data-colorscheme="light"] .filter-btn.active {
+  background: #000000;
+  color: #fdfcfc;
+  border-color: #000000;
+}
+
+[data-colorscheme="light"] .release-artwork {
+  background: #f5f3f1;
+  border-color: #e5e5e5;
+}
+
+[data-colorscheme="light"] .release-status.draft {
+  background: #f5f3f1;
+  border-color: #e5e5e5;
+}
+
+[data-colorscheme="light"] .releases-grid .empty-state svg {
+  stroke: #000000;
+}
+
+[data-colorscheme="light"] .releases-grid .empty-state p:first-of-type {
+  color: #000000;
+}

@@ -1,0 +1,35 @@
+/* Video Posted Badge */
+.video-posted-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(34, 197, 94, 0.95);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.video-card.video-posted {
+  opacity: 0.85;
+}
+
+.video-card.video-posted .video-thumbnail::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(34, 197, 94, 0.1);
+  pointer-events: none;
+}
+
+/* Light theme */
+[data-colorscheme="light"] .video-posted-badge {
+  background: rgba(34, 197, 94, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}

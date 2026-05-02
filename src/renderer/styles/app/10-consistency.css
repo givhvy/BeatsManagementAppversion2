@@ -1,0 +1,321 @@
+/* ========================================
+   CONSISTENCY TRACKER SECTION
+   ======================================== */
+
+.consistency-container {
+  padding: var(--space-6);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.consistency-header {
+  margin-bottom: 32px;
+}
+
+.consistency-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.consistency-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Stats Cards */
+.consistency-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+}
+
+/* Contribution Graph */
+.contribution-graph-container {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.contribution-graph-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.contribution-graph-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.contribution-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.legend-box {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legend-box.level-0 {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.legend-box.level-1 {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.legend-box.level-2 {
+  background: rgba(34, 197, 94, 0.5);
+}
+
+.legend-box.level-3 {
+  background: rgba(34, 197, 94, 0.7);
+}
+
+.legend-box.level-4 {
+  background: rgba(34, 197, 94, 1);
+}
+
+.contribution-graph {
+  overflow-x: auto;
+  padding-bottom: 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.contribution-months {
+  display: grid;
+  grid-template-columns: repeat(53, 12px);
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.contribution-month {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.contribution-days {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contribution-day-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  height: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.contribution-weeks {
+  display: flex;
+  gap: 2px;
+}
+
+.contribution-week {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contribution-day {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.contribution-day:hover {
+  transform: scale(1.2);
+  z-index: 10;
+}
+
+.contribution-day.level-1 {
+  background: rgba(34, 197, 94, 0.3);
+}
+
+.contribution-day.level-2 {
+  background: rgba(34, 197, 94, 0.5);
+}
+
+.contribution-day.level-3 {
+  background: rgba(34, 197, 94, 0.7);
+}
+
+.contribution-day.level-4 {
+  background: rgba(34, 197, 94, 1);
+}
+
+/* Recent Activity */
+.recent-activity {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.recent-activity h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.activity-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 2px;
+}
+
+.activity-date {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Mark Posted Button */
+.video-action-mark {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.video-action-mark:hover {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.video-action-mark.marked {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.3);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Light theme */
+[data-colorscheme="light"] .consistency-header h2 {
+  color: rgba(0, 0, 0, 0.9);
+}
+
+[data-colorscheme="light"] .consistency-subtitle {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+[data-colorscheme="light"] .stat-card {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-colorscheme="light"] .stat-value {
+  color: rgba(0, 0, 0, 0.9);
+}
+
+[data-colorscheme="light"] .stat-label {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+[data-colorscheme="light"] .contribution-graph-container,
+[data-colorscheme="light"] .recent-activity {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+[data-colorscheme="light"] .contribution-day {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-colorscheme="light"] .legend-box.level-0 {
+  background: rgba(0, 0, 0, 0.05);
+}

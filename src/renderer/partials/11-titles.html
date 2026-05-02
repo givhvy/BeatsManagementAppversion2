@@ -1,0 +1,102 @@
+<!-- ============================
+     TITLES AND TAGS SECTION
+     ============================ -->
+  <div class="app-section" id="titles-section">
+    <div class="tt-container">
+
+      <!-- LEFT SIDEBAR: Channel Branding -->
+      <div class="tt-sidebar">
+        <div class="tt-sidebar-inner">
+
+          <div class="tt-sidebar-heading">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            Channel Branding
+          </div>
+          <p class="tt-sidebar-sub">Drop your default channel images here to drag them into YouTube when setting up new channels.</p>
+
+          <!-- Profile Image -->
+          <div class="tt-branding-block">
+            <div class="tt-branding-label">Profile Image
+              <span class="tt-branding-dim">800 x 800</span>
+            </div>
+            <div class="tt-dropzone" id="tt-profile-drop" ondragover="ttDragOver(event)" ondragleave="ttDragLeave(event)" ondrop="ttDropImage(event,'profile')" onclick="ttClickBrowse('profile')">
+              <div class="tt-dropzone-placeholder" id="tt-profile-placeholder">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span class="tt-drop-main">Drop profile image</span>
+                <span class="tt-drop-hint">or click to browse</span>
+              </div>
+              <img class="tt-dropzone-img" id="tt-profile-img" style="display:none" draggable="true" ondragstart="ttDragOutImage(event,'profile')" title="Drag this image to YouTube">
+            </div>
+            <div class="tt-dropzone-footer" id="tt-profile-footer" style="display:none">
+              <span class="tt-dropzone-path" id="tt-profile-path"></span>
+              <button class="tt-icon-btn tt-icon-btn-danger" onclick="ttClearImage('profile')" title="Remove image">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              </button>
+            </div>
+            <input type="file" id="tt-profile-file" accept="image/*" style="display:none" onchange="ttFileChosen(event,'profile')">
+          </div>
+
+          <!-- Banner Image -->
+          <div class="tt-branding-block">
+            <div class="tt-branding-label">Channel Banner
+              <span class="tt-branding-dim">2560 x 1440</span>
+            </div>
+            <div class="tt-dropzone tt-dropzone-banner" id="tt-banner-drop" ondragover="ttDragOver(event)" ondragleave="ttDragLeave(event)" ondrop="ttDropImage(event,'banner')" onclick="ttClickBrowse('banner')">
+              <div class="tt-dropzone-placeholder" id="tt-banner-placeholder">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8"/></svg>
+                <span class="tt-drop-main">Drop banner image</span>
+                <span class="tt-drop-hint">or click to browse</span>
+              </div>
+              <img class="tt-dropzone-img tt-dropzone-img-wide" id="tt-banner-img" style="display:none" draggable="true" ondragstart="ttDragOutImage(event,'banner')" title="Drag this image to YouTube">
+            </div>
+            <div class="tt-dropzone-footer" id="tt-banner-footer" style="display:none">
+              <span class="tt-dropzone-path" id="tt-banner-path"></span>
+              <button class="tt-icon-btn tt-icon-btn-danger" onclick="ttClearImage('banner')" title="Remove image">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              </button>
+            </div>
+            <input type="file" id="tt-banner-file" accept="image/*" style="display:none" onchange="ttFileChosen(event,'banner')">
+          </div>
+
+          <div class="tt-drag-hint">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Drag the saved images directly into YouTube's upload fields.
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MAIN: Title Templates Library -->
+      <div class="tt-main">
+
+        <div class="tt-main-header">
+          <div class="tt-main-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            Title Templates
+          </div>
+          <div class="tt-main-controls">
+            <div class="tt-search-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="tt-search" class="tt-search-input" placeholder="Search titles, tags..." oninput="ttRenderTemplates()">
+            </div>
+            <button class="tt-add-btn" onclick="ttOpenModal(null)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Template
+            </button>
+          </div>
+        </div>
+
+        <div class="tt-templates-grid" id="tt-templates-grid">
+          <!-- Cards rendered by JS -->
+        </div>
+
+        <div class="tt-empty-state" id="tt-empty-state" style="display:none">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <p>No templates yet</p>
+          <span>Click "New Template" to save your first title &amp; description.</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- END TITLES AND TAGS SECTION -->

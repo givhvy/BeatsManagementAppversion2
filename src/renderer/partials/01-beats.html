@@ -1,0 +1,360 @@
+  <!-- Section: Beats Management -->
+  <div class="app-section active" id="beats-section">
+  <div class="container">
+    <!-- Left Panel - All Beats -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <h2>Beats</h2>
+        <button id="refresh-beats-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+      </div>
+      <!-- Tab Buttons -->
+      <div class="tabs-container">
+        <button class="tab-btn active" data-folder-type="all">Beats</button>
+        <button class="tab-btn" data-folder-type="tagged">Untagged</button>
+        <button class="tab-btn" data-folder-type="untagged">Tagged</button>
+      </div>
+      <div class="folder-path" id="folder-path">No folder selected</div>
+      <!-- Channel Management (only visible in Tagged Beats tab) -->
+      <div class="channel-management" id="channel-management" style="display: none;">
+        <div class="channel-stats" id="channel-stats">
+          <div class="stat-item">
+            <span class="stat-label">Total Channels:</span>
+            <span class="stat-value" id="total-channels">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Available Emails:</span>
+            <span class="stat-value" id="available-emails">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Used Folders:</span>
+            <span class="stat-value" id="used-folders">0</span>
+          </div>
+        </div>
+      </div>
+      <!-- Breadcrumb navigation for tagged/untagged -->
+      <div class="breadcrumb-container" id="breadcrumb-container" style="display: none;">
+        <div class="breadcrumb" id="breadcrumb"></div>
+      </div>
+      <div class="filter-container" id="filter-container">
+        <input type="text" id="filter-input" placeholder="Filter by number (e.g., 1, 2, 3...)" class="filter-input">
+      </div>
+      <div class="beats-list" id="beats-list">
+        <!-- Beats will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Middle Panel - Packs Grid -->
+    <div class="middle-panel" id="middle-panel">
+      <div class="panel-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <h2 id="packs-header-title">Packs</h2>
+          <!-- View Toggle Buttons -->
+          <div class="pack-view-toggle">
+            <button id="channel-view-btn" class="pack-view-btn active" data-view="channel">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Channel Views
+            </button>
+            <button id="genre-view-btn" class="pack-view-btn" data-view="genre">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              Genre Views
+            </button>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <!-- Channel management buttons (only visible in Tagged Beats tab) -->
+          <button id="create-channels-btn" class="btn-primary" style="display: none;">Create Channels</button>
+          <button id="auto-add-channel-btn" class="btn-secondary" style="display: none;">Auto Add</button>
+          <button id="add-email-btn" class="btn-secondary" style="display: none;">+ Email</button>
+          <button id="view-emails-btn" class="btn-secondary" style="display: none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Emails</button>
+
+          <button id="toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
+          <button id="images-manager-btn" class="btn-secondary" title="Image Database"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> Images</button>
+          <button id="database-info-btn" class="btn-secondary" title="Database Info"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></button>
+          <button id="create-pack-btn" class="btn-primary">+ Create Pack</button>
+          <button id="packs-zoom-out" class="btn-secondary btn-small" title="Zoom Out" style="padding:3px 9px;font-size:16px;line-height:1;">-</button>
+          <button id="packs-zoom-in" class="btn-secondary btn-small" title="Zoom In" style="padding:3px 9px;font-size:16px;line-height:1;">+</button>
+        </div>
+      </div>
+      <!-- Total Beats Counter -->
+      <div class="total-beats-container">
+        <div class="total-beats-header">
+          <span class="total-beats-label">Total Beats in All Packs</span>
+          <span class="total-beats-count" id="total-beats-count">0/20000</span>
+        </div>
+        <div class="total-beats-progress-bar">
+          <div class="total-beats-progress-fill" id="total-beats-progress-fill"></div>
+        </div>
+      </div>
+      <div class="filter-container">
+        <input type="text" id="pack-filter-input" placeholder="Filter by pack number (e.g., C1, C2, 1, 2...)" class="filter-input">
+      </div>
+      <div class="packs-grid" id="packs-grid">
+        <!-- Pack cards will be created here -->
+      </div>
+    </div>
+
+    <!-- Right Panel - Pack Details -->
+    <div class="right-panel" id="right-panel" style="display: none;">
+      <div class="panel-header">
+        <button id="back-to-packs-btn" class="btn-back"> Back</button>
+        <input type="text" id="pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
+        <div style="display: flex; gap: 8px;">
+          <button id="auto-upload-6-btn" class="btn-primary" title="Auto render and upload next 6 unuploaded beats"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Auto Upload 6</button>
+          <button id="toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
+          <button id="delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+        </div>
+      </div>
+      <div class="pack-detail-content">
+        <div class="pack-detail-beats" id="pack-detail-beats">
+          <div class="pack-detail-count" id="pack-detail-count">0 beats</div>
+          <!-- Pack beats will be shown here -->
+        </div>
+        <div class="resize-handle" id="resize-handle"></div>
+        <div class="pack-detail-right" id="pack-detail-right-panel">
+          <!-- Beat Image Preview -->
+          <div class="beat-image-preview" id="beat-image-preview" style="display: none;">
+            <div id="beat-image-container" style="position: relative; aspect-ratio: 1/1; background: #111; border-radius: 6px; overflow: hidden;">
+              <img id="beat-image-display" draggable="true" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+          </div>
+
+          <!-- Beat Prompt -->
+          <div class="beat-prompt-section" id="beat-prompt-section" style="display: none;">
+            <div class="right-panel-card">
+              <div class="right-panel-card-header">
+                <span class="right-panel-label">PROMPT</span>
+                <button id="edit-prompt-btn" class="btn-icon-sm">Edit</button>
+              </div>
+              <div id="beat-prompt-display" class="prompt-display-box">
+                No prompt available
+              </div>
+              <textarea id="beat-prompt-editor" class="prompt-editor-box" style="display: none;" placeholder="Enter prompt for this beat..."></textarea>
+              <div id="prompt-edit-actions" style="display: none; flex-direction: row; gap: 8px; margin-top: 8px;">
+                <button id="save-prompt-btn" class="btn-primary" style="padding: 5px 14px; font-size: 12px;">Save</button>
+                <button id="cancel-prompt-btn" class="btn-secondary" style="padding: 5px 14px; font-size: 12px;">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pack Email/Password Info -->
+          <div class="pack-email-info" id="pack-email-info">
+            <!-- Email info will be rendered here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Player -->
+  <div class="audio-player" id="audio-player">
+    <div class="player-pill">
+      <!-- Album Art / Track Icon -->
+      <div class="player-art" id="player-art">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" opacity="0.5">
+          <path d="M9 18V5l12-2v13"></path>
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="18" cy="16" r="3"></circle>
+        </svg>
+      </div>
+
+      <!-- Track Info -->
+      <div class="player-info">
+        <div class="now-playing" id="now-playing">No track playing</div>
+      </div>
+
+      <!-- Controls -->
+      <div class="player-controls">
+        <button id="prev-btn" class="ctrl-btn ctrl-skip" title="Previous" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+        </button>
+        <button id="play-pause-btn" class="ctrl-btn ctrl-play" disabled>
+          <span id="play-icon">
+            <svg id="icon-play" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <svg id="icon-pause" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+          </span>
+        </button>
+        <button id="next-btn" class="ctrl-btn ctrl-skip" title="Next" disabled>
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+        </button>
+      </div>
+
+      <!-- Progress -->
+      <div class="player-progress">
+        <span class="time" id="current-time">0:00</span>
+        <div class="player-track">
+          <input type="range" id="progress-bar" min="0" max="100" value="0" disabled>
+        </div>
+        <span class="time" id="duration-time">0:00</span>
+      </div>
+
+      <!-- Volume -->
+      <div class="player-volume">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <input type="range" id="volume-slider" min="0" max="100" value="70">
+      </div>
+    </div>
+  </div>
+
+  <audio id="audio-element"></audio>
+
+  <!-- Database Info Modal -->
+  <div id="database-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Database Information</h3>
+        <button id="close-modal-btn" class="close-btn">x</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Database Location:</label>
+          <div class="db-path" id="db-path-display">Loading...</div>
+          <button id="copy-path-btn" class="btn-secondary" style="margin-top: 10px;">Copy Path</button>
+        </div>
+        <div class="info-section" style="margin-top: 20px;">
+          <label>Backup & Sync:</label>
+          <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
+            Export your database to back it up or transfer to another device.
+          </p>
+          <div style="display: flex; gap: 10px;">
+            <button id="export-db-btn" class="btn-primary">Export Database</button>
+            <button id="import-db-btn" class="btn-secondary">Import Database</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Manager Modal -->
+  <div id="images-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 900px;">
+      <div class="modal-header">
+        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>Image Database</h3>
+        <button id="close-images-modal-btn" class="close-btn">x</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Image Folder:</label>
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <div class="db-path" id="image-folder-display" style="flex: 1;">No folder selected</div>
+            <button id="select-image-folder-btn" class="btn-primary">Select Folder</button>
+            <button id="refresh-images-btn" class="btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-3.12"/></svg> Refresh</button>
+          </div>
+        </div>
+
+        <div class="info-section" style="margin-top: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <label>Images (<span id="images-total-count">0</span> total, <span id="images-used-count">0</span> used, <span id="images-unused-count">0</span> unused)</label>
+            <div style="display: flex; gap: 10px;">
+              <button id="clear-cache-btn" class="btn-secondary" title="Clear 1:1 image cache"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Clear Cache</button>
+              <button id="randomize-images-btn" class="btn-primary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg> Randomize Unused</button>
+            </div>
+          </div>
+          <div id="images-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; max-height: 400px; overflow-y: auto; padding: 10px; background: #1a1a1a; border-radius: 4px;">
+            <div style="grid-column: 1/-1; text-align: center; color: #999; padding: 40px;">Select an image folder to get started</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context Menu for Pack Beats -->
+  <div id="beat-context-menu" class="context-menu" style="display: none;">
+    <div class="context-menu-item" id="mark-last-used">Mark as Last Used</div>
+    <div class="context-menu-item" id="unmark-last-used">Remove Last Used</div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item" id="create-video-from-beat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M4 11v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8H4Z"/><path d="m4 11-.88-2.87a2 2 0 0 1 1.33-2.5l11.48-3.5a2 2 0 0 1 2.5 1.32l.87 2.87L4 11.01Z"/><path d="m6.6 4.99 3.38 4.2"/><path d="m11.86 3.38 3.38 4.2"/></svg>Create Video</div>
+    <div class="context-menu-item" id="upload-beat-to-youtube"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>Upload to YouTube</div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item" id="auto-upload-beat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Auto Render &amp; Upload</div>
+    <div class="context-menu-item" id="auto-upload-6-from-here"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Auto Upload 6 from here</div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item" id="market-this-beat-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.76 12"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M16 4a8 8 0 0 1 0 16"/><line x1="2" y1="2" x2="22" y2="22"/></svg>Market this Beat</div>
+  </div>
+
+  <!-- Create Channels Modal -->
+  <div id="create-channels-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create Channels</h3>
+        <button id="close-channels-modal-btn" class="close-btn">x</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Number of Channels:</label>
+          <input type="number" id="num-channels-input" min="1" value="1" class="modal-input">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Beats per Channel:</label>
+          <input type="number" id="beats-per-channel-input" min="1" value="40" class="modal-input">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
+            This will automatically create channels (C[Number]) and assign random beats from available page folders.
+            Each page folder contains 20 beats. Folders will be tagged with channel names.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button id="confirm-create-channels-btn" class="btn-primary">Create</button>
+          <button id="cancel-create-channels-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Email Modal -->
+  <div id="add-email-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Email Accounts</h3>
+        <button id="close-add-email-modal-btn" class="close-btn">x</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Bulk Add (paste multiple lines):</label>
+          <textarea id="bulk-email-input" placeholder="Paste one or more lines in format:
+email@gmail.com[TAB]password|recovery@gmail.com
+email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8" style="font-family: monospace; font-size: 12px; resize: vertical;"></textarea>
+          <p style="font-size: 11px; color: #666; margin-top: 5px; margin-bottom: 0;">
+             Format: <code>email[TAB]password|recovery</code> (one per line)<br>
+            Recovery email is optional. You can paste 1 or many emails at once.
+          </p>
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
+            Saved as: <code>email:password:recovery</code> in email.txt file
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button id="confirm-add-email-btn" class="btn-primary">Add Email(s)</button>
+          <button id="cancel-add-email-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Emails Modal -->
+  <div id="view-emails-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3>Email Accounts</h3>
+        <button id="close-view-emails-modal-btn" class="close-btn">x</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button id="filter-all-emails-btn" class="btn-secondary" style="flex: 1;">All (<span id="count-all">0</span>)</button>
+            <button id="filter-available-emails-btn" class="btn-secondary" style="flex: 1;">Available (<span id="count-available">0</span>)</button>
+            <button id="filter-used-emails-btn" class="btn-secondary" style="flex: 1;">Used (<span id="count-used">0</span>)</button>
+          </div>
+          <div id="emails-list-container" style="max-height: 400px; overflow-y: auto; border: 1px solid #333; border-radius: 4px; padding: 10px;">
+            <!-- Email items will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div> <!-- End beats-section -->

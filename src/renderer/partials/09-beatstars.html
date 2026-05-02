@@ -1,0 +1,221 @@
+  <!-- Section: Beatstars -->
+  <div class="app-section" id="beatstars-section">
+    <div class="beatstars-container">
+      <!-- Left Panel - Source Folder -->
+      <div class="beatstars-panel beatstars-source">
+        <div class="panel-header">
+          <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Source Folders</h2>
+          <button id="beatstars-select-root-btn" class="btn-secondary">Change Root</button>
+        </div>
+
+        <div class="beatstars-folder-select">
+          <div class="folder-path-display" id="beatstars-root-path">
+            F:\PlaygroundTest\autodownload\suno-ai-downloader\songs
+          </div>
+        </div>
+
+        <div class="beatstars-actions">
+          <button id="beatstars-refresh-folders-btn" class="btn-secondary"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.49-3.12"/></svg>Refresh</button>
+          <button id="beatstars-process-all-folders-btn" class="btn-primary" style="margin-left: 8px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Process All Folders</button>
+        </div>
+
+        <div class="beatstars-folder-browser" id="beatstars-folder-browser">
+          <div class="empty-state">Loading folders...</div>
+        </div>
+
+        <!-- Selected folder info -->
+        <div class="beatstars-selected-info" id="beatstars-selected-info" style="display: none;">
+          <div class="selected-folder-header">
+            <span class="selected-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2"/></svg></span>
+            <span class="selected-name" id="beatstars-selected-name">-</span>
+          </div>
+          <div class="selected-folder-stats">
+            <span id="beatstars-selected-count">0</span> audio files
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle Panel - Preview & Settings -->
+      <div class="beatstars-panel beatstars-middle">
+        <div class="panel-header">
+          <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Processing Settings</h2>
+        </div>
+
+        <div class="beatstars-settings">
+          <div class="setting-group">
+            <label class="setting-label">
+              <input type="checkbox" id="beatstars-remove-silence" checked>
+              <span>Remove silence at start</span>
+            </label>
+            <div class="setting-help">Cuts silent audio at the beginning of the track</div>
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-label">
+              <input type="checkbox" id="beatstars-convert-wav" checked>
+              <span>Convert to WAV (if not already)</span>
+            </label>
+            <div class="setting-help">Converts MP3, FLAC, etc. to WAV format</div>
+          </div>
+
+          <div class="setting-group">
+            <label class="setting-label">
+              <input type="checkbox" id="beatstars-rename" checked>
+              <span>Rename to artist only</span>
+            </label>
+            <div class="setting-help">"City Shadows - Mossen.wav"  "Mossen.wav"</div>
+          </div>
+
+          <div class="setting-group">
+            <label>Silence Threshold (dB):</label>
+            <input type="number" id="beatstars-silence-db" class="filter-input" value="-50" min="-80" max="-20">
+            <div class="setting-help">Audio below this level is considered silence</div>
+          </div>
+
+          <div class="setting-group">
+            <label>Min Silence Duration (seconds):</label>
+            <input type="number" id="beatstars-silence-duration" class="filter-input" value="0.1" min="0.05" max="2" step="0.05">
+            <div class="setting-help">Minimum silence length to detect</div>
+          </div>
+        </div>
+
+        <div class="beatstars-output-folder">
+          <label>Output Folder:</label>
+          <div class="folder-path-display" id="beatstars-output-path">
+            F:\PlaygroundTest\autodownload\suno-ai-downloader\BeatsUpload
+          </div>
+          <div class="output-subfolder-info" id="output-subfolder-info">
+            <span class="subfolder-arrow"></span>
+            <span id="output-subfolder-name">Select a folder above</span>
+          </div>
+          <button id="beatstars-output-folder-btn" class="btn-secondary">Change Output Root</button>
+        </div>
+
+        <div class="beatstars-preview" id="beatstars-preview" style="display: none;">
+          <h3><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Preview Changes</h3>
+          <div class="preview-item">
+            <span class="preview-label">Original:</span>
+            <span class="preview-value" id="preview-original">-</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">New Name:</span>
+            <span class="preview-value" id="preview-new-name">-</span>
+          </div>
+          <div class="preview-item">
+            <span class="preview-label">Format:</span>
+            <span class="preview-value" id="preview-format">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Process & Results -->
+      <div class="beatstars-panel beatstars-results">
+        <div class="panel-header">
+          <h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Process Files</h2>
+        </div>
+
+        <div class="beatstars-process-actions">
+          <button id="beatstars-process-selected-btn" class="btn-secondary" disabled>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:inline-block;vertical-align:middle;margin-right:4px"><polygon points="5 3 19 12 5 21 5 3"/></svg>Process Selected
+          </button>
+          <button id="beatstars-process-all-btn" class="btn-primary btn-large">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Process All Files
+          </button>
+        </div>
+
+        <div class="beatstars-progress" id="beatstars-progress" style="display: none;">
+          <div class="progress-header">
+            <span id="beatstars-progress-text">Processing...</span>
+            <span id="beatstars-progress-count">0/0</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="beatstars-progress-fill"></div>
+          </div>
+          <div class="current-file" id="beatstars-current-file">-</div>
+        </div>
+
+        <div class="beatstars-log" id="beatstars-log">
+          <div class="log-header"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Processing Log</div>
+          <div class="log-content" id="beatstars-log-content">
+            <div class="empty-state">Processing results will appear here</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Customer Modal -->
+  <div class="modal-overlay" id="add-customer-modal" style="display: none;">
+    <div class="modal-content customer-modal">
+      <div class="modal-header">
+        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>Add New Customer</h3>
+        <button class="modal-close" id="close-customer-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" id="new-customer-email" placeholder="email@example.com" />
+        </div>
+        <div class="form-group">
+          <label>Instagram</label>
+          <input type="text" id="new-customer-instagram" placeholder="@username" />
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="new-customer-type">
+            <option value="lead">Lead</option>
+            <option value="customer">Customer</option>
+            <option value="vip">VIP</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <textarea id="new-customer-notes" placeholder="Additional notes..." rows="3"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancel-customer-btn">Cancel</button>
+        <button class="btn-primary" id="save-customer-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save Customer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Email Modal -->
+  <div class="modal-overlay" id="bulk-email-modal" style="display: none;">
+    <div class="modal-content bulk-email-modal">
+      <div class="modal-header">
+        <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Bulk Email</h3>
+        <button class="modal-close" id="close-bulk-email-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="bulk-email-recipients">
+          <h4>Recipients</h4>
+          <div class="recipient-filters">
+            <label><input type="checkbox" id="bulk-all" checked /> All Customers</label>
+            <label><input type="checkbox" id="bulk-leads" /> Leads Only</label>
+            <label><input type="checkbox" id="bulk-customers" /> Customers Only</label>
+            <label><input type="checkbox" id="bulk-vip" /> VIP Only</label>
+          </div>
+          <div class="recipient-count">
+            <span id="bulk-recipient-count">0</span> recipients selected
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Subject:</label>
+          <input type="text" id="bulk-email-subject" placeholder="Email subject..." />
+        </div>
+
+        <div class="form-group">
+          <label>Message:</label>
+          <textarea id="bulk-email-body" placeholder="Write your email message... Use {name} for personalization" rows="8"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancel-bulk-email-btn">Cancel</button>
+        <button class="btn-primary" id="confirm-bulk-email-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Send to All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->

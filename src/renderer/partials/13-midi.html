@@ -1,0 +1,98 @@
+<!-- ============================
+     MIDI SECTION
+     ============================ -->
+  <div class="app-section" id="midi-section">
+  <div class="container">
+    <!-- Left Panel - All MIDI Files -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <h2>MIDI Files</h2>
+        <button id="refresh-midi-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+      </div>
+      <!-- Tab Buttons -->
+      <div class="tabs-container">
+        <button class="tab-btn active" data-midi-type="all">All MIDI</button>
+        <button class="tab-btn" data-midi-type="untagged">Untagged</button>
+        <button class="tab-btn" data-midi-type="tagged">Tagged</button>
+      </div>
+      <div class="folder-path" id="midi-folder-path">No folder selected</div>
+      <div class="filter-container" id="midi-filter-container">
+        <input type="text" id="midi-filter-input" placeholder="Filter by name..." class="filter-input">
+      </div>
+      <div class="beats-list" id="midi-list"
+           ondrop="handleMidiDrop(event)"
+           ondragover="handleMidiDragOver(event)"
+           ondragleave="handleMidiDragLeave(event)">
+        <!-- MIDI files will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Middle Panel - MIDI Packs Grid -->
+    <div class="middle-panel" id="midi-middle-panel">
+      <div class="panel-header">
+        <h2 id="midi-packs-header-title">MIDI Packs</h2>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="midi-toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
+          <button id="midi-create-pack-btn" class="btn-primary">+ Create Pack</button>
+          <button id="midi-packs-zoom-out" class="btn-secondary btn-small" title="Zoom Out" style="padding:3px 9px;font-size:16px;line-height:1;">-</button>
+          <button id="midi-packs-zoom-in" class="btn-secondary btn-small" title="Zoom In" style="padding:3px 9px;font-size:16px;line-height:1;">+</button>
+        </div>
+      </div>
+      <!-- Total MIDI Counter -->
+      <div class="total-beats-container">
+        <div class="total-beats-header">
+          <span class="total-beats-label">Total MIDI Files in All Packs</span>
+          <span class="total-beats-count" id="total-midi-count">0/10000</span>
+        </div>
+        <div class="total-beats-progress-bar">
+          <div class="total-beats-progress-fill" id="total-midi-progress-fill"></div>
+        </div>
+      </div>
+      <div class="filter-container">
+        <input type="text" id="midi-pack-filter-input" placeholder="Filter by pack number (e.g., M1, M2, 1, 2...)" class="filter-input">
+      </div>
+      <div class="packs-grid" id="midi-packs-grid">
+        <!-- Pack cards will be created here -->
+      </div>
+    </div>
+
+    <!-- Right Panel - Pack Details -->
+    <div class="right-panel" id="midi-right-panel" style="display: none;">
+      <div class="panel-header">
+        <button id="midi-back-to-packs-btn" class="btn-back"> Back</button>
+        <input type="text" id="midi-pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
+        <div style="display: flex; gap: 8px;">
+          <button id="midi-toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
+          <button id="midi-delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+        </div>
+      </div>
+      <div class="pack-detail-content">
+        <div class="pack-detail-beats" id="midi-pack-detail-list">
+          <div class="pack-detail-count" id="midi-pack-detail-count">0 files</div>
+          <!-- Pack MIDI files will be shown here -->
+        </div>
+        <div class="resize-handle" id="midi-resize-handle"></div>
+        <div class="pack-detail-right" id="midi-pack-detail-right-panel">
+          <!-- MIDI Info -->
+          <div class="beat-prompt-section" id="midi-info-section" style="display: none;">
+            <div class="right-panel-card">
+              <div class="right-panel-card-header">
+                <span class="right-panel-label">MIDI INFO</span>
+                <button id="midi-edit-info-btn" class="btn-icon-sm">Edit</button>
+              </div>
+              <div id="midi-info-display" class="prompt-display-box">
+                No info available
+              </div>
+              <textarea id="midi-info-editor" class="prompt-editor-box" style="display: none;" placeholder="Enter info for this MIDI file..."></textarea>
+              <div id="midi-info-edit-actions" style="display: none; flex-direction: row; gap: 8px; margin-top: 8px;">
+                <button id="midi-save-info-btn" class="btn-primary" style="padding: 5px 14px; font-size: 12px;">Save</button>
+                <button id="midi-cancel-info-btn" class="btn-secondary" style="padding: 5px 14px; font-size: 12px;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- END MIDI SECTION -->
