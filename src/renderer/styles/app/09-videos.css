@@ -42,7 +42,12 @@
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.2s ease;
-  cursor: pointer;
+  cursor: grab;
+  user-select: none;
+}
+
+.video-card:active {
+  cursor: grabbing;
 }
 
 .video-card:hover {

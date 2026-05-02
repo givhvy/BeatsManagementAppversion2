@@ -51,6 +51,8 @@ mainNavTabs.forEach(tab => {
       initBackgroundSection();
     } else if (section === 'midi') {
       initMidiSection();
+    } else if (section === 'drumkit') {
+      initDrumkitSection();
     }
   });
 });

@@ -64,8 +64,7 @@
           <!-- Channel management buttons (only visible in Tagged Beats tab) -->
           <button id="create-channels-btn" class="btn-primary" style="display: none;">Create Channels</button>
           <button id="auto-add-channel-btn" class="btn-secondary" style="display: none;">Auto Add</button>
-          <button id="add-email-btn" class="btn-secondary" style="display: none;">+ Email</button>
-          <button id="view-emails-btn" class="btn-secondary" style="display: none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Emails</button>
+          <button id="email-manager-btn" class="btn-secondary" style="display: none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8"/><polyline points="22,6 12,13 2,6"/><path d="M19 16v6"/><path d="M16 19h6"/></svg> Emails</button>
 
           <button id="toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
           <button id="images-manager-btn" class="btn-secondary" title="Image Database"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> Images</button>
@@ -305,53 +304,51 @@
     </div>
   </div>
 
-  <!-- Add Email Modal -->
-  <div id="add-email-modal" class="modal" style="display: none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Add Email Accounts</h3>
-        <button id="close-add-email-modal-btn" class="close-btn">x</button>
-      </div>
-      <div class="modal-body">
-        <div class="info-section">
-          <label>Bulk Add (paste multiple lines):</label>
-          <textarea id="bulk-email-input" placeholder="Paste one or more lines in format:
-email@gmail.com[TAB]password|recovery@gmail.com
-email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8" style="font-family: monospace; font-size: 12px; resize: vertical;"></textarea>
-          <p style="font-size: 11px; color: #666; margin-top: 5px; margin-bottom: 0;">
-             Format: <code>email[TAB]password|recovery</code> (one per line)<br>
-            Recovery email is optional. You can paste 1 or many emails at once.
-          </p>
-        </div>
-        <div class="info-section" style="margin-top: 15px;">
-          <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
-            Saved as: <code>email:password:recovery</code> in email.txt file
-          </p>
-        </div>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-          <button id="confirm-add-email-btn" class="btn-primary">Add Email(s)</button>
-          <button id="cancel-add-email-btn" class="btn-secondary">Cancel</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- View Emails Modal -->
-  <div id="view-emails-modal" class="modal" style="display: none;">
-    <div class="modal-content" style="max-width: 800px;">
+  <!-- Email Manager Modal -->
+  <div id="email-manager-modal" class="modal" style="display: none;">
+    <div class="modal-content email-manager-modal">
       <div class="modal-header">
         <h3>Email Accounts</h3>
-        <button id="close-view-emails-modal-btn" class="close-btn">x</button>
+        <button id="close-email-manager-modal-btn" class="close-btn">x</button>
       </div>
       <div class="modal-body">
-        <div class="info-section">
-          <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <button id="filter-all-emails-btn" class="btn-secondary" style="flex: 1;">All (<span id="count-all">0</span>)</button>
-            <button id="filter-available-emails-btn" class="btn-secondary" style="flex: 1;">Available (<span id="count-available">0</span>)</button>
-            <button id="filter-used-emails-btn" class="btn-secondary" style="flex: 1;">Used (<span id="count-used">0</span>)</button>
+        <div class="email-manager-tabs">
+          <button id="email-manager-add-tab" class="email-manager-tab active" type="button">Add Emails</button>
+          <button id="email-manager-list-tab" class="email-manager-tab" type="button">Manage Emails</button>
+        </div>
+
+        <div id="email-manager-add-panel" class="email-manager-panel active">
+          <div class="info-section">
+            <label>Bulk Add (paste multiple lines):</label>
+            <textarea id="bulk-email-input" placeholder="Paste one or more lines in format:
+email@gmail.com[TAB]password|recovery@gmail.com
+email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8" style="font-family: monospace; font-size: 12px; resize: vertical;"></textarea>
+            <p style="font-size: 11px; color: #666; margin-top: 5px; margin-bottom: 0;">
+               Format: <code>email[TAB]password|recovery</code> (one per line)<br>
+              Recovery email is optional. You can paste 1 or many emails at once.
+            </p>
           </div>
-          <div id="emails-list-container" style="max-height: 400px; overflow-y: auto; border: 1px solid #333; border-radius: 4px; padding: 10px;">
-            <!-- Email items will be loaded here -->
+          <div class="info-section" style="margin-top: 15px;">
+            <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
+              Saved as: <code>email:password:recovery</code> in email.txt file
+            </p>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button id="confirm-add-email-btn" class="btn-primary">Add Email(s)</button>
+            <button id="cancel-add-email-btn" class="btn-secondary">Cancel</button>
+          </div>
+        </div>
+
+        <div id="email-manager-list-panel" class="email-manager-panel">
+          <div class="info-section">
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+              <button id="filter-all-emails-btn" class="btn-secondary" style="flex: 1;">All (<span id="count-all">0</span>)</button>
+              <button id="filter-available-emails-btn" class="btn-secondary" style="flex: 1;">Available (<span id="count-available">0</span>)</button>
+              <button id="filter-used-emails-btn" class="btn-secondary" style="flex: 1;">Used (<span id="count-used">0</span>)</button>
+            </div>
+            <div id="emails-list-container" style="max-height: 400px; overflow-y: auto; border: 1px solid #333; border-radius: 4px; padding: 10px;">
+              <!-- Email items will be loaded here -->
+            </div>
           </div>
         </div>
       </div>

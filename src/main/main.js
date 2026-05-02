@@ -19,6 +19,7 @@ try {
 
 // MUST be called before app is ready for taskbar icon + pin to work on Windows
 app.setAppUserModelId('com.givhvy.beatsmanagementstudio');
+app.commandLine.appendSwitch('remote-debugging-port', process.env.BEATS_CDP_PORT || '9223');
 
 // Pre-cached drag icon (populated once app is ready)
 let cachedDragIcon = null;
@@ -356,6 +357,28 @@ ipcMain.handle('read-beats-folder', async (event, folderPath) => {
   }
 });
 
+ipcMain.handle('read-drumkit-folder', async (event, folderPath) => {
+  try {
+    const files = fs.readdirSync(folderPath);
+    const drumkitExtensions = ['.zip', '.rar', '.wav', '.mp3', '.flac', '.flp', '.sf2', '.opus', '.ogg', '.m4a', '.aac', '.kit', '.onekit'];
+
+    const kits = files
+      .filter(file => {
+        const ext = path.extname(file).toLowerCase();
+        return drumkitExtensions.includes(ext) || ext === '';
+      })
+      .map(file => ({
+        name: file,
+        path: path.join(folderPath, file)
+      }));
+
+    return kits;
+  } catch (error) {
+    console.error('Error reading drumkit folder:', error);
+    return [];
+  }
+});
+
 // Read images from folder
 ipcMain.handle('read-images-folder', async (event, folderPath) => {
   try {
@@ -412,7 +435,16 @@ ipcMain.handle('read-folder-contents', async (event, folderPath) => {
 ipcMain.handle('save-data', async (event, data) => {
   const dataPath = path.join(app.getPath('userData'), 'beats-data.json');
   try {
-    const json = JSON.stringify(data, null, 2);
+    // Load existing data and merge to prevent cross-tab data loss
+    let existing = {};
+    if (fs.existsSync(dataPath)) {
+      try {
+        const raw = fs.readFileSync(dataPath, 'utf8');
+        existing = JSON.parse(raw);
+      } catch (e) { /* ignore parse errors, start fresh */ }
+    }
+    const merged = { ...existing, ...data };
+    const json = JSON.stringify(merged, null, 2);
     fs.writeFileSync(dataPath, json);
     // Mirror to data/ folder so git can track it
     const mirrorPath = path.join(APP_ROOT, 'data', 'beats-data.json');
@@ -2371,15 +2403,19 @@ const AI_AGENT_TOOLS = [
   { type: 'function', function: { name: 'create_pack', description: 'Create a new empty beat pack with the given name.', parameters: { type: 'object', required: ['name'], properties: { name: { type: 'string', description: 'Name for the new pack' } } } } },
   { type: 'function', function: { name: 'rename_pack', description: 'Rename an existing beat pack.', parameters: { type: 'object', required: ['current_name', 'new_name'], properties: { current_name: { type: 'string', description: 'Current pack name (partial match ok)' }, new_name: { type: 'string', description: 'New name for the pack' } } } } },
   { type: 'function', function: { name: 'add_beats_to_pack', description: 'Scan a folder on disk for audio files (.wav, .mp3, .flac, etc.) and add them all to an existing pack.', parameters: { type: 'object', required: ['pack_name', 'folder_path'], properties: { pack_name: { type: 'string', description: 'Name of the pack to add beats into (partial match ok)' }, folder_path: { type: 'string', description: 'Full file system path to the folder containing the audio files' } } } } },
+  { type: 'function', function: { name: 'list_background_music_packs', description: 'List all Background Music packs with track counts.', parameters: { type: 'object', properties: {} } } },
+  { type: 'function', function: { name: 'create_background_music_pack', description: 'Create a new empty Background Music pack.', parameters: { type: 'object', required: ['name'], properties: { name: { type: 'string', description: 'Name for the background music pack' } } } } },
+  { type: 'function', function: { name: 'add_background_music_to_pack', description: 'Scan a folder for audio files and add them to a Background Music pack.', parameters: { type: 'object', required: ['pack_name', 'folder_path'], properties: { pack_name: { type: 'string', description: 'Background Music pack name (partial match ok)' }, folder_path: { type: 'string', description: 'Full path to folder containing background music files' } } } } },
   { type: 'function', function: { name: 'get_folders', description: 'Get the list of beat source folders configured in the app.', parameters: { type: 'object', properties: {} } } },
   { type: 'function', function: { name: 'list_customers', description: 'List all customers in the database. Optionally filter by type.', parameters: { type: 'object', properties: { type: { type: 'string', description: 'Filter by: lead | customer | vip (optional)' } } } } },
   { type: 'function', function: { name: 'add_customer', description: 'Add a new customer to the customer database.', parameters: { type: 'object', required: ['email'], properties: { email: { type: 'string', description: 'Customer email address' }, instagram: { type: 'string', description: 'Instagram handle, include the @' }, type: { type: 'string', description: 'lead | customer | vip (default: lead)' }, notes: { type: 'string', description: 'Optional notes' } } } } },
-  { type: 'function', function: { name: 'navigate_tab', description: 'Switch the visible tab in the Beats Management app UI.', parameters: { type: 'object', required: ['tab'], properties: { tab: { type: 'string', description: 'Tab to navigate to: beats | video | youtube | progress | customers | beatstars' } } } } }
+  { type: 'function', function: { name: 'navigate_tab', description: 'Switch the visible tab in the Beats Management app UI.', parameters: { type: 'object', required: ['tab'], properties: { tab: { type: 'string', description: 'Tab to navigate to: beats | autovid | videos | consistency | distro | youtube | progress | customers | beatstars | money | titles | background | midi' } } } } }
 ];
 
 async function executeAgentTool(toolName, toolArgs) {
   const beatsDataPath = path.join(app.getPath('userData'), 'beats-data.json');
   const customersDataPath = path.join(app.getPath('userData'), 'customers.json');
+  const backgroundDataPath = path.join(app.getPath('userData'), 'background-music-data.json');
   const readBeats = () => fs.existsSync(beatsDataPath) ? JSON.parse(fs.readFileSync(beatsDataPath, 'utf8')) : { packs: [], folders: [] };
   const writeBeats = (data) => {
     const json = JSON.stringify(data, null, 2);
@@ -2395,6 +2431,11 @@ async function executeAgentTool(toolName, toolArgs) {
     return { customers: raw.customers || [], emailHistory: raw.emailHistory || [] };
   };
   const readCustomers = () => readCustomersFile().customers;
+  const readBackground = () => fs.existsSync(backgroundDataPath) ? JSON.parse(fs.readFileSync(backgroundDataPath, 'utf8')) : { music: [], packs: [] };
+  const writeBackground = (data) => {
+    const json = JSON.stringify(data, null, 2);
+    fs.writeFileSync(backgroundDataPath, json);
+  };
   const writeCustomers = (arr, emailHistory) => {
     const existing = readCustomersFile();
     const data = { customers: arr, emailHistory: emailHistory !== undefined ? emailHistory : existing.emailHistory };
@@ -2464,6 +2505,58 @@ async function executeAgentTool(toolName, toolArgs) {
       return `Added ${toAdd.length} beats to "${pack.name}" (${files.length - toAdd.length} already existed)`;
     }
 
+    case 'list_background_music_packs': {
+      const data = readBackground();
+      return JSON.stringify((data.packs || []).map(p => ({ id: p.id, name: p.name, tracks: (p.music || []).length, hidden: !!p.hidden })));
+    }
+
+    case 'create_background_music_pack': {
+      const data = readBackground();
+      if (!data.packs) data.packs = [];
+      const exists = data.packs.find(p => p.name.toLowerCase() === toolArgs.name.toLowerCase());
+      if (exists) return `Background Music pack "${toolArgs.name}" already exists.`;
+      data.packs.push({
+        id: `bgpack_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+        name: toolArgs.name,
+        music: [],
+        thumbnail: null,
+        hidden: false,
+        createdAt: new Date().toISOString()
+      });
+      writeBackground(data);
+      return `Created Background Music pack "${toolArgs.name}"`;
+    }
+
+    case 'add_background_music_to_pack': {
+      const data = readBackground();
+      const pack = (data.packs || []).find(p => p.name.toLowerCase().includes(toolArgs.pack_name.toLowerCase()));
+      if (!pack) return `No Background Music pack found matching "${toolArgs.pack_name}"`;
+      if (!fs.existsSync(toolArgs.folder_path)) return `Folder not found: ${toolArgs.folder_path}`;
+      const audioExts = new Set(['.mp3', '.wav', '.flac', '.m4a', '.aac', '.ogg', '.wma']);
+      const files = fs.readdirSync(toolArgs.folder_path).filter(f => audioExts.has(path.extname(f).toLowerCase()));
+      if (!files.length) return `No audio files found in "${toolArgs.folder_path}"`;
+      if (!data.music) data.music = [];
+      if (!pack.music) pack.music = [];
+      const existingPackPaths = new Set(pack.music.map(m => m.filePath));
+      const libraryByPath = new Map(data.music.map(m => [m.filePath, m]));
+      const toAdd = [];
+      for (const file of files) {
+        const filePath = path.join(toolArgs.folder_path, file);
+        if (existingPackPaths.has(filePath)) continue;
+        let music = libraryByPath.get(filePath);
+        if (!music) {
+          music = { id: `bgm_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`, name: file, filePath, addedAt: new Date().toISOString() };
+          data.music.push(music);
+          libraryByPath.set(filePath, music);
+        }
+        toAdd.push({ id: music.id, name: music.name, filePath: music.filePath, duration: music.duration });
+      }
+      if (!toAdd.length) return `All ${files.length} audio files already exist in "${pack.name}"`;
+      pack.music = [...pack.music, ...toAdd];
+      writeBackground(data);
+      return `Added ${toAdd.length} background music tracks to "${pack.name}"`;
+    }
+
     case 'get_folders': {
       const data = readBeats();
       return JSON.stringify(data.folders || []);
@@ -2499,15 +2592,17 @@ async function executeAgentTool(toolName, toolArgs) {
     }
 
     case 'navigate_tab': {
-      const tabMap = { beats: 0, video: 1, youtube: 2, progress: 3, customers: 4, beatstars: 5 };
-      const idx = tabMap[toolArgs.tab];
-      if (idx === undefined) return `Unknown tab: ${toolArgs.tab}`;
+      const tab = String(toolArgs.tab || '').toLowerCase();
+      const aliases = { video: 'videos', create: 'autovid', uploader: 'youtube', customer: 'customers' };
+      const section = aliases[tab] || tab;
+      const allowed = new Set(['beats', 'autovid', 'videos', 'consistency', 'distro', 'youtube', 'progress', 'customers', 'beatstars', 'money', 'titles', 'background', 'midi']);
+      if (!allowed.has(section)) return `Unknown tab: ${toolArgs.tab}`;
       if (mainWindow) {
         mainWindow.webContents.executeJavaScript(
-          `const tabs = document.querySelectorAll('.main-nav-tab'); if (tabs[${idx}]) tabs[${idx}].click();`
+          `const tab = document.querySelector('.main-nav-tab[data-section="${section}"]'); if (tab) tab.click();`
         ).catch(() => {});
       }
-      return `Switched to ${toolArgs.tab} tab`;
+      return `Switched to ${section} tab`;
     }
 
     default:
@@ -2515,7 +2610,7 @@ async function executeAgentTool(toolName, toolArgs) {
   }
 }
 
-const AI_DATA_MODIFYING = new Set(['create_pack', 'rename_pack', 'add_beats_to_pack', 'add_customer']);
+const AI_DATA_MODIFYING = new Set(['create_pack', 'rename_pack', 'add_beats_to_pack', 'create_background_music_pack', 'add_background_music_to_pack', 'add_customer']);
 
 ipcMain.handle('ai-command', async (event, { message, history }) => {
   try {
@@ -2529,6 +2624,7 @@ ipcMain.handle('ai-command', async (event, { message, history }) => {
       { role: 'user', content: message }
     ];
     let dataModified = false;
+    let backgroundModified = false;
     let customersModified = false;
     const log = [];
 
@@ -2563,6 +2659,7 @@ ipcMain.handle('ai-command', async (event, { message, history }) => {
       if (!assistantMsg.tool_calls || assistantMsg.tool_calls.length === 0) {
         let content = (assistantMsg.content || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
         if (dataModified && mainWindow) mainWindow.webContents.send('ai-data-updated');
+        if (backgroundModified && mainWindow) mainWindow.webContents.send('ai-background-updated');
         if (customersModified && mainWindow) mainWindow.webContents.send('ai-customers-updated');
         return { success: true, response: content, log };
       }
@@ -2577,6 +2674,7 @@ ipcMain.handle('ai-command', async (event, { message, history }) => {
         catch (e) { result = 'Error: ' + e.message; }
         log.push({ tool: name, args, result });
         if (AI_DATA_MODIFYING.has(name)) dataModified = true;
+        if (name === 'create_background_music_pack' || name === 'add_background_music_to_pack') backgroundModified = true;
         if (name === 'add_customer') customersModified = true;
         messages.push({ role: 'tool', content: String(result) });
       }

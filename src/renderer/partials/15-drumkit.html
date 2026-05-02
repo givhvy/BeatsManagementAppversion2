@@ -1,0 +1,113 @@
+<!-- ============================
+     DRUM KIT SECTION
+     ============================ -->
+  <div class="app-section" id="drumkit-section">
+  <div class="container">
+    <!-- Left Panel - All Drum Kit Files -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <h2>Drum Kits</h2>
+        <button id="refresh-drumkit-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+      </div>
+      <!-- Tab Buttons -->
+      <div class="tabs-container">
+        <button class="tab-btn active" data-drumkit-type="all">All Kits</button>
+        <button class="tab-btn" data-drumkit-type="untagged">Untagged</button>
+        <button class="tab-btn" data-drumkit-type="tagged">Tagged</button>
+      </div>
+      <div class="folder-path" id="drumkit-folder-path">No folder selected</div>
+      <div class="filter-container" id="drumkit-filter-container">
+        <input type="text" id="drumkit-filter-input" placeholder="Filter by name..." class="filter-input">
+      </div>
+      <div class="beats-list" id="drumkit-list"
+           ondrop="handleDrumkitDrop(event)"
+           ondragover="handleDrumkitDragOver(event)"
+           ondragleave="handleDrumkitDragLeave(event)">
+        <!-- Drum kit files will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Middle Panel - Drum Kit Packs Grid -->
+    <div class="middle-panel" id="drumkit-middle-panel">
+      <div class="panel-header">
+        <h2 id="drumkit-packs-header-title">Drum Kit Packs</h2>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="drumkit-toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
+          <button id="drumkit-create-pack-btn" class="btn-primary" onclick="createDrumkitPack()">+ Create Pack</button>
+          <button id="drumkit-packs-zoom-out" class="btn-secondary btn-small" title="Zoom Out" style="padding:3px 9px;font-size:16px;line-height:1;">-</button>
+          <button id="drumkit-packs-zoom-in" class="btn-secondary btn-small" title="Zoom In" style="padding:3px 9px;font-size:16px;line-height:1;">+</button>
+        </div>
+      </div>
+      <!-- Total Drum Kit Counter -->
+      <div class="total-beats-container">
+        <div class="total-beats-header">
+          <span class="total-beats-label">Total Drum Kits in All Packs</span>
+          <span class="total-beats-count" id="total-drumkit-count">0/1000</span>
+        </div>
+        <div class="total-beats-progress-bar">
+          <div class="total-beats-progress-fill" id="total-drumkit-progress-fill"></div>
+        </div>
+      </div>
+      <div class="filter-container">
+        <input type="text" id="drumkit-pack-filter-input" placeholder="Filter by pack number (e.g., DK1, DK2, 1, 2...)" class="filter-input">
+      </div>
+      <!-- Create Pack Modal -->
+      <div id="drumkit-create-pack-modal" class="dk-modal-overlay" style="display:none;">
+        <div class="dk-modal">
+          <div class="dk-modal-title">Create New Pack</div>
+          <input type="text" id="drumkit-create-pack-input" class="dk-modal-input" placeholder="Pack name (e.g. DK1)" autocomplete="off">
+          <div class="dk-modal-actions">
+            <button id="drumkit-create-pack-cancel" class="btn-secondary">Cancel</button>
+            <button id="drumkit-create-pack-confirm" class="btn-primary">Create</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="packs-grid" id="drumkit-packs-grid">
+        <!-- Pack cards will be created here -->
+      </div>
+    </div>
+
+    <!-- Right Panel - Pack Details -->
+    <div class="right-panel" id="drumkit-right-panel" style="display: none;">
+      <div class="panel-header">
+        <button id="drumkit-back-to-packs-btn" class="btn-back">← Back</button>
+        <input type="text" id="drumkit-pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
+        <div style="display: flex; gap: 8px;">
+          <button id="drumkit-change-thumbnail-header-btn" class="btn-secondary" title="Change thumbnail">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </button>
+          <button id="drumkit-toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
+          <button id="drumkit-delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+        </div>
+      </div>
+      <div class="pack-detail-content">
+        <div class="pack-detail-beats" id="drumkit-pack-detail-list">
+          <div class="pack-detail-count" id="drumkit-pack-detail-count">0 kits</div>
+          <!-- Pack drum kit files will be shown here -->
+        </div>
+        <div class="resize-handle" id="drumkit-resize-handle"></div>
+        <div class="pack-detail-right" id="drumkit-pack-detail-right-panel">
+          <!-- Drum Kit Info -->
+          <div class="beat-prompt-section" id="drumkit-info-section" style="display: none;">
+            <div class="right-panel-card">
+              <div class="right-panel-card-header">
+                <span class="right-panel-label">DRUM KIT INFO</span>
+                <button id="drumkit-edit-info-btn" class="btn-icon-sm">Edit</button>
+              </div>
+              <div id="drumkit-info-display" class="prompt-display-box">
+                No info available
+              </div>
+              <textarea id="drumkit-info-editor" class="prompt-editor-box" style="display: none;" placeholder="Enter info for this drum kit..."></textarea>
+              <div id="drumkit-info-edit-actions" style="display: none; flex-direction: row; gap: 8px; margin-top: 8px;">
+                <button id="drumkit-save-info-btn" class="btn-primary" style="padding: 5px 14px; font-size: 12px;">Save</button>
+                <button id="drumkit-cancel-info-btn" class="btn-secondary" style="padding: 5px 14px; font-size: 12px;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- END DRUM KIT SECTION -->

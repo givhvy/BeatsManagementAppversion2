@@ -10337,8 +10337,190 @@
       "name": "C45",
       "beats": [],
       "thumbnail": null
+    },
+    {
+      "id": "17776935203020.15910537314664075",
+      "name": "C33",
+      "beats": [
+        {
+          "name": "Echoes in the Chamber - Bleeding_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes in the Chamber - Bleeding_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Dust - Jump_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes in the Dust - Jump_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Dust - Skydream_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes in the Dust - Skydream_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Room - Belief_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes in the Room - Belief_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Room - Shore_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes in the Room - Shore_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Past - Believe_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes of the Past - Believe_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Past - Firelight_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes of the Past - Firelight_tagged.wav"
+        },
+        {
+          "name": "Moonlit Reverie - Change_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Moonlit Reverie - Change_tagged.wav"
+        },
+        {
+          "name": "Moonlit Reverie - Lasten_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Moonlit Reverie - Lasten_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Elegance_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Reflections in the Rain - Elegance_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Perennia_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Reflections in the Rain - Perennia_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Reach_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Reflections in the Rain - Reach_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Sunara_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Reflections in the Rain - Sunara_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Tranquil_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Reflections in the Rain - Tranquil_tagged.wav"
+        },
+        {
+          "name": "Shadows and Echoes - Floryss_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Shadows and Echoes - Floryss_tagged.wav"
+        },
+        {
+          "name": "Shadows and Echoes - Lightness_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Shadows and Echoes - Lightness_tagged.wav"
+        },
+        {
+          "name": "Shadows in the Rain - Amourel_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Shadows in the Rain - Amourel_tagged.wav"
+        },
+        {
+          "name": "Shadows in the Rain - Pond_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Shadows in the Rain - Pond_tagged.wav"
+        },
+        {
+          "name": "Warm Saturation - Dawnelle_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Warm Saturation - Dawnelle_tagged.wav"
+        },
+        {
+          "name": "Warm Saturation - Serenea_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Warm Saturation - Serenea_tagged.wav"
+        },
+        {
+          "name": "Dark Abyss - Nostalgic_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Dark Abyss - Nostalgic_tagged.wav"
+        },
+        {
+          "name": "Dark Abyss - Steadyn_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Dark Abyss - Steadyn_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Dark - Attraction_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes in the Dark - Attraction_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Dark - Celorien_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes in the Dark - Celorien_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Smoke - Lovelight_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes in the Smoke - Lovelight_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Smoke - Momentyn_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes in the Smoke - Momentyn_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Past - Haloen_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes of the Past - Haloen_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Past - Mourning_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes of the Past - Mourning_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Soul - Reveris_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes of the Soul - Reveris_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Soul - Sorrow_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes of the Soul - Sorrow_tagged.wav"
+        },
+        {
+          "name": "Midnight Glow - Ashes_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Midnight Glow - Ashes_tagged.wav"
+        },
+        {
+          "name": "Midnight Glow - Beginning_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Midnight Glow - Beginning_tagged.wav"
+        },
+        {
+          "name": "Moonlit Reverie - Day_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Moonlit Reverie - Day_tagged.wav"
+        },
+        {
+          "name": "Moonlit Reverie - Vibe_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Moonlit Reverie - Vibe_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Mirror - Enchanta_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Reflections in the Mirror - Enchanta_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Mirror - Weary_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Reflections in the Mirror - Weary_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Regret_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Reflections in the Rain - Regret_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Sanctyn_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Reflections in the Rain - Sanctyn_tagged.wav"
+        },
+        {
+          "name": "Shadows in the Rain - Graciel_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Shadows in the Rain - Graciel_tagged.wav"
+        },
+        {
+          "name": "Shadows in the Rain - Soften_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Shadows in the Rain - Soften_tagged.wav"
+        }
+      ],
+      "email": "No email available yet",
+      "password": "",
+      "description": "No email available yet",
+      "folders": [
+        "page-50",
+        "page-51"
+      ]
     }
   ],
+  "genrePacks": [
+    {
+      "id": "1777637803067",
+      "name": "Jazz",
+      "beats": [],
+      "thumbnail": "file:///D:/Downloads/ChatGPT Image May 2, 2026, 06_29_29 PM.png"
+    }
+  ],
+  "currentPackView": "channel",
   "emails": [
     {
       "email": "muhdimpulse762@gmail.com",
@@ -14856,6 +15038,179 @@
         "page-49",
         "page-49x"
       ]
+    },
+    {
+      "id": "17776935203020.15910537314664075",
+      "name": "C33",
+      "beats": [
+        {
+          "name": "Echoes in the Chamber - Bleeding_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes in the Chamber - Bleeding_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Dust - Jump_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes in the Dust - Jump_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Dust - Skydream_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes in the Dust - Skydream_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Room - Belief_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes in the Room - Belief_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Room - Shore_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes in the Room - Shore_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Past - Believe_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes of the Past - Believe_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Past - Firelight_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Echoes of the Past - Firelight_tagged.wav"
+        },
+        {
+          "name": "Moonlit Reverie - Change_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Moonlit Reverie - Change_tagged.wav"
+        },
+        {
+          "name": "Moonlit Reverie - Lasten_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Moonlit Reverie - Lasten_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Elegance_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Reflections in the Rain - Elegance_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Perennia_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Reflections in the Rain - Perennia_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Reach_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Reflections in the Rain - Reach_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Sunara_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Reflections in the Rain - Sunara_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Tranquil_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Reflections in the Rain - Tranquil_tagged.wav"
+        },
+        {
+          "name": "Shadows and Echoes - Floryss_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Shadows and Echoes - Floryss_tagged.wav"
+        },
+        {
+          "name": "Shadows and Echoes - Lightness_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Shadows and Echoes - Lightness_tagged.wav"
+        },
+        {
+          "name": "Shadows in the Rain - Amourel_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Shadows in the Rain - Amourel_tagged.wav"
+        },
+        {
+          "name": "Shadows in the Rain - Pond_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Shadows in the Rain - Pond_tagged.wav"
+        },
+        {
+          "name": "Warm Saturation - Dawnelle_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Warm Saturation - Dawnelle_tagged.wav"
+        },
+        {
+          "name": "Warm Saturation - Serenea_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50\\Warm Saturation - Serenea_tagged.wav"
+        },
+        {
+          "name": "Dark Abyss - Nostalgic_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Dark Abyss - Nostalgic_tagged.wav"
+        },
+        {
+          "name": "Dark Abyss - Steadyn_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Dark Abyss - Steadyn_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Dark - Attraction_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes in the Dark - Attraction_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Dark - Celorien_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes in the Dark - Celorien_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Smoke - Lovelight_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes in the Smoke - Lovelight_tagged.wav"
+        },
+        {
+          "name": "Echoes in the Smoke - Momentyn_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes in the Smoke - Momentyn_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Past - Haloen_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes of the Past - Haloen_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Past - Mourning_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes of the Past - Mourning_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Soul - Reveris_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes of the Soul - Reveris_tagged.wav"
+        },
+        {
+          "name": "Echoes of the Soul - Sorrow_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Echoes of the Soul - Sorrow_tagged.wav"
+        },
+        {
+          "name": "Midnight Glow - Ashes_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Midnight Glow - Ashes_tagged.wav"
+        },
+        {
+          "name": "Midnight Glow - Beginning_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Midnight Glow - Beginning_tagged.wav"
+        },
+        {
+          "name": "Moonlit Reverie - Day_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Moonlit Reverie - Day_tagged.wav"
+        },
+        {
+          "name": "Moonlit Reverie - Vibe_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Moonlit Reverie - Vibe_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Mirror - Enchanta_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Reflections in the Mirror - Enchanta_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Mirror - Weary_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Reflections in the Mirror - Weary_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Regret_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Reflections in the Rain - Regret_tagged.wav"
+        },
+        {
+          "name": "Reflections in the Rain - Sanctyn_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Reflections in the Rain - Sanctyn_tagged.wav"
+        },
+        {
+          "name": "Shadows in the Rain - Graciel_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Shadows in the Rain - Graciel_tagged.wav"
+        },
+        {
+          "name": "Shadows in the Rain - Soften_tagged.wav",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51\\Shadows in the Rain - Soften_tagged.wav"
+        }
+      ],
+      "email": "No email available yet",
+      "password": "",
+      "description": "No email available yet",
+      "folders": [
+        "page-50",
+        "page-51"
+      ]
     }
   ],
   "folderTags": {
@@ -14937,7 +15292,9 @@
     "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\C22sub": "C22",
     "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\C32sub": "C32",
     "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\C21sub": "C21",
-    "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\C23sub": "C23"
+    "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\C23sub": "C23",
+    "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-50": "C33",
+    "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-51": "C33"
   },
   "imageFolder": "D:\\Downloads\\Pinterest",
   "images": [
@@ -25024,5 +25381,36 @@
   },
   "beatPrompts": {
     "D:\\Beats\\419. PRICELESS 80 BPM.wav": "hey"
-  }
+  },
+  "drumkitPacks": [
+    {
+      "id": "drumkit-pack-1777745688904",
+      "name": "Drum Kit 1",
+      "files": [],
+      "hidden": false,
+      "thumbnail": "file:///D:/Downloads/ChatGPT Image May 2, 2026, 03_53_27 PM.png"
+    }
+  ],
+  "drumkitFolders": {
+    "all": {
+      "path": "D:\\DrumKits",
+      "files": [],
+      "basePath": "D:\\DrumKits",
+      "currentPath": "D:\\DrumKits"
+    },
+    "tagged": {
+      "path": "D:\\DrumKits\\tagged",
+      "files": [],
+      "basePath": "D:\\DrumKits\\tagged",
+      "currentPath": "D:\\DrumKits\\tagged"
+    },
+    "untagged": {
+      "path": "D:\\DrumKits\\untagged",
+      "files": [],
+      "basePath": "D:\\DrumKits\\untagged",
+      "currentPath": "D:\\DrumKits\\untagged"
+    }
+  },
+  "currentDrumkitFolderType": "all",
+  "drumkitInfos": {}
 }

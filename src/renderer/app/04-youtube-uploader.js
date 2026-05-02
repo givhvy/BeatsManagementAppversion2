@@ -781,8 +781,9 @@ function renderVideosGrid() {
     const postedInfo = getVideoPostedInfo(video.name);
     const isPosted = postedInfo !== null;
 
+    const safePath = video.path.replace(/\\/g, '\\\\');
     return `
-    <div class="video-card ${isPosted ? 'video-posted' : ''}" data-path="${video.path}">
+    <div class="video-card ${isPosted ? 'video-posted' : ''}" draggable="true" data-path="${video.path}" ondragstart="handleVideoCardDragStart(event, '${safePath}')" title="Drag to upload to YouTube">
       ${isPosted ? `
         <div class="video-posted-badge">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1095,9 +1096,24 @@ async function openVideosFolder() {
   }
 }
 
+async function handleVideoCardDragStart(e, videoPath) {
+  e.preventDefault();
+  if (isElectron && videoPath) {
+    console.log('[video-card drag] sending drag-files-start for', videoPath);
+    ipcRenderer.send('drag-files-start', [videoPath]);
+
+    // Auto-mark as posted and sync with Consistency tab
+    const videoName = videoPath.split(/[\\/]/).pop();
+    if (videoName && typeof markVideoAsPosted === 'function') {
+      await markVideoAsPosted(videoPath, videoName);
+    }
+  }
+}
+
 // Make functions global
 window.playVideo = playVideo;
 window.revealVideo = revealVideo;
+window.handleVideoCardDragStart = handleVideoCardDragStart;
 
 // =============================================
 // GLOBAL SETTINGS FUNCTIONS

@@ -107,7 +107,6 @@ const totalBeatsProgressFillEl = document.getElementById('total-beats-progress-f
 const channelManagementEl = document.getElementById('channel-management');
 const createChannelsBtn = document.getElementById('create-channels-btn');
 const autoAddChannelBtn = document.getElementById('auto-add-channel-btn');
-const addEmailBtn = document.getElementById('add-email-btn');
 const totalChannelsEl = document.getElementById('total-channels');
 const availableEmailsEl = document.getElementById('available-emails');
 const usedFoldersEl = document.getElementById('used-folders');
@@ -143,17 +142,18 @@ const promptEditActions = document.getElementById('prompt-edit-actions');
 const savePromptBtn = document.getElementById('save-prompt-btn');
 const cancelPromptBtn = document.getElementById('cancel-prompt-btn');
 
-// Add email modal elements
-const addEmailModal = document.getElementById('add-email-modal');
-const closeAddEmailModalBtn = document.getElementById('close-add-email-modal-btn');
+// Email manager modal elements
+const emailManagerBtn = document.getElementById('email-manager-btn');
+const emailManagerModal = document.getElementById('email-manager-modal');
+const closeEmailManagerModalBtn = document.getElementById('close-email-manager-modal-btn');
+const emailManagerAddTab = document.getElementById('email-manager-add-tab');
+const emailManagerListTab = document.getElementById('email-manager-list-tab');
+const emailManagerAddPanel = document.getElementById('email-manager-add-panel');
+const emailManagerListPanel = document.getElementById('email-manager-list-panel');
 const bulkEmailInput = document.getElementById('bulk-email-input');
 const confirmAddEmailBtn = document.getElementById('confirm-add-email-btn');
 const cancelAddEmailBtn = document.getElementById('cancel-add-email-btn');
 
-// View emails modal elements
-const viewEmailsBtn = document.getElementById('view-emails-btn');
-const viewEmailsModal = document.getElementById('view-emails-modal');
-const closeViewEmailsModalBtn = document.getElementById('close-view-emails-modal-btn');
 const emailsListContainer = document.getElementById('emails-list-container');
 const filterAllEmailsBtn = document.getElementById('filter-all-emails-btn');
 const filterAvailableEmailsBtn = document.getElementById('filter-available-emails-btn');
@@ -462,32 +462,24 @@ async function init() {
     }
   });
 
-  // Add email modal listeners
-  addEmailBtn.addEventListener('click', showAddEmailModal);
-  closeAddEmailModalBtn.addEventListener('click', closeAddEmailModal);
-  cancelAddEmailBtn.addEventListener('click', closeAddEmailModal);
+  // Email manager modal listeners
+  emailManagerBtn.addEventListener('click', () => showEmailManagerModal('add'));
+  closeEmailManagerModalBtn.addEventListener('click', closeEmailManagerModal);
+  cancelAddEmailBtn.addEventListener('click', closeEmailManagerModal);
   confirmAddEmailBtn.addEventListener('click', addNewEmail);
+  emailManagerAddTab.addEventListener('click', () => setEmailManagerPanel('add'));
+  emailManagerListTab.addEventListener('click', () => setEmailManagerPanel('list'));
 
-  // Close add email modal when clicking outside
-  addEmailModal.addEventListener('click', (e) => {
-    if (e.target === addEmailModal) {
-      closeAddEmailModal();
+  // Close email manager modal when clicking outside
+  emailManagerModal.addEventListener('click', (e) => {
+    if (e.target === emailManagerModal) {
+      closeEmailManagerModal();
     }
   });
 
-  // View emails modal listeners
-  viewEmailsBtn.addEventListener('click', showViewEmailsModal);
-  closeViewEmailsModalBtn.addEventListener('click', closeViewEmailsModal);
   filterAllEmailsBtn.addEventListener('click', () => filterEmails('all'));
   filterAvailableEmailsBtn.addEventListener('click', () => filterEmails('available'));
   filterUsedEmailsBtn.addEventListener('click', () => filterEmails('used'));
-
-  // Close view emails modal when clicking outside
-  viewEmailsModal.addEventListener('click', (e) => {
-    if (e.target === viewEmailsModal) {
-      closeViewEmailsModal();
-    }
-  });
 
   // Load emails and page folders for channel management
   if (isElectron) {
@@ -964,16 +956,14 @@ function updateFolderDisplay() {
     // Show channel management buttons in header
     createChannelsBtn.style.display = 'inline-block';
     autoAddChannelBtn.style.display = 'inline-block';
-    addEmailBtn.style.display = 'inline-block';
-    viewEmailsBtn.style.display = 'inline-block';
+    emailManagerBtn.style.display = 'inline-block';
   } else {
     channelManagementEl.style.display = 'none';
 
     // Hide channel management buttons in header
     createChannelsBtn.style.display = 'none';
     autoAddChannelBtn.style.display = 'none';
-    addEmailBtn.style.display = 'none';
-    viewEmailsBtn.style.display = 'none';
+    emailManagerBtn.style.display = 'none';
   }
 
   // Hide filter for "untagged" (Tagged Beats) tab
@@ -2054,7 +2044,9 @@ async function handleDrop(e, packId) {
 
 // Function to select thumbnail image for a pack
 async function selectThumbnail(packId) {
-  const pack = packs.find(p => p.id === packId);
+  // Find pack in the appropriate array based on current view
+  const currentPacks = currentPackView === 'genre' ? genrePacks : packs;
+  const pack = currentPacks.find(p => p.id === packId);
   if (!pack) return;
 
   if (isElectron) {
@@ -2304,24 +2296,30 @@ function closeCreateChannelsModal() {
   createChannelsModal.style.display = 'none';
 }
 
-function showAddEmailModal() {
-  // Clear previous inputs
-  bulkEmailInput.value = '';
-  addEmailModal.style.display = 'flex';
-}
-
-function closeAddEmailModal() {
-  addEmailModal.style.display = 'none';
-}
-
-function showViewEmailsModal() {
+function showEmailManagerModal(panel = 'add') {
+  if (panel === 'add') {
+    bulkEmailInput.value = '';
+  }
   currentEmailFilter = 'all';
   renderEmailsList();
-  viewEmailsModal.style.display = 'flex';
+  setEmailManagerPanel(panel);
+  emailManagerModal.style.display = 'flex';
 }
 
-function closeViewEmailsModal() {
-  viewEmailsModal.style.display = 'none';
+function closeEmailManagerModal() {
+  emailManagerModal.style.display = 'none';
+}
+
+function setEmailManagerPanel(panel) {
+  const showList = panel === 'list';
+  emailManagerAddTab.classList.toggle('active', !showList);
+  emailManagerListTab.classList.toggle('active', showList);
+  emailManagerAddPanel.classList.toggle('active', !showList);
+  emailManagerListPanel.classList.toggle('active', showList);
+
+  if (showList) {
+    renderEmailsList();
+  }
 }
 
 function filterEmails(filter) {
@@ -2457,7 +2455,7 @@ async function addNewEmail() {
     const result = await ipcRenderer.invoke('add-emails-bulk', emailsToAdd);
     if (result.success) {
       alert(`Successfully added ${result.count} email(s)!`);
-      closeAddEmailModal();
+      closeEmailManagerModal();
 
       // Reload emails to update the list
       await loadChannelData();

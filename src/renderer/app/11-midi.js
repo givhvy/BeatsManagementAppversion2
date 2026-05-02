@@ -49,6 +49,7 @@ async function loadMidiData() {
     midiState.packs.forEach((pack, idx) => {
       if (!pack.id) pack.id = `midipack_${Date.now()}_${idx}`;
       if (!pack.midi) pack.midi = [];
+      if (pack.thumbnail === undefined) pack.thumbnail = null;
     });
 
     renderMidiList();
@@ -318,11 +319,12 @@ function renderMidiPacks() {
            ondragleave="handleMidiPackDragLeave(event)"
            ondrop="handleMidiPackDrop(event, '${pack.id}')">
         <div class="pack-card-image">
-          <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
-            ${pack.name}
-          </div>
+          ${renderMidiPackThumbnail(pack)}
           <div class="pack-card-count">${midiCount}</div>
           <div class="pack-card-order">#${index + 1}</div>
+          <button class="pack-thumbnail-btn midi-thumbnail-btn" data-pack-id="${pack.id}" title="Change image" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </button>
         </div>
         <div class="pack-card-info">
           <div class="pack-card-title">${pack.name}</div>
@@ -341,9 +343,17 @@ function renderMidiPacks() {
   grid.querySelectorAll('.pack-card').forEach(card => {
     const packId = card.dataset.packId;
     card.addEventListener('click', (e) => {
+      if (e.target.closest('.midi-thumbnail-btn')) return;
       if (!midiState.draggedMidi) {
         showMidiPackDetail(packId);
       }
+    });
+  });
+
+  grid.querySelectorAll('.midi-thumbnail-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectMidiPackThumbnail(btn.dataset.packId);
     });
   });
 
@@ -356,6 +366,63 @@ function renderMidiPacks() {
   if (progressFillEl) {
     progressFillEl.style.width = `${Math.min(100, (totalCount / 10000) * 100)}%`;
   }
+}
+
+function renderMidiPackThumbnail(pack) {
+  if (pack.thumbnail && pack.thumbnail !== 'auto') {
+    return `<img src="${pack.thumbnail}" alt="${escapeMidiHtml(pack.name)}" style="width: 100%; height: 100%; object-fit: cover;">`;
+  }
+
+  return `
+    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+      ${escapeMidiHtml(pack.name)}
+    </div>
+  `;
+}
+
+async function selectMidiPackThumbnail(packId) {
+  const pack = midiState.packs.find(p => p.id === packId);
+  if (!pack) return;
+
+  try {
+    if (isElectron && ipcRenderer) {
+      const imagePath = await ipcRenderer.invoke('select-image');
+      if (!imagePath) return;
+      pack.thumbnail = 'file:///' + imagePath.replace(/\\/g, '/');
+    } else {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      const imageData = await new Promise(resolve => {
+        input.onchange = (event) => {
+          const file = event.target.files[0];
+          if (!file) return resolve(null);
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        };
+        input.click();
+      });
+      if (!imageData) return;
+      pack.thumbnail = imageData;
+    }
+
+    await saveMidiData();
+    renderMidiPacks();
+    showNotification(`Updated image for "${pack.name}"`, 'success');
+  } catch (error) {
+    console.error('Error selecting MIDI pack image:', error);
+    showNotification('Failed to update pack image', 'error');
+  }
+}
+
+function escapeMidiHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function showMidiPackDetail(packId) {
@@ -572,6 +639,7 @@ function createMidiPack() {
       id: `midipack_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
       name: packName,
       midi: [],
+      thumbnail: null,
       hidden: false,
       createdAt: new Date().toISOString()
     };

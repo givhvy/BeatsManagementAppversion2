@@ -73,6 +73,14 @@ body {
   height: 100%;
 }
 
+#drumkit-section .container {
+  height: 100%;
+}
+
+#drumkit-section .middle-panel {
+  padding-bottom: var(--panel-padding);
+}
+
 .left-panel {
   width: 350px;
   display: flex;
@@ -594,6 +602,33 @@ select.filter-input {
   overflow: hidden;
 }
 
+/* Drum Kit tab: square cards */
+#drumkit-section .pack-card-image {
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+}
+
+/* Drum Kit tab: minimal card design */
+#drumkit-section .pack-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+#drumkit-section .pack-card:hover {
+  background: transparent;
+  border-color: transparent;
+  transform: translateY(-3px);
+  box-shadow: none;
+}
+
+#drumkit-section .pack-card::before {
+  display: none;
+}
+
 .pack-card-count {
   position: absolute;
   bottom: var(--space-2);
@@ -650,15 +685,32 @@ select.filter-input {
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
   color: var(--white);
-  margin-bottom: var(--space-1);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pack-card-subtitle {
   font-size: var(--text-sm);
   color: var(--gray-300);
+}
+
+/* Drum Kit tab overrides */
+#drumkit-section .pack-card-info {
+  padding: 8px 0 0 0;
+  background: transparent;
+  border-top: none;
+}
+
+#drumkit-section .pack-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.95);
+}
+
+#drumkit-section .pack-card-subtitle {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
 }
 
 .pack-card-last-used {
@@ -849,6 +901,53 @@ select.filter-input {
 
 .pack-email-info {
   font-family: var(--font-sans);
+}
+
+.email-manager-modal {
+  max-width: 860px;
+}
+
+.email-manager-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 18px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+
+.email-manager-tab {
+  flex: 1;
+  height: 38px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--gray-300);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  transition: background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.email-manager-tab:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--white);
+}
+
+.email-manager-tab.active {
+  background: var(--white);
+  color: var(--gray-900);
+  box-shadow: 0 8px 18px rgba(255, 255, 255, 0.12);
+}
+
+.email-manager-panel {
+  display: none;
+}
+
+.email-manager-panel.active {
+  display: block;
 }
 
 /* â”€â”€ Account Info Card â”€â”€ */
@@ -1975,4 +2074,58 @@ h1, h2, h3, h4, h5, h6 {
 .expired-channel-item .btn-reauth:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* ============================
+   DRUM KIT CREATE PACK MODAL
+   ============================ */
+.dk-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.dk-modal {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  width: min(360px, 90vw);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dk-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.dk-modal-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.dk-modal-input:focus {
+  border-color: var(--primary);
+}
+
+.dk-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
