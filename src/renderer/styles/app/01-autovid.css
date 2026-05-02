@@ -3,8 +3,8 @@
    ============================ */
 .app-section {
   display: none;
-  height: calc(100vh - 36px);
-  margin-top: -24px;
+  height: calc(100vh - 56px);
+  margin-top: 0;
 }
 
 .app-section.active {
