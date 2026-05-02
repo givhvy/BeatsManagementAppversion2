@@ -382,6 +382,9 @@ ipcMain.handle('read-drumkit-folder', async (event, folderPath) => {
 // Read images from folder
 ipcMain.handle('read-images-folder', async (event, folderPath) => {
   try {
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
     const files = fs.readdirSync(folderPath);
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
 
@@ -397,6 +400,55 @@ ipcMain.handle('read-images-folder', async (event, folderPath) => {
     console.error('Error reading images folder:', error);
     return [];
   }
+});
+
+ipcMain.handle('save-gallery-images', async (event, { imagePaths, targetFolder }) => {
+  try {
+    const galleryFolder = targetFolder || 'D:\\coverimages';
+    if (!fs.existsSync(galleryFolder)) {
+      fs.mkdirSync(galleryFolder, { recursive: true });
+    }
+
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
+    const saved = [];
+
+    for (const imagePath of imagePaths || []) {
+      if (!imagePath || !fs.existsSync(imagePath)) continue;
+      const ext = path.extname(imagePath).toLowerCase();
+      if (!imageExtensions.includes(ext)) continue;
+
+      const parsed = path.parse(imagePath);
+      let targetPath = path.join(galleryFolder, parsed.base);
+      let counter = 1;
+      while (fs.existsSync(targetPath)) {
+        targetPath = path.join(galleryFolder, `${parsed.name}-${counter}${parsed.ext}`);
+        counter += 1;
+      }
+
+      fs.copyFileSync(imagePath, targetPath);
+      saved.push({ name: path.basename(targetPath), path: targetPath });
+    }
+
+    return { success: true, saved, targetFolder: galleryFolder };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('show-gallery-image-context-menu', async () => {
+  return new Promise(resolve => {
+    const menu = Menu.buildFromTemplate([
+      {
+        label: 'Show in Windows Explorer',
+        click: () => resolve({ action: 'show-in-explorer' })
+      }
+    ]);
+
+    menu.popup({
+      window: mainWindow,
+      callback: () => resolve(null)
+    });
+  });
 });
 
 // Read folder contents with both folders and beats

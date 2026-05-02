@@ -88,6 +88,7 @@ const rightPanelEl = document.getElementById('right-panel');
 const packDetailRightPanel = document.getElementById('pack-detail-right-panel');
 const resizeHandle = document.getElementById('resize-handle');
 const backToPacksBtn = document.getElementById('back-to-packs-btn');
+const togglePackSidePanelBtn = document.getElementById('toggle-pack-side-panel-btn');
 const packDetailTitleEl = document.getElementById('pack-detail-title');
 const packDetailCountEl = document.getElementById('pack-detail-count');
 const packEmailInfoEl = document.getElementById('pack-email-info');
@@ -134,6 +135,7 @@ const clearCacheBtn = document.getElementById('clear-cache-btn');
 // Beat image/prompt elements
 const beatImagePreview = document.getElementById('beat-image-preview');
 const beatImageDisplay = document.getElementById('beat-image-display');
+const packDetailCoverPlaceholder = document.getElementById('pack-detail-cover-placeholder');
 const beatPromptSection = document.getElementById('beat-prompt-section');
 const beatPromptDisplay = document.getElementById('beat-prompt-display');
 const editPromptBtn = document.getElementById('edit-prompt-btn');
@@ -317,6 +319,7 @@ async function init() {
   filterInput.addEventListener('input', renderBeats);
   packFilterInput.addEventListener('input', renderPacks);
   backToPacksBtn.addEventListener('click', showPacksGrid);
+  if (togglePackSidePanelBtn) togglePackSidePanelBtn.addEventListener('click', togglePackSidePanel);
   deleteCurrentPackBtn.addEventListener('click', deleteCurrentPack);
   toggleHidePackBtn.addEventListener('click', toggleCurrentPackHidden);
   toggleHiddenViewBtn.addEventListener('click', toggleHiddenPacksView);
@@ -512,6 +515,13 @@ function showPackDetail(packId) {
   renderPackDetailBeats();
 }
 
+function togglePackSidePanel() {
+  if (!rightPanelEl || !togglePackSidePanelBtn) return;
+
+  const isHidden = rightPanelEl.classList.toggle('pack-side-panel-hidden');
+  togglePackSidePanelBtn.textContent = isHidden ? 'Show Details' : 'Hide Details';
+}
+
 function renderPackDetailBeats() {
   packDetailBeatsEl.innerHTML = '';
 
@@ -520,12 +530,19 @@ function renderPackDetailBeats() {
   const pack = currentPacks.find(p => p.id === currentPackId);
   if (!pack) return;
 
-  // Add beat count at the top
-  const beatCountEl = document.createElement('div');
-  beatCountEl.className = 'pack-detail-count';
-  beatCountEl.id = 'pack-detail-count';
-  beatCountEl.textContent = `${pack.beats.length} beats`;
-  packDetailBeatsEl.appendChild(beatCountEl);
+  if (packDetailCountEl) {
+    packDetailCountEl.textContent = `${pack.beats.length} beats`;
+  }
+
+  const trackHeaderEl = document.createElement('div');
+  trackHeaderEl.className = 'pack-tracks-header';
+  trackHeaderEl.innerHTML = `
+    <span>#</span>
+    <span>Title</span>
+    <span>Status</span>
+    <span></span>
+  `;
+  packDetailBeatsEl.appendChild(trackHeaderEl);
 
   if (pack.beats.length === 0) {
     const emptyMessageEl = document.createElement('div');
@@ -869,20 +886,13 @@ function playBeat(beatPath, beatName) {
 
   if (imagePath) {
     beatImagePreview.style.display = 'block';
+    if (packDetailCoverPlaceholder) packDetailCoverPlaceholder.style.display = 'none';
     beatImageDisplay.src = 'file://' + imagePath;
     beatImageDisplay.dataset.imagePath = imagePath;
-
-    // Set up drag-and-drop for image
-    beatImageDisplay.ondragstart = (e) => {
-      e.preventDefault();
-
-      if (isElectron) {
-        // Use Electron's native drag for files
-        ipcRenderer.send('drag-files-start', [imagePath]);
-      }
-    };
+    beatImageDisplay.ondragstart = (e) => e.preventDefault();
   } else {
     beatImagePreview.style.display = 'none';
+    if (packDetailCoverPlaceholder) packDetailCoverPlaceholder.style.display = 'flex';
   }
 
   // Always show prompt section when playing a beat (even if empty)
@@ -1668,7 +1678,8 @@ function createPackBeatElement(beat, packId, index) {
   beatItemEl.className = 'pack-beat-item';
   beatItemEl.dataset.beatPath = beat.path;
   beatItemEl.dataset.beatName = beat.name;
-  beatItemEl.draggable = true;
+  beatItemEl.draggable = false;
+  let packBeatMouseDown = null;
 
   // Add number badge
   const numberBadge = document.createElement('div');
@@ -1741,11 +1752,19 @@ function createPackBeatElement(beat, packId, index) {
     playBeat(beat.path, beat.name);
   });
 
-  // Drag events for external apps (desktop, Chrome, etc.)
-  beatItemEl.addEventListener('dragstart', (e) => {
-    if (isElectron) {
-      e.preventDefault();
+  beatItemEl.addEventListener('mousedown', (e) => {
+    if (e.button !== 0 || e.target === removeBtn) return;
+    packBeatMouseDown = { x: e.clientX, y: e.clientY };
+  });
 
+  beatItemEl.addEventListener('mousemove', (e) => {
+    if (!packBeatMouseDown) return;
+    const movedX = Math.abs(e.clientX - packBeatMouseDown.x);
+    const movedY = Math.abs(e.clientY - packBeatMouseDown.y);
+    if (movedX < 8 && movedY < 8) return;
+    packBeatMouseDown = null;
+
+    if (isElectron) {
       // Extract beat name (e.g., "Untitled - Brightelle_tagged.wav" -> "Brightelle")
       const beatName = beat.name.replace(/\.(mp3|wav|flac|m4a|aac|ogg)$/i, ''); // Remove extension
       const nameMatch = beatName.match(/[-]\s*([^_]+)_/); // Match text between "- " and "_"
@@ -1796,6 +1815,14 @@ function createPackBeatElement(beat, packId, index) {
         e.dataTransfer.items.add(fileObj);
       }
     }
+  });
+
+  beatItemEl.addEventListener('mouseup', () => {
+    packBeatMouseDown = null;
+  });
+
+  beatItemEl.addEventListener('mouseleave', () => {
+    packBeatMouseDown = null;
   });
 
   // Right-click context menu

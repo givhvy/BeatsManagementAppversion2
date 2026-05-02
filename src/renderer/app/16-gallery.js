@@ -3,7 +3,8 @@
 // ============================
 
 let galleryInitialized = false;
-let galleryFolderPath = localStorage.getItem('gallery-folder-path') || '';
+const DEFAULT_GALLERY_FOLDER = 'D:\\coverimages';
+let galleryFolderPath = localStorage.getItem('gallery-folder-path') || DEFAULT_GALLERY_FOLDER;
 let galleryImages = [];
 let selectedGalleryImage = null;
 
@@ -13,10 +14,9 @@ const galleryFolderPathEl = document.getElementById('gallery-folder-path');
 const galleryFilterInput = document.getElementById('gallery-filter-input');
 const galleryGrid = document.getElementById('gallery-grid');
 const galleryCount = document.getElementById('gallery-count');
-const galleryPreview = document.getElementById('gallery-preview');
-const galleryPreviewInfo = document.getElementById('gallery-preview-info');
-const galleryPreviewName = document.getElementById('gallery-preview-name');
-const galleryCopyPathBtn = document.getElementById('gallery-copy-path-btn');
+const galleryImageModal = document.getElementById('gallery-image-modal');
+const galleryModalImage = document.getElementById('gallery-modal-image');
+const galleryModalClose = document.getElementById('gallery-modal-close');
 
 function initGallerySection() {
   if (galleryInitialized) return;
@@ -25,10 +25,23 @@ function initGallerySection() {
   if (gallerySelectFolderBtn) gallerySelectFolderBtn.addEventListener('click', selectGalleryFolder);
   if (galleryRefreshBtn) galleryRefreshBtn.addEventListener('click', loadGalleryImages);
   if (galleryFilterInput) galleryFilterInput.addEventListener('input', renderGalleryGrid);
-  if (galleryCopyPathBtn) galleryCopyPathBtn.addEventListener('click', copySelectedGalleryPath);
+  if (galleryModalClose) galleryModalClose.addEventListener('click', closeGalleryImageModal);
+  if (galleryImageModal) {
+    galleryImageModal.addEventListener('click', (e) => {
+      if (e.target === galleryImageModal) closeGalleryImageModal();
+    });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeGalleryImageModal();
+  });
+  if (galleryGrid) {
+    galleryGrid.addEventListener('dragover', handleGalleryDragOver);
+    galleryGrid.addEventListener('dragleave', handleGalleryDragLeave);
+    galleryGrid.addEventListener('drop', handleGalleryDrop);
+  }
 
   updateGalleryFolderDisplay();
-  if (galleryFolderPath) loadGalleryImages();
+  loadGalleryImages();
 }
 
 async function selectGalleryFolder() {
@@ -49,6 +62,53 @@ function updateGalleryFolderDisplay() {
   }
 }
 
+function handleGalleryDragOver(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  galleryGrid.classList.add('drag-over');
+}
+
+function handleGalleryDragLeave(e) {
+  if (!galleryGrid.contains(e.relatedTarget)) {
+    galleryGrid.classList.remove('drag-over');
+  }
+}
+
+async function handleGalleryDrop(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  galleryGrid.classList.remove('drag-over');
+
+  const files = Array.from(e.dataTransfer?.files || []).filter(file => file.type.startsWith('image/'));
+  if (files.length === 0) return;
+
+  try {
+    const paths = files.map(file => file.path).filter(Boolean);
+    if (paths.length === 0) {
+      showNotification('Could not read dropped image paths', 'error');
+      return;
+    }
+
+    const result = await ipcRenderer.invoke('save-gallery-images', {
+      imagePaths: paths,
+      targetFolder: galleryFolderPath || DEFAULT_GALLERY_FOLDER
+    });
+
+    if (!result.success) {
+      showNotification(`Failed to save images: ${result.error}`, 'error');
+      return;
+    }
+
+    galleryFolderPath = result.targetFolder || galleryFolderPath || DEFAULT_GALLERY_FOLDER;
+    localStorage.setItem('gallery-folder-path', galleryFolderPath);
+    updateGalleryFolderDisplay();
+    showNotification(`Saved ${result.saved.length} image${result.saved.length === 1 ? '' : 's'} to Gallery`, 'success');
+    await loadGalleryImages();
+  } catch (error) {
+    showNotification(`Failed to save images: ${error.message}`, 'error');
+  }
+}
+
 async function loadGalleryImages() {
   if (!galleryGrid) return;
   if (!isElectron) {
@@ -56,7 +116,12 @@ async function loadGalleryImages() {
     return;
   }
   if (!galleryFolderPath) {
-    galleryGrid.innerHTML = '<div class="gallery-empty">Select a folder to load cover arts.</div>';
+    galleryFolderPath = DEFAULT_GALLERY_FOLDER;
+    localStorage.setItem('gallery-folder-path', galleryFolderPath);
+    updateGalleryFolderDisplay();
+  }
+  if (!galleryFolderPath) {
+    galleryGrid.innerHTML = '<div class="gallery-empty">Select a folder or drop images here.</div>';
     return;
   }
 
@@ -79,7 +144,7 @@ function renderGalleryGrid() {
   if (galleryCount) galleryCount.textContent = `${images.length} image${images.length === 1 ? '' : 's'}`;
 
   if (images.length === 0) {
-    galleryGrid.innerHTML = '<div class="gallery-empty">No cover arts found.</div>';
+    galleryGrid.innerHTML = '<div class="gallery-empty">No cover arts found. Drag and drop images here to save them.</div>';
     return;
   }
 
@@ -90,32 +155,47 @@ function renderGalleryGrid() {
     if (selectedGalleryImage?.path === image.path) card.classList.add('active');
     card.innerHTML = `
       <img src="file://${image.path}" alt="${image.name}">
-      <div class="gallery-card-name" title="${image.name}">${image.name}</div>
     `;
-    card.addEventListener('click', () => selectGalleryImage(image));
+    card.addEventListener('click', () => openGalleryImageModal(image));
+    card.addEventListener('contextmenu', (e) => showGalleryContextMenu(e, image));
     galleryGrid.appendChild(card);
   });
 }
 
-function selectGalleryImage(image) {
+function openGalleryImageModal(image) {
   selectedGalleryImage = image;
-  if (galleryPreview) {
-    galleryPreview.innerHTML = `<img src="file://${image.path}" alt="${image.name}">`;
+  if (galleryModalImage) {
+    galleryModalImage.src = `file://${image.path}`;
+    galleryModalImage.alt = image.name;
   }
-  if (galleryPreviewName) {
-    galleryPreviewName.textContent = image.name;
-    galleryPreviewName.title = image.path;
+  if (galleryImageModal) {
+    galleryImageModal.style.display = 'flex';
   }
-  if (galleryPreviewInfo) galleryPreviewInfo.style.display = 'flex';
   renderGalleryGrid();
 }
 
-async function copySelectedGalleryPath() {
-  if (!selectedGalleryImage) return;
-  try {
-    await navigator.clipboard.writeText(selectedGalleryImage.path);
-    showNotification('Image path copied', 'success');
-  } catch (error) {
-    showNotification('Failed to copy image path', 'error');
+function closeGalleryImageModal() {
+  if (galleryImageModal) {
+    galleryImageModal.style.display = 'none';
+  }
+  if (galleryModalImage) {
+    galleryModalImage.src = '';
   }
 }
+
+async function showGalleryContextMenu(e, image = selectedGalleryImage) {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!image || !isElectron) return;
+
+  try {
+    const result = await ipcRenderer.invoke('show-gallery-image-context-menu', image.path);
+    if (result?.action === 'show-in-explorer') {
+      await ipcRenderer.invoke('reveal-in-explorer', image.path);
+    }
+  } catch (error) {
+    showNotification('Could not show image in Windows Explorer', 'error');
+  }
+}
+
+window.showGalleryContextMenu = showGalleryContextMenu;
