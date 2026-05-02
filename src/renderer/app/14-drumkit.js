@@ -27,9 +27,6 @@ const drumkitPackDetailThumbnailImgEl = document.getElementById('drumkit-pack-de
 const drumkitPacksHeaderTitle = document.getElementById('drumkit-packs-header-title');
 const drumkitFolderPathEl = document.getElementById('drumkit-folder-path');
 const drumkitFilterInput = document.getElementById('drumkit-filter-input');
-const drumkitPackFilterInput = document.getElementById('drumkit-pack-filter-input');
-const totalDrumkitCountEl = document.getElementById('total-drumkit-count');
-const totalDrumkitProgressFillEl = document.getElementById('total-drumkit-progress-fill');
 
 // Buttons
 const refreshDrumkitBtn = document.getElementById('refresh-drumkit-btn');
@@ -138,10 +135,6 @@ async function initDrumkitSection() {
   if (drumkitFilterInput) {
     drumkitFilterInput.addEventListener('input', renderDrumkitFiles);
   }
-  if (drumkitPackFilterInput) {
-    drumkitPackFilterInput.addEventListener('input', renderDrumkitPacks);
-  }
-
   // Pack detail title editing
   if (drumkitPackDetailTitleEl) {
     drumkitPackDetailTitleEl.addEventListener('change', () => {
@@ -398,8 +391,6 @@ function selectDrumkitFile(filePath) {
 // Render drum kit packs
 function renderDrumkitPacks() {
   drumkitPacksGridEl.innerHTML = '';
-  
-  updateTotalDrumkitCounter();
 
   if (drumkitPacks.length === 0) {
     drumkitPacksGridEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">No drum kit packs yet. Create one to organize your kits!</div>';
@@ -412,21 +403,11 @@ function renderDrumkitPacks() {
     return showingHiddenDrumkitPacks ? isHidden : !isHidden;
   });
 
-  // Filter by search
-  const filterValue = drumkitPackFilterInput.value.trim().toLowerCase();
-  if (filterValue) {
-    visiblePacks = visiblePacks.filter(pack => {
-      const num = extractPackNumber(pack.name);
-      const filterNum = extractPackNumber(filterValue);
-      return num !== null && num === filterNum;
-    });
-  }
-
   // Sort by number
   const sortedPacks = sortPacksByNumber(visiblePacks);
 
   if (sortedPacks.length === 0) {
-    const message = showingHiddenDrumkitPacks ? 'No hidden packs yet' : (filterValue ? 'No packs match the filter' : 'No active packs');
+    const message = showingHiddenDrumkitPacks ? 'No hidden packs yet' : 'No active packs';
     drumkitPacksGridEl.innerHTML = `<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">${message}</div>`;
     return;
   }
@@ -665,16 +646,6 @@ function toggleDrumkitHiddenView() {
   }
 
   renderDrumkitPacks();
-}
-
-// Update total counter
-function updateTotalDrumkitCounter() {
-  const total = drumkitPacks.reduce((sum, pack) => sum + pack.files.length, 0);
-  const goal = 1000;
-  const percent = Math.min((total / goal) * 100, 100);
-
-  totalDrumkitCountEl.textContent = `${total}/${goal}`;
-  totalDrumkitProgressFillEl.style.width = `${percent}%`;
 }
 
 // Remove drum kit from pack

@@ -958,6 +958,29 @@ ipcMain.handle('download-image', async (event, imageUrl, savePath) => {
   }
 });
 
+// Save pasted clipboard image to a real file so FFmpeg can render it
+ipcMain.handle('save-pasted-image', async (event, dataUrl) => {
+  try {
+    const match = /^data:image\/(\w+);base64,(.+)$/.exec(dataUrl);
+    if (!match) {
+      return { success: false, error: 'Invalid clipboard image data' };
+    }
+
+    const ext = match[1] === 'jpeg' ? 'jpg' : match[1];
+    const buffer = Buffer.from(match[2], 'base64');
+    const outputDir = videoRenderer ? videoRenderer.getOutputDirectory() : path.join(APP_ROOT, 'output');
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    const filePath = path.join(outputDir, `pasted_image_${Date.now()}.${ext}`);
+    fs.writeFileSync(filePath, buffer);
+    return { success: true, path: filePath };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
 // ============================
 // VIDEO FOLDER VIEWER IPC HANDLERS
 // ============================

@@ -155,7 +155,16 @@ function initAutoVidSection() {
         handleDroppedImage(file);
       }
     });
+    imageDropZone.addEventListener('paste', handlePastedImage);
+    imageDropZone.setAttribute('tabindex', '0');
   }
+
+  document.addEventListener('paste', (e) => {
+    const activeSection = document.getElementById('autovid-section');
+    if (activeSection && activeSection.classList.contains('active')) {
+      handlePastedImage(e);
+    }
+  });
 
   // Drag-drop for audio zone
   const audioDropZoneEl = document.getElementById('audio-drop-zone');
@@ -228,6 +237,57 @@ function handleDroppedImage(file) {
     }
   }
   updateRenderButton();
+}
+
+async function handlePastedImage(e) {
+  const items = e.clipboardData?.items;
+  if (!items) return;
+
+  const imageItem = Array.from(items).find(item => item.type.startsWith('image/'));
+  if (!imageItem) return;
+
+  e.preventDefault();
+  const file = imageItem.getAsFile();
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const dataUrl = reader.result;
+      let imagePath = dataUrl;
+
+      if (isElectron) {
+        const result = await ipcRenderer.invoke('save-pasted-image', dataUrl);
+        if (!result.success) {
+          showNotification(`Failed to paste image: ${result.error}`, 'error');
+          return;
+        }
+        imagePath = result.path;
+      }
+
+      autovidState.selectedImagePath = imagePath;
+      autovidState.selectedImage = null;
+
+      if (previewImage && imagePlaceholder) {
+        previewImage.src = isElectron ? `file://${imagePath}` : dataUrl;
+        previewImage.style.display = 'block';
+        imagePlaceholder.style.display = 'none';
+      }
+
+      if (imageInfo) {
+        imageInfo.style.display = 'block';
+        imageTitle.textContent = 'Pasted image';
+        imageSource.textContent = isElectron ? imagePath : 'Clipboard';
+      }
+
+      updateRenderButton();
+      showNotification('Pasted image loaded into preview', 'success');
+    } catch (error) {
+      console.error('Error handling pasted image:', error);
+      showNotification(`Failed to paste image: ${error.message}`, 'error');
+    }
+  };
+  reader.readAsDataURL(file);
 }
 
 function handleDroppedAudio(file) {

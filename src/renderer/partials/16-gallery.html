@@ -1,0 +1,43 @@
+<!-- ============================
+     GALLERY SECTION
+     ============================ -->
+<div class="app-section" id="gallery-section">
+  <div class="gallery-container">
+    <div class="gallery-sidebar">
+      <div class="panel-header">
+        <h2>Gallery</h2>
+        <button id="gallery-refresh-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+      </div>
+      <button id="gallery-select-folder-btn" class="btn-primary gallery-folder-btn">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Select Cover Folder
+      </button>
+      <div id="gallery-folder-path" class="gallery-folder-path">No folder selected</div>
+      <input type="text" id="gallery-filter-input" class="filter-input" placeholder="Filter cover arts...">
+      <div class="gallery-help">Choose a folder that contains your cover art photos.</div>
+    </div>
+
+    <div class="gallery-main">
+      <div class="panel-header">
+        <h2>Cover Arts</h2>
+        <span id="gallery-count" class="gallery-count">0 images</span>
+      </div>
+      <div id="gallery-grid" class="gallery-grid">
+        <div class="gallery-empty">Select a folder to load cover arts.</div>
+      </div>
+    </div>
+
+    <div class="gallery-preview-panel">
+      <div class="panel-header">
+        <h2>Preview</h2>
+      </div>
+      <div id="gallery-preview" class="gallery-preview">
+        <div class="gallery-empty">Choose an image to preview.</div>
+      </div>
+      <div id="gallery-preview-info" class="gallery-preview-info" style="display:none;">
+        <div id="gallery-preview-name" class="gallery-preview-name"></div>
+        <button id="gallery-copy-path-btn" class="btn-secondary">Copy Path</button>
+      </div>
+    </div>
+  </div>
+</div>
