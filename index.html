@@ -82,6 +82,10 @@
         <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
         <span class="nav-label">Consistency</span>
       </button>
+      <button class="main-nav-tab" data-section="distro">
+        <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
+        <span class="nav-label">Distro</span>
+      </button>
       <button class="main-nav-tab" data-section="youtube">
         <span class="nav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg></span>
         <span class="nav-label">Uploader</span>
@@ -894,6 +898,110 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
           <source id="video-player-source" src="" type="video/mp4">
           Your browser does not support the video tag.
         </video>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section: DistroKid Uploader -->
+  <div class="app-section" id="distro-section">
+    <div class="distro-container">
+      <div class="distro-header">
+        <div>
+          <h2>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:8px">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+              <path d="M2 12h20"/>
+            </svg>
+            DistroKid Distribution
+          </h2>
+          <p class="distro-subtitle">Upload and distribute your music to streaming platforms</p>
+        </div>
+        <button class="btn-primary" id="new-release-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          New Release
+        </button>
+      </div>
+
+      <!-- Upload Stats -->
+      <div class="distro-stats">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="distro-published">0</div>
+            <div class="stat-label">Published</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(251, 146, 60, 0.1); color: #fb923c;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="distro-pending">0</div>
+            <div class="stat-label">Pending</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18V5l12-2v13"/>
+              <circle cx="6" cy="18" r="3"/>
+              <circle cx="18" cy="16" r="3"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="distro-total">0</div>
+            <div class="stat-label">Total Releases</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(168, 85, 247, 0.1); color: #a855f7;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value" id="distro-this-month">0</div>
+            <div class="stat-label">This Month</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Releases List -->
+      <div class="distro-releases">
+        <div class="distro-releases-header">
+          <h3>Your Releases</h3>
+          <div class="distro-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="published">Published</button>
+            <button class="filter-btn" data-filter="pending">Pending</button>
+            <button class="filter-btn" data-filter="draft">Draft</button>
+          </div>
+        </div>
+        <div class="releases-grid" id="releases-grid">
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.3; margin-bottom: 16px;">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+              <path d="M2 12h20"/>
+            </svg>
+            <p>No releases yet</p>
+            <p style="font-size: 12px; opacity: 0.5; margin-top: 8px;">Click "New Release" to get started</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
