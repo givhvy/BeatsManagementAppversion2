@@ -53,6 +53,8 @@ mainNavTabs.forEach(tab => {
       initMidiSection();
     } else if (section === 'drumkit') {
       initDrumkitSection();
+    } else if (section === 'flstudio') {
+      initFlstudioSection();
     } else if (section === 'gallery') {
       initGallerySection();
     }

@@ -1,0 +1,250 @@
+/* ============================
+   FL STUDIO TAB STYLES
+   Scoped to #flstudio-section only
+   ============================ */
+
+#flstudio-section .container {
+  height: 100%;
+}
+
+#flstudio-section .middle-panel {
+  padding-bottom: var(--panel-padding);
+}
+
+/* Sort dropdown */
+.flstudio-sort-dropdown {
+  position: absolute;
+  top: 52px;
+  right: 16px;
+  background: var(--bg-elevated, #1e1e2e);
+  border: 1px solid var(--border-subtle, rgba(255,255,255,0.1));
+  border-radius: var(--radius-lg, 10px);
+  padding: 6px 0;
+  z-index: 100;
+  min-width: 180px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.flstudio-sort-option {
+  display: block;
+  width: 100%;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  color: var(--text-secondary, rgba(255,255,255,0.7));
+  font-size: 13px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+}
+
+.flstudio-sort-option:hover {
+  background: var(--bg-hover, rgba(255,255,255,0.06));
+  color: var(--text-primary, #fff);
+}
+
+.flstudio-sort-option.active {
+  color: var(--accent, #f59e0b);
+  font-weight: 600;
+}
+
+/* Project cards */
+#flstudio-section .pack-card-image {
+  height: auto;
+  aspect-ratio: 16 / 10;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+#flstudio-section .pack-card-image .flp-icon {
+  font-size: 32px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.15);
+  letter-spacing: -1px;
+  user-select: none;
+}
+
+#flstudio-section .pack-card-image .flp-date-badge {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  color: rgba(255,255,255,0.8);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-family: var(--font-sans);
+}
+
+#flstudio-section .pack-card-image .flp-size-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  color: rgba(255,255,255,0.7);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-family: var(--font-sans);
+}
+
+#flstudio-section .pack-card-image .flp-open-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+#flstudio-section .pack-card:hover .flp-open-overlay {
+  opacity: 1;
+}
+
+.flp-open-btn {
+  background: var(--accent, #f59e0b);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-full, 9999px);
+  padding: 8px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.15s;
+}
+
+.flp-open-btn:hover {
+  transform: scale(1.05);
+}
+
+/* Minimal card design */
+#flstudio-section .pack-card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+#flstudio-section .pack-card:hover {
+  background: transparent;
+  border-color: transparent;
+  transform: translateY(-3px);
+  box-shadow: none;
+}
+
+#flstudio-section .pack-card::before {
+  display: none;
+}
+
+#flstudio-section .pack-card-info {
+  padding: 8px 0 0 0;
+  background: transparent;
+  border-top: none;
+}
+
+#flstudio-section .pack-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #fff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Project detail info rows */
+.flstudio-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.06));
+  font-size: 13px;
+}
+
+.flstudio-detail-row:last-child {
+  border-bottom: none;
+}
+
+.flstudio-detail-label {
+  color: var(--text-secondary, rgba(255,255,255,0.5));
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.flstudio-detail-value {
+  color: var(--text-primary, #fff);
+  font-weight: 500;
+  font-family: var(--font-sans);
+}
+
+/* Quick open button in left panel items */
+#flstudio-section .beat-item {
+  position: relative;
+}
+
+#flstudio-section .beat-item .beat-item-open {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--accent, #f59e0b);
+  color: #000;
+  border: none;
+  border-radius: var(--radius-full, 9999px);
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+  font-size: 12px;
+  padding: 0;
+}
+
+#flstudio-section .beat-item:hover .beat-item-open {
+  opacity: 1;
+}
+
+/* Empty state */
+.flstudio-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--text-secondary, rgba(255,255,255,0.4));
+  text-align: center;
+  gap: 12px;
+}
+
+.flstudio-empty-state svg {
+  opacity: 0.3;
+}
+
+.flstudio-empty-state p {
+  font-size: 14px;
+  margin: 0;
+}
+
+.flstudio-empty-state .btn-primary {
+  margin-top: 8px;
+}

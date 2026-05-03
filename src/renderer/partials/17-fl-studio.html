@@ -1,0 +1,97 @@
+<!-- ============================
+     FL STUDIO SECTION
+     ============================ -->
+  <div class="app-section" id="flstudio-section">
+  <div class="container">
+    <!-- Left Panel - FL Studio Project Files -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <h2>FL Studio</h2>
+        <button id="flstudio-refresh-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+      </div>
+      <div class="filter-container" id="flstudio-filter-container">
+        <input type="text" id="flstudio-filter-input" placeholder="Filter projects..." class="filter-input">
+      </div>
+      <div class="beats-list" id="flstudio-list">
+        <!-- FL Studio project files will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Middle Panel - Project Cards Grid -->
+    <div class="middle-panel" id="flstudio-middle-panel">
+      <div class="panel-header">
+        <h2 id="flstudio-packs-header-title">Projects</h2>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button id="flstudio-sort-btn" class="btn-secondary" title="Sort">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h12M3 18h6"/></svg>
+            Sort
+          </button>
+          <button id="flstudio-open-folder-btn" class="btn-secondary" title="Open in Explorer">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Open Folder
+          </button>
+          <button id="flstudio-packs-zoom-out" class="btn-secondary btn-small" title="Zoom Out" style="padding:3px 9px;font-size:16px;line-height:1;">-</button>
+          <button id="flstudio-packs-zoom-in" class="btn-secondary btn-small" title="Zoom In" style="padding:3px 9px;font-size:16px;line-height:1;">+</button>
+        </div>
+      </div>
+
+      <!-- Sort Dropdown -->
+      <div id="flstudio-sort-dropdown" class="flstudio-sort-dropdown" style="display:none;">
+        <button class="flstudio-sort-option active" data-sort="date-desc">Newest First</button>
+        <button class="flstudio-sort-option" data-sort="date-asc">Oldest First</button>
+        <button class="flstudio-sort-option" data-sort="name-asc">Name A-Z</button>
+        <button class="flstudio-sort-option" data-sort="name-desc">Name Z-A</button>
+        <button class="flstudio-sort-option" data-sort="size-desc">Largest First</button>
+        <button class="flstudio-sort-option" data-sort="size-asc">Smallest First</button>
+      </div>
+
+      <div class="packs-grid" id="flstudio-projects-grid">
+        <!-- Project cards will be created here -->
+      </div>
+    </div>
+
+    <!-- Right Panel - Project Detail -->
+    <div class="right-panel" id="flstudio-right-panel" style="display: none;">
+      <div class="panel-header">
+        <button id="flstudio-back-to-grid-btn" class="btn-back">← Back</button>
+        <input type="text" id="flstudio-project-detail-title" class="pack-detail-title" placeholder="Project Name">
+        <div style="display: flex; gap: 8px;">
+          <button id="flstudio-open-in-daw-btn" class="btn-primary" style="padding:5px 14px;font-size:12px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Open in FL Studio
+          </button>
+          <button id="flstudio-reveal-btn" class="btn-secondary" title="Show in Explorer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="pack-detail-content">
+        <div class="pack-detail-beats" id="flstudio-project-detail-list">
+          <div class="pack-detail-count" id="flstudio-project-detail-count">Project Info</div>
+          <!-- Project details will be shown here -->
+        </div>
+        <div class="resize-handle" id="flstudio-resize-handle"></div>
+        <div class="pack-detail-right" id="flstudio-project-detail-right-panel">
+          <!-- Project Notes -->
+          <div class="beat-prompt-section" id="flstudio-notes-section" style="display: none;">
+            <div class="right-panel-card">
+              <div class="right-panel-card-header">
+                <span class="right-panel-label">PROJECT NOTES</span>
+                <button id="flstudio-edit-notes-btn" class="btn-icon-sm">Edit</button>
+              </div>
+              <div id="flstudio-notes-display" class="prompt-display-box">
+                No notes available
+              </div>
+              <textarea id="flstudio-notes-editor" class="prompt-editor-box" style="display: none;" placeholder="Enter notes for this project..."></textarea>
+              <div id="flstudio-notes-edit-actions" style="display: none; flex-direction: row; gap: 8px; margin-top: 8px;">
+                <button id="flstudio-save-notes-btn" class="btn-primary" style="padding: 5px 14px; font-size: 12px;">Save</button>
+                <button id="flstudio-cancel-notes-btn" class="btn-secondary" style="padding: 5px 14px; font-size: 12px;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+  <!-- END FL STUDIO SECTION -->
