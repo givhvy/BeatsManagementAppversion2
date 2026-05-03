@@ -10,15 +10,29 @@ const nodePath = isElectron ? require('path') : null;
 const themeManager = {
   STORAGE_KEY: 'bms-theme',
   COLOR_SCHEME_KEY: 'bms-color-scheme',
+  AI_FAB_KEY: 'bms-ai-fab-visible',
 
   init() {
-    const saved = localStorage.getItem(this.STORAGE_KEY) || 'default';
+    const saved = localStorage.getItem(this.STORAGE_KEY) || 'amber';
     this.apply(saved);
 
     const savedScheme = localStorage.getItem(this.COLOR_SCHEME_KEY) || 'dark';
     this.applyColorScheme(savedScheme);
 
+    const aiFabVisible = localStorage.getItem(this.AI_FAB_KEY) !== 'false';
+    this.applyAiFabVisibility(aiFabVisible);
+
     this.bindEvents();
+  },
+
+  applyAiFabVisibility(visible) {
+    const fab = document.getElementById('ai-agent-fab');
+    const panel = document.getElementById('ai-agent-panel');
+    if (fab) fab.style.display = visible ? '' : 'none';
+    if (!visible && panel) panel.style.display = 'none';
+    localStorage.setItem(this.AI_FAB_KEY, visible ? 'true' : 'false');
+    const btn = document.getElementById('ai-fab-toggle-btn');
+    if (btn) btn.setAttribute('aria-checked', visible ? 'true' : 'false');
   },
 
   apply(themeName) {
@@ -101,6 +115,14 @@ const themeManager = {
         this.applyColorScheme(card.dataset.scheme);
       });
     });
+
+    const aiFabToggleBtn = document.getElementById('ai-fab-toggle-btn');
+    if (aiFabToggleBtn) {
+      aiFabToggleBtn.addEventListener('click', () => {
+        const current = aiFabToggleBtn.getAttribute('aria-checked') === 'true';
+        this.applyAiFabVisibility(!current);
+      });
+    }
   }
 };
 

@@ -505,6 +505,11 @@ function showPackDetail(packId) {
 
   middlePanelEl.style.display = 'none';
   rightPanelEl.style.display = 'flex';
+  rightPanelEl.classList.add('pack-side-panel-hidden');
+  if (togglePackSidePanelBtn) {
+    togglePackSidePanelBtn.title = 'Show Details';
+    togglePackSidePanelBtn.setAttribute('aria-label', 'Show Details');
+  }
 
   packDetailTitleEl.value = pack.name;
 
@@ -519,7 +524,8 @@ function togglePackSidePanel() {
   if (!rightPanelEl || !togglePackSidePanelBtn) return;
 
   const isHidden = rightPanelEl.classList.toggle('pack-side-panel-hidden');
-  togglePackSidePanelBtn.textContent = isHidden ? 'Show Details' : 'Hide Details';
+  togglePackSidePanelBtn.title = isHidden ? 'Show Details' : 'Hide Details';
+  togglePackSidePanelBtn.setAttribute('aria-label', isHidden ? 'Show Details' : 'Hide Details');
 }
 
 function renderPackDetailBeats() {

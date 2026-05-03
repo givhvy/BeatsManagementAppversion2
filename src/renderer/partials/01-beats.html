@@ -70,8 +70,8 @@
           <button id="images-manager-btn" class="btn-secondary" title="Image Database"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> Images</button>
           <button id="database-info-btn" class="btn-secondary" title="Database Info"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></button>
           <button id="create-pack-btn" class="btn-primary">+ Create Pack</button>
-          <button id="packs-zoom-out" class="btn-secondary btn-small" title="Zoom Out" style="padding:3px 9px;font-size:16px;line-height:1;">-</button>
-          <button id="packs-zoom-in" class="btn-secondary btn-small" title="Zoom In" style="padding:3px 9px;font-size:16px;line-height:1;">+</button>
+          <button id="packs-zoom-out" class="btn-zoom" title="Zoom Out">−</button>
+          <button id="packs-zoom-in" class="btn-zoom" title="Zoom In">+</button>
         </div>
       </div>
       <!-- Total Beats Counter -->
@@ -94,11 +94,14 @@
 
     <!-- Right Panel - Pack Details -->
     <div class="right-panel" id="right-panel" style="display: none;">
-      <div class="pack-detail-topbar">
-        <button id="back-to-packs-btn" class="btn-back">← Back to Packs</button>
-        <button id="toggle-pack-side-panel-btn" class="btn-secondary">Hide Details</button>
-      </div>
-      <div class="pack-detail-hero">
+      <div class="pack-detail-hero" style="position: relative;">
+        <button id="back-to-packs-btn" class="pack-hero-icon-btn pack-hero-icon-btn--back" title="Back to Packs" aria-label="Back to Packs">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button id="toggle-pack-side-panel-btn" class="pack-hero-icon-btn pack-hero-icon-btn--details pack-side-toggle-btn" title="Show Details" aria-label="Show Details">
+          <svg class="icon-hide-details" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></svg>
+          <svg class="icon-show-details" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+        </button>
         <div class="pack-detail-cover-wrap">
           <div class="beat-image-preview pack-detail-cover" id="beat-image-preview" style="display: none;">
             <div id="beat-image-container" class="pack-detail-cover-inner">

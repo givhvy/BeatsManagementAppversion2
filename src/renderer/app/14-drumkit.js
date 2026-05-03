@@ -25,12 +25,10 @@ const drumkitPackDetailListEl = document.getElementById('drumkit-pack-detail-lis
 const drumkitPackDetailThumbnailEl = document.getElementById('drumkit-pack-detail-thumbnail');
 const drumkitPackDetailThumbnailImgEl = document.getElementById('drumkit-pack-detail-thumbnail-img');
 const drumkitPacksHeaderTitle = document.getElementById('drumkit-packs-header-title');
-const drumkitFolderPathEl = document.getElementById('drumkit-folder-path');
 const drumkitFilterInput = document.getElementById('drumkit-filter-input');
 
 // Buttons
 const refreshDrumkitBtn = document.getElementById('refresh-drumkit-btn');
-const drumkitSelectFolderBtn = document.getElementById('drumkit-select-folder-btn');
 const drumkitCreatePackBtn = document.getElementById('drumkit-create-pack-btn');
 const drumkitChangeThumbnailHeaderBtn = document.getElementById('drumkit-change-thumbnail-header-btn');
 const drumkitBackToPacksBtn = document.getElementById('drumkit-back-to-packs-btn');
@@ -111,25 +109,10 @@ async function initDrumkitSection() {
     drumkitToggleHiddenViewBtn.addEventListener('click', toggleDrumkitHiddenView);
   }
 
-  // Select drum kit folder
-  if (drumkitSelectFolderBtn) {
-    drumkitSelectFolderBtn.addEventListener('click', selectDrumkitFolder);
-  }
-
   // Refresh drum kit files
   if (refreshDrumkitBtn) {
     refreshDrumkitBtn.addEventListener('click', refreshDrumkitFiles);
   }
-
-  // Tab buttons (All Kits / Untagged / Tagged)
-  document.querySelectorAll('[data-drumkit-type]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const type = btn.getAttribute('data-drumkit-type');
-      switchDrumkitFolder(type);
-      document.querySelectorAll('[data-drumkit-type]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-    });
-  });
 
   // Filter inputs
   if (drumkitFilterInput) {
@@ -192,7 +175,6 @@ async function initDrumkitSection() {
   // Load folder contents on init
   refreshDrumkitFiles();
   renderDrumkitPacks();
-  updateDrumkitFolderDisplay();
 
   console.log('[Drum Kit] Section initialized. Packs:', drumkitPacks.length);
 }
@@ -219,7 +201,6 @@ async function refreshDrumkitFiles() {
     const kits = await ipcRenderer.invoke('read-drumkit-folder', currentPath);
     drumkitFolders[currentDrumkitFolderType].files = kits;
     renderDrumkitFiles();
-    updateDrumkitFolderDisplay();
   } catch (e) {
     console.error('[Drum Kit] Error refreshing files:', e);
   }
@@ -323,12 +304,6 @@ async function saveDrumkitData() {
   } catch (e) {
     console.error('[Drum Kit] Error saving data:', e);
   }
-}
-
-// Update folder display
-function updateDrumkitFolderDisplay() {
-  const currentPath = drumkitFolders[currentDrumkitFolderType].currentPath;
-  drumkitFolderPathEl.textContent = currentPath || 'No folder selected';
 }
 
 // Render drum kit files
