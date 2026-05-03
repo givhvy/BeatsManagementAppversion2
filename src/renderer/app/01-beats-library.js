@@ -64,8 +64,6 @@ const filterInput = document.getElementById('filter-input');
 const filterContainer = document.getElementById('filter-container');
 const packFilterInput = document.getElementById('pack-filter-input');
 const tabButtons = document.querySelectorAll('.tab-btn');
-const breadcrumbContainer = document.getElementById('breadcrumb-container');
-const breadcrumbEl = document.getElementById('breadcrumb');
 
 const databaseInfoBtn = document.getElementById('database-info-btn');
 const databaseModal = document.getElementById('database-modal');
@@ -956,13 +954,6 @@ function updateFolderDisplay() {
     }
   });
 
-  // Show/hide breadcrumb for tagged/untagged only
-  if (currentFolderType === 'tagged' || currentFolderType === 'untagged') {
-    breadcrumbContainer.style.display = 'block';
-    renderBreadcrumb();
-  } else {
-    breadcrumbContainer.style.display = 'none';
-  }
 
   // Show channel management only for "untagged" (Tagged Beats) tab
   if (currentFolderType === 'untagged') {
@@ -990,52 +981,7 @@ function updateFolderDisplay() {
   }
 }
 
-// Render breadcrumb navigation
-function renderBreadcrumb() {
-  const basePath = getBasePath();
-  const currentPath = getCurrentFolder();
-
-  breadcrumbEl.innerHTML = '';
-
-  // Get path segments relative to base path
-  const relativePath = currentPath.replace(basePath, '').replace(/^[\\\/]/, '');
-  const segments = relativePath ? relativePath.split(/[\\\/]/) : [];
-
-  // Add root (base folder name)
-  const basePathSegments = basePath.split(/[\\\/]/);
-  const baseName = basePathSegments[basePathSegments.length - 1];
-
-  const rootItem = document.createElement('span');
-  rootItem.className = segments.length === 0 ? 'breadcrumb-current' : 'breadcrumb-item';
-  rootItem.textContent = baseName;
-  if (segments.length > 0) {
-    rootItem.onclick = () => navigateToPath(basePath);
-  }
-  breadcrumbEl.appendChild(rootItem);
-
-  // Add subsequent path segments
-  let builtPath = basePath;
-  segments.forEach((segment, index) => {
-    const separator = document.createElement('span');
-    separator.className = 'breadcrumb-separator';
-    separator.textContent = '  ';
-    breadcrumbEl.appendChild(separator);
-
-    builtPath += `\\${segment}`;
-    const item = document.createElement('span');
-    item.className = index === segments.length - 1 ? 'breadcrumb-current' : 'breadcrumb-item';
-    item.textContent = segment;
-
-    if (index < segments.length - 1) {
-      const pathToNavigate = builtPath;
-      item.onclick = () => navigateToPath(pathToNavigate);
-    }
-
-    breadcrumbEl.appendChild(item);
-  });
-}
-
-// Navigate to a specific path in breadcrumb
+// Navigate to a specific path
 async function navigateToPath(targetPath) {
   setCurrentPath(targetPath);
   await loadFolderContents(targetPath);

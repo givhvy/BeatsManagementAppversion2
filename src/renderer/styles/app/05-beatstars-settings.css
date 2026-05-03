@@ -1041,14 +1041,6 @@
   border-color: rgba(245, 158, 11, 0.4);
 }
 
-[data-theme="amber"] .breadcrumb-item {
-  color: #F59E0B;
-}
-
-[data-theme="amber"] .breadcrumb-item:hover {
-  color: #FCD34D;
-}
-
 [data-theme="amber"] .btn-back {
   background: rgba(245, 158, 11, 0.1);
   color: rgba(245, 158, 11, 0.9);
