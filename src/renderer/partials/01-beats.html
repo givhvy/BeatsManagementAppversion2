@@ -1,8 +1,9 @@
   <!-- Section: Beats Management -->
   <div class="app-section active" id="beats-section">
   <div class="container">
+
     <!-- Left Panel - All Beats -->
-    <div class="left-panel">
+    <div class="left-panel" id="beats-left-panel">
       <div class="panel-header">
         <h2>Beats</h2>
         <button id="refresh-beats-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
@@ -44,7 +45,6 @@
       <div class="panel-header">
         <div style="display: flex; align-items: center; gap: 12px;">
           <h2 id="packs-header-title">Packs</h2>
-          <!-- View Toggle Buttons -->
           <div class="pack-view-toggle">
             <button id="channel-view-btn" class="pack-view-btn active" data-view="channel">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -54,14 +54,16 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
               Genre Views
             </button>
+            <button id="background-view-btn" class="pack-view-btn" data-view="background">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M9 5v13"/></svg>
+              Background
+            </button>
           </div>
         </div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <!-- Channel management buttons (only visible in Tagged Beats tab) -->
+        <div id="beats-action-btns" style="display: flex; gap: 8px; flex-wrap: wrap;">
           <button id="create-channels-btn" class="btn-primary" style="display: none;">Create Channels</button>
           <button id="auto-add-channel-btn" class="btn-secondary" style="display: none;">Auto Add</button>
           <button id="email-manager-btn" class="btn-secondary" style="display: none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8"/><polyline points="22,6 12,13 2,6"/><path d="M19 16v6"/><path d="M16 19h6"/></svg> Emails</button>
-
           <button id="toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
           <button id="images-manager-btn" class="btn-secondary" title="Image Database"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg> Images</button>
           <button id="database-info-btn" class="btn-secondary" title="Database Info"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></button>
@@ -69,7 +71,15 @@
           <button id="packs-zoom-out" class="btn-zoom" title="Zoom Out">−</button>
           <button id="packs-zoom-in" class="btn-zoom" title="Zoom In">+</button>
         </div>
+        <div id="bgmusic-action-btns" style="display: none; gap: 8px; flex-wrap: wrap;">
+          <button id="bgmusic-toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
+          <button id="bgmusic-create-pack-btn" class="btn-primary">+ Create Pack</button>
+          <button id="bgmusic-packs-zoom-out" class="btn-zoom" title="Zoom Out">−</button>
+          <button id="bgmusic-packs-zoom-in" class="btn-zoom" title="Zoom In">+</button>
+        </div>
       </div>
+      <!-- Beats Content (hidden when Background pill active) -->
+      <div id="beats-middle-content">
       <!-- Total Beats Counter -->
       <div class="total-beats-container">
         <div class="total-beats-header">
@@ -86,7 +96,8 @@
       <div class="packs-grid" id="packs-grid">
         <!-- Pack cards will be created here -->
       </div>
-    </div>
+      </div> <!-- end beats-middle-content -->
+    </div> <!-- end middle-panel -->
 
     <!-- Right Panel - Pack Details -->
     <div class="right-panel" id="right-panel" style="display: none;">
@@ -115,11 +126,6 @@
             <span id="pack-detail-count">0 beats</span>
             <span>Ready for upload queue</span>
           </div>
-          <div class="pack-detail-actions">
-            <button id="auto-upload-6-btn" class="btn-primary" title="Auto render and upload next 6 unuploaded beats"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Auto Upload 6</button>
-            <button id="toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
-            <button id="delete-current-pack-btn" class="btn-danger">Delete Pack</button>
-          </div>
         </div>
       </div>
       <div class="pack-detail-content">
@@ -128,17 +134,23 @@
         </div>
         <div class="resize-handle" id="resize-handle"></div>
         <div class="pack-detail-right" id="pack-detail-right-panel">
-          <!-- Beat Prompt -->
-
+          <div class="right-panel-card pack-actions-card">
+            <div class="right-panel-card-header">
+              <span class="right-panel-label">PACK ACTIONS</span>
+            </div>
+            <div class="pack-detail-actions">
+              <button id="auto-upload-6-btn" class="btn-primary" title="Auto render and upload next 6 unuploaded beats"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Auto Upload 6</button>
+              <button id="toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
+              <button id="delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+            </div>
+          </div>
           <div class="beat-prompt-section" id="beat-prompt-section" style="display: none;">
             <div class="right-panel-card">
               <div class="right-panel-card-header">
                 <span class="right-panel-label">PROMPT</span>
                 <button id="edit-prompt-btn" class="btn-icon-sm">Edit</button>
               </div>
-              <div id="beat-prompt-display" class="prompt-display-box">
-                No prompt available
-              </div>
+              <div id="beat-prompt-display" class="prompt-display-box">No prompt available</div>
               <textarea id="beat-prompt-editor" class="prompt-editor-box" style="display: none;" placeholder="Enter prompt for this beat..."></textarea>
               <div id="prompt-edit-actions" style="display: none; flex-direction: row; gap: 8px; margin-top: 8px;">
                 <button id="save-prompt-btn" class="btn-primary" style="padding: 5px 14px; font-size: 12px;">Save</button>
@@ -146,14 +158,150 @@
               </div>
             </div>
           </div>
-
-          <!-- Pack Email/Password Info -->
           <div class="pack-email-info" id="pack-email-info">
             <!-- Email info will be rendered here -->
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Background View Panel (flat sibling, shown when Background pill active) -->
+    <div id="bg-view-panel" style="display: none;">
+      <!-- Left Panel - Background Music List -->
+      <div class="left-panel" id="bgmusic-left-panel">
+        <div class="panel-header">
+          <h2>Background Music</h2>
+          <button id="refresh-bgmusic-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+        </div>
+        <div class="tabs-container">
+          <button class="tab-btn active" data-bgmusic-type="all">All Music</button>
+          <button class="tab-btn" data-bgmusic-type="untagged">Untagged</button>
+          <button class="tab-btn" data-bgmusic-type="tagged">Tagged</button>
+        </div>
+        <div class="folder-path" id="bgmusic-folder-path">No folder selected</div>
+        <div class="filter-container" id="bgmusic-filter-container">
+          <input type="text" id="bgmusic-filter-input" placeholder="Filter by name..." class="filter-input">
+        </div>
+        <div class="beats-list" id="bgmusic-list"
+             ondrop="handleBackgroundMusicDrop(event)"
+             ondragover="handleBackgroundMusicDragOver(event)"
+             ondragleave="handleBackgroundMusicDragLeave(event)">
+        </div>
+      </div>
+      <!-- Middle Panel - Background Music Packs -->
+      <div class="middle-panel" id="bgmusic-middle-panel">
+        <div class="panel-header">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <h2 id="bgmusic-packs-header-title">Background Music Packs</h2>
+            <div class="pack-view-toggle">
+              <button class="pack-view-btn" data-view="channel">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Channel Views
+              </button>
+              <button class="pack-view-btn" data-view="genre">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                Genre Views
+              </button>
+              <button class="pack-view-btn active" data-view="background">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><path d="M9 5v13"/></svg>
+                Background
+              </button>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button id="bgmusic-toggle-hidden-view-btn2" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
+            <button id="bgmusic-create-pack-btn2" class="btn-primary">+ Create Pack</button>
+            <button id="bgmusic-packs-zoom-out2" class="btn-zoom" title="Zoom Out">−</button>
+            <button id="bgmusic-packs-zoom-in2" class="btn-zoom" title="Zoom In">+</button>
+          </div>
+        </div>
+        <div class="total-beats-container">
+          <div class="total-beats-header">
+            <span class="total-beats-label">Total Background Music in All Packs</span>
+            <span class="total-beats-count" id="total-bgmusic-count">0/10000</span>
+          </div>
+          <div class="total-beats-progress-bar">
+            <div class="total-beats-progress-fill" id="total-bgmusic-progress-fill"></div>
+          </div>
+        </div>
+        <div class="filter-container">
+          <input type="text" id="bgmusic-pack-filter-input" placeholder="Filter by pack number (e.g., BG1, BG2, 1, 2...)" class="filter-input">
+        </div>
+        <div class="packs-grid" id="bgmusic-packs-grid"></div>
+      </div>
+      <!-- Right Panel - Background Pack Details -->
+      <div class="right-panel" id="bgmusic-right-panel" style="display: none;">
+        <div class="panel-header">
+          <button id="bgmusic-back-to-packs-btn" class="btn-back">Back</button>
+          <input type="text" id="bgmusic-pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
+          <div style="display: flex; gap: 8px;">
+            <button id="bgmusic-toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
+            <button id="bgmusic-delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+          </div>
+        </div>
+        <div class="pack-detail-content">
+          <div class="pack-detail-beats" id="bgmusic-pack-detail-list">
+            <div class="pack-detail-count" id="bgmusic-pack-detail-count">0 tracks</div>
+          </div>
+          <div class="resize-handle" id="bgmusic-resize-handle"></div>
+          <div class="pack-detail-right" id="bgmusic-pack-detail-right-panel">
+            <div class="beat-image-preview" id="bgmusic-waveform-preview" style="display: none;">
+              <div id="bgmusic-waveform-container" style="position: relative; aspect-ratio: 16/9; background: #111; border-radius: 6px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <canvas id="bgmusic-waveform-canvas" style="width: 100%; height: 100%;"></canvas>
+              </div>
+            </div>
+            <div class="beat-prompt-section" id="bgmusic-info-section" style="display: none;">
+              <div class="right-panel-card">
+                <div class="right-panel-card-header">
+                  <span class="right-panel-label">TRACK INFO</span>
+                  <button id="bgmusic-edit-info-btn" class="btn-icon-sm">Edit</button>
+                </div>
+                <div id="bgmusic-info-display" class="prompt-display-box">No info available</div>
+                <textarea id="bgmusic-info-editor" class="prompt-editor-box" style="display: none;" placeholder="Enter info for this track..."></textarea>
+                <div id="bgmusic-info-edit-actions" style="display: none; flex-direction: row; gap: 8px; margin-top: 8px;">
+                  <button id="bgmusic-save-info-btn" class="btn-primary" style="padding: 5px 14px; font-size: 12px;">Save</button>
+                  <button id="bgmusic-cancel-info-btn" class="btn-secondary" style="padding: 5px 14px; font-size: 12px;">Cancel</button>
+                </div>
+              </div>
+            </div>
+            <div class="beat-prompt-section" id="bgmusic-mixer-section" style="display: none;">
+              <div class="right-panel-card">
+                <div class="right-panel-card-header">
+                  <span class="right-panel-label">MIXER SETTINGS</span>
+                </div>
+                <div style="padding: 15px;">
+                  <div style="margin-bottom: 20px;">
+                    <label style="display: block; color: #999; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Volume</label>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                      <input type="range" id="bgmusic-volume-slider" min="0" max="100" value="30" style="flex: 1; height: 6px; background: #333; border-radius: 3px; outline: none;">
+                      <span id="bgmusic-volume-display" style="color: #fff; font-weight: 600; min-width: 45px; text-align: right; font-size: 13px;">30%</span>
+                    </div>
+                  </div>
+                  <div style="margin-bottom: 20px;">
+                    <label style="display: block; color: #999; font-size: 11px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Fade In/Out (seconds)</label>
+                    <div style="display: flex; gap: 10px;">
+                      <input type="number" id="bgmusic-fade-in" min="0" max="10" value="2" step="0.5" class="modal-input" placeholder="Fade in" style="font-size: 12px; padding: 6px 10px;">
+                      <input type="number" id="bgmusic-fade-out" min="0" max="10" value="2" step="0.5" class="modal-input" placeholder="Fade out" style="font-size: 12px; padding: 6px 10px;">
+                    </div>
+                  </div>
+                  <div style="margin-bottom: 15px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                      <input type="checkbox" id="bgmusic-loop" checked style="width: 16px; height: 16px; cursor: pointer;">
+                      <span style="color: #ccc; font-size: 12px;">Loop if longer than beat</span>
+                    </label>
+                  </div>
+                  <button class="btn-primary" id="bgmusic-apply-to-beats-btn" style="width: 100%; padding: 10px; font-size: 13px; margin-top: 10px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                    Apply to Beats Pack
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- end bg-view-panel -->
+
   </div>
 
   <!-- Audio Player -->
@@ -276,6 +424,7 @@
   <div id="beat-context-menu" class="context-menu" style="display: none;">
     <div class="context-menu-item" id="mark-last-used">Mark as Last Used</div>
     <div class="context-menu-item" id="unmark-last-used">Remove Last Used</div>
+    <div class="context-menu-item" id="open-beat-in-explorer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Open in File Explorer</div>
     <div class="context-menu-divider"></div>
     <div class="context-menu-item" id="create-video-from-beat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M4 11v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8H4Z"/><path d="m4 11-.88-2.87a2 2 0 0 1 1.33-2.5l11.48-3.5a2 2 0 0 1 2.5 1.32l.87 2.87L4 11.01Z"/><path d="m6.6 4.99 3.38 4.2"/><path d="m11.86 3.38 3.38 4.2"/></svg>Create Video</div>
     <div class="context-menu-item" id="upload-beat-to-youtube"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>Upload to YouTube</div>
@@ -366,4 +515,52 @@ email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8"
       </div>
     </div>
   </div>
+  <!-- Now Playing Modal -->
+  <div id="now-playing-modal" class="modal now-playing-modal" style="display: none;">
+    <div class="now-playing-content">
+      <button id="close-now-playing-btn" class="close-now-playing-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      
+      <!-- Album Art -->
+      <div class="np-album-art">
+        <img id="np-album-art-img" src="" alt="Album Art" />
+      </div>
+      
+      <!-- Track Info -->
+      <div class="np-track-info">
+        <h2 id="np-track-title" class="np-track-title">No track playing</h2>
+        <p id="np-track-artist" class="np-track-artist">-</p>
+      </div>
+      
+      <!-- Waveform Progress -->
+      <div class="np-waveform-container">
+        <canvas id="np-waveform" class="np-waveform"></canvas>
+        <div class="np-progress-bar">
+          <div id="np-progress-fill" class="np-progress-fill"></div>
+        </div>
+      </div>
+      
+      <!-- Time Display -->
+      <div class="np-time-display">
+        <span id="np-current-time">0:00</span>
+        <span id="np-duration">0:00</span>
+      </div>
+      
+      <!-- Playback Controls -->
+      <div class="np-playback-controls">
+        <button id="np-prev-btn" class="np-control-btn" title="Previous">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg>
+        </button>
+        <button id="np-play-pause-btn" class="np-play-btn" title="Play/Pause">
+          <svg id="np-play-icon" width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          <svg id="np-pause-icon" width="40" height="40" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+        </button>
+        <button id="np-next-btn" class="np-control-btn" title="Next">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg>
+        </button>
+      </div>
+    </div>
+  </div>
   </div> <!-- End beats-section -->
+</div>

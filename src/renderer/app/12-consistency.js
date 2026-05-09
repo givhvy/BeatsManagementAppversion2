@@ -4,7 +4,9 @@
 
 let consistencyState = {
   uploads: {}, // { "2026-05-02": ["video1.mp4", "video2.mp4"] }
-  initialized: false
+  initialized: false,
+  dataLoaded: false,
+  loadPromise: null
 };
 
 function initConsistencySection() {
@@ -19,17 +21,31 @@ function initConsistencySection() {
 }
 
 async function loadConsistencyData() {
-  if (!isElectron) return;
+  if (!isElectron) return false;
 
+  if (consistencyState.dataLoaded) return true;
+  if (consistencyState.loadPromise) return consistencyState.loadPromise;
+
+  consistencyState.loadPromise = (async () => {
   try {
     const result = await ipcRenderer.invoke('load-consistency-data');
     if (result.success && result.data) {
       consistencyState.uploads = result.data.uploads || {};
       console.log(' Loaded consistency data:', Object.keys(consistencyState.uploads).length, 'days');
+      consistencyState.dataLoaded = true;
+      return true;
     }
+    console.error('Failed to load consistency data:', result.error);
+    return false;
   } catch (error) {
     console.error('Error loading consistency data:', error);
+    return false;
+  } finally {
+    consistencyState.loadPromise = null;
   }
+  })();
+
+  return consistencyState.loadPromise;
 }
 
 async function saveConsistencyData() {
@@ -52,6 +68,12 @@ async function saveConsistencyData() {
 }
 
 async function markVideoAsPosted(videoPath, videoName) {
+  const loaded = await loadConsistencyData();
+  if (isElectron && !loaded) {
+    showNotification('Could not load posted history, so the video was not marked', 'error');
+    return;
+  }
+
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
   if (!consistencyState.uploads[today]) {

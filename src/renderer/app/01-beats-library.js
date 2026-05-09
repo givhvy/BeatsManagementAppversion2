@@ -1,6 +1,12 @@
 // State
 let folders = {
   all: { path: 'D:\\Beats', beats: [], basePath: 'D:\\Beats', currentPath: 'D:\\Beats' },
+  genre: {
+    path: 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres',
+    beats: [],
+    basePath: 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres',
+    currentPath: 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres'
+  },
   tagged: {
     path: 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\songs',
     beats: [],
@@ -20,6 +26,10 @@ let genrePacks = []; // Genre-based packs (separate from channel packs)
 let currentPackView = 'channel'; // 'channel' or 'genre'
 let fileObjectsCache = new Map(); // Cache file objects by path
 
+const GENRE_BEATS_FOLDER = 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres';
+const AUDIO_FILE_EXTENSIONS = ['.mp3', '.wav', '.flac', '.m4a', '.aac', '.ogg'];
+const GENRE_DROP_EXTENSIONS = ['.mp3', '.wav'];
+
 // Channel management state
 let emails = []; // List of {email, password, used}
 let channels = []; // List of created channels
@@ -33,24 +43,50 @@ let beatImages = {}; // Map beatId to image path
 let beatPrompts = {}; // Map beatId to prompt text
 
 // Helper function to get current folder
+function ensureGenreFolderState() {
+  if (!folders.genre) {
+    folders.genre = {
+      path: GENRE_BEATS_FOLDER,
+      beats: [],
+      basePath: GENRE_BEATS_FOLDER,
+      currentPath: GENRE_BEATS_FOLDER
+    };
+  }
+
+  folders.genre.path = folders.genre.path || GENRE_BEATS_FOLDER;
+  folders.genre.basePath = folders.genre.basePath || folders.genre.path;
+  folders.genre.currentPath = folders.genre.currentPath || folders.genre.path;
+}
+
+function getActiveFolderKey() {
+  return currentPackView === 'genre' ? 'genre' : currentFolderType;
+}
+
 function getCurrentFolder() {
-  return folders[currentFolderType].currentPath || folders[currentFolderType].path;
+  ensureGenreFolderState();
+  const folder = folders[getActiveFolderKey()];
+  return folder.currentPath || folder.path;
 }
 
 function getBasePath() {
-  return folders[currentFolderType].basePath || folders[currentFolderType].path;
+  ensureGenreFolderState();
+  const folder = folders[getActiveFolderKey()];
+  return folder.basePath || folder.path;
 }
 
 function getCurrentBeats() {
-  return folders[currentFolderType].beats;
+  ensureGenreFolderState();
+  return folders[getActiveFolderKey()].beats;
 }
 
 function setCurrentBeats(beats) {
-  folders[currentFolderType].beats = beats;
+  ensureGenreFolderState();
+  folders[getActiveFolderKey()].beats = beats;
 }
 
 function setCurrentPath(path) {
-  folders[currentFolderType].currentPath = path;
+  ensureGenreFolderState();
+  folders[getActiveFolderKey()].currentPath = path;
 }
 
 // DOM Elements
@@ -77,6 +113,7 @@ const importDbBtn = document.getElementById('import-db-btn');
 const beatContextMenu = document.getElementById('beat-context-menu');
 const markLastUsedBtn = document.getElementById('mark-last-used');
 const unmarkLastUsedBtn = document.getElementById('unmark-last-used');
+const openBeatInExplorerBtn = document.getElementById('open-beat-in-explorer');
 const createVideoFromBeatBtn = document.getElementById('create-video-from-beat');
 const uploadBeatToYoutubeBtn = document.getElementById('upload-beat-to-youtube');
 
@@ -229,6 +266,7 @@ async function init() {
       // Load folders if available, otherwise use defaults
       if (savedData.folders) {
         folders = savedData.folders;
+        ensureGenreFolderState();
       }
       if (savedData.currentFolderType) {
         currentFolderType = savedData.currentFolderType;
@@ -278,6 +316,7 @@ async function init() {
       const data = JSON.parse(savedData);
       if (data.folders) {
         folders = data.folders;
+        ensureGenreFolderState();
       }
       if (data.currentFolderType) {
         currentFolderType = data.currentFolderType;
@@ -399,6 +438,20 @@ async function init() {
     hideContextMenu();
   });
 
+  if (openBeatInExplorerBtn) {
+    openBeatInExplorerBtn.addEventListener('click', async () => {
+      if (contextMenuTarget && contextMenuTarget.beatPath) {
+        try {
+          await ipcRenderer.invoke('reveal-in-explorer', contextMenuTarget.beatPath);
+        } catch (error) {
+          console.error('Error opening beat in Explorer:', error);
+          showNotification('Could not open beat in File Explorer', 'error');
+        }
+      }
+      hideContextMenu();
+    });
+  }
+
   // Create video from beat context menu item
   if (createVideoFromBeatBtn) {
     createVideoFromBeatBtn.addEventListener('click', () => {
@@ -494,6 +547,23 @@ function showPacksGrid() {
   rightPanelEl.style.display = 'none';
 }
 
+function showPackThumbnailInDetail(pack) {
+  if (!beatImagePreview || !beatImageDisplay || !packDetailCoverPlaceholder) return;
+
+  if (pack?.thumbnail && pack.thumbnail !== 'auto') {
+    beatImagePreview.style.display = 'block';
+    packDetailCoverPlaceholder.style.display = 'none';
+    beatImageDisplay.src = pack.thumbnail;
+    beatImageDisplay.dataset.imagePath = pack.thumbnail;
+    beatImageDisplay.ondragstart = (e) => e.preventDefault();
+  } else {
+    beatImagePreview.style.display = 'none';
+    packDetailCoverPlaceholder.style.display = 'flex';
+    beatImageDisplay.removeAttribute('src');
+    delete beatImageDisplay.dataset.imagePath;
+  }
+}
+
 function showPackDetail(packId) {
   currentPackId = packId;
   // Find pack in the appropriate array based on current view
@@ -510,6 +580,7 @@ function showPackDetail(packId) {
   }
 
   packDetailTitleEl.value = pack.name;
+  showPackThumbnailInDetail(pack);
 
   // Update hide/unhide button text based on pack status
   toggleHidePackBtn.textContent = pack.hidden ? 'Unhide Pack' : 'Hide Pack';
@@ -528,6 +599,9 @@ function togglePackSidePanel() {
 
 function renderPackDetailBeats() {
   packDetailBeatsEl.innerHTML = '';
+  packDetailBeatsEl.ondragover = handleDragOver;
+  packDetailBeatsEl.ondragleave = handleDragLeave;
+  packDetailBeatsEl.ondrop = (e) => handleDrop(e, currentPackId);
 
   // Find pack in the appropriate array based on current view
   const currentPacks = currentPackView === 'genre' ? genrePacks : packs;
@@ -550,8 +624,10 @@ function renderPackDetailBeats() {
 
   if (pack.beats.length === 0) {
     const emptyMessageEl = document.createElement('div');
-    emptyMessageEl.style.cssText = 'padding: 20px; text-align: center; color: #999;';
-    emptyMessageEl.textContent = 'No beats in this pack yet. Drag beats from the left panel to add them.';
+    emptyMessageEl.className = 'pack-empty-drop-zone';
+    emptyMessageEl.textContent = currentPackView === 'genre'
+      ? 'No beats in this genre yet. Drop audio files here to copy them into Genres.'
+      : 'No beats in this pack yet. Drag beats from the left panel to add them.';
     packDetailBeatsEl.appendChild(emptyMessageEl);
     return;
   }
@@ -560,16 +636,14 @@ function renderPackDetailBeats() {
     const beatItemEl = createPackBeatElement(beat, currentPackId, index);
     packDetailBeatsEl.appendChild(beatItemEl);
   });
-
-  // Add drag over events to the detail beats container
-  packDetailBeatsEl.addEventListener('dragover', handleDragOver);
-  packDetailBeatsEl.addEventListener('dragleave', handleDragLeave);
-  packDetailBeatsEl.addEventListener('drop', (e) => handleDrop(e, currentPackId));
 }
 
 function renderPackEmailInfo() {
-  const pack = packs.find(p => p.id === currentPackId);
-  if (!pack) return;
+  const pack = getPackById(currentPackId);
+  if (!pack) {
+    packEmailInfoEl.innerHTML = '';
+    return;
+  }
 
   packEmailInfoEl.innerHTML = '';
 
@@ -761,6 +835,54 @@ function setupAudioPlayer() {
   // Play/Pause button
   playPauseBtn.addEventListener('click', togglePlayPause);
 
+  // Player art click to open Now Playing modal
+  const playerArt = document.getElementById('player-art');
+  if (playerArt) {
+    playerArt.addEventListener('click', () => {
+      if (currentBeat && isPlaying) {
+        openNowPlayingModal();
+      }
+    });
+    playerArt.style.cursor = 'pointer';
+  }
+
+  // Now Playing modal close button
+  const closeNowPlayingBtn = document.getElementById('close-now-playing-btn');
+  if (closeNowPlayingBtn) {
+    closeNowPlayingBtn.addEventListener('click', closeNowPlayingModal);
+  }
+
+  // Now Playing modal controls
+  const npPlayPauseBtn = document.getElementById('np-play-pause-btn');
+  const npPrevBtn = document.getElementById('np-prev-btn');
+  const npNextBtn = document.getElementById('np-next-btn');
+
+  if (npPlayPauseBtn) {
+    npPlayPauseBtn.addEventListener('click', togglePlayPause);
+  }
+  if (npPrevBtn) {
+    npPrevBtn.addEventListener('click', () => {
+      const mainPrevBtn = document.getElementById('prev-btn');
+      if (mainPrevBtn) mainPrevBtn.click();
+    });
+  }
+  if (npNextBtn) {
+    npNextBtn.addEventListener('click', () => {
+      const mainNextBtn = document.getElementById('next-btn');
+      if (mainNextBtn) mainNextBtn.click();
+    });
+  }
+
+  // Close modal when clicking outside
+  const nowPlayingModal = document.getElementById('now-playing-modal');
+  if (nowPlayingModal) {
+    nowPlayingModal.addEventListener('click', (e) => {
+      if (e.target === nowPlayingModal) {
+        closeNowPlayingModal();
+      }
+    });
+  }
+
   // Audio events
   audioElement.addEventListener('loadedmetadata', () => {
     durationTimeEl.textContent = formatTime(audioElement.duration);
@@ -771,6 +893,7 @@ function setupAudioPlayer() {
   audioElement.addEventListener('timeupdate', () => {
     currentTimeEl.textContent = formatTime(audioElement.currentTime);
     progressBar.value = Math.floor(audioElement.currentTime);
+    updateNowPlayingProgress();
   });
 
   audioElement.addEventListener('ended', () => {
@@ -818,6 +941,147 @@ function updatePlayIcons(playing) {
   const iconPause = document.getElementById('icon-pause');
   if (iconPlay) iconPlay.style.display = playing ? 'none' : 'block';
   if (iconPause) iconPause.style.display = playing ? 'block' : 'none';
+  
+  // Update Now Playing modal icons
+  const npPlayIcon = document.getElementById('np-play-icon');
+  const npPauseIcon = document.getElementById('np-pause-icon');
+  if (npPlayIcon) npPlayIcon.style.display = playing ? 'none' : 'block';
+  if (npPauseIcon) npPauseIcon.style.display = playing ? 'block' : 'none';
+}
+
+// Now Playing Modal Functions
+function openNowPlayingModal() {
+  const modal = document.getElementById('now-playing-modal');
+  if (!modal || !currentBeat) return;
+  
+  // Update track info
+  const titleEl = document.getElementById('np-track-title');
+  const artistEl = document.getElementById('np-track-artist');
+  const albumArtImg = document.getElementById('np-album-art-img');
+  
+  if (titleEl) titleEl.textContent = currentBeat.name || 'Unknown Track';
+  if (artistEl) artistEl.textContent = 'Audio';
+  
+  // Set album art
+  const imgPath = beatImages[currentBeat.path];
+  if (albumArtImg) {
+    if (imgPath) {
+      albumArtImg.src = 'file://' + imgPath;
+    } else {
+      // Use a gradient placeholder if no image
+      albumArtImg.src = 'data:image/svg+xml,' + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="280" height="280" viewBox="0 0 280 280">
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+              <stop offset="50%" style="stop-color:#f97316;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#ef4444;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect width="280" height="280" fill="url(#grad)"/>
+          <circle cx="140" cy="140" r="60" fill="rgba(255,255,255,0.3)"/>
+        </svg>
+      `);
+    }
+  }
+  
+  // Update play state
+  updatePlayIcons(isPlaying);
+  
+  // Initialize waveform
+  initWaveform();
+  
+  // Show modal
+  modal.style.display = 'flex';
+  
+  // Update progress
+  updateNowPlayingProgress();
+}
+
+function closeNowPlayingModal() {
+  const modal = document.getElementById('now-playing-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function updateNowPlayingProgress() {
+  const modal = document.getElementById('now-playing-modal');
+  if (!modal || modal.style.display === 'none') return;
+  
+  const currentTimeEl = document.getElementById('np-current-time');
+  const durationEl = document.getElementById('np-duration');
+  const progressFill = document.getElementById('np-progress-fill');
+  
+  if (currentTimeEl) currentTimeEl.textContent = formatTime(audioElement.currentTime);
+  if (durationEl) durationEl.textContent = formatTime(audioElement.duration);
+  
+  if (progressFill && audioElement.duration) {
+    const progress = (audioElement.currentTime / audioElement.duration) * 100;
+    progressFill.style.width = progress + '%';
+  }
+}
+
+// Waveform Visualization
+let waveformAnimationId = null;
+
+function initWaveform() {
+  const canvas = document.getElementById('np-waveform');
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  const container = canvas.parentElement;
+  
+  // Set canvas size
+  canvas.width = container.offsetWidth;
+  canvas.height = container.offsetHeight;
+  
+  // Generate waveform bars
+  const barCount = 60;
+  const barWidth = canvas.width / barCount;
+  const bars = [];
+  
+  for (let i = 0; i < barCount; i++) {
+    bars.push({
+      height: Math.random() * 0.6 + 0.2, // Random height between 20% and 80%
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+  
+  // Animation loop
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const currentTime = Date.now() / 1000;
+    const progress = audioElement.duration ? audioElement.currentTime / audioElement.duration : 0;
+    
+    bars.forEach((bar, i) => {
+      const x = i * barWidth;
+      const barHeight = bar.height * canvas.height;
+      const y = (canvas.height - barHeight) / 2;
+      
+      // Animate bars slightly
+      const animatedHeight = barHeight + Math.sin(currentTime * 3 + bar.phase) * 5;
+      const animatedY = (canvas.height - animatedHeight) / 2;
+      
+      // Color based on progress
+      const isActive = i / barCount < progress;
+      ctx.fillStyle = isActive ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.15)';
+      
+      // Draw rounded bar
+      const radius = 2;
+      ctx.beginPath();
+      ctx.roundRect(x + 1, animatedY, barWidth - 2, animatedHeight, radius);
+      ctx.fill();
+    });
+    
+    waveformAnimationId = requestAnimationFrame(animate);
+  }
+  
+  // Cancel previous animation if exists
+  if (waveformAnimationId) {
+    cancelAnimationFrame(waveformAnimationId);
+  }
+  
+  animate();
 }
 
 // Prev / Next beat navigation
@@ -895,8 +1159,7 @@ function playBeat(beatPath, beatName) {
     beatImageDisplay.dataset.imagePath = imagePath;
     beatImageDisplay.ondragstart = (e) => e.preventDefault();
   } else {
-    beatImagePreview.style.display = 'none';
-    if (packDetailCoverPlaceholder) packDetailCoverPlaceholder.style.display = 'flex';
+    showPackThumbnailInDetail(getPackById(currentPackId));
   }
 
   // Always show prompt section when playing a beat (even if empty)
@@ -1032,7 +1295,10 @@ async function selectFolder() {
   if (isElectron) {
     const folderPath = await ipcRenderer.invoke('select-folder');
     if (folderPath) {
-      folders[currentFolderType].path = folderPath;
+      const folderKey = getActiveFolderKey();
+      folders[folderKey].path = folderPath;
+      folders[folderKey].basePath = folderPath;
+      folders[folderKey].currentPath = folderPath;
       folderPathEl.textContent = folderPath;
       await loadBeats(folderPath);
       await saveData();
@@ -1424,7 +1690,7 @@ function updateTotalBeatsCounter() {
   totalBeatsProgressFillEl.style.width = `${percentage}%`;
 }
 
-function switchPackView(view) {
+async function switchPackView(view) {
   currentPackView = view;
 
   // Update button states
@@ -1438,6 +1704,19 @@ function switchPackView(view) {
     } else {
       channelViewBtn.classList.remove('active');
       genreViewBtn.classList.add('active');
+    }
+  }
+
+  setCurrentPath(getBasePath());
+  updateFolderDisplay();
+
+  if (isElectron) {
+    if (view === 'genre') {
+      await loadBeats(getCurrentFolder());
+    } else if (currentFolderType === 'tagged' || currentFolderType === 'untagged') {
+      await loadFolderContents(getCurrentFolder());
+    } else {
+      await loadBeats(getCurrentFolder());
     }
   }
 
@@ -1736,7 +2015,7 @@ function createPackBeatElement(beat, packId, index) {
 
       // Mark as "Last Used" immediately when dragging
       if (packId) {
-        const pack = packs.find(p => p.id === packId);
+        const pack = getPackById(packId);
         if (pack) {
           // Remove lastUsed from all beats in this pack
           pack.beats.forEach(b => {
@@ -1814,7 +2093,7 @@ function hideContextMenu() {
 }
 
 function markBeatAsLastUsed(packId, beatPath) {
-  const pack = packs.find(p => p.id === packId);
+  const pack = getPackById(packId);
   if (pack) {
     // First, remove lastUsed from all beats in this pack
     pack.beats.forEach(b => {
@@ -1832,7 +2111,7 @@ function markBeatAsLastUsed(packId, beatPath) {
 }
 
 function unmarkBeatAsLastUsed(packId, beatPath) {
-  const pack = packs.find(p => p.id === packId);
+  const pack = getPackById(packId);
   if (pack) {
     const beat = pack.beats.find(b => b.path === beatPath);
     if (beat) {
@@ -1844,7 +2123,7 @@ function unmarkBeatAsLastUsed(packId, beatPath) {
 }
 
 function removeBeatFromPack(packId, beatPath) {
-  const pack = packs.find(p => p.id === packId);
+  const pack = getPackById(packId);
   if (pack) {
     pack.beats = pack.beats.filter(b => b.path !== beatPath);
 
@@ -1864,6 +2143,42 @@ function removeBeatFromPack(packId, beatPath) {
 // Drag and Drop handlers
 let draggedBeat = null;
 let draggedFolder = null;
+
+function getCurrentPackCollection() {
+  return currentPackView === 'genre' ? genrePacks : packs;
+}
+
+function getPackById(packId) {
+  return getCurrentPackCollection().find(p => p.id === packId);
+}
+
+function getExternalAudioFilePaths(e) {
+  return Array.from(e.dataTransfer?.files || [])
+    .map(file => file.path)
+    .filter(filePath => {
+      if (!filePath) return false;
+      const ext = filePath.slice(filePath.lastIndexOf('.')).toLowerCase();
+      return GENRE_DROP_EXTENSIONS.includes(ext);
+    });
+}
+
+function addBeatsToPack(pack, beats) {
+  let addedCount = 0;
+
+  beats.forEach(beat => {
+    const beatExists = pack.beats.some(b => b.path === beat.path);
+    if (!beatExists) {
+      pack.beats.push({
+        name: beat.name,
+        path: beat.path,
+        file: beat.file
+      });
+      addedCount++;
+    }
+  });
+
+  return addedCount;
+}
 
 function handleDragStart(e) {
   draggedBeat = {
@@ -1896,8 +2211,44 @@ async function handleDrop(e, packId) {
   e.preventDefault();
   e.currentTarget.classList.remove('drag-over');
 
-  const pack = packs.find(p => p.id === packId);
+  const pack = getPackById(packId);
   if (!pack) return;
+
+  const externalAudioPaths = getExternalAudioFilePaths(e);
+  if (currentPackView === 'genre' && externalAudioPaths.length > 0) {
+    try {
+      const result = await ipcRenderer.invoke('copy-beats-to-folder', {
+        files: externalAudioPaths,
+        targetFolder: getBasePath(),
+        allowedExtensions: GENRE_DROP_EXTENSIONS
+      });
+
+      if (!result.success) {
+        alert(`Error adding beats: ${result.error}`);
+        return;
+      }
+
+      const addedCount = addBeatsToPack(pack, result.copied || []);
+      pack.lastUsed = Date.now();
+
+      await loadBeats(getCurrentFolder());
+      if (currentPackId === packId) {
+        packDetailCountEl.textContent = `${pack.beats.length} beats`;
+        renderPackDetailBeats();
+      }
+
+      renderPacks();
+      saveData();
+
+      if (addedCount > 0) {
+        showNotification(`Added ${addedCount} beat${addedCount === 1 ? '' : 's'} to ${pack.name}`, 'success');
+      }
+    } catch (error) {
+      console.error('Error adding external genre beats:', error);
+      alert(`Error adding beats: ${error.message}`);
+    }
+    return;
+  }
 
   // Handle folder drop
   if (draggedFolder) {
@@ -1924,25 +2275,7 @@ async function handleDrop(e, packId) {
       }
 
       // Add all beats from folder to pack (skip duplicates)
-      let addedCount = 0;
-      folderBeats.forEach(beat => {
-        const beatExists = pack.beats.some(b => b.path === beat.path);
-        if (!beatExists) {
-          const newBeat = {
-            name: beat.name,
-            path: beat.path,
-            file: beat.file
-          };
-
-          // Cache file object for browser mode
-          if (beat.file && !isElectron) {
-            fileObjectsCache.set(beat.path, beat.file);
-          }
-
-          pack.beats.push(newBeat);
-          addedCount++;
-        }
-      });
+      let addedCount = addBeatsToPack(pack, folderBeats);
 
       // Update folderTags - add or append channel tag
       const channelTag = pack.name; // Use pack name as channel tag (e.g., "C10")
@@ -1987,21 +2320,12 @@ async function handleDrop(e, packId) {
   if (!draggedBeat) return;
 
   // Check if beat already exists in this pack
-  const beatExists = pack.beats.some(b => b.path === draggedBeat.path);
-  if (!beatExists) {
-    // Keep the file object for browser mode drag-out
-    const newBeat = {
-      name: draggedBeat.name,
-      path: draggedBeat.path,
-      file: draggedBeat.file // Keep file object for drag out
-    };
-
+  const addedCount = addBeatsToPack(pack, [draggedBeat]);
+  if (addedCount > 0) {
     // Make sure file object is in cache
     if (draggedBeat.file && !isElectron) {
       fileObjectsCache.set(draggedBeat.path, draggedBeat.file);
     }
-
-    pack.beats.push(newBeat);
 
     // Update last used timestamp
     pack.lastUsed = Date.now();

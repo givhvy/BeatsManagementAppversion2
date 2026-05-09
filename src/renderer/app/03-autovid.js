@@ -772,6 +772,17 @@ function getCurrentRenderedVideoPath() {
   return outputPath;
 }
 
+async function markRenderedVideoAsPosted(outputPath) {
+  const videoName = outputPath?.split(/[\\/]/).pop();
+  if (!videoName || typeof markVideoAsPosted !== 'function') return;
+
+  await markVideoAsPosted(outputPath, videoName);
+
+  if (typeof videosState !== 'undefined' && videosState.initialized && typeof loadVideos === 'function') {
+    await loadVideos();
+  }
+}
+
 async function revealRenderedVideo() {
   const filePath = getCurrentRenderedVideoPath();
   if (!filePath) {
@@ -872,6 +883,7 @@ async function renderVideo() {
       autovidState.lastOutputPath = result.outputPath;
       renderOutput.style.display = 'block';
       showRenderedVideoCard(result.outputPath);
+      await markRenderedVideoAsPosted(result.outputPath);
     } else {
       alert(`Render error: ${result.error}`);
     }

@@ -65,6 +65,13 @@ body {
   z-index: var(--z-base);
 }
 
+#bg-view-panel {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
 #background-section .container {
   height: calc(100vh - 56px);
 }
@@ -882,20 +889,26 @@ select.filter-input {
 
 .pack-detail-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
-  align-items: center;
+  align-items: stretch;
 }
 
 .pack-detail-actions .btn-primary,
 .pack-detail-actions .btn-secondary,
 .pack-detail-actions .btn-danger {
-  height: var(--button-height-md);
-  padding: var(--space-2) var(--space-5);
-  border-radius: var(--radius-3xl);
-  font-size: var(--text-base);
+  width: 100%;
+  height: 40px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
   font-weight: var(--font-medium);
   white-space: nowrap;
+  justify-content: center;
+}
+
+.pack-actions-card {
+  gap: 12px;
 }
 
 .pack-detail-content {
@@ -944,6 +957,23 @@ select.filter-input {
   min-width: 0;
   scrollbar-width: none;
   -ms-overflow-style: none;
+}
+
+.pack-detail-beats.drag-over {
+  outline: 1px dashed var(--primary);
+  outline-offset: -8px;
+  background: rgba(59, 130, 246, 0.08);
+}
+
+.pack-empty-drop-zone {
+  flex: 1;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  color: #999;
 }
 
 .pack-tracks-header {
@@ -2215,5 +2245,174 @@ h1, h2, h3, h4, h5, h6 {
 .pack-side-panel-hidden .pack-detail-right,
 .pack-side-panel-hidden .resize-handle {
   display: none;
+}
+
+/* Now Playing Modal */
+.now-playing-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(20px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.now-playing-content {
+  background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 400px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.close-now-playing-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #333;
+  transition: all 0.2s ease;
+}
+
+.close-now-playing-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+.np-album-art {
+  width: 280px;
+  height: 280px;
+  margin: 0 auto 32px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.np-album-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.np-track-info {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.np-track-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
+}
+
+.np-track-artist {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+  font-weight: 500;
+}
+
+.np-waveform-container {
+  position: relative;
+  height: 60px;
+  margin-bottom: 16px;
+}
+
+.np-waveform {
+  width: 100%;
+  height: 100%;
+  opacity: 0.3;
+}
+
+.np-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+}
+
+.np-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.05);
+  transition: width 0.1s linear;
+}
+
+.np-time-display {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 600;
+}
+
+.np-playback-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+}
+
+.np-control-btn {
+  background: transparent;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.np-control-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: scale(1.1);
+}
+
+.np-play-btn {
+  background: #1a1a1a;
+  border: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: white;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.np-play-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+.np-play-btn:active {
+  transform: scale(0.95);
 }
 
