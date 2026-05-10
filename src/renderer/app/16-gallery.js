@@ -362,25 +362,21 @@ function initGallerySwiper() {
     
     const imagesCount = images.length;
     
-    // Create new Swiper instance with creative effect
+    // Create new Swiper instance with simple slide effect (full screen)
     gallerySwiper = new Swiper('.gallery-swiper', {
-      effect: 'creative',
+      effect: 'slide',
       grabCursor: true,
       centeredSlides: true,
-      slidesPerView: 'auto',
+      slidesPerView: 1,
+      spaceBetween: 0,
       loop: imagesCount >= 3, // Only enable loop if 3 or more slides
-      creativeEffect: {
-        prev: {
-          shadow: true,
-          translate: [0, 0, -400],
-        },
-        next: {
-          translate: ['100%', 0, 0],
-        },
-      },
       pagination: {
         el: '.gallery-carousel-pagination',
         clickable: true,
+      },
+      keyboard: {
+        enabled: true,
+        onlyInViewport: false,
       },
     });
     
