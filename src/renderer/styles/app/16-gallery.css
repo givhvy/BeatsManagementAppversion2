@@ -136,3 +136,114 @@
   background: rgba(255,255,255,0.16);
   transform: scale(1.04);
 }
+
+/* ============================
+   GALLERY CAROUSEL VIEW
+   ============================ */
+
+.gallery-carousel-container {
+  width: 100%;
+  height: calc(100% - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px 60px 20px;
+  overflow: visible;
+}
+
+.gallery-swiper {
+  width: 100%;
+  max-width: 1000px;
+  height: 440px;
+  padding-bottom: 60px !important;
+  overflow: visible;
+}
+
+.gallery-swiper .swiper-slide {
+  background-position: center;
+  background-size: cover;
+  width: 600px;
+  height: 440px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.gallery-swiper .swiper-slide-active {
+  transform: scale(1.05);
+}
+
+/* Gallery Carousel Card */
+.gallery-carousel-card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 25px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+}
+
+.gallery-carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Pagination */
+.gallery-carousel-pagination {
+  bottom: 20px !important;
+}
+
+.gallery-carousel-pagination .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: rgba(222, 219, 200, 0.3);
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.gallery-carousel-pagination .swiper-pagination-bullet-active {
+  background: #DEDBC8;
+  width: 30px;
+  border-radius: 5px;
+}
+
+/* Empty State */
+.gallery-carousel-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: rgba(222, 219, 200, 0.5);
+  font-size: 16px;
+  text-align: center;
+  padding: 40px;
+}
+
+.gallery-carousel-empty svg {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+  opacity: 0.3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .gallery-swiper {
+    height: 350px;
+  }
+  
+  .gallery-swiper .swiper-slide {
+    width: 450px;
+    height: 350px;
+  }
+}

@@ -7,6 +7,8 @@ const DEFAULT_GALLERY_FOLDER = 'D:\\coverimages';
 let galleryFolderPath = localStorage.getItem('gallery-folder-path') || DEFAULT_GALLERY_FOLDER;
 let galleryImages = [];
 let selectedGalleryImage = null;
+let galleryViewMode = localStorage.getItem('gallery-view-mode') || 'grid'; // 'grid' or 'carousel'
+let gallerySwiper = null;
 
 const gallerySelectFolderBtn = document.getElementById('gallery-select-folder-btn');
 const galleryRefreshBtn = document.getElementById('gallery-refresh-btn');
@@ -17,6 +19,10 @@ const galleryCount = document.getElementById('gallery-count');
 const galleryImageModal = document.getElementById('gallery-image-modal');
 const galleryModalImage = document.getElementById('gallery-modal-image');
 const galleryModalClose = document.getElementById('gallery-modal-close');
+const galleryToggleViewBtn = document.getElementById('gallery-toggle-view-btn');
+const galleryViewLabel = document.getElementById('gallery-view-label');
+const galleryCarouselContainer = document.getElementById('gallery-carousel-container');
+const galleryCarouselWrapper = document.getElementById('gallery-carousel-wrapper');
 
 function initGallerySection() {
   if (galleryInitialized) return;
@@ -26,6 +32,7 @@ function initGallerySection() {
   if (galleryRefreshBtn) galleryRefreshBtn.addEventListener('click', loadGalleryImages);
   if (galleryFilterInput) galleryFilterInput.addEventListener('input', renderGalleryGrid);
   if (galleryModalClose) galleryModalClose.addEventListener('click', closeGalleryImageModal);
+  if (galleryToggleViewBtn) galleryToggleViewBtn.addEventListener('click', toggleGalleryView);
   if (galleryImageModal) {
     galleryImageModal.addEventListener('click', (e) => {
       if (e.target === galleryImageModal) closeGalleryImageModal();
@@ -51,6 +58,7 @@ function initGallerySection() {
 
   updateGalleryFolderDisplay();
   loadGalleryImages();
+  updateGalleryViewButton();
 }
 
 async function selectGalleryFolder() {
@@ -137,7 +145,7 @@ async function loadGalleryImages() {
   galleryGrid.innerHTML = '<div class="gallery-empty">Loading cover arts...</div>';
   try {
     galleryImages = await ipcRenderer.invoke('read-images-folder', galleryFolderPath) || [];
-    renderGalleryGrid();
+    renderGalleryView();
   } catch (error) {
     galleryGrid.innerHTML = `<div class="gallery-empty">Error: ${error.message}</div>`;
   }
@@ -235,3 +243,147 @@ async function showGalleryContextMenu(e, image = selectedGalleryImage) {
 }
 
 window.showGalleryContextMenu = showGalleryContextMenu;
+
+// Toggle between grid and carousel view
+function toggleGalleryView() {
+  galleryViewMode = galleryViewMode === 'grid' ? 'carousel' : 'grid';
+  localStorage.setItem('gallery-view-mode', galleryViewMode);
+  updateGalleryViewButton();
+  renderGalleryView();
+}
+
+// Update view toggle button label
+function updateGalleryViewButton() {
+  if (galleryViewLabel) {
+    galleryViewLabel.textContent = galleryViewMode === 'grid' ? 'Grid View' : 'Carousel View';
+  }
+}
+
+// Render gallery based on current view mode
+function renderGalleryView() {
+  if (galleryViewMode === 'grid') {
+    if (galleryGrid) galleryGrid.style.display = 'grid';
+    if (galleryCarouselContainer) galleryCarouselContainer.style.display = 'none';
+    renderGalleryGrid();
+  } else {
+    if (galleryGrid) galleryGrid.style.display = 'none';
+    if (galleryCarouselContainer) galleryCarouselContainer.style.display = 'flex';
+    renderGalleryCarousel();
+  }
+}
+
+// Render gallery carousel
+function renderGalleryCarousel() {
+  if (!galleryCarouselWrapper) return;
+
+  // Clear existing slides
+  galleryCarouselWrapper.innerHTML = '';
+
+  const keyword = (galleryFilterInput?.value || '').trim().toLowerCase();
+  const images = keyword
+    ? galleryImages.filter(image => image.name.toLowerCase().includes(keyword))
+    : galleryImages;
+
+  if (images.length === 0) {
+    galleryCarouselWrapper.innerHTML = `
+      <div class="swiper-slide">
+        <div class="gallery-carousel-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <div>No cover arts found</div>
+        </div>
+      </div>
+    `;
+    initGallerySwiper();
+    return;
+  }
+
+  images.forEach((image, index) => {
+    const slideEl = createGalleryCarouselSlide(image, index);
+    galleryCarouselWrapper.appendChild(slideEl);
+  });
+
+  // Initialize or update Swiper
+  initGallerySwiper();
+}
+
+// Create carousel slide
+function createGalleryCarouselSlide(image, index) {
+  const slideEl = document.createElement('div');
+  slideEl.className = 'swiper-slide';
+  slideEl.dataset.imagePath = image.path;
+
+  const cardEl = document.createElement('div');
+  cardEl.className = 'gallery-carousel-card';
+
+  const img = document.createElement('img');
+  img.src = `file://${image.path}`;
+  img.alt = image.name;
+  img.className = 'gallery-carousel-image';
+
+  cardEl.appendChild(img);
+
+  // Click to view full image
+  cardEl.addEventListener('click', () => {
+    openGalleryImageModal(image);
+  });
+
+  // Right click for context menu
+  cardEl.addEventListener('contextmenu', (e) => {
+    showGalleryContextMenu(e, image);
+  });
+
+  slideEl.appendChild(cardEl);
+  return slideEl;
+}
+
+// Initialize Swiper carousel
+function initGallerySwiper() {
+  // Check if Swiper is loaded
+  if (typeof Swiper === 'undefined') {
+    console.error('[Gallery] Swiper library not loaded!');
+    return;
+  }
+
+  // Destroy existing instance
+  if (gallerySwiper) {
+    gallerySwiper.destroy(true, true);
+  }
+
+  // Wait for DOM to be ready
+  setTimeout(() => {
+    const keyword = (galleryFilterInput?.value || '').trim().toLowerCase();
+    const images = keyword
+      ? galleryImages.filter(image => image.name.toLowerCase().includes(keyword))
+      : galleryImages;
+    
+    const imagesCount = images.length;
+    
+    // Create new Swiper instance with creative effect
+    gallerySwiper = new Swiper('.gallery-swiper', {
+      effect: 'creative',
+      grabCursor: true,
+      centeredSlides: true,
+      slidesPerView: 'auto',
+      loop: imagesCount >= 3, // Only enable loop if 3 or more slides
+      creativeEffect: {
+        prev: {
+          shadow: true,
+          translate: [0, 0, -400],
+        },
+        next: {
+          translate: ['100%', 0, 0],
+        },
+      },
+      pagination: {
+        el: '.gallery-carousel-pagination',
+        clickable: true,
+      },
+    });
+    
+    console.log('[Gallery] Swiper initialized with', imagesCount, 'slides, loop:', imagesCount >= 3);
+  }, 100);
+}

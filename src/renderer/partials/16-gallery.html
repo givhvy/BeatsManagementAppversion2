@@ -4,16 +4,28 @@
 <div class="app-section" id="gallery-section">
   <div class="gallery-container">
     <div class="gallery-main">
-      <div class="panel-header" style="display: none;">
+      <div class="panel-header">
         <div class="gallery-actions">
-          <button id="gallery-select-folder-btn" class="btn-primary gallery-folder-btn">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-            Select Folder
+          <button id="gallery-toggle-view-btn" class="btn-secondary" title="Toggle View">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="14" y="14" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+            </svg>
+            <span id="gallery-view-label">Grid View</span>
           </button>
         </div>
       </div>
       <div id="gallery-grid" class="gallery-grid">
         <div class="gallery-empty">Select a folder to load cover arts.</div>
+      </div>
+      <!-- Carousel View -->
+      <div id="gallery-carousel-container" class="gallery-carousel-container" style="display: none;">
+        <div class="gallery-swiper swiper">
+          <div class="swiper-wrapper" id="gallery-carousel-wrapper"></div>
+          <div class="gallery-carousel-pagination swiper-pagination"></div>
+        </div>
       </div>
     </div>
   </div>
