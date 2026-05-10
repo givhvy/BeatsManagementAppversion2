@@ -197,43 +197,63 @@ body {
   height: 13px;
 }
 
-/* Tab Buttons */
+/* Tab Buttons - Modern elegant design */
 .tabs-container {
   display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-4);
-  background: var(--white-5);
-  padding: var(--space-1);
-  border-radius: var(--radius-xl);
-  border: var(--border-width) solid var(--white-10);
+  gap: 8px;
+  margin-bottom: 14px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.95) 100%);
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid rgba(222, 219, 200, 0.12);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Noise texture overlay */
+.tabs-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.5;
+  border-radius: inherit;
 }
 
 .tab-btn {
   flex: 1;
   background: transparent;
-  color: var(--gray-300);
+  color: rgba(222, 219, 200, 0.6);
   border: none;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-lg);
+  padding: 10px 16px;
+  border-radius: 12px;
   cursor: pointer;
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
+  font-size: 13px;
+  font-weight: 500;
   font-family: var(--font-sans);
-  transition: var(--transition-base);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
-  will-change: background, color;
-  transform: translateZ(0);
+  position: relative;
+  z-index: 1;
+  letter-spacing: 0.01em;
 }
 
 .tab-btn:hover {
-  background: var(--white-5);
-  color: var(--white);
+  background: rgba(222, 219, 200, 0.08);
+  color: rgba(222, 219, 200, 0.9);
 }
 
 .tab-btn.active {
-  background: linear-gradient(135deg, rgba(56,189,248,0.8) 0%, rgba(59,130,246,0.8) 100%);
-  color: var(--white);
-  box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+  background: linear-gradient(135deg, rgba(222, 219, 200, 0.15) 0%, rgba(222, 219, 200, 0.1) 100%);
+  color: #DEDBC8;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(222, 219, 200, 0.2);
 }
 
 .btn-primary {
@@ -418,22 +438,67 @@ select.filter-input {
   box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
+/* Beat item - Modern elegant design */
 .beat-item {
-  background: var(--white-5);
-  border: var(--border-width) solid var(--white-10);
-  padding: var(--space-3) var(--space-4);
-  margin-bottom: var(--space-2);
-  border-radius: var(--radius-lg);
+  position: relative;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.95) 100%);
+  padding: 16px 18px;
+  margin-bottom: 10px;
+  border-radius: 14px;
   cursor: pointer;
-  transition: var(--transition-base);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
-  backdrop-filter: blur(5px);
+  border: 1px solid rgba(222, 219, 200, 0.12);
+  overflow: hidden;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Noise texture overlay */
+.beat-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.5;
+  border-radius: inherit;
+}
+
+/* Subtle gradient border effect on hover */
+.beat-item::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(222, 219, 200, 0.2) 0%, rgba(222, 219, 200, 0.05) 50%, rgba(222, 219, 200, 0.2) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
 }
 
 .beat-item:hover {
-  background: var(--white-10);
-  border-color: var(--border-color-hover);
-  transform: translateX(4px);
+  background: linear-gradient(135deg, rgba(15, 15, 15, 0.98) 0%, rgba(30, 30, 30, 0.98) 100%);
+  border-color: rgba(222, 219, 200, 0.25);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(222, 219, 200, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.beat-item:hover::after {
+  opacity: 1;
+}
+
+.beat-item:active {
+  transform: translateY(0) scale(0.99);
+  transition-duration: 0.1s;
 }
 
 /* Folder item style - Modern elegant design */
@@ -550,28 +615,51 @@ select.filter-input {
 .beat-content {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 6px;
+  position: relative;
+  z-index: 1;
 }
 
 .beat-name {
-  font-size: var(--text-base);
-  font-weight: var(--font-medium);
+  font-size: 15px;
+  font-weight: 500;
+  color: #DEDBC8;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  transition: all 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.beat-item:hover .beat-name {
+  color: #F5F3E8;
+  letter-spacing: 0.02em;
 }
 
 .beat-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
+  gap: 6px;
 }
 
 .pack-tag {
   display: inline-block;
-  background-color: var(--primary);
-  color: var(--white);
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-full);
-  font-size: var(--text-xs);
-  font-weight: var(--font-medium);
+  background: linear-gradient(135deg, rgba(222, 219, 200, 0.15) 0%, rgba(222, 219, 200, 0.1) 100%);
+  color: rgba(222, 219, 200, 0.9);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(222, 219, 200, 0.15);
+  transition: all 0.25s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.pack-tag:hover {
+  background: linear-gradient(135deg, rgba(222, 219, 200, 0.25) 0%, rgba(222, 219, 200, 0.15) 100%);
+  border-color: rgba(222, 219, 200, 0.3);
+  color: #DEDBC8;
+  transform: translateY(-1px);
 }
 
 /* Packs Grid */
@@ -623,14 +711,25 @@ select.filter-input {
 .pack-card-image {
   width: 100%;
   height: 200px;
-  background: linear-gradient(135deg, rgba(56,189,248,0.8) 0%, rgba(59,130,246,0.8) 50%, rgba(14,165,233,0.8) 100%);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.95) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 48px;
-  color: var(--white-30);
+  color: rgba(222, 219, 200, 0.3);
   position: relative;
   overflow: hidden;
+  border: 1px solid rgba(222, 219, 200, 0.12);
+}
+
+/* Noise texture overlay for pack cards */
+.pack-card-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .pack-card-count {
@@ -726,7 +825,7 @@ select.filter-input {
 
 .pack-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #0066ff, #00aaff);
+  background: linear-gradient(90deg, rgba(222, 219, 200, 0.6), rgba(222, 219, 200, 0.4));
   transition: width 0.3s ease;
   border-radius: 3px;
 }
@@ -1520,14 +1619,27 @@ select.filter-input {
   padding: 0 20px;
   height: 60px;
   border-radius: 999px;
-  background: rgba(20, 20, 25, 0.72);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.95) 100%);
   backdrop-filter: blur(28px) saturate(180%);
   -webkit-backdrop-filter: blur(28px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(222, 219, 200, 0.12);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55),
               0 2px 8px rgba(0, 0, 0, 0.35),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+              inset 0 1px 0 rgba(255, 255, 255, 0.03);
   pointer-events: all;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Noise texture overlay for player */
+.player-pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.5;
+  border-radius: inherit;
 }
 
 /* Album Art circle */
@@ -1536,12 +1648,14 @@ select.filter-input {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(222, 219, 200, 0.08);
+  border: 1px solid rgba(222, 219, 200, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
 .player-art img {
@@ -1567,16 +1681,19 @@ select.filter-input {
   min-width: 0;
   flex: 1 1 140px;
   max-width: 200px;
+  position: relative;
+  z-index: 1;
 }
 
 .now-playing {
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
-  color: rgba(255, 255, 255, 0.88);
+  color: rgba(222, 219, 200, 0.9);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: 0.01em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Controls */
@@ -1585,6 +1702,8 @@ select.filter-input {
   align-items: center;
   gap: var(--space-1);
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .ctrl-btn {
@@ -1593,7 +1712,7 @@ select.filter-input {
   justify-content: center;
   border: none;
   background: transparent;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(222, 219, 200, 0.7);
   cursor: pointer;
   transition: var(--transition-base);
   padding: 0;
@@ -1611,22 +1730,22 @@ select.filter-input {
 }
 
 .ctrl-skip:hover:not(:disabled) {
-  color: var(--white);
+  color: rgba(222, 219, 200, 0.95);
   transform: scale(1.1);
 }
 
 .ctrl-play {
   width: 38px;
   height: 38px;
-  background: rgba(255, 255, 255, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(222, 219, 200, 0.10);
+  border: 1px solid rgba(222, 219, 200, 0.12);
   border-radius: 50%;
-  color: var(--white);
+  color: rgba(222, 219, 200, 0.9);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .ctrl-play:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(222, 219, 200, 0.18);
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
@@ -1638,6 +1757,8 @@ select.filter-input {
   gap: 9px;
   flex: 2 1 200px;
   min-width: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .player-track {
@@ -1647,7 +1768,7 @@ select.filter-input {
 
 .time {
   font-size: var(--text-xs);
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(222, 219, 200, 0.5);
   min-width: 32px;
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
@@ -1658,7 +1779,7 @@ select.filter-input {
   height: 3px;
   -webkit-appearance: none;
   appearance: none;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(222, 219, 200, 0.15);
   border-radius: 99px;
   outline: none;
   cursor: pointer;
@@ -1670,7 +1791,7 @@ select.filter-input {
   appearance: none;
   width: 12px;
   height: 12px;
-  background: white;
+  background: rgba(222, 219, 200, 0.9);
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
@@ -1692,6 +1813,8 @@ select.filter-input {
   align-items: center;
   gap: var(--space-2);
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 #volume-slider {

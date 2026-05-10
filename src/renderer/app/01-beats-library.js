@@ -1836,7 +1836,7 @@ function createPackCard(pack, orderNumber) {
   } else {
     // Auto-generate text-based thumbnail with pack name
     const textThumb = document.createElement('div');
-    textThumb.style.cssText = 'width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); font-size: 48px; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);';
+    textThumb.style.cssText = 'width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 20, 0.95) 100%); font-size: 48px; font-weight: bold; color: rgba(222, 219, 200, 0.9); text-shadow: 2px 2px 4px rgba(0,0,0,0.5); border: 1px solid rgba(222, 219, 200, 0.12);';
     textThumb.textContent = pack.name;
     imageEl.appendChild(textThumb);
   }
