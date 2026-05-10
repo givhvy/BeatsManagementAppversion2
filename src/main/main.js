@@ -110,6 +110,9 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(APP_ROOT, 'src', 'renderer', 'index.html'));
 
+  // Open DevTools automatically for debugging
+  mainWindow.webContents.openDevTools();
+
   // --- Easy DOM Grabber: inject on page load ---
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.executeJavaScript(getGrabberCode()).catch(() => {});

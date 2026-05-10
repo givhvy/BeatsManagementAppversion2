@@ -16,21 +16,22 @@ let drumkitInfos = {}; // Map drumkitPath to info text
 
 // DOM Elements
 const drumkitListEl = document.getElementById('drumkit-list');
-const drumkitPacksGridEl = document.getElementById('drumkit-packs-grid');
+const drumkitCarouselWrapper = document.getElementById('drumkit-carousel-wrapper');
 const drumkitMiddlePanelEl = document.getElementById('drumkit-middle-panel');
 const drumkitRightPanelEl = document.getElementById('drumkit-right-panel');
 const drumkitPackDetailTitleEl = document.getElementById('drumkit-pack-detail-title');
 const drumkitPackDetailCountEl = document.getElementById('drumkit-pack-detail-count');
 const drumkitPackDetailListEl = document.getElementById('drumkit-pack-detail-list');
-const drumkitPackDetailThumbnailEl = document.getElementById('drumkit-pack-detail-thumbnail');
-const drumkitPackDetailThumbnailImgEl = document.getElementById('drumkit-pack-detail-thumbnail-img');
 const drumkitPacksHeaderTitle = document.getElementById('drumkit-packs-header-title');
 const drumkitFilterInput = document.getElementById('drumkit-filter-input');
+
+// Swiper instance
+let drumkitSwiper = null;
 
 // Buttons
 const refreshDrumkitBtn = document.getElementById('refresh-drumkit-btn');
 const drumkitCreatePackBtn = document.getElementById('drumkit-create-pack-btn');
-const drumkitChangeThumbnailHeaderBtn = document.getElementById('drumkit-change-thumbnail-header-btn');
+const drumkitChangeThumbnailBtn = document.getElementById('drumkit-change-thumbnail-btn');
 const drumkitBackToPacksBtn = document.getElementById('drumkit-back-to-packs-btn');
 const drumkitDeleteCurrentPackBtn = document.getElementById('drumkit-delete-current-pack-btn');
 const drumkitToggleHidePackBtn = document.getElementById('drumkit-toggle-hide-pack-btn');
@@ -48,6 +49,7 @@ const drumkitCancelInfoBtn = document.getElementById('drumkit-cancel-info-btn');
 const drumkitInfoEditActions = document.getElementById('drumkit-info-edit-actions');
 
 let currentDrumkitFile = null;
+let currentCarouselContextPackId = null; // Track which pack was right-clicked
 
 // Create Pack Modal refs
 let drumkitCreatePackModalEl = null;
@@ -151,9 +153,9 @@ async function initDrumkitSection() {
     });
   }
 
-  // Change thumbnail button in pack detail header
-  if (drumkitChangeThumbnailHeaderBtn) {
-    drumkitChangeThumbnailHeaderBtn.addEventListener('click', (e) => {
+  // Change thumbnail button in pack detail
+  if (drumkitChangeThumbnailBtn) {
+    drumkitChangeThumbnailBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (currentDrumkitPackId) {
         selectDrumkitThumbnail(currentDrumkitPackId);
@@ -344,6 +346,10 @@ function renderDrumkitFiles() {
 
     fileEl.addEventListener('click', () => {
       selectDrumkitFile(file.path);
+      // Also play the drum kit file
+      if (window.playBeat) {
+        window.playBeat(file.path, file.name);
+      }
     });
 
     drumkitListEl.appendChild(fileEl);
@@ -363,12 +369,25 @@ function selectDrumkitFile(filePath) {
   drumkitInfoEditor.value = info;
 }
 
-// Render drum kit packs
+// Render drum kit packs in carousel
 function renderDrumkitPacks() {
-  drumkitPacksGridEl.innerHTML = '';
+  if (!drumkitCarouselWrapper) return;
+
+  drumkitCarouselWrapper.innerHTML = '';
 
   if (drumkitPacks.length === 0) {
-    drumkitPacksGridEl.innerHTML = '<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">No drum kit packs yet. Create one to organize your kits!</div>';
+    drumkitCarouselWrapper.innerHTML = `
+      <div class="swiper-slide">
+        <div class="drumkit-carousel-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <div>No drum kit packs yet.<br>Create one to organize your kits!</div>
+        </div>
+      </div>
+    `;
+    initDrumkitSwiper();
     return;
   }
 
@@ -383,62 +402,119 @@ function renderDrumkitPacks() {
 
   if (sortedPacks.length === 0) {
     const message = showingHiddenDrumkitPacks ? 'No hidden packs yet' : 'No active packs';
-    drumkitPacksGridEl.innerHTML = `<div style="padding: 20px; text-align: center; color: #999; grid-column: 1/-1;">${message}</div>`;
+    drumkitCarouselWrapper.innerHTML = `
+      <div class="swiper-slide">
+        <div class="drumkit-carousel-empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <div>${message}</div>
+        </div>
+      </div>
+    `;
+    initDrumkitSwiper();
     return;
   }
 
   sortedPacks.forEach((pack, index) => {
-    const packCardEl = createDrumkitPackCard(pack, index + 1);
-    drumkitPacksGridEl.appendChild(packCardEl);
+    const slideEl = createDrumkitCarouselSlide(pack, index + 1);
+    drumkitCarouselWrapper.appendChild(slideEl);
   });
+
+  // Initialize or update Swiper
+  initDrumkitSwiper();
 }
 
-// Create pack card
-function createDrumkitPackCard(pack, orderNumber) {
-  const packCardEl = document.createElement('div');
-  packCardEl.className = 'pack-card';
-  packCardEl.dataset.packId = pack.id;
+// Create carousel slide
+function createDrumkitCarouselSlide(pack, orderNumber) {
+  const slideEl = document.createElement('div');
+  slideEl.className = 'swiper-slide';
+  slideEl.dataset.packId = pack.id;
 
-  // Pack image/thumbnail
+  const cardEl = document.createElement('div');
+  cardEl.className = 'drumkit-carousel-card';
+
+  // Pack image/thumbnail (full card)
   const imageEl = document.createElement('div');
-  imageEl.className = 'pack-card-image';
+  imageEl.className = 'drumkit-carousel-card-image-only';
 
   if (pack.thumbnail && pack.thumbnail !== 'auto') {
     const img = document.createElement('img');
     img.src = pack.thumbnail;
     img.alt = pack.name;
-    img.style.width = '100%';
-    img.style.height = '100%';
-    img.style.objectFit = 'cover';
-    img.style.display = 'block';
     imageEl.appendChild(img);
   } else {
-    const textThumb = document.createElement('div');
-    textThumb.style.cssText = 'width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); font-size: 48px; font-weight: bold; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);';
-    textThumb.textContent = pack.name;
-    imageEl.appendChild(textThumb);
+    const placeholder = document.createElement('div');
+    placeholder.className = 'drumkit-carousel-card-placeholder';
+    placeholder.textContent = pack.name;
+    imageEl.appendChild(placeholder);
   }
 
-  packCardEl.appendChild(imageEl);
+  cardEl.appendChild(imageEl);
 
-  // Pack title below the image
-  const infoEl = document.createElement('div');
-  infoEl.className = 'pack-card-info';
-
-  const titleEl = document.createElement('div');
-  titleEl.className = 'pack-card-title';
-  titleEl.textContent = pack.name;
-
-  infoEl.appendChild(titleEl);
-
-  packCardEl.appendChild(infoEl);
-
-  // Click to view details
-  packCardEl.addEventListener('click', () => {
-    showDrumkitPackDetail(pack.id);
+  // Left click to view details
+  cardEl.addEventListener('click', (e) => {
+    if (e.button === 0) { // Left click only
+      showDrumkitPackDetail(pack.id);
+    }
   });
 
-  return packCardEl;
+  // Right click for context menu
+  cardEl.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    showDrumkitCarouselContextMenu(e, pack);
+  });
+
+  slideEl.appendChild(cardEl);
+  return slideEl;
+}
+
+// Initialize Swiper carousel
+function initDrumkitSwiper() {
+  // Check if Swiper is loaded
+  if (typeof Swiper === 'undefined') {
+    console.error('[Drumkit] Swiper library not loaded!');
+    return;
+  }
+
+  // Destroy existing instance
+  if (drumkitSwiper) {
+    drumkitSwiper.destroy(true, true);
+  }
+
+  // Wait for DOM to be ready
+  setTimeout(() => {
+    // Get visible packs count
+    let visiblePacks = drumkitPacks.filter(pack => {
+      const isHidden = pack.hidden === true;
+      return showingHiddenDrumkitPacks ? isHidden : !isHidden;
+    });
+    
+    const packsCount = visiblePacks.length;
+    
+    // Create new Swiper instance
+    drumkitSwiper = new Swiper('.drumkit-swiper', {
+      effect: 'coverflow',
+      grabCursor: true,
+      centeredSlides: true,
+      slidesPerView: 'auto',
+      loop: packsCount >= 3, // Only enable loop if 3 or more slides
+      coverflowEffect: {
+        rotate: 40,
+        stretch: 0,
+        depth: 100,
+        modifier: 1,
+        slideShadows: true,
+      },
+      pagination: {
+        el: '.drumkit-carousel-pagination',
+        clickable: true,
+      },
+    });
+    
+    console.log('[Drumkit] Swiper initialized with', packsCount, 'slides, loop:', packsCount >= 3);
+  }, 100);
 }
 
 // Select thumbnail for pack
@@ -451,6 +527,10 @@ async function selectDrumkitThumbnail(packId) {
     if (imagePath) {
       pack.thumbnail = 'file:///' + imagePath.replace(/\\/g, '/');
       renderDrumkitPacks();
+      // Update hero image if we're viewing this pack's detail
+      if (currentDrumkitPackId === packId) {
+        showDrumkitPackThumbnailInDetail(pack);
+      }
       saveDrumkitData();
     }
   } else {
@@ -464,6 +544,10 @@ async function selectDrumkitThumbnail(packId) {
         reader.onload = (event) => {
           pack.thumbnail = event.target.result;
           renderDrumkitPacks();
+          // Update hero image if we're viewing this pack's detail
+          if (currentDrumkitPackId === packId) {
+            showDrumkitPackThumbnailInDetail(pack);
+          }
           saveDrumkitData();
         };
         reader.readAsDataURL(file);
@@ -485,7 +569,32 @@ function showDrumkitPackDetail(packId) {
   drumkitPackDetailTitleEl.value = pack.name;
   drumkitToggleHidePackBtn.textContent = pack.hidden ? 'Unhide Pack' : 'Hide Pack';
 
+  // Sync pack thumbnail to hero section
+  showDrumkitPackThumbnailInDetail(pack);
+
   renderDrumkitPackDetail();
+}
+
+// Show pack thumbnail in detail view hero section
+function showDrumkitPackThumbnailInDetail(pack) {
+  const drumkitImagePreview = document.getElementById('drumkit-image-preview');
+  const drumkitImageDisplay = document.getElementById('drumkit-image-display');
+  const drumkitCoverPlaceholder = document.getElementById('drumkit-cover-placeholder');
+  
+  if (!drumkitImagePreview || !drumkitImageDisplay || !drumkitCoverPlaceholder) return;
+
+  if (pack?.thumbnail && pack.thumbnail !== 'auto') {
+    // Show the image
+    drumkitImagePreview.style.display = 'block';
+    drumkitCoverPlaceholder.style.display = 'none';
+    drumkitImageDisplay.src = pack.thumbnail;
+    drumkitImageDisplay.ondragstart = (e) => e.preventDefault();
+  } else {
+    // Show placeholder
+    drumkitImagePreview.style.display = 'none';
+    drumkitCoverPlaceholder.style.display = 'flex';
+    drumkitImageDisplay.removeAttribute('src');
+  }
 }
 
 // Render pack detail
@@ -498,22 +607,23 @@ function renderDrumkitPackDetail() {
     drumkitPackDetailCountEl.textContent = `${pack.files.length} ${pack.files.length === 1 ? 'kit' : 'kits'}`;
   }
 
-  // Remove dynamically added items (everything after drumkitPackDetailCountEl)
-  const children = Array.from(drumkitPackDetailListEl.children);
-  let reachedCount = false;
-  for (const child of children) {
-    if (child.id === 'drumkit-pack-detail-count') {
-      reachedCount = true;
-      continue;
-    }
-    if (reachedCount) {
-      child.remove();
-    }
-  }
+  // Clear the list
+  drumkitPackDetailListEl.innerHTML = '';
+
+  // Add header
+  const headerEl = document.createElement('div');
+  headerEl.className = 'pack-tracks-header';
+  headerEl.innerHTML = `
+    <span>#</span>
+    <span>Title</span>
+    <span>Status</span>
+    <span></span>
+  `;
+  drumkitPackDetailListEl.appendChild(headerEl);
 
   if (pack.files.length === 0) {
     const emptyEl = document.createElement('div');
-    emptyEl.style.cssText = 'padding: 20px; text-align: center; color: #999;';
+    emptyEl.className = 'pack-empty-drop-zone';
     emptyEl.textContent = 'No drum kits in this pack yet. Drag kits from the left panel to add them.';
     drumkitPackDetailListEl.appendChild(emptyEl);
     return;
@@ -521,17 +631,32 @@ function renderDrumkitPackDetail() {
 
   pack.files.forEach((file, index) => {
     const fileEl = document.createElement('div');
-    fileEl.className = 'beat-item';
+    fileEl.className = 'pack-beat-item';
+    fileEl.setAttribute('data-beat-path', file.path);
+    fileEl.setAttribute('data-beat-name', file.name);
+    fileEl.setAttribute('draggable', 'false');
+    
+    const displayName = file.name.replace(/\.(wav|mp3|flac|m4a|aac|ogg)$/i, '');
+    
     fileEl.innerHTML = `
-      <div class="beat-item-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"/>
-          <circle cx="12" cy="12" r="3"/>
-        </svg>
+      <div class="beat-number-badge">${index + 1}</div>
+      <div class="beat-content-container">
+        <span>${displayName}</span>
       </div>
-      <div class="beat-item-name">${file.name}</div>
-      <button class="beat-item-remove" onclick="removeDrumkitFromPack('${pack.id}', ${index})">×</button>
+      <button class="remove-beat-btn" onclick="removeDrumkitFromPack('${pack.id}', ${index})"></button>
     `;
+    
+    // Add click handler to play the drum kit file
+    fileEl.addEventListener('click', (e) => {
+      // Don't play if clicking the remove button
+      if (e.target.classList.contains('remove-beat-btn')) return;
+      
+      // Use the global playBeat function from beats-library.js
+      if (window.playBeat) {
+        window.playBeat(file.path, file.name);
+      }
+    });
+    
     drumkitPackDetailListEl.appendChild(fileEl);
   });
 }
@@ -614,10 +739,8 @@ function toggleDrumkitHiddenView() {
 
   if (showingHiddenDrumkitPacks) {
     drumkitToggleHiddenViewBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Active';
-    drumkitPacksHeaderTitle.textContent = 'Hidden Packs';
   } else {
     drumkitToggleHiddenViewBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden';
-    drumkitPacksHeaderTitle.textContent = 'Drum Kit Packs';
   }
 
   renderDrumkitPacks();
@@ -694,3 +817,117 @@ function cancelDrumkitInfoEdit() {
   drumkitInfoEditActions.style.display = 'none';
   drumkitEditInfoBtn.style.display = 'block';
 }
+
+// Carousel Context Menu Functions
+function showDrumkitCarouselContextMenu(event, pack) {
+  const contextMenu = document.getElementById('drumkit-carousel-context-menu');
+  if (!contextMenu) return;
+
+  currentCarouselContextPackId = pack.id;
+
+  // Update hide/unhide text
+  const toggleHideItem = document.getElementById('drumkit-carousel-toggle-hide');
+  if (toggleHideItem) {
+    const hideText = pack.hidden ? 'Unhide Pack' : 'Hide Pack';
+    toggleHideItem.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      ${hideText}
+    `;
+  }
+
+  // Position context menu
+  contextMenu.style.display = 'block';
+  contextMenu.style.left = `${event.pageX}px`;
+  contextMenu.style.top = `${event.pageY}px`;
+}
+
+function hideDrumkitCarouselContextMenu() {
+  const contextMenu = document.getElementById('drumkit-carousel-context-menu');
+  if (contextMenu) {
+    contextMenu.style.display = 'none';
+  }
+  currentCarouselContextPackId = null;
+}
+
+// Context menu item handlers
+function handleCarouselChangeThumbnail() {
+  if (currentCarouselContextPackId) {
+    selectDrumkitThumbnail(currentCarouselContextPackId);
+  }
+  hideDrumkitCarouselContextMenu();
+}
+
+function handleCarouselRenamePack() {
+  if (!currentCarouselContextPackId) return;
+  
+  const pack = drumkitPacks.find(p => p.id === currentCarouselContextPackId);
+  if (!pack) return;
+
+  const newName = prompt('Enter new pack name:', pack.name);
+  if (newName && newName.trim()) {
+    pack.name = newName.trim();
+    renderDrumkitPacks();
+    saveDrumkitData();
+  }
+  hideDrumkitCarouselContextMenu();
+}
+
+function handleCarouselToggleHide() {
+  if (!currentCarouselContextPackId) return;
+  
+  const pack = drumkitPacks.find(p => p.id === currentCarouselContextPackId);
+  if (!pack) return;
+
+  pack.hidden = !pack.hidden;
+  saveDrumkitData();
+  
+  // If hiding and currently showing active packs, or unhiding and showing hidden packs, refresh
+  if ((pack.hidden && !showingHiddenDrumkitPacks) || (!pack.hidden && showingHiddenDrumkitPacks)) {
+    renderDrumkitPacks();
+  }
+  
+  hideDrumkitCarouselContextMenu();
+}
+
+function handleCarouselDeletePack() {
+  if (!currentCarouselContextPackId) return;
+  
+  const pack = drumkitPacks.find(p => p.id === currentCarouselContextPackId);
+  if (!pack) return;
+
+  if (confirm(`Are you sure you want to delete "${pack.name}"?`)) {
+    drumkitPacks = drumkitPacks.filter(p => p.id !== currentCarouselContextPackId);
+    renderDrumkitPacks();
+    saveDrumkitData();
+  }
+  
+  hideDrumkitCarouselContextMenu();
+}
+
+// Initialize context menu listeners
+document.addEventListener('DOMContentLoaded', () => {
+  // Hide context menu when clicking anywhere
+  document.addEventListener('click', hideDrumkitCarouselContextMenu);
+
+  // Context menu item listeners
+  const changeThumbnailItem = document.getElementById('drumkit-carousel-change-thumbnail');
+  const renamePackItem = document.getElementById('drumkit-carousel-rename-pack');
+  const toggleHideItem = document.getElementById('drumkit-carousel-toggle-hide');
+  const deletePackItem = document.getElementById('drumkit-carousel-delete-pack');
+
+  if (changeThumbnailItem) {
+    changeThumbnailItem.addEventListener('click', handleCarouselChangeThumbnail);
+  }
+  if (renamePackItem) {
+    renamePackItem.addEventListener('click', handleCarouselRenamePack);
+  }
+  if (toggleHideItem) {
+    toggleHideItem.addEventListener('click', handleCarouselToggleHide);
+  }
+  if (deletePackItem) {
+    deletePackItem.addEventListener('click', handleCarouselDeletePack);
+  }
+});

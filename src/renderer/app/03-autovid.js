@@ -367,6 +367,29 @@ function resetAutovidWorkspace() {
   // Hide render output
   if (renderOutput) renderOutput.style.display = 'none';
 
+  // Restore render button if it was replaced by rendered video item
+  const renderSection = document.querySelector('.autovid-render-section');
+  if (renderSection && !renderSection.querySelector('#render-video-btn')) {
+    renderSection.innerHTML = `
+      <button id="render-video-btn" class="btn-render" disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        Render Video
+      </button>
+      <div class="render-progress" id="render-progress" style="display: none;">
+        <div class="progress-bar">
+          <div class="progress-fill" id="render-progress-fill"></div>
+        </div>
+        <span id="render-progress-text">0%</span>
+      </div>
+    `;
+    
+    // Re-attach event listener to the new button
+    const newRenderBtn = document.getElementById('render-video-btn');
+    if (newRenderBtn) {
+      newRenderBtn.addEventListener('click', renderVideo);
+    }
+  }
+
   // Update render button state
   updateRenderButton();
 
@@ -881,8 +904,65 @@ async function renderVideo() {
 
     if (result.success) {
       autovidState.lastOutputPath = result.outputPath;
+      
+      // Mark the image as used in the image database
+      if (imagePath && typeof window.markImageAsUsedByPath === 'function') {
+        await window.markImageAsUsedByPath(imagePath);
+        console.log('[AutoVid] Marked image as used:', imagePath);
+      }
+      
+      // Hide render button and show rendered video item in its place
+      const renderSection = document.querySelector('.autovid-render-section');
+      if (renderSection) {
+        renderSection.innerHTML = `
+          <div class="rendered-video-item" id="rendered-video-item" draggable="true" title="Drag this file anywhere" data-output-path="${result.outputPath}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; color:#60a5fa;"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2"></rect></svg>
+            <span id="rendered-video-name" class="rendered-video-name">${result.outputPath.split('\\').pop()}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; color:rgba(255,255,255,0.25); margin-left:auto;"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg>
+          </div>
+        `;
+        
+        // Setup drag functionality for the new rendered video item
+        const newItem = document.getElementById('rendered-video-item');
+        if (newItem) {
+          newItem.ondragstart = (e) => {
+            const currentOutputPath = newItem.dataset.outputPath || result.outputPath;
+            const debugInfo = `ondragstart fired | path=${currentOutputPath} | nodeFs=${!!nodeFs}`;
+            console.log('[rendered-video drag]', debugInfo);
+            if (isElectron) ipcRenderer.send('renderer-debug', debugInfo);
+
+            if (!currentOutputPath) {
+              e.preventDefault();
+              showNotification('No rendered video path found', 'error');
+              if (isElectron) ipcRenderer.send('renderer-debug', 'BLOCKED: no path');
+              return;
+            }
+
+            // Normalise slashes for existsSync on Windows
+            const normPath = currentOutputPath.replace(/\//g, '\\');
+            const fileExists = nodeFs ? (nodeFs.existsSync(normPath) || nodeFs.existsSync(currentOutputPath)) : true;
+            if (isElectron) ipcRenderer.send('renderer-debug', `existsSync(${normPath}) = ${fileExists}`);
+
+            if (nodeFs && !fileExists) {
+              e.preventDefault();
+              showNotification('Rendered video file was not found on disk: ' + normPath, 'error');
+              console.warn('[rendered-video drag] file not found:', normPath);
+              return;
+            }
+
+            e.preventDefault();
+            if (isElectron) {
+              console.log('[rendered-video drag] sending drag-files-start for', normPath);
+              ipcRenderer.send('renderer-debug', 'Sending drag-files-start for ' + normPath);
+              ipcRenderer.send('drag-files-start', [normPath]);
+            }
+          };
+        }
+      }
+      
+      // Still show the output section with Open Folder and Upload buttons
       renderOutput.style.display = 'block';
-      showRenderedVideoCard(result.outputPath);
+      
       await markRenderedVideoAsPosted(result.outputPath);
     } else {
       alert(`Render error: ${result.error}`);

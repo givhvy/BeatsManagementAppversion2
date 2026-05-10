@@ -52,10 +52,10 @@
 }
 
 .gallery-grid {
-  height: calc(100% - 128px);
+  height: calc(100% - 60px);
   overflow-y: auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 22px;
   align-content: start;
   padding: 4px 4px 24px 0;
@@ -84,7 +84,7 @@
 
 .gallery-card img {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 16 / 9;
   display: block;
   object-fit: cover;
 }

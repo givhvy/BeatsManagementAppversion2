@@ -1956,6 +1956,1233 @@
         }
       ],
       "currentPath": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged"
+    },
+    "genre": {
+      "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres",
+      "beats": [
+        {
+          "name": "Blue Note Drip.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\Blue Note Drip.mp3"
+        },
+        {
+          "name": "Breakfast in Capri (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\Breakfast in Capri (1).mp3"
+        },
+        {
+          "name": "Breakfast in Capri.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\Breakfast in Capri.mp3"
+        },
+        {
+          "name": "Capri Terrace Breakfast (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\Capri Terrace Breakfast (1).mp3"
+        },
+        {
+          "name": "Capri Terrace Breakfast.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\Capri Terrace Breakfast.mp3"
+        },
+        {
+          "name": "fc60429f-d1c7-496a-9ba0-4893fa2f3a82.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\fc60429f-d1c7-496a-9ba0-4893fa2f3a82.mp3"
+        },
+        {
+          "name": "SAINTE-After_Hours_Demo-cd052251-cbb5-40e6-93f3-c6d40ebcd489.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Hours_Demo-cd052251-cbb5-40e6-93f3-c6d40ebcd489.mp3"
+        },
+        {
+          "name": "SAINTE-After_Hours_Demo-f26f13d7-f38b-4c8e-80a8-7438d55421aa.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Hours_Demo-f26f13d7-f38b-4c8e-80a8-7438d55421aa.mp3"
+        },
+        {
+          "name": "SAINTE-After_Hours_Velvet-e377d5ff-c666-4976-98c8-11690135b67d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Hours_Velvet-e377d5ff-c666-4976-98c8-11690135b67d.mp3"
+        },
+        {
+          "name": "SAINTE-After_Hours_Velvet-e3bb453e-c8a6-4575-b65f-48de1de6a2de.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Hours_Velvet-e3bb453e-c8a6-4575-b65f-48de1de6a2de.mp3"
+        },
+        {
+          "name": "SAINTE-After_Midnight_Demo-33d6fc3b-f127-47f4-a1b9-f735c8b06cc4.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Midnight_Demo-33d6fc3b-f127-47f4-a1b9-f735c8b06cc4.mp3"
+        },
+        {
+          "name": "SAINTE-After_Midnight_Demo-e7cf0606-eae6-423e-b5f8-b8ec17ee1bd2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Midnight_Demo-e7cf0606-eae6-423e-b5f8-b8ec17ee1bd2.mp3"
+        },
+        {
+          "name": "SAINTE-After_Midnight_Drip-06f1be58-4003-442d-9f9a-35f0ed8f8157.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Midnight_Drip-06f1be58-4003-442d-9f9a-35f0ed8f8157.mp3"
+        },
+        {
+          "name": "SAINTE-After_Midnight_Drip-6901ca54-46f6-4309-b7cd-368a5a431a9a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Midnight_Drip-6901ca54-46f6-4309-b7cd-368a5a431a9a.mp3"
+        },
+        {
+          "name": "SAINTE-Backroom_Sax-20c20d39-3cf7-4872-8275-750f0920b0c0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backroom_Sax-20c20d39-3cf7-4872-8275-750f0920b0c0.mp3"
+        },
+        {
+          "name": "SAINTE-Backroom_Sax-ecbaf9a3-8eaf-4d17-ba29-642542d6dfbc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backroom_Sax-ecbaf9a3-8eaf-4d17-ba29-642542d6dfbc.mp3"
+        },
+        {
+          "name": "SAINTE-Backseat_Glass-3320fe20-6167-4757-9b26-6cf3a05e861e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Glass-3320fe20-6167-4757-9b26-6cf3a05e861e.mp3"
+        },
+        {
+          "name": "SAINTE-Backseat_Glass-59cddb68-9f4e-45fb-9654-06889d9d37c2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Glass-59cddb68-9f4e-45fb-9654-06889d9d37c2.mp3"
+        },
+        {
+          "name": "SAINTE-Backseat_Moonroof-855a6999-de77-4481-bb19-1dbaadcd6cdc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Moonroof-855a6999-de77-4481-bb19-1dbaadcd6cdc.mp3"
+        },
+        {
+          "name": "SAINTE-Backseat_Moonroof-d60d0f04-8724-4c06-9212-096b2df2831d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Moonroof-d60d0f04-8724-4c06-9212-096b2df2831d.mp3"
+        },
+        {
+          "name": "SAINTE-Backseat_Neon-a559fa20-948d-4c4b-8eda-e158ca585e5b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Neon-a559fa20-948d-4c4b-8eda-e158ca585e5b.mp3"
+        },
+        {
+          "name": "SAINTE-Backseat_Neon-ea10198c-72f8-48f4-b301-9294c92f826c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Neon-ea10198c-72f8-48f4-b301-9294c92f826c.mp3"
+        },
+        {
+          "name": "SAINTE-Backseat_Rain-27d36097-f5bd-453c-8f6a-f305134091f6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Rain-27d36097-f5bd-453c-8f6a-f305134091f6.mp3"
+        },
+        {
+          "name": "SAINTE-Backseat_Rain-8d2ab594-c11b-4bdc-9648-1787fe4add49.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Rain-8d2ab594-c11b-4bdc-9648-1787fe4add49.mp3"
+        },
+        {
+          "name": "SAINTE-Backseat_Rain_Loop-8125f3a4-4846-472e-a4c5-a7422fbff29c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Rain_Loop-8125f3a4-4846-472e-a4c5-a7422fbff29c.mp3"
+        },
+        {
+          "name": "SAINTE-Backseat_Smoke-9ae6ceea-b7a7-40bd-a02d-e67af89e4d2c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Smoke-9ae6ceea-b7a7-40bd-a02d-e67af89e4d2c.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Cup_Late-056b38d2-0beb-4ebf-813d-2ac038506fb8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Cup_Late-056b38d2-0beb-4ebf-813d-2ac038506fb8.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Cup_Late-5bee030f-2a78-43b6-afc3-a3313bdb18dc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Cup_Late-5bee030f-2a78-43b6-afc3-a3313bdb18dc.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Hour_Demo-15063852-3735-4999-8585-85c37495fbf0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Hour_Demo-15063852-3735-4999-8585-85c37495fbf0.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Hour_Demo-1ae68600-e210-4a18-bf09-d4fcef9a17cd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Hour_Demo-1ae68600-e210-4a18-bf09-d4fcef9a17cd.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Noodle_Late-31323f08-1141-4a4b-8a30-8c5a9d43037b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Noodle_Late-31323f08-1141-4a4b-8a30-8c5a9d43037b.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Noodle_Late-f283c694-392b-4482-a95b-e77d1d21b53f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Noodle_Late-f283c694-392b-4482-a95b-e77d1d21b53f.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Note_Drip-223ccf8a-57bb-4f00-90bf-7813c365dfcc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Note_Drip-223ccf8a-57bb-4f00-90bf-7813c365dfcc.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Note_Drip-527830d1-eeb3-4634-be8e-f4208f9bfc12.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Note_Drip-527830d1-eeb3-4634-be8e-f4208f9bfc12.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Note_Drip-b6a8dc13-5869-48ba-b4ea-be35921c6c59.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Note_Drip-b6a8dc13-5869-48ba-b4ea-be35921c6c59.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Paper_Drift-2989d9ed-f0bd-4c13-8cc4-280203bb1712.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Paper_Drift-2989d9ed-f0bd-4c13-8cc4-280203bb1712.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Paper_Drift-92838265-4bd9-4477-a131-3660da9e248f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Paper_Drift-92838265-4bd9-4477-a131-3660da9e248f.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Plastic_Demo-a7dc831e-17a9-4ac9-b060-e875621c5656.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Plastic_Demo-a7dc831e-17a9-4ac9-b060-e875621c5656.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Plastic_Demo-d71d324e-c700-4590-914f-26da61932769.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Plastic_Demo-d71d324e-c700-4590-914f-26da61932769.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Vinyl_Drift-09d527d7-4931-455d-b3c8-8bccc816059c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Vinyl_Drift-09d527d7-4931-455d-b3c8-8bccc816059c.mp3"
+        },
+        {
+          "name": "SAINTE-Blue_Vinyl_Drift-feef3e33-6af9-41a1-b6b0-c8d50d5b4f50.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Vinyl_Drift-feef3e33-6af9-41a1-b6b0-c8d50d5b4f50.mp3"
+        },
+        {
+          "name": "SAINTE-Bodega_Rain-1dc5b11a-a8ea-4637-8f89-227706137281.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Bodega_Rain-1dc5b11a-a8ea-4637-8f89-227706137281.mp3"
+        },
+        {
+          "name": "SAINTE-Bodega_Rain-d378a1db-4b85-449d-bcc7-a1e51d9c3fef.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Bodega_Rain-d378a1db-4b85-449d-bcc7-a1e51d9c3fef.mp3"
+        },
+        {
+          "name": "SAINTE-Cardboard_Halo-4e090938-2e13-4764-a7e2-f9187197e50f (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cardboard_Halo-4e090938-2e13-4764-a7e2-f9187197e50f (1).mp3"
+        },
+        {
+          "name": "SAINTE-Cardboard_Halo-4e090938-2e13-4764-a7e2-f9187197e50f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cardboard_Halo-4e090938-2e13-4764-a7e2-f9187197e50f.mp3"
+        },
+        {
+          "name": "SAINTE-Cardboard_Halo-8e3d6e9c-22f2-4cd8-8158-34bc32801879 (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cardboard_Halo-8e3d6e9c-22f2-4cd8-8158-34bc32801879 (1).mp3"
+        },
+        {
+          "name": "SAINTE-Cardboard_Halo-8e3d6e9c-22f2-4cd8-8158-34bc32801879.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cardboard_Halo-8e3d6e9c-22f2-4cd8-8158-34bc32801879.mp3"
+        },
+        {
+          "name": "SAINTE-Cedar_Smoke-0faf3cf1-a077-4c39-9b43-b530242cb62c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cedar_Smoke-0faf3cf1-a077-4c39-9b43-b530242cb62c.mp3"
+        },
+        {
+          "name": "SAINTE-Cedar_Smoke-625a476e-ad93-48c0-a2b1-db2a21e31664.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cedar_Smoke-625a476e-ad93-48c0-a2b1-db2a21e31664.mp3"
+        },
+        {
+          "name": "SAINTE-Cinderwalk_Demo-134d0176-3fe5-4955-b7eb-d2a39872c079.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cinderwalk_Demo-134d0176-3fe5-4955-b7eb-d2a39872c079.mp3"
+        },
+        {
+          "name": "SAINTE-Cinderwalk_Demo-24baac76-249d-4a2f-a7eb-136bbb85343b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cinderwalk_Demo-24baac76-249d-4a2f-a7eb-136bbb85343b.mp3"
+        },
+        {
+          "name": "SAINTE-Cool_Late_Demo-5f7562d1-e435-4ba6-8acc-9ce4caa50dab.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cool_Late_Demo-5f7562d1-e435-4ba6-8acc-9ce4caa50dab.mp3"
+        },
+        {
+          "name": "SAINTE-Cool_Late_Demo-610db678-0c9b-48d5-a176-7b5232ad606f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cool_Late_Demo-610db678-0c9b-48d5-a176-7b5232ad606f.mp3"
+        },
+        {
+          "name": "SAINTE-Corner_Booth-5cbb3426-c9b2-4156-a54a-e51a74a20ee8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Corner_Booth-5cbb3426-c9b2-4156-a54a-e51a74a20ee8.mp3"
+        },
+        {
+          "name": "SAINTE-Corner_Booth-801b0248-6f59-4d2d-a57a-e723a4852218.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Corner_Booth-801b0248-6f59-4d2d-a57a-e723a4852218.mp3"
+        },
+        {
+          "name": "SAINTE-Corner_Booth_Demo-a447ef49-f8b6-4c9a-a386-c8f6c661ed4c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Corner_Booth_Demo-a447ef49-f8b6-4c9a-a386-c8f6c661ed4c.mp3"
+        },
+        {
+          "name": "SAINTE-Corner_Booth_Demo-df618f2b-ae79-4aa9-8488-d62137e57f70.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Corner_Booth_Demo-df618f2b-ae79-4aa9-8488-d62137e57f70.mp3"
+        },
+        {
+          "name": "SAINTE-Cruise_Control-058a609d-d686-4808-87c6-75a90d0beb90.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cruise_Control-058a609d-d686-4808-87c6-75a90d0beb90.mp3"
+        },
+        {
+          "name": "SAINTE-Cruise_Control-54f9faaf-c290-47de-9b1a-83ad272e88b6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cruise_Control-54f9faaf-c290-47de-9b1a-83ad272e88b6.mp3"
+        },
+        {
+          "name": "SAINTE-Curbside_Loops-80d31d8d-4a4b-4762-9f1e-7065c877709f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Curbside_Loops-80d31d8d-4a4b-4762-9f1e-7065c877709f.mp3"
+        },
+        {
+          "name": "SAINTE-Curbside_Loops-b1bfbfec-ad31-4188-8a9f-9f61fcc54912.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Curbside_Loops-b1bfbfec-ad31-4188-8a9f-9f61fcc54912.mp3"
+        },
+        {
+          "name": "SAINTE-Freeway_Chrome-8440c579-172e-4ea8-96b4-a1741d73a3b6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Freeway_Chrome-8440c579-172e-4ea8-96b4-a1741d73a3b6.mp3"
+        },
+        {
+          "name": "SAINTE-Freeway_Chrome-8b712d34-d632-443d-a91c-d34f80dcfebc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Freeway_Chrome-8b712d34-d632-443d-a91c-d34f80dcfebc.mp3"
+        },
+        {
+          "name": "SAINTE-Freeway_Demo-af6d2d51-1034-49c2-a5ae-a8e8d156bc19.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Freeway_Demo-af6d2d51-1034-49c2-a5ae-a8e8d156bc19.mp3"
+        },
+        {
+          "name": "SAINTE-Freeway_Demo-ec3edd6b-44ae-4256-b747-1c7526ecbeca.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Freeway_Demo-ec3edd6b-44ae-4256-b747-1c7526ecbeca.mp3"
+        },
+        {
+          "name": "SAINTE-Free_Car_Ride-6e9a373b-88f8-4e1b-a428-22938cb83fb2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Free_Car_Ride-6e9a373b-88f8-4e1b-a428-22938cb83fb2.mp3"
+        },
+        {
+          "name": "SAINTE-Free_Car_Ride-c6f911df-7731-453a-a9b4-c9a9df16caf0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Free_Car_Ride-c6f911df-7731-453a-a9b4-c9a9df16caf0.mp3"
+        },
+        {
+          "name": "SAINTE-Lantern_After_Rain-48210f26-53d9-4114-8c35-059eb82fce03.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Lantern_After_Rain-48210f26-53d9-4114-8c35-059eb82fce03.mp3"
+        },
+        {
+          "name": "SAINTE-Lantern_After_Rain-c445833e-65c4-4441-9610-91fa08e86a9f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Lantern_After_Rain-c445833e-65c4-4441-9610-91fa08e86a9f.mp3"
+        },
+        {
+          "name": "SAINTE-Lantern_Window-b8891732-ceaa-44b9-bfdb-ff5435045611.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Lantern_Window-b8891732-ceaa-44b9-bfdb-ff5435045611.mp3"
+        },
+        {
+          "name": "SAINTE-Lantern_Window-ed06f69d-3b51-4c9a-b14b-990051c46fd7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Lantern_Window-ed06f69d-3b51-4c9a-b14b-990051c46fd7.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Bus_Ticket-0db72edc-1d07-4311-a527-23dfa73ada5c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Bus_Ticket-0db72edc-1d07-4311-a527-23dfa73ada5c.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Bus_Ticket-16535266-074e-45e5-b4e1-2bd5633f02a4.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Bus_Ticket-16535266-074e-45e5-b4e1-2bd5633f02a4.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Demo_Loop-2a97f23e-6239-4697-b281-730c82483e39.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Demo_Loop-2a97f23e-6239-4697-b281-730c82483e39.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Demo_Loop-68a89947-cea5-4fcf-a2e2-cea7e0b26b15.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Demo_Loop-68a89947-cea5-4fcf-a2e2-cea7e0b26b15.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Drive-966ea7df-a7d9-4546-8d0d-33eeaa3f3e5b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Drive-966ea7df-a7d9-4546-8d0d-33eeaa3f3e5b.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Drive-b0fe0c49-c651-47ac-8078-406943143538.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Drive-b0fe0c49-c651-47ac-8078-406943143538.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Drive_Sips-25dccdb8-10b5-44fe-a4a8-ec365bdb3e56.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Drive_Sips-25dccdb8-10b5-44fe-a4a8-ec365bdb3e56.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Drive_Sips-d2b0a611-4e44-4e63-ace0-4419cff92eea.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Drive_Sips-d2b0a611-4e44-4e63-ace0-4419cff92eea.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Canvas-2628e27e-4b23-40b3-88d9-f8bd27e02a38.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Canvas-2628e27e-4b23-40b3-88d9-f8bd27e02a38.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Canvas-6f5e4df7-f58a-4be9-ab2e-c3c04dde51dd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Canvas-6f5e4df7-f58a-4be9-ab2e-c3c04dde51dd.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Cardigan-345ffd80-9f09-438c-93f3-7394ec3a0ab1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Cardigan-345ffd80-9f09-438c-93f3-7394ec3a0ab1.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Cardigan-cf26fbfe-c51b-4484-9e12-045cf5828d1e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Cardigan-cf26fbfe-c51b-4484-9e12-045cf5828d1e.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Demo-05e4ee46-800d-4db0-b192-edb942fe8bc3.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Demo-05e4ee46-800d-4db0-b192-edb942fe8bc3.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Demo-2a7c486d-e8cc-4001-b75b-fd72aa652f96.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Demo-2a7c486d-e8cc-4001-b75b-fd72aa652f96.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Demo-3fecf2ec-5d56-4a78-9660-19a8a02727a8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Demo-3fecf2ec-5d56-4a78-9660-19a8a02727a8.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Demo-4350099f-5e7c-47fc-8de2-86ff83c7ab93.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Demo-4350099f-5e7c-47fc-8de2-86ff83c7ab93.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Ferris-8d3dcc5f-e7aa-4dcf-afa2-a436dcb94501.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Ferris-8d3dcc5f-e7aa-4dcf-afa2-a436dcb94501.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Ferris-91a71d43-369c-41c8-a4b7-1606a6059e16.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Ferris-91a71d43-369c-41c8-a4b7-1606a6059e16.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Free-1b68419d-5693-4c5a-a31b-63ce0b418364.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Free-1b68419d-5693-4c5a-a31b-63ce0b418364.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Free-a87675f9-e52d-4545-8900-2b3f60be7e54.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Free-a87675f9-e52d-4545-8900-2b3f60be7e54.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Glass-3a62f66a-3b82-4cf3-848d-2ceeaf10cba6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Glass-3a62f66a-3b82-4cf3-848d-2ceeaf10cba6.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Glass-67c2b16b-26f9-4c97-a2e0-df7c24b39104.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Glass-67c2b16b-26f9-4c97-a2e0-df7c24b39104.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Loops-1de9296e-fc3d-49ad-90ec-267047da577b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Loops-1de9296e-fc3d-49ad-90ec-267047da577b.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Loops-9f7fd54f-e14f-4f33-bc23-dae7cda39e3f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Loops-9f7fd54f-e14f-4f33-bc23-dae7cda39e3f.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Proof-382d61ba-9173-40aa-9451-b20df113c9c3.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Proof-382d61ba-9173-40aa-9451-b20df113c9c3.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Proof-c6f62273-8363-4e43-b117-3dc2e9640506.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Proof-c6f62273-8363-4e43-b117-3dc2e9640506.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Receipt-0b0fcc8b-85fb-46e1-86e1-09d5818ff80b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Receipt-0b0fcc8b-85fb-46e1-86e1-09d5818ff80b.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Receipt-cbadc941-1614-4447-87b8-afda8ce3adc7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Receipt-cbadc941-1614-4447-87b8-afda8ce3adc7.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Saint-31cd008d-305d-47fa-bcee-e02e0bc5a746.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Saint-31cd008d-305d-47fa-bcee-e02e0bc5a746.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Saint-66328cc3-3bc0-4c38-9e74-4285cf597ba1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Saint-66328cc3-3bc0-4c38-9e74-4285cf597ba1.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Saint-a66384e9-701b-42f8-b4eb-05f9b2b26a5a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Saint-a66384e9-701b-42f8-b4eb-05f9b2b26a5a.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Saint-db5586bd-f4de-4cf8-9ed3-3ae3f6e328da.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Saint-db5586bd-f4de-4cf8-9ed3-3ae3f6e328da.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Sketch-2e34a55b-e7a7-46b8-b857-7c22af19fd1d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Sketch-2e34a55b-e7a7-46b8-b857-7c22af19fd1d.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Sketch-5eda5a66-e6af-40bf-bda8-7ca00a4d39c9.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Sketch-5eda5a66-e6af-40bf-bda8-7ca00a4d39c9.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Token-3b33c3b0-0303-462c-9992-55590e0b1606.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Token-3b33c3b0-0303-462c-9992-55590e0b1606.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Night_Token-f98d7332-2846-4f94-b936-c69e1955bb7e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Token-f98d7332-2846-4f94-b936-c69e1955bb7e.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-53b68942-a0fe-4c56-8669-703b8ad122e6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-53b68942-a0fe-4c56-8669-703b8ad122e6.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-987a53da-0d01-41a6-9a8c-3c0d8361c3c2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-987a53da-0d01-41a6-9a8c-3c0d8361c3c2.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-d5e57226-979f-4494-b6ac-5bb9bef498b5.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-d5e57226-979f-4494-b6ac-5bb9bef498b5.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-e86ba8ee-d877-4270-b998-bff91cb0f596.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-e86ba8ee-d877-4270-b998-bff91cb0f596.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-edf60445-8e25-43fa-9a01-8cabc98c1d57 (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-edf60445-8e25-43fa-9a01-8cabc98c1d57 (1).mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-edf60445-8e25-43fa-9a01-8cabc98c1d57.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-edf60445-8e25-43fa-9a01-8cabc98c1d57.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-f6a58d8c-aed1-4583-9236-828b45649c82 (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-f6a58d8c-aed1-4583-9236-828b45649c82 (1).mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-f6a58d8c-aed1-4583-9236-828b45649c82.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-f6a58d8c-aed1-4583-9236-828b45649c82.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Drip-27980bfe-0bca-4138-8361-e49ba0e15c2c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Drip-27980bfe-0bca-4138-8361-e49ba0e15c2c.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Drip-6ae39944-b284-4437-b5fd-c34e63776a76.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Drip-6ae39944-b284-4437-b5fd-c34e63776a76.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Dusk-204754dc-c1d8-4965-b54e-a28af32e6212.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Dusk-204754dc-c1d8-4965-b54e-a28af32e6212.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Dusk-f0f0c5fc-d2d3-49fd-a947-287da176d756.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Dusk-f0f0c5fc-d2d3-49fd-a947-287da176d756.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Glass-3cdc4b02-10a4-4b4f-94ac-bca800262383.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Glass-3cdc4b02-10a4-4b4f-94ac-bca800262383.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Glass-c118ada8-1036-408f-b833-84235487fabd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Glass-c118ada8-1036-408f-b833-84235487fabd.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Murmur-6642d61d-bc54-4549-952a-791b1218364f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Murmur-6642d61d-bc54-4549-952a-791b1218364f.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Murmur-bb650a27-1160-4fee-985f-b6471dc0afe8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Murmur-bb650a27-1160-4fee-985f-b6471dc0afe8.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Ticket-185f221d-2f53-40a7-9021-8e09ac10277c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Ticket-185f221d-2f53-40a7-9021-8e09ac10277c.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Ticket-f381bd4c-ef65-4355-bd0d-49a92594172f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Ticket-f381bd4c-ef65-4355-bd0d-49a92594172f.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Window-6b394aac-e2c1-4f49-9a11-30333d28600c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Window-6b394aac-e2c1-4f49-9a11-30333d28600c.mp3"
+        },
+        {
+          "name": "SAINTE-Late_Train_Window-8bf978ba-7f79-42f3-ae55-7e6e4f56c44e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Window-8bf978ba-7f79-42f3-ae55-7e6e4f56c44e.mp3"
+        },
+        {
+          "name": "SAINTE-Loose_Coin_Demo-49a2af98-12f8-4e6f-a137-e641ec1f8e27.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Loose_Coin_Demo-49a2af98-12f8-4e6f-a137-e641ec1f8e27.mp3"
+        },
+        {
+          "name": "SAINTE-Loose_Coin_Demo-5ac500fd-4395-4f86-bee0-10ba613eeb26.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Loose_Coin_Demo-5ac500fd-4395-4f86-bee0-10ba613eeb26.mp3"
+        },
+        {
+          "name": "SAINTE-Mercury_Lane_Glide-2666245f-63c8-4c29-a179-c0fd5a2ce7a7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Mercury_Lane_Glide-2666245f-63c8-4c29-a179-c0fd5a2ce7a7.mp3"
+        },
+        {
+          "name": "SAINTE-Mercury_Lane_Glide-6ae07c0e-1b94-42a0-83f8-49efc9350424.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Mercury_Lane_Glide-6ae07c0e-1b94-42a0-83f8-49efc9350424.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Afterglow-1c57f5f6-d8cd-481e-a121-8951bd77054b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Afterglow-1c57f5f6-d8cd-481e-a121-8951bd77054b.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Afterglow-f3452e14-68ad-4666-8359-84c9113499ad.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Afterglow-f3452e14-68ad-4666-8359-84c9113499ad.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Alley-8ae265c4-f957-46dd-87d1-67e2c02ab133.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley-8ae265c4-f957-46dd-87d1-67e2c02ab133.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Alley-ba2b66e7-76fb-4af0-b0ec-38612d9a964e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley-ba2b66e7-76fb-4af0-b0ec-38612d9a964e.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Alley_Cards-321508cf-29fb-4187-8c0b-ede958d32eca.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley_Cards-321508cf-29fb-4187-8c0b-ede958d32eca.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Alley_Cards-d3127389-016a-4f79-aad6-efb66163f55d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley_Cards-d3127389-016a-4f79-aad6-efb66163f55d.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Alley_Loop-23d30c7b-1e2a-4a9d-b095-7c5a2b89fc61.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley_Loop-23d30c7b-1e2a-4a9d-b095-7c5a2b89fc61.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Alley_Loop-ee2c0542-e05f-4ce7-88c5-c498e7064d38.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley_Loop-ee2c0542-e05f-4ce7-88c5-c498e7064d38.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Bodega_Loop-6f0afe03-ded4-4362-97cd-2c272fbd2d77.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Bodega_Loop-6f0afe03-ded4-4362-97cd-2c272fbd2d77.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Bodega_Loop-9d6c4f32-7574-4af5-8fd3-6c64b9d463e5.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Bodega_Loop-9d6c4f32-7574-4af5-8fd3-6c64b9d463e5.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Cardigan-8a9530e1-967c-422f-8a8f-a8f284ef9d8a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Cardigan-8a9530e1-967c-422f-8a8f-a8f284ef9d8a.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Cardigan-c379ef6b-5589-461d-b4dc-d0300bacd8db.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Cardigan-c379ef6b-5589-461d-b4dc-d0300bacd8db.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Cinders-43f6c223-7cc7-4eb6-a926-ff251966eccc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Cinders-43f6c223-7cc7-4eb6-a926-ff251966eccc.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Cinders-78c5c585-bbf6-41c6-a18a-a05ea9d1bb33.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Cinders-78c5c585-bbf6-41c6-a18a-a05ea9d1bb33.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Coin_Toss-67e11e66-7bbf-47d8-ae7e-001c5be281d4.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Coin_Toss-67e11e66-7bbf-47d8-ae7e-001c5be281d4.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Coin_Toss-880f8f36-a8c3-4e27-b2dc-3f7135ba6d6a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Coin_Toss-880f8f36-a8c3-4e27-b2dc-3f7135ba6d6a.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Crosswalk-8a932661-6f54-4837-9622-27153193c93f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Crosswalk-8a932661-6f54-4837-9622-27153193c93f.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Crosswalk-d92a094f-46f3-416f-a82c-1d770d839b7e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Crosswalk-d92a094f-46f3-416f-a82c-1d770d839b7e.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Lantern-0c6f98d8-68d8-4f7a-b5c5-2d56a0febf2a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Lantern-0c6f98d8-68d8-4f7a-b5c5-2d56a0febf2a.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Lantern-567a913c-dbd8-408c-861e-b11369af1920.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Lantern-567a913c-dbd8-408c-861e-b11369af1920.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Lanterns-02a41a63-4938-4238-a548-0704f2492f88.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Lanterns-02a41a63-4938-4238-a548-0704f2492f88.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Lanterns-d67f290a-ab5c-47e6-a1db-34978bd53dac.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Lanterns-d67f290a-ab5c-47e6-a1db-34978bd53dac.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Ledger-945c10ba-c46f-48db-ab42-d95bbef4048f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Ledger-945c10ba-c46f-48db-ab42-d95bbef4048f.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Ledger-b45f4c48-dafd-4fab-93c8-6780b5086f8d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Ledger-b45f4c48-dafd-4fab-93c8-6780b5086f8d.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Pager-9930c365-1227-4ce9-b5ff-f3c0332a513c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Pager-9930c365-1227-4ce9-b5ff-f3c0332a513c.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Pager-f4886a09-f2a2-4c31-a787-364af9b658ab.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Pager-f4886a09-f2a2-4c31-a787-364af9b658ab.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Passenger-3614fc25-c12d-40ab-9771-df2708180726.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Passenger-3614fc25-c12d-40ab-9771-df2708180726.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Passenger-50b80190-87eb-4acc-aa16-44b637d6da9e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Passenger-50b80190-87eb-4acc-aa16-44b637d6da9e.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Saffron-73df7689-c782-4106-ad9b-db23551563ff.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saffron-73df7689-c782-4106-ad9b-db23551563ff.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Saffron-a1c01850-74e0-474e-85f4-f6f3d70d792a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saffron-a1c01850-74e0-474e-85f4-f6f3d70d792a.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Saint-5d3c68c9-dccf-4173-9452-9b6fbec5595a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saint-5d3c68c9-dccf-4173-9452-9b6fbec5595a.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Saint-94a95e03-817c-4cd0-88f1-91f9995c75d5.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saint-94a95e03-817c-4cd0-88f1-91f9995c75d5.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Saint-9a6637cd-4e2b-4165-983f-deb6dc92f536.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saint-9a6637cd-4e2b-4165-983f-deb6dc92f536.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Saint-e9507fab-aa23-4700-8aed-40be39c6e679.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saint-e9507fab-aa23-4700-8aed-40be39c6e679.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Sainte-9526564b-9c14-4db0-81b3-b0662cd66962.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Sainte-9526564b-9c14-4db0-81b3-b0662cd66962.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Sainte-e5b23c09-e35a-47ab-a08a-9b58f2257ca6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Sainte-e5b23c09-e35a-47ab-a08a-9b58f2257ca6.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Velvet-3d5f0326-258f-44fd-a5dd-e68eb6f51e3d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Velvet-3d5f0326-258f-44fd-a5dd-e68eb6f51e3d.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Velvet-528f6930-f6b9-4c37-9758-9404a1402ae3.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Velvet-528f6930-f6b9-4c37-9758-9404a1402ae3.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Vinyl-3e2baa5e-9848-4a66-aa10-f6b5c465911f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Vinyl-3e2baa5e-9848-4a66-aa10-f6b5c465911f.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Vinyl-c061baef-7364-48d7-8e0a-ff652ebc2fa1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Vinyl-c061baef-7364-48d7-8e0a-ff652ebc2fa1.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Walkman-c9b2b5aa-adb5-4236-af33-1316c56a51d8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Walkman-c9b2b5aa-adb5-4236-af33-1316c56a51d8.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Walkman-daa2350f-64ac-47fa-b20a-a4bae1c0497f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Walkman-daa2350f-64ac-47fa-b20a-a4bae1c0497f.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Window_Tax-59d3cbbe-cdcd-4f58-ac90-415287991681.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Window_Tax-59d3cbbe-cdcd-4f58-ac90-415287991681.mp3"
+        },
+        {
+          "name": "SAINTE-Midnight_Window_Tax-eac66a69-ba08-445a-8e78-c4e014531057.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Window_Tax-eac66a69-ba08-445a-8e78-c4e014531057.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-1a3dbea6-05bf-4ede-b670-0a2f4d8df6a1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-1a3dbea6-05bf-4ede-b670-0a2f4d8df6a1.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-33ff8082-a33d-4450-b27c-2327c92ee617.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-33ff8082-a33d-4450-b27c-2327c92ee617.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-38118ee6-b550-43de-9648-5cd561d97c50.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-38118ee6-b550-43de-9648-5cd561d97c50.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-5c2c7632-cbcf-45d5-95e6-f00995be1b6b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-5c2c7632-cbcf-45d5-95e6-f00995be1b6b.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-7cb2f9dd-9758-4e84-9bf7-c7c6f6e987a5.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-7cb2f9dd-9758-4e84-9bf7-c7c6f6e987a5.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-90317751-90f0-4782-bebb-2b1b37a34a5a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-90317751-90f0-4782-bebb-2b1b37a34a5a.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley_Swing-05ccc1d4-acde-4f2b-828d-2a9c5066e210.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley_Swing-05ccc1d4-acde-4f2b-828d-2a9c5066e210.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley_Swing-39198ab8-0b03-4336-9982-08d87cf4efb0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley_Swing-39198ab8-0b03-4336-9982-08d87cf4efb0.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley_Tape-331a6c5a-7481-48c6-8e8f-904bdfce9712.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley_Tape-331a6c5a-7481-48c6-8e8f-904bdfce9712.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley_Tape-4f66b797-e548-48b6-961f-6e6af10ceb59.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley_Tape-4f66b797-e548-48b6-961f-6e6af10ceb59.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Canvas-1f5ca309-5c4e-4f7d-9785-7c2bb0caf238.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Canvas-1f5ca309-5c4e-4f7d-9785-7c2bb0caf238.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Canvas-a599ad11-45d9-4ac4-9472-b68590f780dd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Canvas-a599ad11-45d9-4ac4-9472-b68590f780dd.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Cruise-32ff1fc5-d3f9-462b-9799-d72f31589a1a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Cruise-32ff1fc5-d3f9-462b-9799-d72f31589a1a.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Cruise-d9a74b56-a343-408b-8377-1470f720e277.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Cruise-d9a74b56-a343-408b-8377-1470f720e277.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Ledger-81e83e30-0ade-4252-9c47-a937668f6ec2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Ledger-81e83e30-0ade-4252-9c47-a937668f6ec2.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Ledger-e6ee8a16-baad-4d63-8275-6863bf696b1a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Ledger-e6ee8a16-baad-4d63-8275-6863bf696b1a.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Ledger-ebd31f16-b295-4e49-81d4-94c18a1d2378.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Ledger-ebd31f16-b295-4e49-81d4-94c18a1d2378.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Ledger-ff067637-ab61-489f-a3a2-7ea942c6bc58.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Ledger-ff067637-ab61-489f-a3a2-7ea942c6bc58.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Letters-50f85d9e-d277-4447-bf09-09ec8e8b8b5d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Letters-50f85d9e-d277-4447-bf09-09ec8e8b8b5d.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Letters-89f4adb4-5261-4d2f-9a99-75461e8948da.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Letters-89f4adb4-5261-4d2f-9a99-75461e8948da.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Miles-85256d5d-17f7-4e4c-a138-5f362e89768e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Miles-85256d5d-17f7-4e4c-a138-5f362e89768e.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Miles-dac180a2-98bc-4111-8d76-dcc9ffb1e3fc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Miles-dac180a2-98bc-4111-8d76-dcc9ffb1e3fc.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Vinyl-41eb7dba-406a-4d0d-be62-4921ef6be220.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Vinyl-41eb7dba-406a-4d0d-be62-4921ef6be220.mp3"
+        },
+        {
+          "name": "SAINTE-Moonlit_Vinyl-b3477a55-d938-4cf4-810c-1afb040431e2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Vinyl-b3477a55-d938-4cf4-810c-1afb040431e2.mp3"
+        },
+        {
+          "name": "SAINTE-Motel_Almond_Moon-18ce2524-5b68-4eb7-bc1e-c1a62a05d884.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Motel_Almond_Moon-18ce2524-5b68-4eb7-bc1e-c1a62a05d884.mp3"
+        },
+        {
+          "name": "SAINTE-Motel_Almond_Moon-55b65e96-6036-4682-8170-ef1237b05fd7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Motel_Almond_Moon-55b65e96-6036-4682-8170-ef1237b05fd7.mp3"
+        },
+        {
+          "name": "SAINTE-Nights_Free-98334274-a353-4215-8797-cbc7fe4939bb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Nights_Free-98334274-a353-4215-8797-cbc7fe4939bb.mp3"
+        },
+        {
+          "name": "SAINTE-Nights_Free-d4260e90-1a9a-4f06-a6e9-6ef13316d033.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Nights_Free-d4260e90-1a9a-4f06-a6e9-6ef13316d033.mp3"
+        },
+        {
+          "name": "SAINTE-Nights_on_Me-727e443b-bf95-4332-9778-f60db4532080.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Nights_on_Me-727e443b-bf95-4332-9778-f60db4532080.mp3"
+        },
+        {
+          "name": "SAINTE-Nights_on_Me-e3a95197-d549-4861-8c7b-1d1fa6831aca.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Nights_on_Me-e3a95197-d549-4861-8c7b-1d1fa6831aca.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Drive_Chalk-9b393714-6680-4e63-b5ae-c201d890baae.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Drive_Chalk-9b393714-6680-4e63-b5ae-c201d890baae.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Drive_Chalk-cf594196-9744-4f04-8d6c-9430a211855d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Drive_Chalk-cf594196-9744-4f04-8d6c-9430a211855d.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Glass-2cfa25cd-5f78-4f8c-b80a-77a5b5847be6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Glass-2cfa25cd-5f78-4f8c-b80a-77a5b5847be6.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Glass-8b85ae7b-e461-46c7-a820-1a5767163fa2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Glass-8b85ae7b-e461-46c7-a820-1a5767163fa2.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Ledger-95279eec-3619-4813-8f00-ba8098866aa0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Ledger-95279eec-3619-4813-8f00-ba8098866aa0.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Ledger-958879b1-7b11-498f-a5be-21bf96d18021.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Ledger-958879b1-7b11-498f-a5be-21bf96d18021.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Market_Drip-82d7c035-359a-4a64-8ce6-7fb3adb5c8dd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Market_Drip-82d7c035-359a-4a64-8ce6-7fb3adb5c8dd.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Market_Drip-cb98649a-2116-46e7-9d5a-555eda2fa8bb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Market_Drip-cb98649a-2116-46e7-9d5a-555eda2fa8bb.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Ride_Velvet-432f4709-6448-46e1-b025-f0ac5dbbe0eb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Ride_Velvet-432f4709-6448-46e1-b025-f0ac5dbbe0eb.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Ride_Velvet-f7d446d3-5b5d-4afc-bb2c-92b93ca9b25c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Ride_Velvet-f7d446d3-5b5d-4afc-bb2c-92b93ca9b25c.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Train_Canvas-1bd3adb6-1a01-4044-aa3b-e64674a1d01e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Train_Canvas-1bd3adb6-1a01-4044-aa3b-e64674a1d01e.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Train_Canvas-40f12c20-7b23-467c-9e98-a915b96d1757.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Train_Canvas-40f12c20-7b23-467c-9e98-a915b96d1757.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Train_Velvet-1e591656-5588-4bae-951c-1e0b62cc326c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Train_Velvet-1e591656-5588-4bae-951c-1e0b62cc326c.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Train_Velvet-8f62095f-97da-4432-ab1c-b271da21cfbb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Train_Velvet-8f62095f-97da-4432-ab1c-b271da21cfbb.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Walks-23205001-cbd2-411d-947c-f5a482ba6149.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Walks-23205001-cbd2-411d-947c-f5a482ba6149.mp3"
+        },
+        {
+          "name": "SAINTE-Night_Walks-6b22cecc-43c8-4b46-acf7-96c4c6061328.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Walks-6b22cecc-43c8-4b46-acf7-96c4c6061328.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Moon-ad69401e-b3af-4809-a1eb-260171e402c8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Moon-ad69401e-b3af-4809-a1eb-260171e402c8.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Moon-cbf5ce86-fcc1-467b-819a-aee13d79fbf9.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Moon-cbf5ce86-fcc1-467b-819a-aee13d79fbf9.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Rain-77e92478-7691-45e1-860b-8daf110b134d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Rain-77e92478-7691-45e1-860b-8daf110b134d.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589 (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589 (1).mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589-1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589-1.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Lantern_Drive-5d1f1da4-6044-4015-8724-9ef2ade76ea0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Lantern_Drive-5d1f1da4-6044-4015-8724-9ef2ade76ea0.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Lantern_Drive-b95894c4-c947-4785-960f-0a4a2601294d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Lantern_Drive-b95894c4-c947-4785-960f-0a4a2601294d.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Alley-717e6f42-f1fd-4dbe-81da-46f71cfb1702.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Alley-717e6f42-f1fd-4dbe-81da-46f71cfb1702.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Alley-7a21704c-8e3b-4c0f-8105-dff159ab4fdf.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Alley-7a21704c-8e3b-4c0f-8105-dff159ab4fdf.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Drive-0884de8d-254f-4ae8-8014-7d817f0c8297.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Drive-0884de8d-254f-4ae8-8014-7d817f0c8297.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Drive-bb1d1627-b5b5-472d-85ed-9e87a9c31449.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Drive-bb1d1627-b5b5-472d-85ed-9e87a9c31449.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Drive-bd834878-ac54-4db4-aab4-724709a46061.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Drive-bd834878-ac54-4db4-aab4-724709a46061.mp3"
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Drive-d448509f-7b91-473b-b0e2-5858f98a1a15.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Drive-d448509f-7b91-473b-b0e2-5858f98a1a15.mp3"
+        },
+        {
+          "name": "SAINTE-Parking_Lot_Saints-09a26dcc-2e5b-4206-9c3c-cc8ab83883ce.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Parking_Lot_Saints-09a26dcc-2e5b-4206-9c3c-cc8ab83883ce.mp3"
+        },
+        {
+          "name": "SAINTE-Parking_Lot_Saints-be94f556-1337-4a4f-ab82-33c40793d225.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Parking_Lot_Saints-be94f556-1337-4a4f-ab82-33c40793d225.mp3"
+        },
+        {
+          "name": "SAINTE-Pocket_Full_of_Rain-434ecaf8-d4b0-4234-8013-ac9c624bb630.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Pocket_Full_of_Rain-434ecaf8-d4b0-4234-8013-ac9c624bb630.mp3"
+        },
+        {
+          "name": "SAINTE-Pocket_Full_of_Rain-b24a380b-dda8-4db5-b5b3-814fff10f956.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Pocket_Full_of_Rain-b24a380b-dda8-4db5-b5b3-814fff10f956.mp3"
+        },
+        {
+          "name": "SAINTE-Rain_On_Vinyl-070df5ac-fec1-4e91-a609-fd2cee068427.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Rain_On_Vinyl-070df5ac-fec1-4e91-a609-fd2cee068427.mp3"
+        },
+        {
+          "name": "SAINTE-Rain_On_Vinyl-8c38a923-0fcb-40b0-adf9-e20a2456dc9d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Rain_On_Vinyl-8c38a923-0fcb-40b0-adf9-e20a2456dc9d.mp3"
+        },
+        {
+          "name": "SAINTE-Rain_On_Vinyl-90302321-5684-48f5-b805-5cedeedba705.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Rain_On_Vinyl-90302321-5684-48f5-b805-5cedeedba705.mp3"
+        },
+        {
+          "name": "SAINTE-Rain_On_Vinyl-9c8e2eb8-af76-42bf-9c61-b79b57ee7724.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Rain_On_Vinyl-9c8e2eb8-af76-42bf-9c61-b79b57ee7724.mp3"
+        },
+        {
+          "name": "SAINTE-Sainte_Sidewalk-22bffefc-9c65-4aaa-9b63-716c72b0f3c2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sainte_Sidewalk-22bffefc-9c65-4aaa-9b63-716c72b0f3c2.mp3"
+        },
+        {
+          "name": "SAINTE-Sainte_Sidewalk-d03a8e68-adc2-4108-98f4-d734742cc76e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sainte_Sidewalk-d03a8e68-adc2-4108-98f4-d734742cc76e.mp3"
+        },
+        {
+          "name": "SAINTE-Smoke_in_the_Oaks-5958240c-bebc-40f5-b78f-8957dfae118e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Smoke_in_the_Oaks-5958240c-bebc-40f5-b78f-8957dfae118e.mp3"
+        },
+        {
+          "name": "SAINTE-Smoke_in_the_Oaks-9659a738-151b-4466-99c9-d156ec3eb577.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Smoke_in_the_Oaks-9659a738-151b-4466-99c9-d156ec3eb577.mp3"
+        },
+        {
+          "name": "SAINTE-Sunday_Backseat-5b4dd451-9250-4fe0-83ae-7cbb17c52b9d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sunday_Backseat-5b4dd451-9250-4fe0-83ae-7cbb17c52b9d.mp3"
+        },
+        {
+          "name": "SAINTE-Sunday_Backseat-667d14f4-dd91-4933-b8b8-9574b411c78b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sunday_Backseat-667d14f4-dd91-4933-b8b8-9574b411c78b.mp3"
+        },
+        {
+          "name": "SAINTE-Sunday_Coat-1a47aa78-ae8e-4bc8-9160-8768590c5aa7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sunday_Coat-1a47aa78-ae8e-4bc8-9160-8768590c5aa7.mp3"
+        },
+        {
+          "name": "SAINTE-Sunday_Coat-554cbac3-c886-404c-8b60-20ccbc2b06fb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sunday_Coat-554cbac3-c886-404c-8b60-20ccbc2b06fb.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Afterhours-25196f11-33dc-4da5-b4f7-c7e786e897ff.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Afterhours-25196f11-33dc-4da5-b4f7-c7e786e897ff.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Afterhours-e64032cb-edcd-4e4a-9556-fe8e7ebdf382.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Afterhours-e64032cb-edcd-4e4a-9556-fe8e7ebdf382.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_After_Hours-2d70938c-0ec8-4b8a-8e3e-ea864c7bd789.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Hours-2d70938c-0ec8-4b8a-8e3e-ea864c7bd789.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_After_Hours-4fbed686-7668-499d-8af4-46a0eb4f1d58.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Hours-4fbed686-7668-499d-8af4-46a0eb4f1d58.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_After_Hours-a8a05038-5b44-486f-b1bd-c4356a61e8e8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Hours-a8a05038-5b44-486f-b1bd-c4356a61e8e8.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_After_Hours-ed69d327-56d4-4d67-aed1-ee511a92ad99.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Hours-ed69d327-56d4-4d67-aed1-ee511a92ad99.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_After_Rain-7b3108ae-8615-4cb8-845c-3f29c2987c5d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Rain-7b3108ae-8615-4cb8-845c-3f29c2987c5d.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_After_Rain-8e6296fb-ecdb-493a-b7a3-479fc8d35d1c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Rain-8e6296fb-ecdb-493a-b7a3-479fc8d35d1c.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_After_Rain-984fca42-d77e-4f0f-83d4-82824fc5f006.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Rain-984fca42-d77e-4f0f-83d4-82824fc5f006.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_After_Rain-b5edb387-6f54-499d-beb4-d236826c28af.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Rain-b5edb387-6f54-499d-beb4-d236826c28af.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Alley-1e8f2998-3e8f-44a4-9330-37554b8af235.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley-1e8f2998-3e8f-44a4-9330-37554b8af235.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Alley-a62f773a-d515-4bad-936e-6fbd399e7d50.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley-a62f773a-d515-4bad-936e-6fbd399e7d50.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Alley-e41997ad-aee2-47e5-93ce-0950810e5506.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley-e41997ad-aee2-47e5-93ce-0950810e5506.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Alley-f0509dc4-7881-4efe-9259-416261692d65.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley-f0509dc4-7881-4efe-9259-416261692d65.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Alley_Loop-3e8574eb-986c-44ba-bae0-f7eacd7c88a2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley_Loop-3e8574eb-986c-44ba-bae0-f7eacd7c88a2.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Alley_Loop-572de2ec-b4a1-48b5-8725-a50becc821cb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley_Loop-572de2ec-b4a1-48b5-8725-a50becc821cb.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Ashes-0fcb3154-7ff8-45e3-89f0-86824dc5d0cd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Ashes-0fcb3154-7ff8-45e3-89f0-86824dc5d0cd.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Ashes-834742b2-c6a0-4281-833f-b7b35041e27c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Ashes-834742b2-c6a0-4281-833f-b7b35041e27c.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Corner-23ad76a2-28ea-4d98-906b-3fbb3023612b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner-23ad76a2-28ea-4d98-906b-3fbb3023612b.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Corner-3886cdd3-eadb-4255-915e-469448358de3.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner-3886cdd3-eadb-4255-915e-469448358de3.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Corner-e4f4b97f-fcec-496a-b12f-407e3d0c6f24 (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner-e4f4b97f-fcec-496a-b12f-407e3d0c6f24 (1).mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Corner-e4f4b97f-fcec-496a-b12f-407e3d0c6f24.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner-e4f4b97f-fcec-496a-b12f-407e3d0c6f24.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Corner-e77a0baa-6bfe-41ba-a66a-9274a8277541.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner-e77a0baa-6bfe-41ba-a66a-9274a8277541.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Corner_Demo-fe317be6-418f-4640-8ab6-ce590187101c (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner_Demo-fe317be6-418f-4640-8ab6-ce590187101c (1).mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Corner_Demo-fe317be6-418f-4640-8ab6-ce590187101c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner_Demo-fe317be6-418f-4640-8ab6-ce590187101c.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Corner_Demo-ffc42696-b0d6-4afb-ae58-8ea5285ea46b (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner_Demo-ffc42696-b0d6-4afb-ae58-8ea5285ea46b (1).mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Corner_Demo-ffc42696-b0d6-4afb-ae58-8ea5285ea46b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner_Demo-ffc42696-b0d6-4afb-ae58-8ea5285ea46b.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Demo-cc534be4-1a1c-4bd5-8e50-13968201722a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Demo-cc534be4-1a1c-4bd5-8e50-13968201722a.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Demo_Loop-7b37dd58-75d8-421d-8b5d-972f00e66f41.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Demo_Loop-7b37dd58-75d8-421d-8b5d-972f00e66f41.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Demo_Loop-82e5e684-ece7-4ae0-9d44-f56937968f49.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Demo_Loop-82e5e684-ece7-4ae0-9d44-f56937968f49.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Hourglass-55944aa5-99fb-4388-b46f-d1d8615d0fc6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Hourglass-55944aa5-99fb-4388-b46f-d1d8615d0fc6.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Hourglass-5a73293f-9659-415c-b24f-40239d9d2fa9.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Hourglass-5a73293f-9659-415c-b24f-40239d9d2fa9.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Loop-6d15e714-926a-467e-9d15-c25e49e45f9c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Loop-6d15e714-926a-467e-9d15-c25e49e45f9c.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Loop-873eac0a-23f4-40be-97fd-093520b9ce53.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Loop-873eac0a-23f4-40be-97fd-093520b9ce53.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-86d9b73d-ced3-4bbc-ba1b-602feab74558.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-86d9b73d-ced3-4bbc-ba1b-602feab74558.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-aadb370d-e5ff-4326-ba8e-2802cf1e2a44.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-aadb370d-e5ff-4326-ba8e-2802cf1e2a44.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-ab526695-7923-4a63-aadf-755ef13163b1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-ab526695-7923-4a63-aadf-755ef13163b1.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-c7107238-c357-4659-880f-ad0897447555.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-c7107238-c357-4659-880f-ad0897447555.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-d3ea9a33-6b80-4b2c-8300-2bb76587cf07.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-d3ea9a33-6b80-4b2c-8300-2bb76587cf07.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-ed3813d6-ae07-4930-8eff-a0f46a169880.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-ed3813d6-ae07-4930-8eff-a0f46a169880.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Night_Drive-64965c81-6d92-4d56-90e3-2b47a38a809d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Night_Drive-64965c81-6d92-4d56-90e3-2b47a38a809d.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Night_Drive-914ee639-35e1-4889-a3e8-7a8e7e1efbe9.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Night_Drive-914ee639-35e1-4889-a3e8-7a8e7e1efbe9.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Night_Drive-a4245514-8cc5-40f0-a3e1-93ae2ad4a32a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Night_Drive-a4245514-8cc5-40f0-a3e1-93ae2ad4a32a.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Night_Drive-f11e8cb7-7650-4cb2-b323-ac479d9926bb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Night_Drive-f11e8cb7-7650-4cb2-b323-ac479d9926bb.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Pawn_Ticket-356cd557-a140-46f2-a712-388b7037933e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Pawn_Ticket-356cd557-a140-46f2-a712-388b7037933e.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Pawn_Ticket-8fc56a79-7e3e-40ee-920d-78566d38f27e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Pawn_Ticket-8fc56a79-7e3e-40ee-920d-78566d38f27e.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Receipt-38a44f3e-0371-41ab-bd3d-648ff9324fa1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Receipt-38a44f3e-0371-41ab-bd3d-648ff9324fa1.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Receipt-78e83744-b26e-4e4f-98f7-32ea53f7af54.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Receipt-78e83744-b26e-4e4f-98f7-32ea53f7af54.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Receipt-975209eb-780a-4250-9114-bb6a2c41dcd2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Receipt-975209eb-780a-4250-9114-bb6a2c41dcd2.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Receipt-b2c30962-a56d-417c-84ef-7831faa45bd7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Receipt-b2c30962-a56d-417c-84ef-7831faa45bd7.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Sidewalk-040964f5-faee-4027-8927-b85550c701e4.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Sidewalk-040964f5-faee-4027-8927-b85550c701e4.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Sidewalk-0c1d780b-386a-4561-a42d-7c511d8071c9.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Sidewalk-0c1d780b-386a-4561-a42d-7c511d8071c9.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Sidewalk-4c84b073-636f-434b-83f2-8140a5e19f95.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Sidewalk-4c84b073-636f-434b-83f2-8140a5e19f95.mp3"
+        },
+        {
+          "name": "SAINTE-Velvet_Sidewalk-8a06dd0c-9c7f-4496-bec6-f5ee3a0fd533.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Sidewalk-8a06dd0c-9c7f-4496-bec6-f5ee3a0fd533.mp3"
+        }
+      ],
+      "basePath": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres",
+      "currentPath": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres"
     }
   },
   "currentFolderType": "all",
@@ -2708,7 +3935,7 @@
         {
           "name": "Untitled - Fondness_tagged.wav",
           "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-5\\Untitled - Fondness_tagged.wav",
-          "lastUsed": false
+          "lastUsed": true
         },
         {
           "name": "Untitled - Heaven_tagged.wav",
@@ -2743,7 +3970,7 @@
         {
           "name": "Untitled - Sentiment_tagged.wav",
           "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\tagged\\page-5\\Untitled - Sentiment_tagged.wav",
-          "lastUsed": true
+          "lastUsed": false
         },
         {
           "name": "Untitled - Spectrum_tagged.wav",
@@ -10510,14 +11737,1546 @@
         "page-50",
         "page-51"
       ]
+    },
+    {
+      "id": "1778407907999",
+      "name": "New Pack",
+      "beats": [],
+      "thumbnail": null
     }
   ],
   "genrePacks": [
     {
       "id": "1777637803067",
       "name": "Jazz",
-      "beats": [],
-      "thumbnail": "file:///D:/Downloads/ChatGPT Image May 2, 2026, 06_29_29 PM.png"
+      "beats": [
+        {
+          "name": "Capri Terrace Breakfast (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\Capri Terrace Breakfast (1).mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "Capri Terrace Breakfast.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\Capri Terrace Breakfast.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "Breakfast in Capri (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\Breakfast in Capri (1).mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "Breakfast in Capri.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\Breakfast in Capri.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cardboard_Halo-8e3d6e9c-22f2-4cd8-8158-34bc32801879 (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cardboard_Halo-8e3d6e9c-22f2-4cd8-8158-34bc32801879 (1).mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cardboard_Halo-4e090938-2e13-4764-a7e2-f9187197e50f (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cardboard_Halo-4e090938-2e13-4764-a7e2-f9187197e50f (1).mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Corner_Demo-ffc42696-b0d6-4afb-ae58-8ea5285ea46b (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner_Demo-ffc42696-b0d6-4afb-ae58-8ea5285ea46b (1).mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Corner_Demo-fe317be6-418f-4640-8ab6-ce590187101c (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner_Demo-fe317be6-418f-4640-8ab6-ce590187101c (1).mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Corner-e4f4b97f-fcec-496a-b12f-407e3d0c6f24 (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner-e4f4b97f-fcec-496a-b12f-407e3d0c6f24 (1).mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-f6a58d8c-aed1-4583-9236-828b45649c82 (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-f6a58d8c-aed1-4583-9236-828b45649c82 (1).mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-edf60445-8e25-43fa-9a01-8cabc98c1d57 (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-edf60445-8e25-43fa-9a01-8cabc98c1d57 (1).mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589 (1).mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589 (1).mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-After_Midnight_Demo-e7cf0606-eae6-423e-b5f8-b8ec17ee1bd2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Midnight_Demo-e7cf0606-eae6-423e-b5f8-b8ec17ee1bd2.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-After_Midnight_Demo-33d6fc3b-f127-47f4-a1b9-f735c8b06cc4.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Midnight_Demo-33d6fc3b-f127-47f4-a1b9-f735c8b06cc4.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-d5e57226-979f-4494-b6ac-5bb9bef498b5.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-d5e57226-979f-4494-b6ac-5bb9bef498b5.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-e86ba8ee-d877-4270-b998-bff91cb0f596.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-e86ba8ee-d877-4270-b998-bff91cb0f596.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Hourglass-5a73293f-9659-415c-b24f-40239d9d2fa9.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Hourglass-5a73293f-9659-415c-b24f-40239d9d2fa9.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Hourglass-55944aa5-99fb-4388-b46f-d1d8615d0fc6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Hourglass-55944aa5-99fb-4388-b46f-d1d8615d0fc6.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Receipt-cbadc941-1614-4447-87b8-afda8ce3adc7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Receipt-cbadc941-1614-4447-87b8-afda8ce3adc7.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Receipt-0b0fcc8b-85fb-46e1-86e1-09d5818ff80b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Receipt-0b0fcc8b-85fb-46e1-86e1-09d5818ff80b.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Proof-382d61ba-9173-40aa-9451-b20df113c9c3.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Proof-382d61ba-9173-40aa-9451-b20df113c9c3.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Proof-c6f62273-8363-4e43-b117-3dc2e9640506.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Proof-c6f62273-8363-4e43-b117-3dc2e9640506.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_After_Rain-b5edb387-6f54-499d-beb4-d236826c28af.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Rain-b5edb387-6f54-499d-beb4-d236826c28af.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_After_Rain-7b3108ae-8615-4cb8-845c-3f29c2987c5d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Rain-7b3108ae-8615-4cb8-845c-3f29c2987c5d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Mercury_Lane_Glide-2666245f-63c8-4c29-a179-c0fd5a2ce7a7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Mercury_Lane_Glide-2666245f-63c8-4c29-a179-c0fd5a2ce7a7.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Mercury_Lane_Glide-6ae07c0e-1b94-42a0-83f8-49efc9350424.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Mercury_Lane_Glide-6ae07c0e-1b94-42a0-83f8-49efc9350424.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Curbside_Loops-b1bfbfec-ad31-4188-8a9f-9f61fcc54912.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Curbside_Loops-b1bfbfec-ad31-4188-8a9f-9f61fcc54912.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Curbside_Loops-80d31d8d-4a4b-4762-9f1e-7065c877709f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Curbside_Loops-80d31d8d-4a4b-4762-9f1e-7065c877709f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backseat_Glass-59cddb68-9f4e-45fb-9654-06889d9d37c2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Glass-59cddb68-9f4e-45fb-9654-06889d9d37c2.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backseat_Glass-3320fe20-6167-4757-9b26-6cf3a05e861e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Glass-3320fe20-6167-4757-9b26-6cf3a05e861e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Sunday_Backseat-667d14f4-dd91-4933-b8b8-9574b411c78b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sunday_Backseat-667d14f4-dd91-4933-b8b8-9574b411c78b.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Sunday_Backseat-5b4dd451-9250-4fe0-83ae-7cbb17c52b9d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sunday_Backseat-5b4dd451-9250-4fe0-83ae-7cbb17c52b9d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Drive-b0fe0c49-c651-47ac-8078-406943143538.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Drive-b0fe0c49-c651-47ac-8078-406943143538.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Drive-966ea7df-a7d9-4546-8d0d-33eeaa3f3e5b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Drive-966ea7df-a7d9-4546-8d0d-33eeaa3f3e5b.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cruise_Control-54f9faaf-c290-47de-9b1a-83ad272e88b6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cruise_Control-54f9faaf-c290-47de-9b1a-83ad272e88b6.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cruise_Control-058a609d-d686-4808-87c6-75a90d0beb90.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cruise_Control-058a609d-d686-4808-87c6-75a90d0beb90.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Freeway_Chrome-8440c579-172e-4ea8-96b4-a1741d73a3b6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Freeway_Chrome-8440c579-172e-4ea8-96b4-a1741d73a3b6.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Freeway_Chrome-8b712d34-d632-443d-a91c-d34f80dcfebc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Freeway_Chrome-8b712d34-d632-443d-a91c-d34f80dcfebc.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Drive_Sips-25dccdb8-10b5-44fe-a4a8-ec365bdb3e56.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Drive_Sips-25dccdb8-10b5-44fe-a4a8-ec365bdb3e56.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Drive_Sips-d2b0a611-4e44-4e63-ace0-4419cff92eea.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Drive_Sips-d2b0a611-4e44-4e63-ace0-4419cff92eea.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Parking_Lot_Saints-09a26dcc-2e5b-4206-9c3c-cc8ab83883ce.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Parking_Lot_Saints-09a26dcc-2e5b-4206-9c3c-cc8ab83883ce.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Parking_Lot_Saints-be94f556-1337-4a4f-ab82-33c40793d225.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Parking_Lot_Saints-be94f556-1337-4a4f-ab82-33c40793d225.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Free_Car_Ride-6e9a373b-88f8-4e1b-a428-22938cb83fb2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Free_Car_Ride-6e9a373b-88f8-4e1b-a428-22938cb83fb2.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Free_Car_Ride-c6f911df-7731-453a-a9b4-c9a9df16caf0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Free_Car_Ride-c6f911df-7731-453a-a9b4-c9a9df16caf0.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Passenger-50b80190-87eb-4acc-aa16-44b637d6da9e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Passenger-50b80190-87eb-4acc-aa16-44b637d6da9e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Passenger-3614fc25-c12d-40ab-9771-df2708180726.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Passenger-3614fc25-c12d-40ab-9771-df2708180726.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Receipt-b2c30962-a56d-417c-84ef-7831faa45bd7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Receipt-b2c30962-a56d-417c-84ef-7831faa45bd7.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Receipt-78e83744-b26e-4e4f-98f7-32ea53f7af54.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Receipt-78e83744-b26e-4e4f-98f7-32ea53f7af54.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Vinyl_Drift-09d527d7-4931-455d-b3c8-8bccc816059c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Vinyl_Drift-09d527d7-4931-455d-b3c8-8bccc816059c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Vinyl_Drift-feef3e33-6af9-41a1-b6b0-c8d50d5b4f50.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Vinyl_Drift-feef3e33-6af9-41a1-b6b0-c8d50d5b4f50.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Smoke_in_the_Oaks-9659a738-151b-4466-99c9-d156ec3eb577.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Smoke_in_the_Oaks-9659a738-151b-4466-99c9-d156ec3eb577.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Smoke_in_the_Oaks-5958240c-bebc-40f5-b78f-8957dfae118e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Smoke_in_the_Oaks-5958240c-bebc-40f5-b78f-8957dfae118e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Night_Drive-64965c81-6d92-4d56-90e3-2b47a38a809d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Night_Drive-64965c81-6d92-4d56-90e3-2b47a38a809d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Night_Drive-914ee639-35e1-4889-a3e8-7a8e7e1efbe9.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Night_Drive-914ee639-35e1-4889-a3e8-7a8e7e1efbe9.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_After_Rain-8e6296fb-ecdb-493a-b7a3-479fc8d35d1c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Rain-8e6296fb-ecdb-493a-b7a3-479fc8d35d1c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_After_Rain-984fca42-d77e-4f0f-83d4-82824fc5f006.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Rain-984fca42-d77e-4f0f-83d4-82824fc5f006.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Receipt-38a44f3e-0371-41ab-bd3d-648ff9324fa1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Receipt-38a44f3e-0371-41ab-bd3d-648ff9324fa1.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Receipt-975209eb-780a-4250-9114-bb6a2c41dcd2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Receipt-975209eb-780a-4250-9114-bb6a2c41dcd2.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cedar_Smoke-0faf3cf1-a077-4c39-9b43-b530242cb62c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cedar_Smoke-0faf3cf1-a077-4c39-9b43-b530242cb62c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cedar_Smoke-625a476e-ad93-48c0-a2b1-db2a21e31664.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cedar_Smoke-625a476e-ad93-48c0-a2b1-db2a21e31664.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Alley_Loop-3e8574eb-986c-44ba-bae0-f7eacd7c88a2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley_Loop-3e8574eb-986c-44ba-bae0-f7eacd7c88a2.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Alley_Loop-572de2ec-b4a1-48b5-8725-a50becc821cb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley_Loop-572de2ec-b4a1-48b5-8725-a50becc821cb.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Pager-9930c365-1227-4ce9-b5ff-f3c0332a513c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Pager-9930c365-1227-4ce9-b5ff-f3c0332a513c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Pager-f4886a09-f2a2-4c31-a787-364af9b658ab.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Pager-f4886a09-f2a2-4c31-a787-364af9b658ab.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Ferris-8d3dcc5f-e7aa-4dcf-afa2-a436dcb94501.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Ferris-8d3dcc5f-e7aa-4dcf-afa2-a436dcb94501.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Ferris-91a71d43-369c-41c8-a4b7-1606a6059e16.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Ferris-91a71d43-369c-41c8-a4b7-1606a6059e16.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Glass-3a62f66a-3b82-4cf3-848d-2ceeaf10cba6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Glass-3a62f66a-3b82-4cf3-848d-2ceeaf10cba6.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Glass-67c2b16b-26f9-4c97-a2e0-df7c24b39104.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Glass-67c2b16b-26f9-4c97-a2e0-df7c24b39104.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Window-6b394aac-e2c1-4f49-9a11-30333d28600c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Window-6b394aac-e2c1-4f49-9a11-30333d28600c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Window-8bf978ba-7f79-42f3-ae55-7e6e4f56c44e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Window-8bf978ba-7f79-42f3-ae55-7e6e4f56c44e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Sidewalk-8a06dd0c-9c7f-4496-bec6-f5ee3a0fd533.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Sidewalk-8a06dd0c-9c7f-4496-bec6-f5ee3a0fd533.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Sidewalk-0c1d780b-386a-4561-a42d-7c511d8071c9.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Sidewalk-0c1d780b-386a-4561-a42d-7c511d8071c9.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Sidewalk-040964f5-faee-4027-8927-b85550c701e4.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Sidewalk-040964f5-faee-4027-8927-b85550c701e4.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Sidewalk-4c84b073-636f-434b-83f2-8140a5e19f95.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Sidewalk-4c84b073-636f-434b-83f2-8140a5e19f95.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-After_Hours_Velvet-e377d5ff-c666-4976-98c8-11690135b67d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Hours_Velvet-e377d5ff-c666-4976-98c8-11690135b67d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-After_Hours_Velvet-e3bb453e-c8a6-4575-b65f-48de1de6a2de.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Hours_Velvet-e3bb453e-c8a6-4575-b65f-48de1de6a2de.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Murmur-bb650a27-1160-4fee-985f-b6471dc0afe8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Murmur-bb650a27-1160-4fee-985f-b6471dc0afe8.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Murmur-6642d61d-bc54-4549-952a-791b1218364f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Murmur-6642d61d-bc54-4549-952a-791b1218364f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Drip-27980bfe-0bca-4138-8361-e49ba0e15c2c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Drip-27980bfe-0bca-4138-8361-e49ba0e15c2c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Drip-6ae39944-b284-4437-b5fd-c34e63776a76.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Drip-6ae39944-b284-4437-b5fd-c34e63776a76.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Noodle_Late-f283c694-392b-4482-a95b-e77d1d21b53f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Noodle_Late-f283c694-392b-4482-a95b-e77d1d21b53f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Noodle_Late-31323f08-1141-4a4b-8a30-8c5a9d43037b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Noodle_Late-31323f08-1141-4a4b-8a30-8c5a9d43037b.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Dusk-f0f0c5fc-d2d3-49fd-a947-287da176d756.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Dusk-f0f0c5fc-d2d3-49fd-a947-287da176d756.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Dusk-204754dc-c1d8-4965-b54e-a28af32e6212.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Dusk-204754dc-c1d8-4965-b54e-a28af32e6212.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Paper_Drift-92838265-4bd9-4477-a131-3660da9e248f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Paper_Drift-92838265-4bd9-4477-a131-3660da9e248f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Paper_Drift-2989d9ed-f0bd-4c13-8cc4-280203bb1712.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Paper_Drift-2989d9ed-f0bd-4c13-8cc4-280203bb1712.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Moon-ad69401e-b3af-4809-a1eb-260171e402c8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Moon-ad69401e-b3af-4809-a1eb-260171e402c8.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Moon-cbf5ce86-fcc1-467b-819a-aee13d79fbf9.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Moon-cbf5ce86-fcc1-467b-819a-aee13d79fbf9.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Letters-89f4adb4-5261-4d2f-9a99-75461e8948da.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Letters-89f4adb4-5261-4d2f-9a99-75461e8948da.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Letters-50f85d9e-d277-4447-bf09-09ec8e8b8b5d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Letters-50f85d9e-d277-4447-bf09-09ec8e8b8b5d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Vinyl-3e2baa5e-9848-4a66-aa10-f6b5c465911f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Vinyl-3e2baa5e-9848-4a66-aa10-f6b5c465911f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Vinyl-c061baef-7364-48d7-8e0a-ff652ebc2fa1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Vinyl-c061baef-7364-48d7-8e0a-ff652ebc2fa1.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Cup_Late-056b38d2-0beb-4ebf-813d-2ac038506fb8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Cup_Late-056b38d2-0beb-4ebf-813d-2ac038506fb8.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Cup_Late-5bee030f-2a78-43b6-afc3-a3313bdb18dc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Cup_Late-5bee030f-2a78-43b6-afc3-a3313bdb18dc.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Pawn_Ticket-8fc56a79-7e3e-40ee-920d-78566d38f27e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Pawn_Ticket-8fc56a79-7e3e-40ee-920d-78566d38f27e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Pawn_Ticket-356cd557-a140-46f2-a712-388b7037933e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Pawn_Ticket-356cd557-a140-46f2-a712-388b7037933e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Sainte_Sidewalk-22bffefc-9c65-4aaa-9b63-716c72b0f3c2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sainte_Sidewalk-22bffefc-9c65-4aaa-9b63-716c72b0f3c2.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Sainte_Sidewalk-d03a8e68-adc2-4108-98f4-d734742cc76e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sainte_Sidewalk-d03a8e68-adc2-4108-98f4-d734742cc76e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Sunday_Coat-1a47aa78-ae8e-4bc8-9160-8768590c5aa7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sunday_Coat-1a47aa78-ae8e-4bc8-9160-8768590c5aa7.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Sunday_Coat-554cbac3-c886-404c-8b60-20ccbc2b06fb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Sunday_Coat-554cbac3-c886-404c-8b60-20ccbc2b06fb.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Demo_Loop-82e5e684-ece7-4ae0-9d44-f56937968f49.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Demo_Loop-82e5e684-ece7-4ae0-9d44-f56937968f49.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Demo_Loop-7b37dd58-75d8-421d-8b5d-972f00e66f41.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Demo_Loop-7b37dd58-75d8-421d-8b5d-972f00e66f41.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Freeway_Demo-af6d2d51-1034-49c2-a5ae-a8e8d156bc19.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Freeway_Demo-af6d2d51-1034-49c2-a5ae-a8e8d156bc19.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Freeway_Demo-ec3edd6b-44ae-4256-b747-1c7526ecbeca.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Freeway_Demo-ec3edd6b-44ae-4256-b747-1c7526ecbeca.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Demo-4350099f-5e7c-47fc-8de2-86ff83c7ab93.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Demo-4350099f-5e7c-47fc-8de2-86ff83c7ab93.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Demo-3fecf2ec-5d56-4a78-9660-19a8a02727a8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Demo-3fecf2ec-5d56-4a78-9660-19a8a02727a8.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-After_Hours_Demo-cd052251-cbb5-40e6-93f3-c6d40ebcd489.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Hours_Demo-cd052251-cbb5-40e6-93f3-c6d40ebcd489.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-After_Hours_Demo-f26f13d7-f38b-4c8e-80a8-7438d55421aa.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Hours_Demo-f26f13d7-f38b-4c8e-80a8-7438d55421aa.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Loops-9f7fd54f-e14f-4f33-bc23-dae7cda39e3f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Loops-9f7fd54f-e14f-4f33-bc23-dae7cda39e3f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Loops-1de9296e-fc3d-49ad-90ec-267047da577b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Loops-1de9296e-fc3d-49ad-90ec-267047da577b.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Ride_Velvet-432f4709-6448-46e1-b025-f0ac5dbbe0eb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Ride_Velvet-432f4709-6448-46e1-b025-f0ac5dbbe0eb.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Ride_Velvet-f7d446d3-5b5d-4afc-bb2c-92b93ca9b25c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Ride_Velvet-f7d446d3-5b5d-4afc-bb2c-92b93ca9b25c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Drive_Chalk-cf594196-9744-4f04-8d6c-9430a211855d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Drive_Chalk-cf594196-9744-4f04-8d6c-9430a211855d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Drive_Chalk-9b393714-6680-4e63-b5ae-c201d890baae.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Drive_Chalk-9b393714-6680-4e63-b5ae-c201d890baae.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Rain_On_Vinyl-9c8e2eb8-af76-42bf-9c61-b79b57ee7724.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Rain_On_Vinyl-9c8e2eb8-af76-42bf-9c61-b79b57ee7724.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Rain_On_Vinyl-90302321-5684-48f5-b805-5cedeedba705.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Rain_On_Vinyl-90302321-5684-48f5-b805-5cedeedba705.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-1a3dbea6-05bf-4ede-b670-0a2f4d8df6a1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-1a3dbea6-05bf-4ede-b670-0a2f4d8df6a1.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-38118ee6-b550-43de-9648-5cd561d97c50.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-38118ee6-b550-43de-9648-5cd561d97c50.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Cruise-d9a74b56-a343-408b-8377-1470f720e277.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Cruise-d9a74b56-a343-408b-8377-1470f720e277.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Cruise-32ff1fc5-d3f9-462b-9799-d72f31589a1a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Cruise-32ff1fc5-d3f9-462b-9799-d72f31589a1a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backseat_Moonroof-855a6999-de77-4481-bb19-1dbaadcd6cdc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Moonroof-855a6999-de77-4481-bb19-1dbaadcd6cdc.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backseat_Moonroof-d60d0f04-8724-4c06-9212-096b2df2831d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Moonroof-d60d0f04-8724-4c06-9212-096b2df2831d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Ledger-95279eec-3619-4813-8f00-ba8098866aa0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Ledger-95279eec-3619-4813-8f00-ba8098866aa0.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Ledger-958879b1-7b11-498f-a5be-21bf96d18021.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Ledger-958879b1-7b11-498f-a5be-21bf96d18021.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Motel_Almond_Moon-18ce2524-5b68-4eb7-bc1e-c1a62a05d884.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Motel_Almond_Moon-18ce2524-5b68-4eb7-bc1e-c1a62a05d884.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Motel_Almond_Moon-55b65e96-6036-4682-8170-ef1237b05fd7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Motel_Almond_Moon-55b65e96-6036-4682-8170-ef1237b05fd7.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Walks-23205001-cbd2-411d-947c-f5a482ba6149.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Walks-23205001-cbd2-411d-947c-f5a482ba6149.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Walks-6b22cecc-43c8-4b46-acf7-96c4c6061328.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Walks-6b22cecc-43c8-4b46-acf7-96c4c6061328.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Afterglow-f3452e14-68ad-4666-8359-84c9113499ad.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Afterglow-f3452e14-68ad-4666-8359-84c9113499ad.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Afterglow-1c57f5f6-d8cd-481e-a121-8951bd77054b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Afterglow-1c57f5f6-d8cd-481e-a121-8951bd77054b.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Ledger-ebd31f16-b295-4e49-81d4-94c18a1d2378.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Ledger-ebd31f16-b295-4e49-81d4-94c18a1d2378.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Ledger-81e83e30-0ade-4252-9c47-a937668f6ec2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Ledger-81e83e30-0ade-4252-9c47-a937668f6ec2.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backseat_Rain-8d2ab594-c11b-4bdc-9648-1787fe4add49.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Rain-8d2ab594-c11b-4bdc-9648-1787fe4add49.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backseat_Rain-27d36097-f5bd-453c-8f6a-f305134091f6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Rain-27d36097-f5bd-453c-8f6a-f305134091f6.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Afterhours-25196f11-33dc-4da5-b4f7-c7e786e897ff.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Afterhours-25196f11-33dc-4da5-b4f7-c7e786e897ff.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Afterhours-e64032cb-edcd-4e4a-9556-fe8e7ebdf382.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Afterhours-e64032cb-edcd-4e4a-9556-fe8e7ebdf382.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Sainte-e5b23c09-e35a-47ab-a08a-9b58f2257ca6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Sainte-e5b23c09-e35a-47ab-a08a-9b58f2257ca6.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Sainte-9526564b-9c14-4db0-81b3-b0662cd66962.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Sainte-9526564b-9c14-4db0-81b3-b0662cd66962.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Cardigan-cf26fbfe-c51b-4484-9e12-045cf5828d1e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Cardigan-cf26fbfe-c51b-4484-9e12-045cf5828d1e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Cardigan-345ffd80-9f09-438c-93f3-7394ec3a0ab1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Cardigan-345ffd80-9f09-438c-93f3-7394ec3a0ab1.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Window_Tax-eac66a69-ba08-445a-8e78-c4e014531057.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Window_Tax-eac66a69-ba08-445a-8e78-c4e014531057.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Window_Tax-59d3cbbe-cdcd-4f58-ac90-415287991681.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Window_Tax-59d3cbbe-cdcd-4f58-ac90-415287991681.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-After_Midnight_Drip-6901ca54-46f6-4309-b7cd-368a5a431a9a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Midnight_Drip-6901ca54-46f6-4309-b7cd-368a5a431a9a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-After_Midnight_Drip-06f1be58-4003-442d-9f9a-35f0ed8f8157.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-After_Midnight_Drip-06f1be58-4003-442d-9f9a-35f0ed8f8157.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Alley-f0509dc4-7881-4efe-9259-416261692d65.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley-f0509dc4-7881-4efe-9259-416261692d65.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Alley-a62f773a-d515-4bad-936e-6fbd399e7d50.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley-a62f773a-d515-4bad-936e-6fbd399e7d50.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Ashes-834742b2-c6a0-4281-833f-b7b35041e27c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Ashes-834742b2-c6a0-4281-833f-b7b35041e27c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Ashes-0fcb3154-7ff8-45e3-89f0-86824dc5d0cd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Ashes-0fcb3154-7ff8-45e3-89f0-86824dc5d0cd.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-7cb2f9dd-9758-4e84-9bf7-c7c6f6e987a5.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-7cb2f9dd-9758-4e84-9bf7-c7c6f6e987a5.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-90317751-90f0-4782-bebb-2b1b37a34a5a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-90317751-90f0-4782-bebb-2b1b37a34a5a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Free-1b68419d-5693-4c5a-a31b-63ce0b418364.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Free-1b68419d-5693-4c5a-a31b-63ce0b418364.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Free-a87675f9-e52d-4545-8900-2b3f60be7e54.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Free-a87675f9-e52d-4545-8900-2b3f60be7e54.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Coin_Toss-880f8f36-a8c3-4e27-b2dc-3f7135ba6d6a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Coin_Toss-880f8f36-a8c3-4e27-b2dc-3f7135ba6d6a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Coin_Toss-67e11e66-7bbf-47d8-ae7e-001c5be281d4.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Coin_Toss-67e11e66-7bbf-47d8-ae7e-001c5be281d4.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Train_Velvet-8f62095f-97da-4432-ab1c-b271da21cfbb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Train_Velvet-8f62095f-97da-4432-ab1c-b271da21cfbb.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Train_Velvet-1e591656-5588-4bae-951c-1e0b62cc326c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Train_Velvet-1e591656-5588-4bae-951c-1e0b62cc326c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Drive-d448509f-7b91-473b-b0e2-5858f98a1a15.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Drive-d448509f-7b91-473b-b0e2-5858f98a1a15.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Drive-bd834878-ac54-4db4-aab4-724709a46061.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Drive-bd834878-ac54-4db4-aab4-724709a46061.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Velvet-528f6930-f6b9-4c37-9758-9404a1402ae3.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Velvet-528f6930-f6b9-4c37-9758-9404a1402ae3.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Velvet-3d5f0326-258f-44fd-a5dd-e68eb6f51e3d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Velvet-3d5f0326-258f-44fd-a5dd-e68eb6f51e3d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Alley-7a21704c-8e3b-4c0f-8105-dff159ab4fdf.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Alley-7a21704c-8e3b-4c0f-8105-dff159ab4fdf.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Alley-717e6f42-f1fd-4dbe-81da-46f71cfb1702.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Alley-717e6f42-f1fd-4dbe-81da-46f71cfb1702.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Saint-e9507fab-aa23-4700-8aed-40be39c6e679.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saint-e9507fab-aa23-4700-8aed-40be39c6e679.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Saint-9a6637cd-4e2b-4165-983f-deb6dc92f536.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saint-9a6637cd-4e2b-4165-983f-deb6dc92f536.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Walkman-daa2350f-64ac-47fa-b20a-a4bae1c0497f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Walkman-daa2350f-64ac-47fa-b20a-a4bae1c0497f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Walkman-c9b2b5aa-adb5-4236-af33-1316c56a51d8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Walkman-c9b2b5aa-adb5-4236-af33-1316c56a51d8.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Lantern-0c6f98d8-68d8-4f7a-b5c5-2d56a0febf2a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Lantern-0c6f98d8-68d8-4f7a-b5c5-2d56a0febf2a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Lantern-567a913c-dbd8-408c-861e-b11369af1920.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Lantern-567a913c-dbd8-408c-861e-b11369af1920.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Glass-3cdc4b02-10a4-4b4f-94ac-bca800262383.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Glass-3cdc4b02-10a4-4b4f-94ac-bca800262383.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Glass-c118ada8-1036-408f-b833-84235487fabd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Glass-c118ada8-1036-408f-b833-84235487fabd.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-aadb370d-e5ff-4326-ba8e-2802cf1e2a44.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-aadb370d-e5ff-4326-ba8e-2802cf1e2a44.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-c7107238-c357-4659-880f-ad0897447555.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-c7107238-c357-4659-880f-ad0897447555.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Crosswalk-8a932661-6f54-4837-9622-27153193c93f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Crosswalk-8a932661-6f54-4837-9622-27153193c93f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Crosswalk-d92a094f-46f3-416f-a82c-1d770d839b7e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Crosswalk-d92a094f-46f3-416f-a82c-1d770d839b7e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley_Tape-331a6c5a-7481-48c6-8e8f-904bdfce9712.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley_Tape-331a6c5a-7481-48c6-8e8f-904bdfce9712.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley_Tape-4f66b797-e548-48b6-961f-6e6af10ceb59.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley_Tape-4f66b797-e548-48b6-961f-6e6af10ceb59.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Canvas-a599ad11-45d9-4ac4-9472-b68590f780dd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Canvas-a599ad11-45d9-4ac4-9472-b68590f780dd.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Canvas-1f5ca309-5c4e-4f7d-9785-7c2bb0caf238.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Canvas-1f5ca309-5c4e-4f7d-9785-7c2bb0caf238.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Night_Drive-a4245514-8cc5-40f0-a3e1-93ae2ad4a32a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Night_Drive-a4245514-8cc5-40f0-a3e1-93ae2ad4a32a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Night_Drive-f11e8cb7-7650-4cb2-b323-ac479d9926bb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Night_Drive-f11e8cb7-7650-4cb2-b323-ac479d9926bb.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Lantern_After_Rain-48210f26-53d9-4114-8c35-059eb82fce03.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Lantern_After_Rain-48210f26-53d9-4114-8c35-059eb82fce03.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Lantern_After_Rain-c445833e-65c4-4441-9610-91fa08e86a9f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Lantern_After_Rain-c445833e-65c4-4441-9610-91fa08e86a9f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backseat_Rain_Loop-8125f3a4-4846-472e-a4c5-a7422fbff29c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Rain_Loop-8125f3a4-4846-472e-a4c5-a7422fbff29c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Alley_Cards-321508cf-29fb-4187-8c0b-ede958d32eca.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley_Cards-321508cf-29fb-4187-8c0b-ede958d32eca.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Alley_Cards-d3127389-016a-4f79-aad6-efb66163f55d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley_Cards-d3127389-016a-4f79-aad6-efb66163f55d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Alley-ba2b66e7-76fb-4af0-b0ec-38612d9a964e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley-ba2b66e7-76fb-4af0-b0ec-38612d9a964e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Alley-8ae265c4-f957-46dd-87d1-67e2c02ab133.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley-8ae265c4-f957-46dd-87d1-67e2c02ab133.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Train_Canvas-1bd3adb6-1a01-4044-aa3b-e64674a1d01e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Train_Canvas-1bd3adb6-1a01-4044-aa3b-e64674a1d01e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Train_Canvas-40f12c20-7b23-467c-9e98-a915b96d1757.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Train_Canvas-40f12c20-7b23-467c-9e98-a915b96d1757.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Ledger-945c10ba-c46f-48db-ab42-d95bbef4048f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Ledger-945c10ba-c46f-48db-ab42-d95bbef4048f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Ledger-b45f4c48-dafd-4fab-93c8-6780b5086f8d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Ledger-b45f4c48-dafd-4fab-93c8-6780b5086f8d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backseat_Neon-a559fa20-948d-4c4b-8eda-e158ca585e5b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Neon-a559fa20-948d-4c4b-8eda-e158ca585e5b.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backseat_Neon-ea10198c-72f8-48f4-b301-9294c92f826c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Neon-ea10198c-72f8-48f4-b301-9294c92f826c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_After_Hours-4fbed686-7668-499d-8af4-46a0eb4f1d58.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Hours-4fbed686-7668-499d-8af4-46a0eb4f1d58.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_After_Hours-2d70938c-0ec8-4b8a-8e3e-ea864c7bd789.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Hours-2d70938c-0ec8-4b8a-8e3e-ea864c7bd789.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Saffron-a1c01850-74e0-474e-85f4-f6f3d70d792a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saffron-a1c01850-74e0-474e-85f4-f6f3d70d792a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Saffron-73df7689-c782-4106-ad9b-db23551563ff.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saffron-73df7689-c782-4106-ad9b-db23551563ff.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Alley_Loop-23d30c7b-1e2a-4a9d-b095-7c5a2b89fc61.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley_Loop-23d30c7b-1e2a-4a9d-b095-7c5a2b89fc61.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Alley_Loop-ee2c0542-e05f-4ce7-88c5-c498e7064d38.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Alley_Loop-ee2c0542-e05f-4ce7-88c5-c498e7064d38.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-86d9b73d-ced3-4bbc-ba1b-602feab74558.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-86d9b73d-ced3-4bbc-ba1b-602feab74558.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-ab526695-7923-4a63-aadf-755ef13163b1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-ab526695-7923-4a63-aadf-755ef13163b1.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-5c2c7632-cbcf-45d5-95e6-f00995be1b6b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-5c2c7632-cbcf-45d5-95e6-f00995be1b6b.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley-33ff8082-a33d-4450-b27c-2327c92ee617.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley-33ff8082-a33d-4450-b27c-2327c92ee617.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Nights_on_Me-e3a95197-d549-4861-8c7b-1d1fa6831aca.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Nights_on_Me-e3a95197-d549-4861-8c7b-1d1fa6831aca.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Nights_on_Me-727e443b-bf95-4332-9778-f60db4532080.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Nights_on_Me-727e443b-bf95-4332-9778-f60db4532080.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Alley-e41997ad-aee2-47e5-93ce-0950810e5506.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley-e41997ad-aee2-47e5-93ce-0950810e5506.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Alley-1e8f2998-3e8f-44a4-9330-37554b8af235.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Alley-1e8f2998-3e8f-44a4-9330-37554b8af235.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_After_Hours-a8a05038-5b44-486f-b1bd-c4356a61e8e8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Hours-a8a05038-5b44-486f-b1bd-c4356a61e8e8.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_After_Hours-ed69d327-56d4-4d67-aed1-ee511a92ad99.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_After_Hours-ed69d327-56d4-4d67-aed1-ee511a92ad99.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Miles-85256d5d-17f7-4e4c-a138-5f362e89768e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Miles-85256d5d-17f7-4e4c-a138-5f362e89768e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Miles-dac180a2-98bc-4111-8d76-dcc9ffb1e3fc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Miles-dac180a2-98bc-4111-8d76-dcc9ffb1e3fc.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Market_Drip-82d7c035-359a-4a64-8ce6-7fb3adb5c8dd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Market_Drip-82d7c035-359a-4a64-8ce6-7fb3adb5c8dd.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Market_Drip-cb98649a-2116-46e7-9d5a-555eda2fa8bb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Market_Drip-cb98649a-2116-46e7-9d5a-555eda2fa8bb.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Ledger-ff067637-ab61-489f-a3a2-7ea942c6bc58.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Ledger-ff067637-ab61-489f-a3a2-7ea942c6bc58.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Ledger-e6ee8a16-baad-4d63-8275-6863bf696b1a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Ledger-e6ee8a16-baad-4d63-8275-6863bf696b1a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Drive-0884de8d-254f-4ae8-8014-7d817f0c8297.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Drive-0884de8d-254f-4ae8-8014-7d817f0c8297.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Moon_Drive-bb1d1627-b5b5-472d-85ed-9e87a9c31449.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Moon_Drive-bb1d1627-b5b5-472d-85ed-9e87a9c31449.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Lantern_Drive-b95894c4-c947-4785-960f-0a4a2601294d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Lantern_Drive-b95894c4-c947-4785-960f-0a4a2601294d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Lantern_Drive-5d1f1da4-6044-4015-8724-9ef2ade76ea0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Lantern_Drive-5d1f1da4-6044-4015-8724-9ef2ade76ea0.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Cinders-43f6c223-7cc7-4eb6-a926-ff251966eccc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Cinders-43f6c223-7cc7-4eb6-a926-ff251966eccc.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Cinders-78c5c585-bbf6-41c6-a18a-a05ea9d1bb33.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Cinders-78c5c585-bbf6-41c6-a18a-a05ea9d1bb33.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Vinyl-b3477a55-d938-4cf4-810c-1afb040431e2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Vinyl-b3477a55-d938-4cf4-810c-1afb040431e2.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Vinyl-41eb7dba-406a-4d0d-be62-4921ef6be220.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Vinyl-41eb7dba-406a-4d0d-be62-4921ef6be220.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Nights_Free-98334274-a353-4215-8797-cbc7fe4939bb.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Nights_Free-98334274-a353-4215-8797-cbc7fe4939bb.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Nights_Free-d4260e90-1a9a-4f06-a6e9-6ef13316d033.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Nights_Free-d4260e90-1a9a-4f06-a6e9-6ef13316d033.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Glass-2cfa25cd-5f78-4f8c-b80a-77a5b5847be6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Glass-2cfa25cd-5f78-4f8c-b80a-77a5b5847be6.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Night_Glass-8b85ae7b-e461-46c7-a820-1a5767163fa2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Night_Glass-8b85ae7b-e461-46c7-a820-1a5767163fa2.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Lanterns-d67f290a-ab5c-47e6-a1db-34978bd53dac.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Lanterns-d67f290a-ab5c-47e6-a1db-34978bd53dac.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Lanterns-02a41a63-4938-4238-a548-0704f2492f88.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Lanterns-02a41a63-4938-4238-a548-0704f2492f88.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Lantern_Window-b8891732-ceaa-44b9-bfdb-ff5435045611.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Lantern_Window-b8891732-ceaa-44b9-bfdb-ff5435045611.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Lantern_Window-ed06f69d-3b51-4c9a-b14b-990051c46fd7.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Lantern_Window-ed06f69d-3b51-4c9a-b14b-990051c46fd7.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Saint-db5586bd-f4de-4cf8-9ed3-3ae3f6e328da.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Saint-db5586bd-f4de-4cf8-9ed3-3ae3f6e328da.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Saint-a66384e9-701b-42f8-b4eb-05f9b2b26a5a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Saint-a66384e9-701b-42f8-b4eb-05f9b2b26a5a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley_Swing-05ccc1d4-acde-4f2b-828d-2a9c5066e210.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley_Swing-05ccc1d4-acde-4f2b-828d-2a9c5066e210.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Moonlit_Alley_Swing-39198ab8-0b03-4336-9982-08d87cf4efb0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Alley_Swing-39198ab8-0b03-4336-9982-08d87cf4efb0.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-d3ea9a33-6b80-4b2c-8300-2bb76587cf07.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-d3ea9a33-6b80-4b2c-8300-2bb76587cf07.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Nights-ed3813d6-ae07-4930-8eff-a0f46a169880.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Nights-ed3813d6-ae07-4930-8eff-a0f46a169880.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Demo-cc534be4-1a1c-4bd5-8e50-13968201722a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Demo-cc534be4-1a1c-4bd5-8e50-13968201722a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Corner-3886cdd3-eadb-4255-915e-469448358de3.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner-3886cdd3-eadb-4255-915e-469448358de3.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Corner-23ad76a2-28ea-4d98-906b-3fbb3023612b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner-23ad76a2-28ea-4d98-906b-3fbb3023612b.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Saint-94a95e03-817c-4cd0-88f1-91f9995c75d5.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saint-94a95e03-817c-4cd0-88f1-91f9995c75d5.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Saint-5d3c68c9-dccf-4173-9452-9b6fbec5595a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Saint-5d3c68c9-dccf-4173-9452-9b6fbec5595a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Bodega_Rain-d378a1db-4b85-449d-bcc7-a1e51d9c3fef.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Bodega_Rain-d378a1db-4b85-449d-bcc7-a1e51d9c3fef.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Bodega_Rain-1dc5b11a-a8ea-4637-8f89-227706137281.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Bodega_Rain-1dc5b11a-a8ea-4637-8f89-227706137281.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Saint-31cd008d-305d-47fa-bcee-e02e0bc5a746.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Saint-31cd008d-305d-47fa-bcee-e02e0bc5a746.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Saint-66328cc3-3bc0-4c38-9e74-4285cf597ba1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Saint-66328cc3-3bc0-4c38-9e74-4285cf597ba1.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Cardigan-8a9530e1-967c-422f-8a8f-a8f284ef9d8a.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Cardigan-8a9530e1-967c-422f-8a8f-a8f284ef9d8a.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Cardigan-c379ef6b-5589-461d-b4dc-d0300bacd8db.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Cardigan-c379ef6b-5589-461d-b4dc-d0300bacd8db.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Rain_On_Vinyl-070df5ac-fec1-4e91-a609-fd2cee068427.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Rain_On_Vinyl-070df5ac-fec1-4e91-a609-fd2cee068427.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Rain_On_Vinyl-8c38a923-0fcb-40b0-adf9-e20a2456dc9d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Rain_On_Vinyl-8c38a923-0fcb-40b0-adf9-e20a2456dc9d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backseat_Smoke-9ae6ceea-b7a7-40bd-a02d-e67af89e4d2c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backseat_Smoke-9ae6ceea-b7a7-40bd-a02d-e67af89e4d2c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Corner_Booth-801b0248-6f59-4d2d-a57a-e723a4852218.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Corner_Booth-801b0248-6f59-4d2d-a57a-e723a4852218.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Corner_Booth-5cbb3426-c9b2-4156-a54a-e51a74a20ee8.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Corner_Booth-5cbb3426-c9b2-4156-a54a-e51a74a20ee8.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Loop-6d15e714-926a-467e-9d15-c25e49e45f9c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Loop-6d15e714-926a-467e-9d15-c25e49e45f9c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Loop-873eac0a-23f4-40be-97fd-093520b9ce53.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Loop-873eac0a-23f4-40be-97fd-093520b9ce53.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backroom_Sax-20c20d39-3cf7-4872-8275-750f0920b0c0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backroom_Sax-20c20d39-3cf7-4872-8275-750f0920b0c0.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Backroom_Sax-ecbaf9a3-8eaf-4d17-ba29-642542d6dfbc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Backroom_Sax-ecbaf9a3-8eaf-4d17-ba29-642542d6dfbc.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Bus_Ticket-0db72edc-1d07-4311-a527-23dfa73ada5c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Bus_Ticket-0db72edc-1d07-4311-a527-23dfa73ada5c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Bus_Ticket-16535266-074e-45e5-b4e1-2bd5633f02a4.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Bus_Ticket-16535266-074e-45e5-b4e1-2bd5633f02a4.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Corner_Booth_Demo-df618f2b-ae79-4aa9-8488-d62137e57f70.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Corner_Booth_Demo-df618f2b-ae79-4aa9-8488-d62137e57f70.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Corner_Booth_Demo-a447ef49-f8b6-4c9a-a386-c8f6c661ed4c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Corner_Booth_Demo-a447ef49-f8b6-4c9a-a386-c8f6c661ed4c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Pocket_Full_of_Rain-434ecaf8-d4b0-4234-8013-ac9c624bb630.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Pocket_Full_of_Rain-434ecaf8-d4b0-4234-8013-ac9c624bb630.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Pocket_Full_of_Rain-b24a380b-dda8-4db5-b5b3-814fff10f956.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Pocket_Full_of_Rain-b24a380b-dda8-4db5-b5b3-814fff10f956.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "fc60429f-d1c7-496a-9ba0-4893fa2f3a82.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\fc60429f-d1c7-496a-9ba0-4893fa2f3a82.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Note_Drip-b6a8dc13-5869-48ba-b4ea-be35921c6c59.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Note_Drip-b6a8dc13-5869-48ba-b4ea-be35921c6c59.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Hour_Demo-15063852-3735-4999-8585-85c37495fbf0.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Hour_Demo-15063852-3735-4999-8585-85c37495fbf0.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Hour_Demo-1ae68600-e210-4a18-bf09-d4fcef9a17cd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Hour_Demo-1ae68600-e210-4a18-bf09-d4fcef9a17cd.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Loose_Coin_Demo-5ac500fd-4395-4f86-bee0-10ba613eeb26.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Loose_Coin_Demo-5ac500fd-4395-4f86-bee0-10ba613eeb26.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Loose_Coin_Demo-49a2af98-12f8-4e6f-a137-e641ec1f8e27.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Loose_Coin_Demo-49a2af98-12f8-4e6f-a137-e641ec1f8e27.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Sketch-2e34a55b-e7a7-46b8-b857-7c22af19fd1d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Sketch-2e34a55b-e7a7-46b8-b857-7c22af19fd1d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Sketch-5eda5a66-e6af-40bf-bda8-7ca00a4d39c9.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Sketch-5eda5a66-e6af-40bf-bda8-7ca00a4d39c9.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Demo-05e4ee46-800d-4db0-b192-edb942fe8bc3.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Demo-05e4ee46-800d-4db0-b192-edb942fe8bc3.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Demo-2a7c486d-e8cc-4001-b75b-fd72aa652f96.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Demo-2a7c486d-e8cc-4001-b75b-fd72aa652f96.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Bodega_Loop-6f0afe03-ded4-4362-97cd-2c272fbd2d77.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Bodega_Loop-6f0afe03-ded4-4362-97cd-2c272fbd2d77.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Midnight_Bodega_Loop-9d6c4f32-7574-4af5-8fd3-6c64b9d463e5.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Midnight_Bodega_Loop-9d6c4f32-7574-4af5-8fd3-6c64b9d463e5.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Ticket-185f221d-2f53-40a7-9021-8e09ac10277c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Ticket-185f221d-2f53-40a7-9021-8e09ac10277c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Ticket-f381bd4c-ef65-4355-bd0d-49a92594172f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Ticket-f381bd4c-ef65-4355-bd0d-49a92594172f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Canvas-2628e27e-4b23-40b3-88d9-f8bd27e02a38.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Canvas-2628e27e-4b23-40b3-88d9-f8bd27e02a38.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Canvas-6f5e4df7-f58a-4be9-ab2e-c3c04dde51dd.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Canvas-6f5e4df7-f58a-4be9-ab2e-c3c04dde51dd.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Demo_Loop-68a89947-cea5-4fcf-a2e2-cea7e0b26b15.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Demo_Loop-68a89947-cea5-4fcf-a2e2-cea7e0b26b15.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Demo_Loop-2a97f23e-6239-4697-b281-730c82483e39.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Demo_Loop-2a97f23e-6239-4697-b281-730c82483e39.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Token-f98d7332-2846-4f94-b936-c69e1955bb7e.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Token-f98d7332-2846-4f94-b936-c69e1955bb7e.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Night_Token-3b33c3b0-0303-462c-9992-55590e0b1606.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Night_Token-3b33c3b0-0303-462c-9992-55590e0b1606.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cardboard_Halo-8e3d6e9c-22f2-4cd8-8158-34bc32801879.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cardboard_Halo-8e3d6e9c-22f2-4cd8-8158-34bc32801879.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cardboard_Halo-4e090938-2e13-4764-a7e2-f9187197e50f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cardboard_Halo-4e090938-2e13-4764-a7e2-f9187197e50f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cool_Late_Demo-5f7562d1-e435-4ba6-8acc-9ce4caa50dab.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cool_Late_Demo-5f7562d1-e435-4ba6-8acc-9ce4caa50dab.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cool_Late_Demo-610db678-0c9b-48d5-a176-7b5232ad606f.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cool_Late_Demo-610db678-0c9b-48d5-a176-7b5232ad606f.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cinderwalk_Demo-24baac76-249d-4a2f-a7eb-136bbb85343b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cinderwalk_Demo-24baac76-249d-4a2f-a7eb-136bbb85343b.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Cinderwalk_Demo-134d0176-3fe5-4955-b7eb-d2a39872c079.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Cinderwalk_Demo-134d0176-3fe5-4955-b7eb-d2a39872c079.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Corner_Demo-ffc42696-b0d6-4afb-ae58-8ea5285ea46b.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner_Demo-ffc42696-b0d6-4afb-ae58-8ea5285ea46b.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Corner_Demo-fe317be6-418f-4640-8ab6-ce590187101c.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner_Demo-fe317be6-418f-4640-8ab6-ce590187101c.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Plastic_Demo-a7dc831e-17a9-4ac9-b060-e875621c5656.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Plastic_Demo-a7dc831e-17a9-4ac9-b060-e875621c5656.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Plastic_Demo-d71d324e-c700-4590-914f-26da61932769.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Plastic_Demo-d71d324e-c700-4590-914f-26da61932769.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Corner-e77a0baa-6bfe-41ba-a66a-9274a8277541.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner-e77a0baa-6bfe-41ba-a66a-9274a8277541.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Velvet_Corner-e4f4b97f-fcec-496a-b12f-407e3d0c6f24.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Velvet_Corner-e4f4b97f-fcec-496a-b12f-407e3d0c6f24.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-f6a58d8c-aed1-4583-9236-828b45649c82.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-f6a58d8c-aed1-4583-9236-828b45649c82.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-edf60445-8e25-43fa-9a01-8cabc98c1d57.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-edf60445-8e25-43fa-9a01-8cabc98c1d57.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589.mp3",
+          "lastUsed": true
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Rain-77e92478-7691-45e1-860b-8daf110b134d.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Rain-77e92478-7691-45e1-860b-8daf110b134d.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-987a53da-0d01-41a6-9a8c-3c0d8361c3c2.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-987a53da-0d01-41a6-9a8c-3c0d8361c3c2.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Late_Train_Demo-53b68942-a0fe-4c56-8669-703b8ad122e6.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Demo-53b68942-a0fe-4c56-8669-703b8ad122e6.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Note_Drip-223ccf8a-57bb-4f00-90bf-7813c365dfcc.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Note_Drip-223ccf8a-57bb-4f00-90bf-7813c365dfcc.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Blue_Note_Drip-527830d1-eeb3-4634-be8e-f4208f9bfc12.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Note_Drip-527830d1-eeb3-4634-be8e-f4208f9bfc12.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "Blue Note Drip.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\Blue Note Drip.mp3",
+          "lastUsed": false
+        },
+        {
+          "name": "SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589-1.mp3",
+          "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Paper_Cup_Rain-82acdb1a-1c2c-4de8-bc3c-66e06c8f9589-1.mp3"
+        }
+      ],
+      "thumbnail": "file:///D:/Downloads/ChatGPT Image May 2, 2026, 06_29_29 PM.png",
+      "lastUsed": 1778331672534
     }
   ],
   "currentPackView": "channel",

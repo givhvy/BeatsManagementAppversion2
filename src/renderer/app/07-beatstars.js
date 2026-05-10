@@ -83,13 +83,17 @@ const beatstarsSilenceDuration = document.getElementById('beatstars-silence-dura
 
 // Initialize Beatstars section
 function initBeatstarsSection() {
-  if (!beatstarsRootPath) return;
-
   // Load saved done folders
   loadDoneFolders();
 
-  beatstarsRootPath.textContent = beatstarsState.rootPath;
-  beatstarsOutputPath.textContent = beatstarsState.outputRootPath;
+  // Update root path display if element exists (now in settings modal)
+  if (beatstarsRootPath) {
+    beatstarsRootPath.textContent = beatstarsState.rootPath;
+  }
+  
+  if (beatstarsOutputPath) {
+    beatstarsOutputPath.textContent = beatstarsState.outputRootPath;
+  }
 
   // Event listeners
   beatstarsSelectRootBtn?.addEventListener('click', selectBeatstarsRootFolder);
@@ -113,7 +117,12 @@ async function selectBeatstarsRootFolder() {
   const folderPath = await ipcRenderer.invoke('select-folder');
   if (folderPath) {
     beatstarsState.rootPath = folderPath;
-    beatstarsRootPath.textContent = folderPath;
+    
+    // Update root path display if element exists (now in settings modal)
+    if (beatstarsRootPath) {
+      beatstarsRootPath.textContent = folderPath;
+    }
+    
     beatstarsState.selectedFolder = null;
     updateSelectedFolderUI();
     await scanBeatstarsFolders();

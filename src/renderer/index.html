@@ -51,6 +51,10 @@
       font-display: swap;
     }
   </style>
+  
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="../../node_modules/swiper/swiper-bundle.min.css">
+  
   <link rel="stylesheet" href="styles/design-tokens.css">
   <link rel="stylesheet" href="styles/app/00-base-beats.css">
   <link rel="stylesheet" href="styles/app/01-autovid.css">
@@ -66,6 +70,7 @@
   <link rel="stylesheet" href="styles/app/11-distro.css">
   <link rel="stylesheet" href="styles/app/12-video-badges.css">
   <link rel="stylesheet" href="styles/app/14-drumkit.css">
+  <link rel="stylesheet" href="styles/app/15-drumkit-carousel.css">
   <link rel="stylesheet" href="styles/app/16-gallery.css">
   <link rel="stylesheet" href="styles/app/17-fl-studio.css">
   <link rel="stylesheet" href="styles/app/18-global-search.css">
@@ -83,7 +88,6 @@
   <div data-include="partials/09-beatstars.html"></div>
   <div data-include="partials/10-settings-and-money.html"></div>
   <div data-include="partials/11-titles.html"></div>
-  <div data-include="partials/12-background-music.html"></div>
   <div data-include="partials/13-midi.html"></div>
   <div data-include="partials/14-title-template-modal.html"></div>
   <div data-include="partials/15-drumkit.html"></div>
@@ -94,6 +98,23 @@
   <script src="bootstrap/include-html.js"></script>
   <script>loadHtmlIncludes();</script>
 
+  <!-- Core Modules (Load First) -->
+  <script src="core/state-manager.js"></script>
+  <script src="core/audio-player.js"></script>
+  <script src="core/data-service.js"></script>
+  <script src="core/ipc-bridge.js"></script>
+  
+  <!-- Shared Utilities -->
+  <script src="shared/utils.js"></script>
+  <script src="shared/pack-manager.js"></script>
+  
+  <!-- Core Initialization -->
+  <script src="core/core-init.js"></script>
+
+  <!-- Swiper JS -->
+  <script src="../../node_modules/swiper/swiper-bundle.min.js"></script>
+  
+  <!-- App Modules -->
   <script src="app/00-platform-theme.js"></script>
   <script src="app/01-beats-library.js"></script>
   <script src="app/02-navigation.js"></script>

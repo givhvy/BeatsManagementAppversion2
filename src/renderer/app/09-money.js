@@ -550,3 +550,180 @@ function renderMoneyBreakdown(txs, field, containerId, colorMap) {
 
 
 // ============================
+
+
+// ============================
+// GLOBAL PACK ZOOM CONTROLS IN SETTINGS
+// ============================
+
+// Add event listeners for the zoom buttons in settings modal
+document.addEventListener('DOMContentLoaded', () => {
+  const settingsZoomIn = document.getElementById('settings-packs-zoom-in');
+  const settingsZoomOut = document.getElementById('settings-packs-zoom-out');
+
+  if (settingsZoomIn) {
+    settingsZoomIn.addEventListener('click', () => {
+      // Zoom in all pack grids
+      const grids = [
+        document.getElementById('packs-grid'),
+        document.getElementById('bgmusic-packs-grid'),
+        document.getElementById('midi-packs-grid'),
+        document.getElementById('drumkit-packs-grid')
+      ];
+
+      grids.forEach(grid => {
+        if (grid) {
+          const currentSize = parseInt(getComputedStyle(grid).getPropertyValue('--pack-card-width') || '200');
+          const newSize = Math.min(currentSize + 20, 400);
+          grid.style.setProperty('--pack-card-width', newSize + 'px');
+        }
+      });
+    });
+  }
+
+  if (settingsZoomOut) {
+    settingsZoomOut.addEventListener('click', () => {
+      // Zoom out all pack grids
+      const grids = [
+        document.getElementById('packs-grid'),
+        document.getElementById('bgmusic-packs-grid'),
+        document.getElementById('midi-packs-grid'),
+        document.getElementById('drumkit-packs-grid')
+      ];
+
+      grids.forEach(grid => {
+        if (grid) {
+          const currentSize = parseInt(getComputedStyle(grid).getPropertyValue('--pack-card-width') || '200');
+          const newSize = Math.max(currentSize - 20, 120);
+          grid.style.setProperty('--pack-card-width', newSize + 'px');
+        }
+      });
+    });
+  }
+
+  // Database buttons in settings
+  const settingsCopyDbPathBtn = document.getElementById('settings-copy-db-path-btn');
+  const settingsExportDbBtn = document.getElementById('settings-export-db-btn');
+  const settingsImportDbBtn = document.getElementById('settings-import-db-btn');
+
+  if (settingsCopyDbPathBtn) {
+    settingsCopyDbPathBtn.addEventListener('click', async () => {
+      if (typeof ipcRenderer !== 'undefined') {
+        const path = await ipcRenderer.invoke('get-database-path');
+        navigator.clipboard.writeText(path);
+        showNotification('Database path copied to clipboard', 'success');
+      }
+    });
+  }
+
+  if (settingsExportDbBtn) {
+    settingsExportDbBtn.addEventListener('click', async () => {
+      if (typeof ipcRenderer !== 'undefined') {
+        const result = await ipcRenderer.invoke('export-database');
+        if (result.success) {
+          showNotification(`Database exported to ${result.path}`, 'success');
+        } else {
+          showNotification(result.error || 'Export failed', 'error');
+        }
+      }
+    });
+  }
+
+  if (settingsImportDbBtn) {
+    settingsImportDbBtn.addEventListener('click', async () => {
+      if (typeof ipcRenderer !== 'undefined') {
+        const result = await ipcRenderer.invoke('import-database');
+        if (result.success) {
+          showNotification('Database imported successfully. Please restart the app.', 'success');
+        } else {
+          showNotification(result.error || 'Import failed', 'error');
+        }
+      }
+    });
+  }
+});
+
+// ============================
+// UPDATE FOLDER PATHS IN SETTINGS
+// ============================
+
+function updateSettingsFolderPaths() {
+  // Update Beats folder path
+  const beatsPathEl = document.getElementById('settings-beats-path');
+  if (beatsPathEl && typeof folders !== 'undefined') {
+    const beatsPath = folders.all?.path || folders.all?.basePath || 'D:\\Beats';
+    beatsPathEl.textContent = beatsPath;
+    beatsPathEl.title = beatsPath;
+  }
+
+  // Update Genre Views folder path
+  const genrePathEl = document.getElementById('settings-genre-path');
+  if (genrePathEl && typeof folders !== 'undefined') {
+    const genrePath = folders.genre?.path || folders.genre?.basePath || 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres';
+    genrePathEl.textContent = genrePath;
+    genrePathEl.title = genrePath;
+  }
+
+  // Update Background Music folder path
+  const bgmusicPathEl = document.getElementById('settings-bgmusic-path');
+  if (bgmusicPathEl && typeof bgMusicState !== 'undefined') {
+    const bgmusicPath = bgMusicState.folderPath || 'D:\\BackgroundMusic';
+    bgmusicPathEl.textContent = bgmusicPath;
+    bgmusicPathEl.title = bgmusicPath;
+  }
+
+  // Update Gallery folder path
+  const galleryPathEl = document.getElementById('settings-gallery-path');
+  if (galleryPathEl && typeof galleryFolderPath !== 'undefined') {
+    const galleryPath = galleryFolderPath || 'D:\\coverimages';
+    galleryPathEl.textContent = galleryPath;
+    galleryPathEl.title = galleryPath;
+  }
+
+  // Update MIDI folder path
+  const midiPathEl = document.getElementById('settings-midi-path');
+  if (midiPathEl && typeof midiState !== 'undefined') {
+    const midiPath = midiState.folderPath || 'D:\\MIDI';
+    midiPathEl.textContent = midiPath;
+    midiPathEl.title = midiPath;
+  }
+
+  // Update Drum Kit folder path
+  const drumkitPathEl = document.getElementById('settings-drumkit-path');
+  if (drumkitPathEl && typeof drumkitFolders !== 'undefined') {
+    const drumkitPath = drumkitFolders.all?.path || drumkitFolders.all?.basePath || 'D:\\DrumKits';
+    drumkitPathEl.textContent = drumkitPath;
+    drumkitPathEl.title = drumkitPath;
+  }
+
+  // Update Videos Output folder path
+  const videosPathEl = document.getElementById('settings-videos-path');
+  if (videosPathEl && typeof VIDEO_OUTPUT_PATH !== 'undefined') {
+    videosPathEl.textContent = VIDEO_OUTPUT_PATH;
+    videosPathEl.title = VIDEO_OUTPUT_PATH;
+  } else if (videosPathEl) {
+    // Fallback if VIDEO_OUTPUT_PATH is not defined
+    const videosPath = 'F:\\PlaygroundTest\\BeatsManagementVersion2\\output';
+    videosPathEl.textContent = videosPath;
+    videosPathEl.title = videosPath;
+  }
+
+  // Update Beatstars Source folder path
+  const beatstarsPathEl = document.getElementById('settings-beatstars-path');
+  if (beatstarsPathEl && typeof beatstarsState !== 'undefined') {
+    const beatstarsPath = beatstarsState.rootPath || 'F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\songs';
+    beatstarsPathEl.textContent = beatstarsPath;
+    beatstarsPathEl.title = beatstarsPath;
+  }
+
+  // Update Database path
+  const dbPathEl = document.getElementById('settings-db-path');
+  if (dbPathEl && typeof ipcRenderer !== 'undefined') {
+    ipcRenderer.invoke('get-database-path').then(path => {
+      dbPathEl.textContent = path;
+      dbPathEl.title = path;
+    }).catch(() => {
+      dbPathEl.textContent = 'Error loading database path';
+    });
+  }
+}

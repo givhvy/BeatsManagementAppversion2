@@ -20,15 +20,11 @@
       </div>
     </div>
 
-    <!-- Middle Panel - Drum Kit Packs Grid -->
+    <!-- Middle Panel - Drum Kit Packs Carousel -->
     <div class="middle-panel" id="drumkit-middle-panel">
       <div class="panel-header">
-        <h2 id="drumkit-packs-header-title">Drum Kit Packs</h2>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button id="drumkit-toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
           <button id="drumkit-create-pack-btn" class="btn-primary" onclick="createDrumkitPack()">+ Create Pack</button>
-          <button id="drumkit-packs-zoom-out" class="btn-secondary btn-small" title="Zoom Out" style="padding:3px 9px;font-size:16px;line-height:1;">-</button>
-          <button id="drumkit-packs-zoom-in" class="btn-secondary btn-small" title="Zoom In" style="padding:3px 9px;font-size:16px;line-height:1;">+</button>
         </div>
       </div>
       <!-- Create Pack Modal -->
@@ -43,41 +39,71 @@
         </div>
       </div>
 
-      <div class="packs-grid" id="drumkit-packs-grid">
-        <!-- Pack cards will be created here -->
+      <!-- Swiper Carousel Container -->
+      <div class="drumkit-carousel-container">
+        <div class="swiper drumkit-swiper" id="drumkit-packs-carousel">
+          <div class="swiper-wrapper" id="drumkit-carousel-wrapper">
+            <!-- Pack slides will be created here -->
+          </div>
+          
+          <!-- Pagination -->
+          <div class="swiper-pagination drumkit-carousel-pagination"></div>
+        </div>
       </div>
     </div>
 
     <!-- Right Panel - Pack Details -->
     <div class="right-panel" id="drumkit-right-panel" style="display: none;">
-      <div class="panel-header">
-        <button id="drumkit-back-to-packs-btn" class="btn-back">← Back</button>
-        <input type="text" id="drumkit-pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
-        <div style="display: flex; gap: 8px;">
-          <button id="drumkit-change-thumbnail-header-btn" class="btn-secondary" title="Change thumbnail">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          </button>
-          <button id="drumkit-toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
-          <button id="drumkit-delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+      <div class="pack-detail-hero" style="position: relative;">
+        <button id="drumkit-back-to-packs-btn" class="pack-hero-icon-btn pack-hero-icon-btn--back" title="Back to Packs" aria-label="Back to Packs">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button id="drumkit-toggle-pack-side-panel-btn" class="pack-hero-icon-btn pack-hero-icon-btn--details pack-side-toggle-btn" title="Show Details" aria-label="Show Details">
+          <svg class="icon-hide-details" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/></svg>
+          <svg class="icon-show-details" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+        </button>
+        <div class="pack-detail-cover-wrap">
+          <div class="beat-image-preview pack-detail-cover" id="drumkit-image-preview" style="display: none;">
+            <div id="drumkit-image-container" class="pack-detail-cover-inner">
+              <img id="drumkit-image-display" draggable="false" />
+            </div>
+          </div>
+          <div class="pack-detail-cover-placeholder" id="drumkit-cover-placeholder">
+            <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle><path d="M12 2v4"></path><path d="M12 18v4"></path><path d="M4.93 4.93l2.83 2.83"></path><path d="M16.24 16.24l2.83 2.83"></path><path d="M2 12h4"></path><path d="M18 12h4"></path><path d="M4.93 19.07l2.83-2.83"></path><path d="M16.24 7.76l2.83-2.83"></path></svg>
+          </div>
+        </div>
+        <div class="pack-detail-hero-info">
+          <span class="pack-detail-kicker">Drum Kit Pack</span>
+          <input type="text" id="drumkit-pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
+          <div class="pack-detail-meta">
+            <span id="drumkit-pack-detail-count">0 kits</span>
+            <span>Ready to use</span>
+          </div>
         </div>
       </div>
       <div class="pack-detail-content">
         <div class="pack-detail-beats" id="drumkit-pack-detail-list">
-          <div class="pack-detail-count" id="drumkit-pack-detail-count">0 kits</div>
           <!-- Pack drum kit files will be shown here -->
         </div>
         <div class="resize-handle" id="drumkit-resize-handle"></div>
         <div class="pack-detail-right" id="drumkit-pack-detail-right-panel">
-          <!-- Drum Kit Info -->
+          <div class="right-panel-card pack-actions-card">
+            <div class="right-panel-card-header">
+              <span class="right-panel-label">PACK ACTIONS</span>
+            </div>
+            <div class="pack-detail-actions">
+              <button id="drumkit-change-thumbnail-btn" class="btn-secondary" title="Change thumbnail"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Change Thumbnail</button>
+              <button id="drumkit-toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
+              <button id="drumkit-delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+            </div>
+          </div>
           <div class="beat-prompt-section" id="drumkit-info-section" style="display: none;">
             <div class="right-panel-card">
               <div class="right-panel-card-header">
                 <span class="right-panel-label">DRUM KIT INFO</span>
                 <button id="drumkit-edit-info-btn" class="btn-icon-sm">Edit</button>
               </div>
-              <div id="drumkit-info-display" class="prompt-display-box">
-                No info available
-              </div>
+              <div id="drumkit-info-display" class="prompt-display-box">No info available</div>
               <textarea id="drumkit-info-editor" class="prompt-editor-box" style="display: none;" placeholder="Enter info for this drum kit..."></textarea>
               <div id="drumkit-info-edit-actions" style="display: none; flex-direction: row; gap: 8px; margin-top: 8px;">
                 <button id="drumkit-save-info-btn" class="btn-primary" style="padding: 5px 14px; font-size: 12px;">Save</button>
@@ -89,5 +115,39 @@
       </div>
     </div>
   </div>
+  
+  <!-- Carousel Context Menu -->
+  <div id="drumkit-carousel-context-menu" class="context-menu" style="display: none;">
+    <div class="context-menu-item" id="drumkit-carousel-change-thumbnail">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+      </svg>
+      Change Picture
+    </div>
+    <div class="context-menu-item" id="drumkit-carousel-rename-pack">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+      Rename Pack
+    </div>
+    <div class="context-menu-item" id="drumkit-carousel-toggle-hide">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      Hide Pack
+    </div>
+    <div class="context-menu-divider"></div>
+    <div class="context-menu-item context-menu-item-danger" id="drumkit-carousel-delete-pack">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+      </svg>
+      Delete Pack
+    </div>
+  </div>
+  
   </div>
   <!-- END DRUM KIT SECTION -->

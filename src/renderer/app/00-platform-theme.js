@@ -11,6 +11,7 @@ const themeManager = {
   STORAGE_KEY: 'bms-theme',
   COLOR_SCHEME_KEY: 'bms-color-scheme',
   AI_FAB_KEY: 'bms-ai-fab-visible',
+  NAVBAR_STYLE_KEY: 'bms-navbar-style',
 
   init() {
     const saved = localStorage.getItem(this.STORAGE_KEY) || 'amber';
@@ -21,6 +22,9 @@ const themeManager = {
 
     const aiFabVisible = localStorage.getItem(this.AI_FAB_KEY) !== 'false';
     this.applyAiFabVisibility(aiFabVisible);
+
+    const navbarStyle = localStorage.getItem(this.NAVBAR_STYLE_KEY) || 'elegant';
+    this.applyNavbarStyle(navbarStyle);
 
     this.bindEvents();
   },
@@ -67,6 +71,18 @@ const themeManager = {
     });
   },
 
+  applyNavbarStyle(style) {
+    document.documentElement.setAttribute('data-navbar-style', style);
+    localStorage.setItem(this.NAVBAR_STYLE_KEY, style);
+    this.updateNavbarStyleCards(style);
+  },
+
+  updateNavbarStyleCards(style) {
+    document.querySelectorAll('#navbar-style-grid .cs-card').forEach(card => {
+      card.classList.toggle('active', card.dataset.navbarStyle === style);
+    });
+  },
+
   bindEvents() {
     const settingsBtn = document.getElementById('settings-btn');
     const settingsModal = document.getElementById('settings-modal');
@@ -75,6 +91,10 @@ const themeManager = {
     if (settingsBtn) {
       settingsBtn.addEventListener('click', () => {
         settingsModal.style.display = 'flex';
+        // Update folder paths when settings are opened
+        if (typeof updateSettingsFolderPaths === 'function') {
+          updateSettingsFolderPaths();
+        }
       });
     }
 
@@ -113,6 +133,12 @@ const themeManager = {
     document.querySelectorAll('.cs-card').forEach(card => {
       card.addEventListener('click', () => {
         this.applyColorScheme(card.dataset.scheme);
+      });
+    });
+
+    document.querySelectorAll('#navbar-style-grid .cs-card').forEach(card => {
+      card.addEventListener('click', () => {
+        this.applyNavbarStyle(card.dataset.navbarStyle);
       });
     });
 

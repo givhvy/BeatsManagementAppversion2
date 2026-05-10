@@ -34,6 +34,29 @@ function initBackgroundSection() {
 
   // Auto-load music from folder
   loadMusicFromFolder();
+
+  // Setup tools panel toggle
+  const toggleToolsPanelBtn = document.getElementById('bgmusic-toggle-tools-panel-btn');
+  const toolsPanel = document.getElementById('bgmusic-tools-panel');
+  
+  if (toggleToolsPanelBtn && toolsPanel) {
+    toggleToolsPanelBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isVisible = toolsPanel.style.display !== 'none';
+      toolsPanel.style.display = isVisible ? 'none' : 'block';
+      toggleToolsPanelBtn.classList.toggle('active', !isVisible);
+    });
+
+    // Close tools panel when clicking outside
+    document.addEventListener('click', (e) => {
+      if (toolsPanel.style.display !== 'none' && 
+          !toolsPanel.contains(e.target) && 
+          !toggleToolsPanelBtn.contains(e.target)) {
+        toolsPanel.style.display = 'none';
+        toggleToolsPanelBtn.classList.remove('active');
+      }
+    });
+  }
 }
 
 function bindBackgroundMusicAiEvents() {
@@ -343,11 +366,6 @@ function renderBackgroundMusicPacks() {
            ondrop="handleBgMusicPackDrop(event, '${pack.id}')">
         <div class="pack-card-image">
           ${renderBgMusicPackThumbnail(pack)}
-          <div class="pack-card-count">${musicCount}</div>
-          <div class="pack-card-order">#${index + 1}</div>
-          <button class="pack-thumbnail-btn bgmusic-thumbnail-btn" data-pack-id="${pack.id}" title="Change image" type="button">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          </button>
         </div>
         <div class="pack-card-info">
           <div class="pack-card-title">${pack.name}</div>
@@ -367,18 +385,10 @@ function renderBackgroundMusicPacks() {
   grid.querySelectorAll('.pack-card').forEach(card => {
     const packId = card.dataset.packId;
     card.addEventListener('click', (e) => {
-      if (e.target.closest('.bgmusic-thumbnail-btn')) return;
       // Don't open if clicking during drag
       if (!bgMusicState.draggedMusic) {
         showBgMusicPackDetail(packId);
       }
-    });
-  });
-
-  grid.querySelectorAll('.bgmusic-thumbnail-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      selectBackgroundMusicPackThumbnail(btn.dataset.packId);
     });
   });
 

@@ -15,7 +15,6 @@
         <button class="tab-btn" data-midi-type="untagged">Untagged</button>
         <button class="tab-btn" data-midi-type="tagged">Tagged</button>
       </div>
-      <div class="folder-path" id="midi-folder-path">No folder selected</div>
       <div class="filter-container" id="midi-filter-container">
         <input type="text" id="midi-filter-input" placeholder="Filter by name..." class="filter-input">
       </div>
@@ -30,12 +29,9 @@
     <!-- Middle Panel - MIDI Packs Grid -->
     <div class="middle-panel" id="midi-middle-panel">
       <div class="panel-header">
-        <h2 id="midi-packs-header-title">MIDI Packs</h2>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
           <button id="midi-toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Hidden</button>
           <button id="midi-create-pack-btn" class="btn-primary">+ Create Pack</button>
-          <button id="midi-packs-zoom-out" class="btn-secondary btn-small" title="Zoom Out" style="padding:3px 9px;font-size:16px;line-height:1;">-</button>
-          <button id="midi-packs-zoom-in" class="btn-secondary btn-small" title="Zoom In" style="padding:3px 9px;font-size:16px;line-height:1;">+</button>
         </div>
       </div>
       <!-- Total MIDI Counter -->

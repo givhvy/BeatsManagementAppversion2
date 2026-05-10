@@ -6,7 +6,41 @@ const mainNavTabs = document.querySelectorAll('.main-nav-tab');
 const appSections = document.querySelectorAll('.app-section');
 const mainNavTabsContainer = document.querySelector('.main-nav-tabs');
 
+// Add drag-to-scroll functionality
 if (mainNavTabsContainer) {
+  let isDragging = false;
+  let startX;
+  let scrollLeft;
+
+  mainNavTabsContainer.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    mainNavTabsContainer.style.cursor = 'grabbing';
+    mainNavTabsContainer.style.userSelect = 'none';
+    startX = e.pageX - mainNavTabsContainer.offsetLeft;
+    scrollLeft = mainNavTabsContainer.scrollLeft;
+  });
+
+  mainNavTabsContainer.addEventListener('mouseleave', () => {
+    isDragging = false;
+    mainNavTabsContainer.style.cursor = 'grab';
+    mainNavTabsContainer.style.userSelect = '';
+  });
+
+  mainNavTabsContainer.addEventListener('mouseup', () => {
+    isDragging = false;
+    mainNavTabsContainer.style.cursor = 'grab';
+    mainNavTabsContainer.style.userSelect = '';
+  });
+
+  mainNavTabsContainer.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - mainNavTabsContainer.offsetLeft;
+    const walk = (x - startX) * 2; // Multiply by 2 for faster scrolling
+    mainNavTabsContainer.scrollLeft = scrollLeft - walk;
+  });
+
+  // Mouse wheel horizontal scroll
   mainNavTabsContainer.addEventListener('wheel', (event) => {
     const canScroll = mainNavTabsContainer.scrollWidth > mainNavTabsContainer.clientWidth;
     if (!canScroll) return;
@@ -14,6 +48,9 @@ if (mainNavTabsContainer) {
     event.preventDefault();
     mainNavTabsContainer.scrollLeft += event.deltaY || event.deltaX;
   }, { passive: false });
+
+  // Set initial cursor
+  mainNavTabsContainer.style.cursor = 'grab';
 }
 
 mainNavTabs.forEach(tab => {
@@ -36,7 +73,9 @@ mainNavTabs.forEach(tab => {
     if (section === 'youtube') {
       initYouTubeSection();
     } else if (section === 'autovid') {
-      initAutoVidSection();
+      if (typeof initAutoVidSection === 'function') {
+        initAutoVidSection();
+      }
     } else if (section === 'videos') {
       initVideosSection();
     } else if (section === 'consistency') {
@@ -108,16 +147,4 @@ mainNavTabs.forEach(tab => {
     });
   });
 
-  // Wire proxy action buttons to real hidden buttons
-  const proxyMap = {
-    'bgmusic-toggle-hidden-view-btn2': 'bgmusic-toggle-hidden-view-btn',
-    'bgmusic-create-pack-btn2':        'bgmusic-create-pack-btn',
-    'bgmusic-packs-zoom-out2':         'bgmusic-packs-zoom-out',
-    'bgmusic-packs-zoom-in2':          'bgmusic-packs-zoom-in',
-  };
-  Object.entries(proxyMap).forEach(([proxyId, realId]) => {
-    const proxy = document.getElementById(proxyId);
-    const real  = document.getElementById(realId);
-    if (proxy && real) proxy.addEventListener('click', () => real.click());
-  });
 }());

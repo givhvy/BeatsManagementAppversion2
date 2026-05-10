@@ -33,6 +33,15 @@ function initGallerySection() {
   }
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeGalleryImageModal();
+    
+    // Navigate images with arrow keys when modal is open
+    if (galleryImageModal && galleryImageModal.style.display === 'flex') {
+      if (e.key === 'ArrowLeft') {
+        navigateGalleryImage('prev');
+      } else if (e.key === 'ArrowRight') {
+        navigateGalleryImage('next');
+      }
+    }
   });
   if (galleryGrid) {
     galleryGrid.addEventListener('dragover', handleGalleryDragOver);
@@ -172,6 +181,33 @@ function openGalleryImageModal(image) {
     galleryImageModal.style.display = 'flex';
   }
   renderGalleryGrid();
+}
+
+function navigateGalleryImage(direction) {
+  if (!selectedGalleryImage || galleryImages.length === 0) return;
+  
+  // Get filtered images (respect current filter)
+  const keyword = (galleryFilterInput?.value || '').trim().toLowerCase();
+  const images = keyword
+    ? galleryImages.filter(image => image.name.toLowerCase().includes(keyword))
+    : galleryImages;
+  
+  if (images.length === 0) return;
+  
+  // Find current index
+  const currentIndex = images.findIndex(img => img.path === selectedGalleryImage.path);
+  if (currentIndex === -1) return;
+  
+  // Calculate next index
+  let nextIndex;
+  if (direction === 'next') {
+    nextIndex = (currentIndex + 1) % images.length; // Loop to start
+  } else {
+    nextIndex = (currentIndex - 1 + images.length) % images.length; // Loop to end
+  }
+  
+  // Open the next/previous image
+  openGalleryImageModal(images[nextIndex]);
 }
 
 function closeGalleryImageModal() {

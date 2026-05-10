@@ -30,7 +30,7 @@
    ============================================= */
 
 .global-queue-controls {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.1));
+  background: #000000;
   border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: var(--radius-lg);
   padding: 16px 20px;

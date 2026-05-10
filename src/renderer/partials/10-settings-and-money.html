@@ -120,6 +120,30 @@
           </div>
         </div>
 
+        <!-- Navigation Bar Style -->
+        <div class="settings-divider"></div>
+        <div class="theme-section-title">Navigation Bar Style</div>
+        <div class="cs-grid" id="navbar-style-grid">
+          <div class="cs-card active" data-navbar-style="elegant">
+            <div class="cs-preview cs-preview-dark">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            </div>
+            <div class="theme-card-info">
+              <span class="theme-card-name">Elegant Dark</span>
+              <span class="theme-card-check"></span>
+            </div>
+          </div>
+          <div class="cs-card" data-navbar-style="classic">
+            <div class="cs-preview cs-preview-light">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+            </div>
+            <div class="theme-card-info">
+              <span class="theme-card-name">Classic</span>
+              <span class="theme-card-check"></span>
+            </div>
+          </div>
+        </div>
+
         <!-- Interface Options -->
         <div class="settings-divider"></div>
         <div class="settings-section-label">Interface</div>
@@ -133,6 +157,115 @@
           </button>
         </div>
 
+        <!-- Pack View Controls -->
+        <div class="settings-divider"></div>
+        <div class="settings-section-label">Pack View</div>
+        <div class="settings-zoom-row">
+          <div class="settings-zoom-info">
+            <span class="settings-toggle-label">Pack Card Size</span>
+            <span class="settings-toggle-desc">Adjust the size of pack cards in grid view</span>
+          </div>
+          <div class="settings-zoom-controls">
+            <button id="settings-packs-zoom-out" class="btn-zoom-settings" title="Zoom Out">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+            <button id="settings-packs-zoom-in" class="btn-zoom-settings" title="Zoom In">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Folder Paths Section -->
+        <div class="settings-divider"></div>
+        <div class="settings-section-label">Folder Paths</div>
+        <div class="settings-folder-paths">
+          <div class="settings-folder-item">
+            <div class="settings-folder-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              Beats
+            </div>
+            <div class="settings-folder-path" id="settings-beats-path">D:\Beats</div>
+          </div>
+          <div class="settings-folder-item">
+            <div class="settings-folder-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              Genre Views
+            </div>
+            <div class="settings-folder-path" id="settings-genre-path">F:\PlaygroundTest\autodownload\suno-ai-downloader\Genres</div>
+          </div>
+          <div class="settings-folder-item">
+            <div class="settings-folder-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              Background Music
+            </div>
+            <div class="settings-folder-path" id="settings-bgmusic-path">D:\BackgroundMusic</div>
+          </div>
+          <div class="settings-folder-item">
+            <div class="settings-folder-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              Gallery
+            </div>
+            <div class="settings-folder-path" id="settings-gallery-path">D:\coverimages</div>
+          </div>
+          <div class="settings-folder-item">
+            <div class="settings-folder-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M8 12v4"/><path d="M12 12v4"/><path d="M16 12v4"/></svg>
+              MIDI
+            </div>
+            <div class="settings-folder-path" id="settings-midi-path">D:\MIDI</div>
+          </div>
+          <div class="settings-folder-item">
+            <div class="settings-folder-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+              Drum Kits
+            </div>
+            <div class="settings-folder-path" id="settings-drumkit-path">D:\DrumKits</div>
+          </div>
+          <div class="settings-folder-item">
+            <div class="settings-folder-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              Videos Output
+            </div>
+            <div class="settings-folder-path" id="settings-videos-path">F:\PlaygroundTest\BeatsManagementVersion2\output</div>
+          </div>
+          <div class="settings-folder-item">
+            <div class="settings-folder-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+              Beatstars Source
+            </div>
+            <div class="settings-folder-path" id="settings-beatstars-path">F:\PlaygroundTest\autodownload\suno-ai-downloader\songs</div>
+          </div>
+        </div>
+
+        <!-- Database Section -->
+        <div class="settings-divider"></div>
+        <div class="settings-section-label">Database</div>
+        
+        <div class="settings-folder-paths">
+          <div class="settings-folder-item">
+            <div class="settings-folder-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+              Database Location
+            </div>
+            <div class="settings-folder-path" id="settings-db-path" style="font-size: 11px;">Loading...</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
+          <button id="settings-copy-db-path-btn" class="btn-settings-action">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy Path
+          </button>
+          <button id="settings-export-db-btn" class="btn-settings-action">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export Database
+          </button>
+          <button id="settings-import-db-btn" class="btn-settings-action">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Import Database
+          </button>
+        </div>
+
         <!-- System Status Section -->
         <div class="settings-divider"></div>
         <div class="settings-section-label">System Status</div>
@@ -141,10 +274,6 @@
           <!-- YouTube Status -->
           <div class="settings-status-item">
             <div class="settings-status-label">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/>
-                <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>
-              </svg>
               YouTube Server
             </div>
             <span id="youtube-status-settings" class="status-indicator offline">Offline</span>
@@ -226,7 +355,6 @@
           <!-- Period Selector -->
           <div class="money-block">
             <div class="money-block-label">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
               Period
             </div>
             <div class="money-period-tabs">
