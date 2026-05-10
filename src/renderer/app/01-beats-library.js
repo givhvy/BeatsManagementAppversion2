@@ -1942,6 +1942,14 @@ function createPackBeatElement(beat, packId, index) {
     contentContainer.appendChild(lastUsedBadge);
   }
 
+  // Add "Used for Upload" badge if marked
+  if (beat.usedForUpload) {
+    const usedForUploadBadge = document.createElement('span');
+    usedForUploadBadge.className = 'used-for-upload-badge';
+    usedForUploadBadge.textContent = 'Used for Upload';
+    contentContainer.appendChild(usedForUploadBadge);
+  }
+
   // Add marketing badge if beat has been marketed
   if (marketingState && marketingState.beatStatus[beat.path]) {
     const mktBadge = document.createElement('span');
@@ -2127,6 +2135,38 @@ function unmarkBeatAsLastUsed(packId, beatPath) {
     }
   }
 }
+
+// Mark beat as "used for upload" across all packs
+function markBeatAsUsedForUpload(beatPath) {
+  let updated = false;
+  
+  // Check all channel packs
+  packs.forEach(pack => {
+    const beat = pack.beats.find(b => b.path === beatPath);
+    if (beat && !beat.usedForUpload) {
+      beat.usedForUpload = true;
+      updated = true;
+    }
+  });
+  
+  // Check all genre packs
+  genrePacks.forEach(pack => {
+    const beat = pack.beats.find(b => b.path === beatPath);
+    if (beat && !beat.usedForUpload) {
+      beat.usedForUpload = true;
+      updated = true;
+    }
+  });
+  
+  if (updated) {
+    renderPackDetailBeats();
+    saveData();
+    console.log('[Beats] Marked beat as used for upload:', beatPath);
+  }
+}
+
+// Expose function globally
+window.markBeatAsUsedForUpload = markBeatAsUsedForUpload;
 
 function removeBeatFromPack(packId, beatPath) {
   const pack = getPackById(packId);

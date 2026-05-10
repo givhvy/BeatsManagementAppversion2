@@ -1550,6 +1550,17 @@ select.filter-input {
   flex-shrink: 0;
 }
 
+.used-for-upload-badge {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: var(--white);
+  padding: 2px 8px;
+  border-radius: var(--radius-lg);
+  font-size: 10px;
+  font-weight: var(--font-semibold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .uploaded-badge,
 .uploaded-tag {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);

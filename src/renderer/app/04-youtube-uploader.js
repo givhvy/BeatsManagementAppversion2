@@ -2232,6 +2232,11 @@ async function createVideoFromCurrentBeat() {
     return;
   }
 
+  // Mark beat as "used for upload" in all packs that contain it
+  if (typeof markBeatAsUsedForUpload === 'function') {
+    markBeatAsUsedForUpload(currentBeat.path);
+  }
+
   // Switch to AutoVid section
   document.querySelector('.main-nav-tab[data-section="autovid"]')?.click();
 
