@@ -101,14 +101,6 @@ const filterContainer = document.getElementById('filter-container');
 const packFilterInput = document.getElementById('pack-filter-input');
 const tabButtons = document.querySelectorAll('.tab-btn');
 
-const databaseInfoBtn = document.getElementById('database-info-btn');
-const databaseModal = document.getElementById('database-modal');
-const closeModalBtn = document.getElementById('close-modal-btn');
-const dbPathDisplay = document.getElementById('db-path-display');
-const copyPathBtn = document.getElementById('copy-path-btn');
-const exportDbBtn = document.getElementById('export-db-btn');
-const importDbBtn = document.getElementById('import-db-btn');
-
 // Context menu elements
 const beatContextMenu = document.getElementById('beat-context-menu');
 const markLastUsedBtn = document.getElementById('mark-last-used');
@@ -274,6 +266,8 @@ async function init() {
       packs = savedData.packs || [];
       genrePacks = savedData.genrePacks || [];
       currentPackView = savedData.currentPackView || 'channel';
+      
+      console.log('[Beats] Loaded packs:', packs.length, 'genrePacks:', genrePacks.length);
 
       // Load image data
       imageFolder = savedData.imageFolder || '';
@@ -353,8 +347,29 @@ async function init() {
   if (selectFolderBtn) selectFolderBtn.addEventListener('click', selectFolder);
   refreshBeatsBtn.addEventListener('click', refreshBeats);
   createPackBtn.addEventListener('click', createPack);
-  filterInput.addEventListener('input', renderBeats);
-  packFilterInput.addEventListener('input', renderPacks);
+  
+  // Tools panel toggle
+  const toggleToolsPanelBtn = document.getElementById('toggle-tools-panel-btn');
+  const toolsPanel = document.getElementById('tools-panel');
+  if (toggleToolsPanelBtn && toolsPanel) {
+    toggleToolsPanelBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isVisible = toolsPanel.style.display === 'flex';
+      toolsPanel.style.display = isVisible ? 'none' : 'flex';
+      toggleToolsPanelBtn.classList.toggle('active', !isVisible);
+    });
+    
+    // Close panel when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!toolsPanel.contains(e.target) && e.target !== toggleToolsPanelBtn) {
+        toolsPanel.style.display = 'none';
+        toggleToolsPanelBtn.classList.remove('active');
+      }
+    });
+  }
+  
+  if (filterInput) filterInput.addEventListener('input', renderBeats);
+  if (packFilterInput) packFilterInput.addEventListener('input', renderPacks);
   backToPacksBtn.addEventListener('click', showPacksGrid);
   if (togglePackSidePanelBtn) togglePackSidePanelBtn.addEventListener('click', togglePackSidePanel);
   deleteCurrentPackBtn.addEventListener('click', deleteCurrentPack);
@@ -373,20 +388,6 @@ async function init() {
       const folderType = btn.getAttribute('data-folder-type');
       switchFolder(folderType);
     });
-  });
-
-  // Database modal listeners
-  databaseInfoBtn.addEventListener('click', showDatabaseInfo);
-  closeModalBtn.addEventListener('click', closeDatabaseModal);
-  copyPathBtn.addEventListener('click', copyDatabasePath);
-  exportDbBtn.addEventListener('click', exportDatabase);
-  importDbBtn.addEventListener('click', importDatabase);
-
-  // Close modal when clicking outside
-  databaseModal.addEventListener('click', (e) => {
-    if (e.target === databaseModal) {
-      closeDatabaseModal();
-    }
   });
 
   // Image manager modal listeners
@@ -817,11 +818,9 @@ function toggleHiddenPacksView() {
   if (showingHiddenPacks) {
     toggleHiddenViewBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Active';
     toggleHiddenViewBtn.title = 'View Active Packs';
-    packsHeaderTitle.textContent = 'Hidden Packs';
   } else {
     toggleHiddenViewBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg> Hidden';
     toggleHiddenViewBtn.title = 'View Hidden Packs';
-    packsHeaderTitle.textContent = 'Packs';
   }
 
   // Re-render packs with new filter
@@ -1206,7 +1205,10 @@ function updatePlayingState() {
 
 // Update folder display based on current folder type
 function updateFolderDisplay() {
-  folderPathEl.textContent = getCurrentFolder();
+  // Only update if element exists (it was removed when moved to settings)
+  if (folderPathEl) {
+    folderPathEl.textContent = getCurrentFolder();
+  }
 
   // Update active tab button
   tabButtons.forEach(btn => {
@@ -1237,10 +1239,12 @@ function updateFolderDisplay() {
   }
 
   // Hide filter for "untagged" (Tagged Beats) tab
-  if (currentFolderType === 'untagged') {
-    filterContainer.style.display = 'none';
-  } else {
-    filterContainer.style.display = 'block';
+  if (filterContainer) {
+    if (currentFolderType === 'untagged') {
+      filterContainer.style.display = 'none';
+    } else {
+      filterContainer.style.display = 'block';
+    }
   }
 }
 
@@ -1254,7 +1258,23 @@ async function navigateToPath(targetPath) {
 
 // Switch between different folder types
 async function switchFolder(folderType) {
-  if (folderType === currentFolderType) return;
+  // Toggle functionality: if clicking the same tab while inside a subfolder, go back to parent folder
+  if (folderType === currentFolderType) {
+    if (folderType === 'untagged' || folderType === 'tagged') {
+      const basePath = getBasePath();
+      const currentPath = getCurrentFolder();
+      
+      // If we're in a subfolder (viewing beat files), go back to base folder (show folders like C107, C108)
+      if (currentPath !== basePath) {
+        setCurrentPath(basePath);
+        await loadFolderContents(basePath);
+        updateFolderDisplay();
+        await saveData();
+        return;
+      }
+    }
+    return; // Don't do anything if already at base level
+  }
 
   currentFolderType = folderType;
 
@@ -1299,7 +1319,9 @@ async function selectFolder() {
       folders[folderKey].path = folderPath;
       folders[folderKey].basePath = folderPath;
       folders[folderKey].currentPath = folderPath;
-      folderPathEl.textContent = folderPath;
+      if (folderPathEl) {
+        folderPathEl.textContent = folderPath;
+      }
       await loadBeats(folderPath);
       await saveData();
     }
@@ -1315,7 +1337,9 @@ async function selectFolder() {
       const files = Array.from(e.target.files);
       if (files.length > 0) {
         folders[currentFolderType].path = 'Selected Files';
-        folderPathEl.textContent = `${files.length} audio files selected`;
+        if (folderPathEl) {
+          folderPathEl.textContent = `${files.length} audio files selected`;
+        }
 
         const audioExtensions = ['.mp3', '.wav', '.flac', '.m4a', '.aac', '.ogg'];
         const beats = files
@@ -1412,7 +1436,7 @@ function renderBeats() {
   }
 
   // Get filter value
-  const filterValue = filterInput.value.trim();
+  const filterValue = filterInput ? filterInput.value.trim() : '';
 
   // Separate folders and beats
   const folders = allItems.filter(item => item.type === 'folder');
@@ -1726,6 +1750,11 @@ async function switchPackView(view) {
 }
 
 function renderPacks() {
+  if (!packsGridEl) {
+    console.error('[Beats] ERROR: packsGridEl is null! Cannot render packs.');
+    return;
+  }
+  
   packsGridEl.innerHTML = '';
 
   // Update total beats counter
@@ -1738,6 +1767,8 @@ function renderPacks() {
 
   // Get the appropriate packs array based on current view
   const currentPacks = currentPackView === 'genre' ? genrePacks : packs;
+  
+  console.log('[Beats] renderPacks called - currentPackView:', currentPackView, 'packs:', packs.length, 'genrePacks:', genrePacks.length, 'currentPacks:', currentPacks.length);
 
   if (currentPacks.length === 0) {
     const message = currentPackView === 'genre'
@@ -1754,7 +1785,7 @@ function renderPacks() {
   });
 
   // Get filter value
-  const filterValue = packFilterInput.value.trim().toLowerCase();
+  const filterValue = packFilterInput ? packFilterInput.value.trim().toLowerCase() : '';
 
   // Filter packs by number if filter is provided
   let filteredPacks = visiblePacks;
@@ -1809,31 +1840,6 @@ function createPackCard(pack, orderNumber) {
     textThumb.textContent = pack.name;
     imageEl.appendChild(textThumb);
   }
-
-  // Beat count badge on image
-  const countBadge = document.createElement('div');
-  countBadge.className = 'pack-card-count';
-  countBadge.textContent = pack.beats.length;
-  imageEl.appendChild(countBadge);
-
-  // Order number badge on image (top left)
-  if (orderNumber) {
-    const orderBadge = document.createElement('div');
-    orderBadge.className = 'pack-card-order';
-    orderBadge.textContent = `#${orderNumber}`;
-    imageEl.appendChild(orderBadge);
-  }
-
-  // Add thumbnail button overlay
-  const thumbnailBtn = document.createElement('button');
-  thumbnailBtn.className = 'pack-thumbnail-btn';
-  thumbnailBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
-  thumbnailBtn.title = 'Change thumbnail';
-  thumbnailBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // Don't trigger pack detail view
-    selectThumbnail(pack.id);
-  });
-  imageEl.appendChild(thumbnailBtn);
 
   // Pack info
   const infoEl = document.createElement('div');
@@ -2377,105 +2383,6 @@ async function selectThumbnail(packId) {
           saveData();
         };
         reader.readAsDataURL(file);
-      }
-    };
-
-    input.click();
-  }
-}
-
-// Database modal functions
-async function showDatabaseInfo() {
-  databaseModal.style.display = 'flex';
-
-  if (isElectron) {
-    const dbPath = await ipcRenderer.invoke('get-database-path');
-    dbPathDisplay.textContent = dbPath;
-  } else {
-    dbPathDisplay.textContent = 'Browser Mode: Data stored in localStorage';
-    copyPathBtn.style.display = 'none';
-    exportDbBtn.textContent = 'Export as JSON';
-    importDbBtn.textContent = 'Import JSON';
-  }
-}
-
-function closeDatabaseModal() {
-  databaseModal.style.display = 'none';
-}
-
-async function copyDatabasePath() {
-  if (isElectron) {
-    const dbPath = await ipcRenderer.invoke('get-database-path');
-    navigator.clipboard.writeText(dbPath);
-
-    // Visual feedback
-    const originalText = copyPathBtn.textContent;
-    copyPathBtn.textContent = 'Copied!';
-    copyPathBtn.style.backgroundColor = '#00aa00';
-    setTimeout(() => {
-      copyPathBtn.textContent = originalText;
-      copyPathBtn.style.backgroundColor = '';
-    }, 2000);
-  }
-}
-
-async function exportDatabase() {
-  if (isElectron) {
-    const result = await ipcRenderer.invoke('export-database');
-    if (result.success) {
-      alert(`Database exported successfully to:\n${result.path}`);
-    } else {
-      alert(`Export failed: ${result.error}`);
-    }
-  } else {
-    // Browser mode - download as JSON
-    const data = localStorage.getItem('beats-data');
-    if (!data) {
-      alert('No data to export');
-      return;
-    }
-
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'beats-data-backup.json';
-    a.click();
-    URL.revokeObjectURL(url);
-    alert('Database exported successfully!');
-  }
-}
-
-async function importDatabase() {
-  if (isElectron) {
-    const result = await ipcRenderer.invoke('import-database');
-    if (result.success) {
-      alert(`Database imported successfully from:\n${result.path}\n\nReloading application...`);
-      location.reload();
-    } else if (result.error !== 'Import cancelled') {
-      alert(`Import failed: ${result.error}`);
-    }
-  } else {
-    // Browser mode - upload JSON file
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json';
-
-    input.onchange = (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          try {
-            const data = JSON.parse(event.target.result);
-            localStorage.setItem('beats-data', JSON.stringify(data));
-            alert('Database imported successfully!\n\nReloading application...');
-            location.reload();
-          } catch (error) {
-            alert(`Import failed: Invalid JSON file`);
-          }
-        };
-        reader.readAsText(file);
       }
     };
 
@@ -3154,3 +3061,33 @@ async function clearImageCache() {
     alert(` Error clearing cache: ${error.message}`);
   }
 }
+
+
+// Mark image as used (called from other modules like autovid)
+async function markImageAsUsedByPath(imagePath) {
+  if (!imagePath) return false;
+  
+  // Find the image in the images array
+  const image = images.find(img => img.path === imagePath);
+  
+  if (image && !image.used) {
+    image.used = true;
+    image.beatId = 'autovid'; // Mark as used by autovid
+    console.log('[Image] Marked as used:', imagePath);
+    
+    // Save data
+    await saveData();
+    
+    // Refresh images grid if it's open
+    if (imagesModal && imagesModal.style.display !== 'none') {
+      await refreshImages();
+    }
+    
+    return true;
+  }
+  
+  return false;
+}
+
+// Make function globally accessible
+window.markImageAsUsedByPath = markImageAsUsedByPath;
