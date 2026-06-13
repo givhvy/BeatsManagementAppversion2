@@ -115,6 +115,7 @@
   --z-tooltip: 1070;
 
   /* Layout */
+  --sidebar-width: 180px;
   --panel-padding: var(--space-6);
   --card-padding: var(--space-5);
   --input-height: 40px;

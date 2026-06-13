@@ -1,7 +1,7 @@
 .artists-container {
   display: grid;
   grid-template-columns: minmax(260px, 320px) 1fr;
-  height: calc(100vh - 68px);
+  height: 100vh;
   background: #080808;
   color: var(--white);
   overflow: hidden;

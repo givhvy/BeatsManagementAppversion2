@@ -6,18 +6,18 @@ const mainNavTabs = document.querySelectorAll('.main-nav-tab');
 const appSections = document.querySelectorAll('.app-section');
 const mainNavTabsContainer = document.querySelector('.main-nav-tabs');
 
-// Add drag-to-scroll functionality
+// Add drag-to-scroll functionality (vertical for sidebar)
 if (mainNavTabsContainer) {
   let isDragging = false;
-  let startX;
-  let scrollLeft;
+  let startY;
+  let scrollTop;
 
   mainNavTabsContainer.addEventListener('mousedown', (e) => {
     isDragging = true;
     mainNavTabsContainer.style.cursor = 'grabbing';
     mainNavTabsContainer.style.userSelect = 'none';
-    startX = e.pageX - mainNavTabsContainer.offsetLeft;
-    scrollLeft = mainNavTabsContainer.scrollLeft;
+    startY = e.pageY - mainNavTabsContainer.offsetTop;
+    scrollTop = mainNavTabsContainer.scrollTop;
   });
 
   mainNavTabsContainer.addEventListener('mouseleave', () => {
@@ -35,18 +35,18 @@ if (mainNavTabsContainer) {
   mainNavTabsContainer.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
     e.preventDefault();
-    const x = e.pageX - mainNavTabsContainer.offsetLeft;
-    const walk = (x - startX) * 2; // Multiply by 2 for faster scrolling
-    mainNavTabsContainer.scrollLeft = scrollLeft - walk;
+    const y = e.pageY - mainNavTabsContainer.offsetTop;
+    const walk = (y - startY) * 2; // Multiply by 2 for faster scrolling
+    mainNavTabsContainer.scrollTop = scrollTop - walk;
   });
 
-  // Mouse wheel horizontal scroll
+  // Mouse wheel vertical scroll
   mainNavTabsContainer.addEventListener('wheel', (event) => {
-    const canScroll = mainNavTabsContainer.scrollWidth > mainNavTabsContainer.clientWidth;
+    const canScroll = mainNavTabsContainer.scrollHeight > mainNavTabsContainer.clientHeight;
     if (!canScroll) return;
 
     event.preventDefault();
-    mainNavTabsContainer.scrollLeft += event.deltaY || event.deltaX;
+    mainNavTabsContainer.scrollTop += event.deltaY || event.deltaX;
   }, { passive: false });
 
   // Set initial cursor

@@ -4,7 +4,7 @@
 
 #money-section {
   display: none;
-  height: calc(100vh - 60px);
+  height: 100vh;
 }
 #money-section.active {
   display: block;
