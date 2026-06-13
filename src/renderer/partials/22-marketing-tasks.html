@@ -1,0 +1,184 @@
+<!-- ============================
+     MARKETING TASKS SECTION
+     ============================ -->
+  <div class="app-section" id="marketing-tasks-section">
+    <div class="mtk-container">
+
+      <!-- LEFT SIDEBAR: Stats & Filters -->
+      <div class="mtk-sidebar">
+        <div class="mtk-sidebar-inner">
+
+          <div class="mtk-sidebar-heading">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+            Marketing Overview
+          </div>
+
+          <div class="mtk-stats-grid">
+            <div class="mtk-stat-card">
+              <div class="mtk-stat-value" id="mtk-stat-total">0</div>
+              <div class="mtk-stat-label">Total Tasks</div>
+            </div>
+            <div class="mtk-stat-card mtk-stat-done">
+              <div class="mtk-stat-value" id="mtk-stat-done">0</div>
+              <div class="mtk-stat-label">Done</div>
+            </div>
+            <div class="mtk-stat-card mtk-stat-progress">
+              <div class="mtk-stat-value" id="mtk-stat-progress">0</div>
+              <div class="mtk-stat-label">In Progress</div>
+            </div>
+            <div class="mtk-stat-card mtk-stat-todo">
+              <div class="mtk-stat-value" id="mtk-stat-todo">0</div>
+              <div class="mtk-stat-label">To Do</div>
+            </div>
+          </div>
+
+          <div class="mtk-filter-block">
+            <div class="mtk-filter-heading">Status Filter</div>
+            <div class="mtk-filter-group" id="mtk-status-filters">
+              <button class="mtk-filter-btn active" data-status="all">All</button>
+              <button class="mtk-filter-btn" data-status="todo">To Do</button>
+              <button class="mtk-filter-btn" data-status="in-progress">In Progress</button>
+              <button class="mtk-filter-btn" data-status="done">Done</button>
+            </div>
+          </div>
+
+          <div class="mtk-filter-block">
+            <div class="mtk-filter-heading">Platform</div>
+            <select class="mtk-filter-select" id="mtk-platform-filter">
+              <option value="all">All Platforms</option>
+              <option value="YouTube">YouTube</option>
+              <option value="Instagram">Instagram</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Twitter/X">Twitter / X</option>
+              <option value="Email">Email</option>
+              <option value="Beatstars">Beatstars</option>
+              <option value="SoundCloud">SoundCloud</option>
+              <option value="Discord">Discord</option>
+              <option value="Reddit">Reddit</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="mtk-progress-block">
+            <div class="mtk-progress-header">
+              <span>Completion</span>
+              <span id="mtk-completion-pct">0%</span>
+            </div>
+            <div class="mtk-progress-bar">
+              <div class="mtk-progress-fill" id="mtk-completion-fill" style="width: 0%"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MAIN: Task List -->
+      <div class="mtk-main">
+
+        <div class="mtk-main-header">
+          <div class="mtk-main-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/><circle cx="18" cy="6" r="3"/></svg>
+            Marketing Tasks
+          </div>
+          <div class="mtk-main-controls">
+            <div class="mtk-search-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="mtk-search" class="mtk-search-input" placeholder="Search tasks..." oninput="mtkRenderTasks()">
+            </div>
+            <button class="mtk-add-btn" onclick="mtkOpenModal(null)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Task
+            </button>
+          </div>
+        </div>
+
+        <div class="mtk-tasks-list" id="mtk-tasks-list">
+          <!-- Tasks rendered by JS -->
+        </div>
+
+        <div class="mtk-empty-state" id="mtk-empty-state" style="display:none">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <p>No marketing tasks yet</p>
+          <span>Click "New Task" to plan your next beat promotion.</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Marketing Task Modal -->
+  <div class="mtk-modal-overlay" id="mtk-modal-overlay" onclick="mtkModalOverlayClick(event)" style="display:none">
+    <div class="mtk-modal">
+      <div class="mtk-modal-header">
+        <span id="mtk-modal-heading">New Marketing Task</span>
+        <button class="mtk-modal-close" onclick="mtkCloseModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="mtk-modal-body">
+        <input type="hidden" id="mtk-modal-edit-id">
+
+        <div class="mtk-form-row">
+          <label class="mtk-form-label">Task Title</label>
+          <input type="text" id="mtk-modal-title-input" class="mtk-form-input" placeholder="e.g. Post 30s preview on Instagram Reels">
+        </div>
+
+        <div class="mtk-form-row">
+          <label class="mtk-form-label">Description <span class="mtk-form-hint">(optional)</span></label>
+          <textarea id="mtk-modal-desc-input" class="mtk-form-textarea" rows="3" placeholder="What exactly needs to be done?"></textarea>
+        </div>
+
+        <div class="mtk-form-row mtk-form-row-2col">
+          <div>
+            <label class="mtk-form-label">Platform</label>
+            <select id="mtk-modal-platform-input" class="mtk-form-select">
+              <option value="YouTube">YouTube</option>
+              <option value="Instagram">Instagram</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Twitter/X">Twitter / X</option>
+              <option value="Email">Email</option>
+              <option value="Beatstars">Beatstars</option>
+              <option value="SoundCloud">SoundCloud</option>
+              <option value="Discord">Discord</option>
+              <option value="Reddit">Reddit</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="mtk-form-label">Priority</label>
+            <select id="mtk-modal-priority-input" class="mtk-form-select">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mtk-form-row mtk-form-row-2col">
+          <div>
+            <label class="mtk-form-label">Status</label>
+            <select id="mtk-modal-status-input" class="mtk-form-select">
+              <option value="todo" selected>To Do</option>
+              <option value="in-progress">In Progress</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+          <div>
+            <label class="mtk-form-label">Due Date <span class="mtk-form-hint">(optional)</span></label>
+            <input type="date" id="mtk-modal-due-input" class="mtk-form-input">
+          </div>
+        </div>
+
+        <div class="mtk-form-row">
+          <label class="mtk-form-label">Linked Beats <span class="mtk-form-hint">(comma separated, optional)</span></label>
+          <input type="text" id="mtk-modal-beats-input" class="mtk-form-input" placeholder="e.g. Dark Trap Beat, Summer Vibes">
+        </div>
+
+      </div>
+      <div class="mtk-modal-footer">
+        <button class="mtk-modal-cancel-btn" onclick="mtkCloseModal()">Cancel</button>
+        <button class="mtk-modal-save-btn" onclick="mtkSaveTask()">Save Task</button>
+      </div>
+    </div>
+  </div>
+  <!-- END MARKETING TASKS SECTION -->

@@ -1,0 +1,18 @@
+{
+  "channelName": "C9",
+  "channelStyle": "",
+  "autoUpload": true,
+  "metadataTemplate": {
+    "titleTemplate": "(FREE) MF DOOM x Joey Bada$$ x 90s Boom Bap Type Beat - \"[NAME]\"",
+    "description": "💰PURCHASE on instagram @prodvince\n\n• You must credit with (PROD. VINCE) in the title\n• You must purchase a lease to upload your track to streaming platforms like Spotify, Apple Music, etc.\n\nThis beat is free for NON PROFIT USE ONLY",
+    "tags": [
+      "beats"
+    ],
+    "descriptionConditions": {
+      "default": {
+        "text": "💰PURCHASE on instagram @prodvince\n\nThis beat is free for NON PROFIT USE ONLY",
+        "tags": "beats"
+      }
+    }
+  }
+}

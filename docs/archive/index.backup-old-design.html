@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beats Management</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Left Panel - All Beats -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <h2>All Beats</h2>
+        <div style="display: flex; gap: 8px;">
+          <button id="refresh-beats-btn" class="btn-secondary">Refresh</button>
+          <button id="select-folder-btn" class="btn-primary">Select Folder</button>
+        </div>
+      </div>
+      <!-- Tab Buttons -->
+      <div class="tabs-container">
+        <button class="tab-btn active" data-folder-type="all">All Beats</button>
+        <button class="tab-btn" data-folder-type="tagged">Untagged Beats</button>
+        <button class="tab-btn" data-folder-type="untagged">Tagged Beats</button>
+      </div>
+      <div class="folder-path" id="folder-path">No folder selected</div>
+      <!-- Channel Management (only visible in Tagged Beats tab) -->
+      <div class="channel-management" id="channel-management" style="display: none;">
+        <div class="channel-stats" id="channel-stats">
+          <div class="stat-item">
+            <span class="stat-label">Total Channels:</span>
+            <span class="stat-value" id="total-channels">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Available Emails:</span>
+            <span class="stat-value" id="available-emails">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Used Folders:</span>
+            <span class="stat-value" id="used-folders">0</span>
+          </div>
+        </div>
+      </div>
+      <!-- Breadcrumb navigation for tagged/untagged -->
+      <div class="breadcrumb-container" id="breadcrumb-container" style="display: none;">
+        <div class="breadcrumb" id="breadcrumb"></div>
+      </div>
+      <div class="filter-container" id="filter-container">
+        <input type="text" id="filter-input" placeholder="Filter by number (e.g., 1, 2, 3...)" class="filter-input">
+      </div>
+      <div class="beats-list" id="beats-list">
+        <!-- Beats will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Middle Panel - Packs Grid -->
+    <div class="middle-panel" id="middle-panel">
+      <div class="panel-header">
+        <h2 id="packs-header-title">Packs</h2>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <!-- Channel management buttons (only visible in Tagged Beats tab) -->
+          <button id="create-channels-btn" class="btn-primary" style="display: none;">Create Channels</button>
+          <button id="auto-add-channel-btn" class="btn-secondary" style="display: none;">Auto Add</button>
+          <button id="add-email-btn" class="btn-secondary" style="display: none;">+ Email</button>
+          <button id="view-emails-btn" class="btn-secondary" style="display: none;">📧 Emails</button>
+
+          <button id="toggle-hidden-view-btn" class="btn-secondary" title="View Hidden Packs">👁️ Hidden</button>
+          <button id="database-info-btn" class="btn-secondary" title="Database Info">💾</button>
+          <button id="create-pack-btn" class="btn-primary">+ Create Pack</button>
+        </div>
+      </div>
+      <!-- Total Beats Counter -->
+      <div class="total-beats-container">
+        <div class="total-beats-header">
+          <span class="total-beats-label">Total Beats in All Packs</span>
+          <span class="total-beats-count" id="total-beats-count">0/20000</span>
+        </div>
+        <div class="total-beats-progress-bar">
+          <div class="total-beats-progress-fill" id="total-beats-progress-fill"></div>
+        </div>
+      </div>
+      <div class="filter-container">
+        <input type="text" id="pack-filter-input" placeholder="Filter by pack number (e.g., C1, C2, 1, 2...)" class="filter-input">
+      </div>
+      <div class="packs-grid" id="packs-grid">
+        <!-- Pack cards will be created here -->
+      </div>
+    </div>
+
+    <!-- Right Panel - Pack Details -->
+    <div class="right-panel" id="right-panel" style="display: none;">
+      <div class="panel-header">
+        <button id="back-to-packs-btn" class="btn-back">← Back</button>
+        <input type="text" id="pack-detail-title" class="pack-detail-title" placeholder="Pack Name">
+        <div style="display: flex; gap: 8px;">
+          <button id="toggle-hide-pack-btn" class="btn-secondary">Hide Pack</button>
+          <button id="delete-current-pack-btn" class="btn-danger">Delete Pack</button>
+        </div>
+      </div>
+      <div class="pack-detail-content">
+        <div class="pack-detail-beats" id="pack-detail-beats">
+          <div class="pack-detail-count" id="pack-detail-count">0 beats</div>
+          <!-- Pack beats will be shown here -->
+        </div>
+        <div class="resize-handle" id="resize-handle"></div>
+        <div class="pack-detail-right" id="pack-detail-right-panel">
+          <!-- Pack Email/Password Info -->
+          <div class="pack-email-info" id="pack-email-info">
+            <!-- Email info will be rendered here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Player -->
+  <div class="audio-player" id="audio-player">
+    <div class="player-info">
+      <div class="now-playing" id="now-playing">No track playing</div>
+    </div>
+    <div class="player-controls">
+      <button id="play-pause-btn" class="control-btn" disabled>
+        <span id="play-icon">▶</span>
+      </button>
+    </div>
+    <div class="player-progress">
+      <span class="time" id="current-time">0:00</span>
+      <input type="range" id="progress-bar" min="0" max="100" value="0" disabled>
+      <span class="time" id="duration-time">0:00</span>
+    </div>
+    <div class="player-volume">
+      <span>🔊</span>
+      <input type="range" id="volume-slider" min="0" max="100" value="70">
+    </div>
+  </div>
+
+  <audio id="audio-element"></audio>
+
+  <!-- Database Info Modal -->
+  <div id="database-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Database Information</h3>
+        <button id="close-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Database Location:</label>
+          <div class="db-path" id="db-path-display">Loading...</div>
+          <button id="copy-path-btn" class="btn-secondary" style="margin-top: 10px;">Copy Path</button>
+        </div>
+        <div class="info-section" style="margin-top: 20px;">
+          <label>Backup & Sync:</label>
+          <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
+            Export your database to back it up or transfer to another device.
+          </p>
+          <div style="display: flex; gap: 10px;">
+            <button id="export-db-btn" class="btn-primary">Export Database</button>
+            <button id="import-db-btn" class="btn-secondary">Import Database</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context Menu for Pack Beats -->
+  <div id="beat-context-menu" class="context-menu" style="display: none;">
+    <div class="context-menu-item" id="mark-last-used">Mark as Last Used</div>
+    <div class="context-menu-item" id="unmark-last-used">Remove Last Used</div>
+  </div>
+
+  <!-- Create Channels Modal -->
+  <div id="create-channels-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create Channels</h3>
+        <button id="close-channels-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Number of Channels:</label>
+          <input type="number" id="num-channels-input" min="1" value="1" class="modal-input">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <label>Beats per Channel:</label>
+          <input type="number" id="beats-per-channel-input" min="1" value="40" class="modal-input">
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
+            This will automatically create channels (C[Number]) and assign random beats from available page folders.
+            Each page folder contains 20 beats. Folders will be tagged with channel names.
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button id="confirm-create-channels-btn" class="btn-primary">Create</button>
+          <button id="cancel-create-channels-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Email Modal -->
+  <div id="add-email-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Email Accounts</h3>
+        <button id="close-add-email-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <label>Bulk Add (paste multiple lines):</label>
+          <textarea id="bulk-email-input" placeholder="Paste one or more lines in format:
+email@gmail.com[TAB]password|recovery@gmail.com
+email2@gmail.com[TAB]password2|recovery2@gmail.com" class="modal-input" rows="8" style="font-family: monospace; font-size: 12px; resize: vertical;"></textarea>
+          <p style="font-size: 11px; color: #666; margin-top: 5px; margin-bottom: 0;">
+            💡 Format: <code>email[TAB]password|recovery</code> (one per line)<br>
+            Recovery email is optional. You can paste 1 or many emails at once.
+          </p>
+        </div>
+        <div class="info-section" style="margin-top: 15px;">
+          <p style="font-size: 12px; color: #999; margin-bottom: 10px;">
+            Saved as: <code>email:password:recovery</code> in email.txt file
+          </p>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+          <button id="confirm-add-email-btn" class="btn-primary">Add Email(s)</button>
+          <button id="cancel-add-email-btn" class="btn-secondary">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Emails Modal -->
+  <div id="view-emails-modal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 800px;">
+      <div class="modal-header">
+        <h3>Email Accounts</h3>
+        <button id="close-view-emails-modal-btn" class="close-btn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-section">
+          <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button id="filter-all-emails-btn" class="btn-secondary" style="flex: 1;">All (<span id="count-all">0</span>)</button>
+            <button id="filter-available-emails-btn" class="btn-secondary" style="flex: 1;">Available (<span id="count-available">0</span>)</button>
+            <button id="filter-used-emails-btn" class="btn-secondary" style="flex: 1;">Used (<span id="count-used">0</span>)</button>
+          </div>
+          <div id="emails-list-container" style="max-height: 400px; overflow-y: auto; border: 1px solid #333; border-radius: 4px; padding: 10px;">
+            <!-- Email items will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

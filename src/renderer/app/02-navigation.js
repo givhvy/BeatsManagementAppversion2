@@ -72,6 +72,8 @@ mainNavTabs.forEach(tab => {
     // Initialize section if needed
     if (section === 'youtube') {
       initYouTubeSection();
+    } else if (section === 'artists') {
+      initArtistsSection();
     } else if (section === 'autovid') {
       if (typeof initAutoVidSection === 'function') {
         initAutoVidSection();
@@ -86,6 +88,8 @@ mainNavTabs.forEach(tab => {
       initBeatstarsSection();
     } else if (section === 'money') {
       initMoneySection();
+    } else if (section === 'titles') {
+      initTitlesSection();
     } else if (section === 'midi') {
       initMidiSection();
     } else if (section === 'drumkit') {
@@ -94,6 +98,12 @@ mainNavTabs.forEach(tab => {
       initFlstudioSection();
     } else if (section === 'gallery') {
       initGallerySection();
+    } else if (section === 'cloud') {
+      initCloudSection();
+    } else if (section === 'marketing-tasks') {
+      initMarketingSection();
+    } else if (section === 'marketing-plans') {
+      initMarketingPlansSection();
     }
   });
 });

@@ -17,6 +17,7 @@ let drumkitInfos = {}; // Map drumkitPath to info text
 // DOM Elements
 const drumkitListEl = document.getElementById('drumkit-list');
 const drumkitCarouselWrapper = document.getElementById('drumkit-carousel-wrapper');
+const drumkitCarouselContainer = document.querySelector('.drumkit-carousel-container');
 const drumkitMiddlePanelEl = document.getElementById('drumkit-middle-panel');
 const drumkitRightPanelEl = document.getElementById('drumkit-right-panel');
 const drumkitPackDetailTitleEl = document.getElementById('drumkit-pack-detail-title');
@@ -27,6 +28,7 @@ const drumkitFilterInput = document.getElementById('drumkit-filter-input');
 
 // Swiper instance
 let drumkitSwiper = null;
+let drumkitWheelLocked = false;
 
 // Buttons
 const refreshDrumkitBtn = document.getElementById('refresh-drumkit-btn');
@@ -119,6 +121,9 @@ async function initDrumkitSection() {
   // Filter inputs
   if (drumkitFilterInput) {
     drumkitFilterInput.addEventListener('input', renderDrumkitFiles);
+  }
+  if (drumkitCarouselContainer) {
+    drumkitCarouselContainer.addEventListener('wheel', handleDrumkitCarouselWheel, { passive: false });
   }
   // Pack detail title editing
   if (drumkitPackDetailTitleEl) {
@@ -517,6 +522,34 @@ function initDrumkitSwiper() {
   }, 100);
 }
 
+function handleDrumkitCarouselWheel(e) {
+  if (!drumkitSwiper || e.ctrlKey) return;
+
+  const visiblePacks = drumkitPacks.filter(pack => {
+    const isHidden = pack.hidden === true;
+    return showingHiddenDrumkitPacks ? isHidden : !isHidden;
+  });
+  if (visiblePacks.length <= 1) return;
+
+  const wheelDelta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  if (Math.abs(wheelDelta) < 10) return;
+
+  e.preventDefault();
+
+  if (drumkitWheelLocked) return;
+  drumkitWheelLocked = true;
+
+  if (wheelDelta > 0) {
+    drumkitSwiper.slideNext();
+  } else {
+    drumkitSwiper.slidePrev();
+  }
+
+  setTimeout(() => {
+    drumkitWheelLocked = false;
+  }, 300);
+}
+
 // Select thumbnail for pack
 async function selectDrumkitThumbnail(packId) {
   const pack = drumkitPacks.find(p => p.id === packId);
@@ -706,11 +739,33 @@ function confirmCreateDrumkitPack() {
   console.log('[Drum Kit] Pack created. Total packs:', drumkitPacks.length);
 }
 
-// Delete current pack
+// Delete current pack — two-click confirmation (no confirm() — blocked by Electron)
+let _drumkitDeleteTimer = null;
 function deleteDrumkitPack() {
   if (!currentDrumkitPackId) return;
-  if (!confirm('Are you sure you want to delete this pack?')) return;
-
+  const btn = document.getElementById('drumkit-delete-pack-btn') ||
+              document.querySelector('[onclick*="deleteDrumkitPack"]');
+  if (btn && btn.dataset.confirmArmed !== '1') {
+    btn.dataset.confirmArmed = '1';
+    const orig = btn.textContent;
+    btn.textContent = 'Confirm delete?';
+    btn.style.background = 'rgba(239,68,68,0.18)';
+    btn.style.color = '#fca5a5';
+    clearTimeout(_drumkitDeleteTimer);
+    _drumkitDeleteTimer = setTimeout(() => {
+      btn.dataset.confirmArmed = '';
+      btn.textContent = orig;
+      btn.style.background = '';
+      btn.style.color = '';
+    }, 3000);
+    return;
+  }
+  if (btn) {
+    clearTimeout(_drumkitDeleteTimer);
+    btn.dataset.confirmArmed = '';
+    btn.style.background = '';
+    btn.style.color = '';
+  }
   drumkitPacks = drumkitPacks.filter(p => p.id !== currentDrumkitPackId);
   showDrumkitPacksGrid();
   renderDrumkitPacks();
@@ -862,17 +917,13 @@ function handleCarouselChangeThumbnail() {
 
 function handleCarouselRenamePack() {
   if (!currentCarouselContextPackId) return;
-  
-  const pack = drumkitPacks.find(p => p.id === currentCarouselContextPackId);
-  if (!pack) return;
-
-  const newName = prompt('Enter new pack name:', pack.name);
-  if (newName && newName.trim()) {
-    pack.name = newName.trim();
-    renderDrumkitPacks();
-    saveDrumkitData();
-  }
   hideDrumkitCarouselContextMenu();
+  // Open the pack detail view and focus the title input for inline rename
+  showDrumkitPackDetail(currentCarouselContextPackId);
+  if (drumkitPackDetailTitleEl) {
+    drumkitPackDetailTitleEl.focus();
+    drumkitPackDetailTitleEl.select();
+  }
 }
 
 function handleCarouselToggleHide() {
@@ -898,12 +949,10 @@ function handleCarouselDeletePack() {
   const pack = drumkitPacks.find(p => p.id === currentCarouselContextPackId);
   if (!pack) return;
 
-  if (confirm(`Are you sure you want to delete "${pack.name}"?`)) {
-    drumkitPacks = drumkitPacks.filter(p => p.id !== currentCarouselContextPackId);
-    renderDrumkitPacks();
-    saveDrumkitData();
-  }
-  
+  // confirm() is blocked by Electron — execute delete directly from context menu
+  drumkitPacks = drumkitPacks.filter(p => p.id !== currentCarouselContextPackId);
+  renderDrumkitPacks();
+  saveDrumkitData();
   hideDrumkitCarouselContextMenu();
 }
 

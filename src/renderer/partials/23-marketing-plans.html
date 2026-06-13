@@ -1,0 +1,166 @@
+<!-- ============================
+     MARKETING PLANS SECTION
+     ============================ -->
+  <div class="app-section" id="marketing-plans-section">
+    <div class="mp-container">
+
+      <!-- LEFT SIDEBAR: Stats & Filters -->
+      <div class="mp-sidebar">
+        <div class="mp-sidebar-inner">
+
+          <div class="mp-sidebar-heading">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h20"/><path d="M2 9h20"/><path d="M2 15h14"/><path d="M2 21h9"/></svg>
+            Plans Overview
+          </div>
+
+          <div class="mp-stats-grid">
+            <div class="mp-stat-card">
+              <div class="mp-stat-value" id="mp-stat-total">0</div>
+              <div class="mp-stat-label">Total Plans</div>
+            </div>
+            <div class="mp-stat-card mp-stat-active">
+              <div class="mp-stat-value" id="mp-stat-active">0</div>
+              <div class="mp-stat-label">Active</div>
+            </div>
+            <div class="mp-stat-card mp-stat-draft">
+              <div class="mp-stat-value" id="mp-stat-draft">0</div>
+              <div class="mp-stat-label">Draft</div>
+            </div>
+            <div class="mp-stat-card mp-stat-completed">
+              <div class="mp-stat-value" id="mp-stat-completed">0</div>
+              <div class="mp-stat-label">Completed</div>
+            </div>
+          </div>
+
+          <div class="mp-filter-block">
+            <div class="mp-filter-heading">Status Filter</div>
+            <div class="mp-filter-group" id="mp-status-filters">
+              <button class="mp-filter-btn active" data-status="all">All</button>
+              <button class="mp-filter-btn" data-status="draft">Draft</button>
+              <button class="mp-filter-btn" data-status="active">Active</button>
+              <button class="mp-filter-btn" data-status="completed">Completed</button>
+              <button class="mp-filter-btn" data-status="archived">Archived</button>
+            </div>
+          </div>
+
+          <button class="mp-add-sidebar-btn" onclick="mpOpenModal(null)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Marketing Plan
+          </button>
+
+        </div>
+      </div>
+
+      <!-- MAIN: Plans List -->
+      <div class="mp-main">
+
+        <div class="mp-main-header">
+          <div class="mp-main-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h20"/><path d="M2 9h20"/><path d="M2 15h14"/><path d="M2 21h9"/></svg>
+            Marketing Plans
+          </div>
+          <div class="mp-main-controls">
+            <div class="mp-search-wrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="mp-search" class="mp-search-input" placeholder="Search plans..." oninput="mpRenderPlans()">
+            </div>
+            <button class="mp-add-btn" onclick="mpOpenModal(null)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Plan
+            </button>
+          </div>
+        </div>
+
+        <div class="mp-plans-list" id="mp-plans-list">
+          <!-- Plans rendered by JS -->
+        </div>
+
+        <div class="mp-empty-state" id="mp-empty-state" style="display:none">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          <p>No marketing plans yet</p>
+          <span>Click "New Plan" to create your first campaign strategy.</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Marketing Plan Modal -->
+  <div class="mp-modal-overlay" id="mp-modal-overlay" onclick="mpModalOverlayClick(event)" style="display:none">
+    <div class="mp-modal">
+      <div class="mp-modal-header">
+        <span id="mp-modal-heading">New Marketing Plan</span>
+        <button class="mp-modal-close" onclick="mpCloseModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="mp-modal-body">
+        <input type="hidden" id="mp-modal-edit-id">
+
+        <div class="mp-form-row">
+          <label class="mp-form-label">Plan Name</label>
+          <input type="text" id="mp-modal-name-input" class="mp-form-input" placeholder="e.g. Summer Beat Drop Campaign">
+        </div>
+
+        <div class="mp-form-row">
+          <label class="mp-form-label">Description <span class="mp-form-hint">(optional)</span></label>
+          <textarea id="mp-modal-desc-input" class="mp-form-textarea" rows="3" placeholder="What is the overall goal of this plan?"></textarea>
+        </div>
+
+        <div class="mp-form-row mp-form-row-2col">
+          <div>
+            <label class="mp-form-label">Status</label>
+            <select id="mp-modal-status-input" class="mp-form-select">
+              <option value="draft" selected>Draft</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+          <div>
+            <label class="mp-form-label">Primary Platform</label>
+            <select id="mp-modal-platform-input" class="mp-form-select">
+              <option value="All Platforms">All Platforms</option>
+              <option value="YouTube">YouTube</option>
+              <option value="Instagram">Instagram</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Twitter/X">Twitter / X</option>
+              <option value="Email">Email</option>
+              <option value="Beatstars">Beatstars</option>
+              <option value="SoundCloud">SoundCloud</option>
+              <option value="Discord">Discord</option>
+              <option value="Reddit">Reddit</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mp-form-row mp-form-row-2col">
+          <div>
+            <label class="mp-form-label">Start Date <span class="mp-form-hint">(optional)</span></label>
+            <input type="date" id="mp-modal-start-input" class="mp-form-input">
+          </div>
+          <div>
+            <label class="mp-form-label">End Date <span class="mp-form-hint">(optional)</span></label>
+            <input type="date" id="mp-modal-end-input" class="mp-form-input">
+          </div>
+        </div>
+
+        <div class="mp-form-row">
+          <label class="mp-form-label">Goals / Objectives <span class="mp-form-hint">(optional)</span></label>
+          <textarea id="mp-modal-goals-input" class="mp-form-textarea" rows="2" placeholder="e.g. Reach 10k views, gain 50 new email subscribers"></textarea>
+        </div>
+
+        <div class="mp-form-row">
+          <label class="mp-form-label">Notes <span class="mp-form-hint">(optional)</span></label>
+          <textarea id="mp-modal-notes-input" class="mp-form-textarea" rows="2" placeholder="Additional ideas, resources, or reminders"></textarea>
+        </div>
+
+      </div>
+      <div class="mp-modal-footer">
+        <button class="mp-modal-cancel-btn" onclick="mpCloseModal()">Cancel</button>
+        <button class="mp-modal-save-btn" onclick="mpSavePlan()">Save Plan</button>
+      </div>
+    </div>
+  </div>
+  <!-- END MARKETING PLANS SECTION -->

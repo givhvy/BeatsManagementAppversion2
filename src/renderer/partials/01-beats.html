@@ -6,7 +6,6 @@
     <div class="left-panel" id="beats-left-panel">
       <div class="panel-header">
         <h2>Beats</h2>
-        <button id="refresh-beats-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
       </div>
       <!-- Tab Buttons -->
       <div class="tabs-container">
@@ -191,7 +190,6 @@
       <div class="left-panel" id="bgmusic-left-panel">
         <div class="panel-header">
           <h2>Background Music</h2>
-          <button id="refresh-bgmusic-btn" class="btn-secondary" title="Refresh"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
         </div>
         <div class="tabs-container">
           <button class="tab-btn active" data-bgmusic-type="all">All Music</button>
@@ -259,9 +257,6 @@
           <div class="total-beats-progress-bar">
             <div class="total-beats-progress-fill" id="total-bgmusic-progress-fill"></div>
           </div>
-        </div>
-        <div class="filter-container">
-          <input type="text" id="bgmusic-pack-filter-input" placeholder="Filter by pack number (e.g., BG1, BG2, 1, 2...)" class="filter-input">
         </div>
         <div class="packs-grid" id="bgmusic-packs-grid"></div>
       </div>
@@ -434,6 +429,7 @@
   <div id="beat-context-menu" class="context-menu" style="display: none;">
     <div class="context-menu-item" id="mark-last-used">Mark as Last Used</div>
     <div class="context-menu-item" id="unmark-last-used">Remove Last Used</div>
+    <div class="context-menu-item" id="mark-used">Mark as used</div>
     <div class="context-menu-item" id="open-beat-in-explorer"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Open in File Explorer</div>
     <div class="context-menu-divider"></div>
     <div class="context-menu-item" id="create-video-from-beat"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M4 11v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8H4Z"/><path d="m4 11-.88-2.87a2 2 0 0 1 1.33-2.5l11.48-3.5a2 2 0 0 1 2.5 1.32l.87 2.87L4 11.01Z"/><path d="m6.6 4.99 3.38 4.2"/><path d="m11.86 3.38 3.38 4.2"/></svg>Create Video</div>
@@ -443,6 +439,12 @@
     <div class="context-menu-item" id="auto-upload-6-from-here"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Auto Upload 6 from here</div>
     <div class="context-menu-divider"></div>
     <div class="context-menu-item" id="market-this-beat-btn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:6px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.76 12"/><path d="M16 8a4 4 0 0 1 0 8"/><path d="M16 4a8 8 0 0 1 0 16"/><line x1="2" y1="2" x2="22" y2="22"/></svg>Market this Beat</div>
+  </div>
+
+  <!-- Context Menu for Channel Stats -->
+  <div id="channel-stats-context-menu" class="context-menu" style="display: none;">
+    <div class="context-menu-item" id="hide-channel-stats">Hide stats</div>
+    <div class="context-menu-item" id="show-channel-stats">Show stats</div>
   </div>
 
   <!-- Create Channels Modal -->

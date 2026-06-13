@@ -447,11 +447,28 @@ async function saveNewCustomer() {
 /**
  * Delete customer
  */
+const _deleteCustomerArmed = new Map();
 async function deleteCustomer(id) {
   const customer = customerState.customers.find(c => c.id === id);
   if (!customer) return;
 
-  if (!confirm(`Are you sure you want to delete "${customer.name}"?`)) return;
+  // Two-click confirm — confirm() blocked by Electron
+  if (!_deleteCustomerArmed.get(id)) {
+    _deleteCustomerArmed.set(id, true);
+    const btn = document.querySelector(`[onclick*="deleteCustomer('${id}')"]`);
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = 'Confirm?';
+      btn.style.outline = '1px solid #f87171';
+      setTimeout(() => {
+        _deleteCustomerArmed.delete(id);
+        btn.textContent = orig;
+        btn.style.outline = '';
+      }, 3000);
+    }
+    return;
+  }
+  _deleteCustomerArmed.delete(id);
 
   customerState.customers = customerState.customers.filter(c => c.id !== id);
 

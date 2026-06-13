@@ -278,10 +278,24 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (clearQueueBtn) {
     clearQueueBtn.addEventListener('click', () => {
-      if (confirm('Clear all queued items?')) {
-        clearGlobalQueue();
-        clearAllProgress();
+      // confirm() blocked by Electron — two-click handled by caller button state
+      if (clearQueueBtn.dataset.confirmArmed !== '1') {
+        clearQueueBtn.dataset.confirmArmed = '1';
+        const orig = clearQueueBtn.textContent;
+        clearQueueBtn.textContent = 'Clear all? (click again)';
+        clearQueueBtn.style.color = '#fca5a5';
+        setTimeout(() => {
+          clearQueueBtn.dataset.confirmArmed = '';
+          clearQueueBtn.textContent = orig;
+          clearQueueBtn.style.color = '';
+        }, 3000);
+        return;
       }
+      clearQueueBtn.dataset.confirmArmed = '';
+      clearQueueBtn.textContent = clearQueueBtn.textContent.replace(' (click again)', '').replace('Clear all?', 'Clear Queue') || 'Clear Queue';
+      clearQueueBtn.style.color = '';
+      clearGlobalQueue();
+      clearAllProgress();
     });
   }
 

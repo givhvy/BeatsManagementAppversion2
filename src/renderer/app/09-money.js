@@ -605,6 +605,36 @@ document.addEventListener('DOMContentLoaded', () => {
   const settingsCopyDbPathBtn = document.getElementById('settings-copy-db-path-btn');
   const settingsExportDbBtn = document.getElementById('settings-export-db-btn');
   const settingsImportDbBtn = document.getElementById('settings-import-db-btn');
+  const settingsRefreshBeatsBtn = document.getElementById('settings-refresh-beats-btn');
+  const settingsRefreshGenreBtn = document.getElementById('settings-refresh-genre-btn');
+  const settingsRefreshBgMusicBtn = document.getElementById('settings-refresh-bgmusic-btn');
+
+  if (settingsRefreshBeatsBtn) {
+    settingsRefreshBeatsBtn.addEventListener('click', () => {
+      if (typeof refreshBeats === 'function') {
+        refreshBeats();
+        showNotification('Refreshing beats...', 'info');
+      }
+    });
+  }
+
+  if (settingsRefreshGenreBtn) {
+    settingsRefreshGenreBtn.addEventListener('click', () => {
+      if (typeof refreshBeats === 'function') {
+        refreshBeats();
+        showNotification('Refreshing genre views...', 'info');
+      }
+    });
+  }
+
+  if (settingsRefreshBgMusicBtn) {
+    settingsRefreshBgMusicBtn.addEventListener('click', () => {
+      if (typeof loadMusicFromFolder === 'function') {
+        loadMusicFromFolder();
+        showNotification('Refreshing background music...', 'info');
+      }
+    });
+  }
 
   if (settingsCopyDbPathBtn) {
     settingsCopyDbPathBtn.addEventListener('click', async () => {

@@ -159,6 +159,75 @@
   text-align: center;
   padding: var(--space-5);
 }
+
+.autovid-artist-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-content: start;
+  padding: 2px 0;
+}
+
+.autovid-artist-list::-webkit-scrollbar { width: 4px; }
+.autovid-artist-list::-webkit-scrollbar-track { background: transparent; }
+.autovid-artist-list::-webkit-scrollbar-thumb { background: rgba(245,158,11,0.2); border-radius: 2px; }
+
+.autovid-artist-thumb-item {
+  overflow: hidden;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.03);
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+
+.autovid-artist-thumb-item:hover {
+  transform: translateY(-1px);
+  border-color: rgba(245,158,11,0.34);
+  background: rgba(245,158,11,0.07);
+}
+
+.autovid-artist-thumb-item.used {
+  opacity: 0.58;
+}
+
+.autovid-artist-thumb-item img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  display: block;
+  background: #050505;
+}
+
+.autovid-artist-thumb-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 8px;
+}
+
+.autovid-artist-thumb-meta span,
+.autovid-artist-thumb-meta small {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.autovid-artist-thumb-meta span {
+  color: rgba(255,255,255,0.84);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.autovid-artist-thumb-meta small {
+  color: rgba(255,255,255,0.4);
+  font-size: 10px;
+}
+
 .autovid-beat-item {
   display: flex;
   align-items: center;
@@ -281,6 +350,21 @@
   align-items: center;
   gap: var(--space-2);
   pointer-events: none;
+}
+
+.image-no-preview-hint {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.autovid-center .btn-secondary.active,
+.autovid-center .btn-secondary[aria-pressed="true"] {
+  background: rgba(245, 158, 11, 0.16);
+  border-color: rgba(245, 158, 11, 0.55);
+  color: #FCD34D;
 }
 
 /* â”€â”€ Audio Drop Zone â”€â”€ */
@@ -529,27 +613,31 @@
 /* Render button */
 .btn-render {
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
   width: 100%;
-  padding: 13px 20px;
-  background: linear-gradient(135deg, rgba(56,189,248,0.9) 0%, rgba(59,130,246,0.9) 100%);
+  padding: var(--space-2) var(--space-5);
+  background-color: var(--white-5);
   color: var(--white);
-  border: none;
-  border-radius: 14px;
+  border: var(--border-width) solid var(--border-color);
+  border-radius: var(--radius-3xl);
   cursor: pointer;
-  font-size: var(--text-lg);
-  font-weight: var(--font-semibold);
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
   font-family: inherit;
   transition: all 0.25s ease;
-  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
+  box-shadow: none;
+  backdrop-filter: blur(10px);
 }
 
 .btn-render:hover:not(:disabled) {
+  background-color: var(--white-10);
+  border-color: var(--border-color-hover);
+  color: var(--white);
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+  box-shadow: none;
 }
 
 .btn-render:disabled {

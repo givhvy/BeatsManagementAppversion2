@@ -9,6 +9,7 @@ let galleryImages = [];
 let selectedGalleryImage = null;
 let galleryViewMode = localStorage.getItem('gallery-view-mode') || 'grid'; // 'grid' or 'carousel'
 let gallerySwiper = null;
+let galleryWheelLocked = false;
 
 const gallerySelectFolderBtn = document.getElementById('gallery-select-folder-btn');
 const galleryRefreshBtn = document.getElementById('gallery-refresh-btn');
@@ -33,6 +34,9 @@ function initGallerySection() {
   if (galleryFilterInput) galleryFilterInput.addEventListener('input', renderGalleryGrid);
   if (galleryModalClose) galleryModalClose.addEventListener('click', closeGalleryImageModal);
   if (galleryToggleViewBtn) galleryToggleViewBtn.addEventListener('click', toggleGalleryView);
+  if (galleryCarouselContainer) {
+    galleryCarouselContainer.addEventListener('wheel', handleGalleryCarouselWheel, { passive: false });
+  }
   if (galleryImageModal) {
     galleryImageModal.addEventListener('click', (e) => {
       if (e.target === galleryImageModal) closeGalleryImageModal();
@@ -225,6 +229,28 @@ function closeGalleryImageModal() {
   if (galleryModalImage) {
     galleryModalImage.src = '';
   }
+}
+
+function handleGalleryCarouselWheel(e) {
+  if (galleryViewMode !== 'carousel' || !gallerySwiper || galleryImages.length <= 1 || e.ctrlKey) return;
+
+  const wheelDelta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  if (Math.abs(wheelDelta) < 10) return;
+
+  e.preventDefault();
+
+  if (galleryWheelLocked) return;
+  galleryWheelLocked = true;
+
+  if (wheelDelta > 0) {
+    gallerySwiper.slideNext();
+  } else {
+    gallerySwiper.slidePrev();
+  }
+
+  setTimeout(() => {
+    galleryWheelLocked = false;
+  }, 300);
 }
 
 async function showGalleryContextMenu(e, image = selectedGalleryImage) {

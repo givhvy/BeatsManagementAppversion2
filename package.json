@@ -21,34 +21,29 @@
   "author": "givhvy",
   "license": "MIT",
   "build": {
-    "appId": "com.givhvy.beatsmanagementstudio",
+    "appId": "com.givhvy.beatsmanagementstudio.blue",
     "productName": "Beats Management Studio",
     "win": {
       "target": "portable",
-      "icon": "build/icon.ico"
+      "icon": "build/all-beats-blue.ico"
     },
     "files": [
       "**/*",
       "!**/*.vbs",
-      "!build/**/*",
       "!dist/**/*",
       "!autovid/node_modules/**/*",
       "!automation/node_modules/**/*"
     ]
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^6.0.1",
     "electron": "^28.0.0",
     "electron-builder": "^26.8.1",
-    "electron-reload": "^2.0.0-alpha.1",
-    "vite": "^8.0.10",
-    "vite-plugin-electron": "^0.29.1",
-    "vite-plugin-electron-renderer": "^0.14.7"
+    "electron-reload": "^2.0.0-alpha.1"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1065.0",
+    "@aws-sdk/s3-request-presigner": "^3.1065.0",
     "googleapis": "^167.0.0",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5",
     "resend": "^4.0.0",
     "swiper": "^12.1.4"
   }

@@ -8,9 +8,12 @@
       <div class="tt-sidebar">
         <div class="tt-sidebar-inner">
 
-          <div class="tt-sidebar-heading">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            Channel Branding
+          <div class="tt-sidebar-heading-row">
+            <div class="tt-sidebar-heading">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              Channel Branding
+            </div>
+            <button id="tt-no-preview-btn" class="tt-no-preview-btn" type="button" onclick="ttToggleNoPreview()" aria-pressed="false">No Preview</button>
           </div>
           <p class="tt-sidebar-sub">Drop your default channel images here to drag them into YouTube when setting up new channels.</p>
 
@@ -26,6 +29,9 @@
                 <span class="tt-drop-hint">or click to browse</span>
               </div>
               <img class="tt-dropzone-img" id="tt-profile-img" style="display:none" draggable="true" ondragstart="ttDragOutImage(event,'profile')" title="Drag this image to YouTube">
+              <div class="tt-no-preview-placeholder" id="tt-profile-no-preview" style="display:none" draggable="true" ondragstart="ttDragOutImage(event,'profile')" title="Drag this image to YouTube">
+                <span>one image</span>
+              </div>
             </div>
             <div class="tt-dropzone-footer" id="tt-profile-footer" style="display:none">
               <span class="tt-dropzone-path" id="tt-profile-path"></span>
@@ -48,6 +54,9 @@
                 <span class="tt-drop-hint">or click to browse</span>
               </div>
               <img class="tt-dropzone-img tt-dropzone-img-wide" id="tt-banner-img" style="display:none" draggable="true" ondragstart="ttDragOutImage(event,'banner')" title="Drag this image to YouTube">
+              <div class="tt-no-preview-placeholder" id="tt-banner-no-preview" style="display:none" draggable="true" ondragstart="ttDragOutImage(event,'banner')" title="Drag this image to YouTube">
+                <span>one image</span>
+              </div>
             </div>
             <div class="tt-dropzone-footer" id="tt-banner-footer" style="display:none">
               <span class="tt-dropzone-path" id="tt-banner-path"></span>

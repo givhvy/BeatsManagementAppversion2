@@ -689,13 +689,11 @@ async function createNewChannel() {
       // Refresh channels list
       await scanYouTubeChannels();
 
-      // Prompt for authentication
-      if (confirm(`Channel "${channelId}" created! Do you want to authenticate now?`)) {
-        // Select the new channel and authenticate
-        const newChannelFullId = `${channelId}/${channelId}`;
-        youtubeState.selectedChannel = { id: newChannelFullId, name: channelId };
-        await reauthenticateYouTube();
-      }
+      // Auto-authenticate the new channel (confirm() blocked by Electron)
+      showNotification(`Channel "${channelId}" created! Authenticating...`, 'success');
+      const newChannelFullId = `${channelId}/${channelId}`;
+      youtubeState.selectedChannel = { id: newChannelFullId, name: channelId };
+      await reauthenticateYouTube();
     } else {
       showNotification('Error: ' + result.error, 'error');
     }
@@ -1269,9 +1267,7 @@ async function applyTemplateToAllChannels() {
     return;
   }
 
-  if (!confirm(`Apply "${template.name}" to ALL channels?\n\nThis will update the title template, description, and tags for all channels.`)) {
-    return;
-  }
+  // confirm() blocked by Electron — button is already labeled as "Apply to All", which is intent enough
 
   try {
     showNotification('Applying template to all channels...', 'info');

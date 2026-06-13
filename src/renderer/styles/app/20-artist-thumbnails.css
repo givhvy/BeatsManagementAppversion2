@@ -1,0 +1,330 @@
+.artists-container {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  height: calc(100vh - 68px);
+  background: #080808;
+  color: var(--white);
+  overflow: hidden;
+}
+
+.artists-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 18px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  background: #0f0f0f;
+}
+
+.artists-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.artists-header h2,
+.artist-main-header h2 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+}
+
+.artists-header p,
+.artist-main-header p {
+  margin: 5px 0 0;
+  color: rgba(255,255,255,0.44);
+  font-size: 13px;
+}
+
+.artist-icon-btn {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.artist-search-row {
+  margin-bottom: 12px;
+}
+
+.artist-create-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.025);
+}
+
+.artist-create-row .btn-secondary {
+  width: 100%;
+  justify-content: center;
+}
+
+.artist-pack-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.artist-pack-stats > div {
+  padding: 12px 8px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.07);
+  text-align: center;
+}
+
+.artist-pack-stats span {
+  display: block;
+  color: #F59E0B;
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.artist-pack-stats small {
+  display: block;
+  margin-top: 5px;
+  color: rgba(255,255,255,0.36);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.artist-pack-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 3px;
+}
+
+.artist-pack-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 66px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.025);
+  color: rgba(255,255,255,0.84);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s ease;
+}
+
+.artist-pack-card:hover {
+  border-color: rgba(245,158,11,0.24);
+  background: rgba(245,158,11,0.06);
+}
+
+.artist-pack-card.active {
+  border-color: rgba(245,158,11,0.46);
+  background: rgba(245,158,11,0.11);
+}
+
+.artist-pack-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  background: #171713;
+  border: 1px solid rgba(245,158,11,0.18);
+  color: #F59E0B;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.artist-pack-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.artist-pack-name {
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artist-pack-meta {
+  margin-top: 4px;
+  color: rgba(255,255,255,0.38);
+  font-size: 12px;
+}
+
+.artist-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  overflow: hidden;
+}
+
+.artist-main-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.artist-kicker {
+  display: block;
+  margin-bottom: 6px;
+  color: #F59E0B;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.artist-main-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.artist-main-actions .btn-secondary:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.artist-drop-zone {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border-radius: 22px;
+  border: 1px dashed rgba(255,255,255,0.16);
+  background:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px),
+    #050505;
+  background-size: 20px 20px;
+  padding: 18px;
+  transition: all 0.18s ease;
+}
+
+.artist-drop-zone.drag-over {
+  border-color: rgba(245,158,11,0.55);
+  background-color: rgba(245,158,11,0.04);
+}
+
+.artist-drop-empty {
+  height: 100%;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: rgba(255,255,255,0.38);
+}
+
+.artist-drop-empty svg {
+  margin-bottom: 14px;
+  opacity: 0.55;
+}
+
+.artist-drop-empty h3 {
+  margin: 0 0 6px;
+  color: rgba(255,255,255,0.62);
+}
+
+.artist-drop-empty p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.artist-thumbnail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px;
+}
+
+.artist-thumb-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #111;
+  cursor: grab;
+}
+
+.artist-thumb-card:active {
+  cursor: grabbing;
+}
+
+.artist-thumb-card.used {
+  opacity: 0.58;
+}
+
+.artist-thumb-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  background: #050505;
+}
+
+.artist-thumb-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 10px;
+}
+
+.artist-thumb-name {
+  min-width: 0;
+  color: rgba(255,255,255,0.72);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.artist-used-toggle {
+  flex-shrink: 0;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.6);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.artist-thumb-card.used .artist-used-toggle {
+  border-color: rgba(34,197,94,0.3);
+  background: rgba(34,197,94,0.14);
+  color: #4ade80;
+}
+
+@media (max-width: 900px) {
+  .artists-container {
+    grid-template-columns: 1fr;
+  }
+
+  .artists-sidebar {
+    max-height: 38vh;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+}

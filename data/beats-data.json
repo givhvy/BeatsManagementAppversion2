@@ -11918,7 +11918,8 @@
         {
           "name": "SAINTE-Late_Drive-966ea7df-a7d9-4546-8d0d-33eeaa3f3e5b.mp3",
           "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Drive-966ea7df-a7d9-4546-8d0d-33eeaa3f3e5b.mp3",
-          "lastUsed": false
+          "lastUsed": false,
+          "usedForUpload": true
         },
         {
           "name": "SAINTE-Cruise_Control-54f9faaf-c290-47de-9b1a-83ad272e88b6.mp3",
@@ -12138,7 +12139,8 @@
         {
           "name": "SAINTE-Late_Train_Murmur-6642d61d-bc54-4549-952a-791b1218364f.mp3",
           "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Late_Train_Murmur-6642d61d-bc54-4549-952a-791b1218364f.mp3",
-          "lastUsed": false
+          "lastUsed": false,
+          "usedForUpload": true
         },
         {
           "name": "SAINTE-Late_Train_Drip-27980bfe-0bca-4138-8361-e49ba0e15c2c.mp3",
@@ -12193,7 +12195,8 @@
         {
           "name": "SAINTE-Moonlit_Letters-89f4adb4-5261-4d2f-9a99-75461e8948da.mp3",
           "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Letters-89f4adb4-5261-4d2f-9a99-75461e8948da.mp3",
-          "lastUsed": false
+          "lastUsed": false,
+          "usedForUpload": true
         },
         {
           "name": "SAINTE-Moonlit_Letters-50f85d9e-d277-4447-bf09-09ec8e8b8b5d.mp3",
@@ -12858,7 +12861,8 @@
         {
           "name": "SAINTE-Moonlit_Vinyl-b3477a55-d938-4cf4-810c-1afb040431e2.mp3",
           "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Moonlit_Vinyl-b3477a55-d938-4cf4-810c-1afb040431e2.mp3",
-          "lastUsed": false
+          "lastUsed": false,
+          "usedForUpload": true
         },
         {
           "name": "SAINTE-Moonlit_Vinyl-41eb7dba-406a-4d0d-be62-4921ef6be220.mp3",
@@ -13258,12 +13262,14 @@
         {
           "name": "SAINTE-Blue_Note_Drip-223ccf8a-57bb-4f00-90bf-7813c365dfcc.mp3",
           "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Note_Drip-223ccf8a-57bb-4f00-90bf-7813c365dfcc.mp3",
-          "lastUsed": false
+          "lastUsed": false,
+          "usedForUpload": true
         },
         {
           "name": "SAINTE-Blue_Note_Drip-527830d1-eeb3-4634-be8e-f4208f9bfc12.mp3",
           "path": "F:\\PlaygroundTest\\autodownload\\suno-ai-downloader\\Genres\\SAINTE-Blue_Note_Drip-527830d1-eeb3-4634-be8e-f4208f9bfc12.mp3",
-          "lastUsed": false
+          "lastUsed": false,
+          "used": true
         },
         {
           "name": "Blue Note Drip.mp3",
@@ -13277,6 +13283,12 @@
       ],
       "thumbnail": "file:///D:/Downloads/ChatGPT Image May 2, 2026, 06_29_29 PM.png",
       "lastUsed": 1778331672534
+    },
+    {
+      "id": "1779110895780",
+      "name": "Jazz House",
+      "beats": [],
+      "thumbnail": null
     }
   ],
   "currentPackView": "channel",
@@ -28171,5 +28183,14 @@
     }
   },
   "currentDrumkitFolderType": "all",
-  "drumkitInfos": {}
+  "drumkitInfos": {},
+  "titleTemplates": [],
+  "titleBranding": {
+    "profile": {
+      "path": "F:\\Download Folder from C\\channels4_profile (1).jpg",
+      "name": "channels4_profile (1).jpg",
+      "updatedAt": 1778697470382
+    },
+    "banner": null
+  }
 }

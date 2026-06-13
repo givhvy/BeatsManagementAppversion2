@@ -35,23 +35,25 @@
     <div class="customers-container">
       <!-- Left Panel - Customer List -->
       <div class="customers-sidebar">
-        <div class="customer-action-bar">
-          <button id="ai-scan-customer-btn" class="btn-ai-scan" onclick="openAIScanModal()" title="AI: Scan Instagram screenshot to add customer">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
-              AI Scan
-            </button>
-          <button id="add-customer-btn" class="btn-primary btn-sm" onclick="openAddCustomerModal()">+ Add</button>
-        </div>
+        <div class="customer-controls">
+          <div class="customer-action-bar">
+            <button id="ai-scan-customer-btn" class="btn-ai-scan" onclick="openAIScanModal()" title="AI: Scan Instagram screenshot to add customer">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:4px"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                AI Scan
+              </button>
+            <button id="add-customer-btn" class="btn-primary btn-sm" onclick="openAddCustomerModal()">+ Add</button>
+          </div>
 
-        <div class="customer-filters">
-          <button class="filter-btn active" data-filter="all">All</button>
-          <button class="filter-btn" data-filter="lead">Leads</button>
-          <button class="filter-btn" data-filter="customer">Customers</button>
-          <button class="filter-btn" data-filter="vip">VIP</button>
-        </div>
+          <div class="customer-search">
+            <input type="text" id="customer-search-input" placeholder="Search customers..." />
+          </div>
 
-        <div class="customer-search">
-          <input type="text" id="customer-search-input" placeholder="Search customers..." />
+          <div class="customer-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="lead">Leads</button>
+            <button class="filter-btn" data-filter="customer">Customers</button>
+            <button class="filter-btn" data-filter="vip">VIP</button>
+          </div>
         </div>
 
         <div class="customer-stats">

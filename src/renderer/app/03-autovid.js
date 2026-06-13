@@ -10,8 +10,11 @@ let autovidState = {
   selectedAudioPath: null,
   isRendering: false,
   allBeats: [],
-  currentLeftTab: 'images', // 'images' | 'beats'
-  selectedBeatPath: null
+  currentLeftTab: 'images', // 'images' | 'beats' | 'artist'
+  selectedBeatPath: null,
+  artistThumbnailPacks: [],
+  allArtistThumbnails: [],
+  noPreviewMode: localStorage.getItem('autovid-no-preview-mode') === 'true'
 };
 
 // AutoVid DOM Elements
@@ -20,8 +23,10 @@ const pinterestSearchInput = document.getElementById('pinterest-search');
 const searchPinsBtn = document.getElementById('search-pins-btn');
 const boardsList = document.getElementById('boards-list');
 const randomizePinBtn = document.getElementById('randomize-pin-btn');
+const noPreviewBtn = document.getElementById('no-preview-btn');
 const previewImage = document.getElementById('preview-image');
 const imagePlaceholder = document.getElementById('image-placeholder');
+const noPreviewPlaceholder = document.getElementById('no-preview-placeholder');
 const imageInfo = document.getElementById('image-info');
 const imageTitle = document.getElementById('image-title');
 const imageSource = document.getElementById('image-source');
@@ -52,6 +57,8 @@ function initAutoVidSection() {
     loadBoardsBtn.addEventListener('click', () => {
       if (autovidState.currentLeftTab === 'beats') {
         loadAutovidBeats();
+      } else if (autovidState.currentLeftTab === 'artist') {
+        loadAutovidArtistThumbnails();
       } else {
         loadLocalImageFolder();
       }
@@ -72,18 +79,31 @@ function initAutoVidSection() {
   }
 
   if (searchPinsBtn) {
-    searchPinsBtn.addEventListener('click', filterLocalImages);
+    searchPinsBtn.addEventListener('click', () => {
+      if (autovidState.currentLeftTab === 'artist') filterAutovidArtistThumbnails();
+      else filterLocalImages();
+    });
   }
 
   if (pinterestSearchInput) {
-    pinterestSearchInput.addEventListener('input', filterLocalImages);
+    pinterestSearchInput.addEventListener('input', () => {
+      if (autovidState.currentLeftTab === 'artist') filterAutovidArtistThumbnails();
+      else filterLocalImages();
+    });
     pinterestSearchInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') filterLocalImages();
+      if (e.key === 'Enter') {
+        if (autovidState.currentLeftTab === 'artist') filterAutovidArtistThumbnails();
+        else filterLocalImages();
+      }
     });
   }
 
   if (randomizePinBtn) {
     randomizePinBtn.addEventListener('click', randomizePin);
+  }
+
+  if (noPreviewBtn) {
+    noPreviewBtn.addEventListener('click', toggleNoPreviewMode);
   }
 
   if (selectAudioBtn) {
@@ -112,7 +132,7 @@ function initAutoVidSection() {
 
   // Local image selection
   if (selectLocalImageBtn) {
-    selectLocalImageBtn.addEventListener('click', selectLocalImage);
+    selectLocalImageBtn.addEventListener('click', selectLocalImageFromDialog);
   }
 
   // Clear audio button
@@ -128,7 +148,7 @@ function initAutoVidSection() {
   const imageDropZone = document.getElementById('image-preview-container');
   if (imageDropZone) {
     imageDropZone.addEventListener('click', () => {
-      if (!autovidState.selectedImagePath) selectLocalImage();
+      if (!autovidState.selectedImagePath) selectLocalImageFromDialog();
     });
     imageDropZone.addEventListener('dragover', (e) => {
       e.preventDefault();
@@ -202,11 +222,74 @@ function initAutoVidSection() {
     });
   }
 
+  // Artist thumbnail toolbar buttons
+  const browseFolderBtn = document.getElementById('autovid-browse-artist-folder-btn');
+  if (browseFolderBtn) browseFolderBtn.addEventListener('click', browseArtistFolder);
+
+  const fromPacksBtn = document.getElementById('autovid-from-packs-btn');
+  if (fromPacksBtn) fromPacksBtn.addEventListener('click', loadAutovidArtistThumbnails);
+
   updateRenderButton();
+  updateNoPreviewButton();
   initCustomAudioPlayer();
 
   // Auto-load local image folder on first open
   loadLocalImageFolder();
+}
+
+function toggleNoPreviewMode() {
+  autovidState.noPreviewMode = !autovidState.noPreviewMode;
+  localStorage.setItem('autovid-no-preview-mode', String(autovidState.noPreviewMode));
+  updateNoPreviewButton();
+  refreshAutovidImagePreview();
+}
+
+function updateNoPreviewButton() {
+  if (!noPreviewBtn) return;
+  noPreviewBtn.classList.toggle('active', autovidState.noPreviewMode);
+  noPreviewBtn.setAttribute('aria-pressed', String(autovidState.noPreviewMode));
+}
+
+function setAutovidImagePreview(previewSrc) {
+  const hasImage = Boolean(autovidState.selectedImagePath || autovidState.selectedImage);
+  if (!previewImage || !imagePlaceholder) return;
+
+  if (!hasImage) {
+    previewImage.style.display = 'none';
+    if (noPreviewPlaceholder) noPreviewPlaceholder.style.display = 'none';
+    imagePlaceholder.style.display = 'flex';
+    return;
+  }
+
+  imagePlaceholder.style.display = 'none';
+
+  if (autovidState.noPreviewMode) {
+    previewImage.style.display = 'none';
+    if (noPreviewPlaceholder) noPreviewPlaceholder.style.display = 'flex';
+    return;
+  }
+
+  if (previewSrc) previewImage.src = previewSrc;
+  previewImage.style.display = 'block';
+  if (noPreviewPlaceholder) noPreviewPlaceholder.style.display = 'none';
+}
+
+function refreshAutovidImagePreview() {
+  if (autovidState.selectedImage?.imageUrl) {
+    setAutovidImagePreview(autovidState.selectedImage.imageUrl);
+    return;
+  }
+
+  if (autovidState.selectedImagePath) {
+    const imagePath = autovidState.selectedImagePath;
+    const previewSrc = imagePath.startsWith('data:') || imagePath.startsWith('blob:') || imagePath.startsWith('file:')
+      ? imagePath
+      : `file://${imagePath}`;
+    setAutovidImagePreview(previewSrc);
+    return;
+  }
+
+  setAutovidImagePreview('');
 }
 
 function handleDroppedImage(file) {
@@ -215,11 +298,7 @@ function handleDroppedImage(file) {
   if (filePath) {
     autovidState.selectedImagePath = filePath;
     autovidState.selectedImage = null;
-    if (previewImage && imagePlaceholder) {
-      previewImage.src = `file://${filePath}`;
-      previewImage.style.display = 'block';
-      imagePlaceholder.style.display = 'none';
-    }
+    setAutovidImagePreview(`file://${filePath}`);
     if (imageInfo) {
       imageInfo.style.display = 'block';
       imageTitle.textContent = file.name;
@@ -230,11 +309,7 @@ function handleDroppedImage(file) {
     const url = URL.createObjectURL(file);
     autovidState.selectedImagePath = url;
     autovidState.selectedImage = null;
-    if (previewImage && imagePlaceholder) {
-      previewImage.src = url;
-      previewImage.style.display = 'block';
-      imagePlaceholder.style.display = 'none';
-    }
+    setAutovidImagePreview(url);
   }
   updateRenderButton();
 }
@@ -268,11 +343,7 @@ async function handlePastedImage(e) {
       autovidState.selectedImagePath = imagePath;
       autovidState.selectedImage = null;
 
-      if (previewImage && imagePlaceholder) {
-        previewImage.src = isElectron ? `file://${imagePath}` : dataUrl;
-        previewImage.style.display = 'block';
-        imagePlaceholder.style.display = 'none';
-      }
+      setAutovidImagePreview(isElectron ? `file://${imagePath}` : dataUrl);
 
       if (imageInfo) {
         imageInfo.style.display = 'block';
@@ -356,6 +427,7 @@ function resetAutovidWorkspace() {
   if (previewImage) previewImage.src = '';
   if (imagePlaceholder) imagePlaceholder.style.display = 'flex';
   if (previewImage) previewImage.style.display = 'none';
+  if (noPreviewPlaceholder) noPreviewPlaceholder.style.display = 'none';
 
   // Reset output name
   if (outputNameInput) outputNameInput.value = '';
@@ -371,8 +443,8 @@ function resetAutovidWorkspace() {
   const renderSection = document.querySelector('.autovid-render-section');
   if (renderSection && !renderSection.querySelector('#render-video-btn')) {
     renderSection.innerHTML = `
-      <button id="render-video-btn" class="btn-render" disabled>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      <button id="render-video-btn" class="btn-secondary btn-render" disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
         Render Video
       </button>
       <div class="render-progress" id="render-progress" style="display: none;">
@@ -397,7 +469,7 @@ function resetAutovidWorkspace() {
   showNotification('Workspace reset successfully', 'success');
 }
 
-async function selectLocalImage() {
+async function selectLocalImageFromDialog() {
   if (!isElectron) return;
 
   try {
@@ -406,12 +478,7 @@ async function selectLocalImage() {
       autovidState.selectedImagePath = filePath;
       autovidState.selectedImage = null; // Clear Pinterest selection
 
-      // Update preview
-      if (previewImage && imagePlaceholder) {
-        previewImage.src = `file://${filePath}`;
-        previewImage.style.display = 'block';
-        imagePlaceholder.style.display = 'none';
-      }
+      setAutovidImagePreview(`file://${filePath}`);
 
       if (imageInfo) {
         imageInfo.style.display = 'block';
@@ -446,6 +513,11 @@ async function loadLocalImageFolder() {
 }
 
 function filterLocalImages() {
+  if (autovidState.currentLeftTab === 'artist') {
+    filterAutovidArtistThumbnails();
+    return;
+  }
+
   const keyword = (pinterestSearchInput?.value || '').toLowerCase().trim();
   const filtered = keyword
     ? allLocalImages.filter(f => f.name.toLowerCase().includes(keyword))
@@ -485,11 +557,7 @@ function renderLocalImages(files) {
 function selectLocalImage(file) {
   autovidState.selectedImage = { imageUrl: 'file://' + file.path, title: file.name };
   autovidState.selectedImagePath = file.path;
-  if (previewImage && imagePlaceholder) {
-    previewImage.src = 'file://' + file.path;
-    previewImage.style.display = 'block';
-    imagePlaceholder.style.display = 'none';
-  }
+  setAutovidImagePreview('file://' + file.path);
   if (imageInfo) {
     imageInfo.style.display = 'block';
     if (imageTitle) imageTitle.textContent = file.name;
@@ -498,7 +566,156 @@ function selectLocalImage(file) {
   updateRenderButton();
 }
 
+const AUTOVID_ARTIST_THUMBNAIL_ROOT = 'D:\\artistthumbnail';
+
+function parseAutovidArtistJson(raw) {
+  return JSON.parse(String(raw || '').replace(/^\uFEFF/, '').trim() || '{}');
+}
+
+async function loadAutovidArtistThumbnails() {
+  const artistList = document.getElementById('autovid-artist-list');
+  if (!artistList) return;
+  artistList.innerHTML = '<div class="empty-state">Loading artist thumbnails...</div>';
+
+  try {
+    let data = null;
+    if (typeof require !== 'undefined') {
+      const fs = require('fs');
+      const path = require('path');
+      const dbPath = path.join(AUTOVID_ARTIST_THUMBNAIL_ROOT, 'artist-thumbnails.json');
+      if (fs.existsSync(dbPath)) {
+        data = parseAutovidArtistJson(fs.readFileSync(dbPath, 'utf8'));
+      }
+    }
+
+    if (!data && isElectron && typeof ipcRenderer !== 'undefined') {
+      data = await ipcRenderer.invoke('load-artist-thumbnail-data');
+    }
+
+    autovidState.artistThumbnailPacks = Array.isArray(data?.artistThumbnailPacks) ? data.artistThumbnailPacks : [];
+    autovidState.allArtistThumbnails = autovidState.artistThumbnailPacks.flatMap(pack =>
+      (pack.images || []).map(image => ({
+        ...image,
+        artist: pack.artist
+      }))
+    );
+    renderAutovidArtistThumbnails(autovidState.allArtistThumbnails);
+  } catch (error) {
+    artistList.innerHTML = `<div class="empty-state">Error loading artist thumbnails: ${error.message}</div>`;
+  }
+}
+
+function filterAutovidArtistThumbnails() {
+  const keyword = (pinterestSearchInput?.value || '').toLowerCase().trim();
+  const filtered = keyword
+    ? autovidState.allArtistThumbnails.filter(image =>
+        image.name.toLowerCase().includes(keyword) ||
+        image.artist.toLowerCase().includes(keyword)
+      )
+    : autovidState.allArtistThumbnails;
+  renderAutovidArtistThumbnails(filtered);
+}
+
+function renderAutovidArtistThumbnails(images) {
+  const artistList = document.getElementById('autovid-artist-list');
+  if (!artistList) return;
+
+  if (!images || images.length === 0) {
+    artistList.innerHTML = '<div class="empty-state">No artist thumbnails found</div>';
+    return;
+  }
+
+  artistList.innerHTML = '';
+  images.forEach(image => {
+    const item = document.createElement('div');
+    item.className = 'autovid-artist-thumb-item';
+    if (image.used) item.classList.add('used');
+    item.innerHTML = `
+      <img src="file://${image.path}" alt="${image.name}">
+      <div class="autovid-artist-thumb-meta">
+        <span>${image.artist}</span>
+        <small>${image.used ? 'Used' : image.name}</small>
+      </div>
+    `;
+    item.addEventListener('click', () => selectArtistThumbnailImage(image));
+    artistList.appendChild(item);
+  });
+}
+
+function selectArtistThumbnailImage(image) {
+  autovidState.selectedImage = {
+    imageUrl: 'file://' + image.path,
+    title: image.name,
+    artist: image.artist
+  };
+  autovidState.selectedImagePath = image.path;
+  setAutovidImagePreview('file://' + image.path);
+  if (imageInfo) {
+    imageInfo.style.display = 'block';
+    if (imageTitle) imageTitle.textContent = image.name;
+    if (imageSource) imageSource.textContent = `Artist Thumbnails / ${image.artist}`;
+  }
+  updateRenderButton();
+}
+
+async function browseArtistFolder() {
+  try {
+    let folderPath = null;
+    if (isElectron && typeof ipcRenderer !== 'undefined') {
+      folderPath = await ipcRenderer.invoke('select-folder');
+    }
+    if (!folderPath) return;
+
+    const folderLabel = document.getElementById('autovid-artist-folder-label');
+    if (folderLabel) {
+      folderLabel.textContent = folderPath;
+      folderLabel.style.display = 'block';
+    }
+
+    const artistList = document.getElementById('autovid-artist-list');
+    if (artistList) artistList.innerHTML = '<div class="empty-state">Loading images...</div>';
+
+    let images = [];
+    if (typeof require !== 'undefined') {
+      const fs = require('fs');
+      const pathMod = require('path');
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp'];
+      const entries = fs.readdirSync(folderPath, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = pathMod.join(folderPath, entry.name);
+        if (entry.isDirectory()) {
+          try {
+            const sub = fs.readdirSync(fullPath).filter(f => imageExtensions.includes(pathMod.extname(f).toLowerCase()));
+            sub.forEach(f => images.push({ name: f, path: pathMod.join(fullPath, f), artist: entry.name, used: false }));
+          } catch (_) {}
+        } else if (imageExtensions.includes(pathMod.extname(entry.name).toLowerCase())) {
+          images.push({ name: entry.name, path: fullPath, artist: '', used: false });
+        }
+      }
+    } else if (isElectron && typeof ipcRenderer !== 'undefined') {
+      const raw = await ipcRenderer.invoke('read-images-folder-recursive', folderPath);
+      images = (raw || []).map(img => ({ ...img, artist: img.folder || '', used: false }));
+    }
+
+    autovidState.allArtistThumbnails = images;
+    renderAutovidArtistThumbnails(images);
+  } catch (error) {
+    const artistList = document.getElementById('autovid-artist-list');
+    if (artistList) artistList.innerHTML = `<div class="empty-state">Error: ${error.message}</div>`;
+  }
+}
+
 function randomizePin() {
+  if (autovidState.currentLeftTab === 'artist') {
+    if (autovidState.allArtistThumbnails.length === 0) {
+      alert('No artist thumbnails loaded. Click refresh first.');
+      return;
+    }
+    const randomIndex = Math.floor(Math.random() * autovidState.allArtistThumbnails.length);
+    selectArtistThumbnailImage(autovidState.allArtistThumbnails[randomIndex]);
+    return;
+  }
+
   if (allLocalImages.length === 0) {
     alert('No images loaded. Click the refresh button first.');
     return;
@@ -510,11 +727,7 @@ function randomizePin() {
 function selectPin(pin) {
   autovidState.selectedImage = pin;
 
-  if (previewImage && imagePlaceholder) {
-    previewImage.src = pin.imageUrl;
-    previewImage.style.display = 'block';
-    imagePlaceholder.style.display = 'none';
-  }
+  setAutovidImagePreview(pin.imageUrl);
 
   if (imageInfo) {
     imageInfo.style.display = 'block';
@@ -571,23 +784,35 @@ function updateRenderButton() {
 //  Left-panel tab switching
 function switchAutovidLeftTab(tab) {
   autovidState.currentLeftTab = tab;
-  const imagesSearch = document.getElementById('autovid-images-search');
-  const imagesList   = document.getElementById('boards-list');
-  const beatsSearch  = document.getElementById('autovid-beats-search');
-  const beatsList    = document.getElementById('autovid-beats-list');
+  const imagesSearch   = document.getElementById('autovid-images-search');
+  const imagesList     = document.getElementById('boards-list');
+  const beatsSearch    = document.getElementById('autovid-beats-search');
+  const beatsList      = document.getElementById('autovid-beats-list');
+  const artistList     = document.getElementById('autovid-artist-list');
+  const artistToolbar  = document.getElementById('autovid-artist-toolbar');
 
   const isImages = tab === 'images';
-  if (imagesSearch) imagesSearch.style.display = isImages ? '' : 'none';
+  const isArtist = tab === 'artist';
+  const isBeats  = tab === 'beats';
+
+  if (imagesSearch) imagesSearch.style.display = (isImages || isArtist) ? '' : 'none';
   if (imagesList)   imagesList.style.display   = isImages ? '' : 'none';
-  if (beatsSearch)  beatsSearch.style.display  = isImages ? 'none' : '';
-  if (beatsList)    beatsList.style.display    = isImages ? 'none' : '';
+  if (beatsSearch)  beatsSearch.style.display  = isBeats  ? '' : 'none';
+  if (beatsList)    beatsList.style.display    = isBeats  ? '' : 'none';
+  if (artistList)   artistList.style.display   = isArtist ? '' : 'none';
+  if (artistToolbar) artistToolbar.style.display = isArtist ? 'flex' : 'none';
+  if (pinterestSearchInput) {
+    pinterestSearchInput.placeholder = isArtist ? 'Search artist thumbnails...' : 'Filter images...';
+  }
 
   document.querySelectorAll('.autovid-left-tab').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.avtab === tab);
   });
 
-  if (tab === 'beats' && autovidState.allBeats.length === 0) {
+  if (isBeats && autovidState.allBeats.length === 0) {
     loadAutovidBeats();
+  } else if (isArtist) {
+    loadAutovidArtistThumbnails();
   }
 }
 
@@ -985,3 +1210,63 @@ async function openAutovidOutput() {
     console.error('Error opening output folder:', error);
   }
 }
+
+// ─── Stratum DAW remote render ────────────────────────────────────────────
+// Invoked from the DAW (via the bridge server in main.js). Fully drives the
+// Create/AutoVid tab: load the beat's WAV, auto-pick a random local image,
+// set the output name, then start the render — no manual clicks needed.
+window.stratumRenderVideo = async function (payload) {
+  try {
+    payload = payload || {};
+    const audioPath = payload.audioPath || '';
+    if (!audioPath) {
+      if (typeof showNotification === 'function') showNotification('Stratum: no audio path received', 'error');
+      return;
+    }
+
+    // 1) Set the audio file (mirrors handleDroppedAudio, but from a path).
+    autovidState.selectedAudioPath = audioPath;
+    const displayName = audioPath.split(/[\\/]/).pop();
+    const audioDropHint = document.getElementById('audio-drop-hint');
+    const audioSelectedInfo = document.getElementById('audio-selected-info');
+    const audioFileNameEl = document.getElementById('audio-file-name');
+    if (audioFilePath) audioFilePath.value = displayName;
+    if (audioDropHint) audioDropHint.style.display = 'none';
+    if (audioSelectedInfo) audioSelectedInfo.style.display = 'flex';
+    if (audioFileNameEl) audioFileNameEl.textContent = displayName;
+    if (audioPreviewContainer) audioPreviewContainer.style.display = 'block';
+    if (autovidAudioPlayer) autovidAudioPlayer.src = `file://${audioPath}`;
+
+    // 2) Output name (prefer the name the DAW sent).
+    const baseName = displayName.replace(/\.[^/.]+$/, '');
+    const outName = payload.outputName
+      || (typeof extractBeatName === 'function' ? extractBeatName(baseName) : baseName);
+    if (outputNameInput) outputNameInput.value = outName;
+
+    // 3) Ensure local images are loaded, then pick one at random.
+    if (!allLocalImages || allLocalImages.length === 0) {
+      try { await loadLocalImageFolder(); } catch (e) { /* ignore */ }
+    }
+    if (allLocalImages && allLocalImages.length > 0) {
+      const idx = Math.floor(Math.random() * allLocalImages.length);
+      selectLocalImage(allLocalImages[idx]);
+    }
+
+    updateRenderButton();
+
+    // 4) Validate + render.
+    if (!autovidState.selectedAudioPath
+        || (!autovidState.selectedImage && !autovidState.selectedImagePath)) {
+      if (typeof showNotification === 'function')
+        showNotification('Stratum render: missing audio or image', 'error');
+      return;
+    }
+    if (typeof showNotification === 'function')
+      showNotification('Rendering video for: ' + outName, 'info');
+    await renderVideo();
+  } catch (err) {
+    console.error('[Stratum] stratumRenderVideo error:', err);
+    if (typeof showNotification === 'function')
+      showNotification('Stratum render failed: ' + err.message, 'error');
+  }
+};

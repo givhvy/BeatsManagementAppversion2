@@ -105,6 +105,7 @@ const tabButtons = document.querySelectorAll('.tab-btn');
 const beatContextMenu = document.getElementById('beat-context-menu');
 const markLastUsedBtn = document.getElementById('mark-last-used');
 const unmarkLastUsedBtn = document.getElementById('unmark-last-used');
+const markUsedBtn = document.getElementById('mark-used');
 const openBeatInExplorerBtn = document.getElementById('open-beat-in-explorer');
 const createVideoFromBeatBtn = document.getElementById('create-video-from-beat');
 const uploadBeatToYoutubeBtn = document.getElementById('upload-beat-to-youtube');
@@ -133,6 +134,10 @@ const totalBeatsProgressFillEl = document.getElementById('total-beats-progress-f
 
 // Channel management elements
 const channelManagementEl = document.getElementById('channel-management');
+const channelStatsEl = document.getElementById('channel-stats');
+const channelStatsContextMenu = document.getElementById('channel-stats-context-menu');
+const hideChannelStatsBtn = document.getElementById('hide-channel-stats');
+const showChannelStatsBtn = document.getElementById('show-channel-stats');
 const createChannelsBtn = document.getElementById('create-channels-btn');
 const autoAddChannelBtn = document.getElementById('auto-add-channel-btn');
 const totalChannelsEl = document.getElementById('total-channels');
@@ -192,6 +197,7 @@ const countAvailableEl = document.getElementById('count-available');
 const countUsedEl = document.getElementById('count-used');
 
 let currentEmailFilter = 'all'; // 'all', 'available', 'used'
+let channelStatsHidden = localStorage.getItem('channel-stats-hidden') === 'true';
 
 let currentPackId = null;
 let showingHiddenPacks = false; // Track if viewing hidden or active packs
@@ -345,7 +351,9 @@ async function init() {
 
   // Event listeners
   if (selectFolderBtn) selectFolderBtn.addEventListener('click', selectFolder);
-  refreshBeatsBtn.addEventListener('click', refreshBeats);
+  if (refreshBeatsBtn) {
+    refreshBeatsBtn.addEventListener('click', refreshBeats);
+  }
   createPackBtn.addEventListener('click', createPack);
   
   // Tools panel toggle
@@ -381,6 +389,8 @@ async function init() {
   const genreViewBtn = document.getElementById('genre-view-btn');
   if (channelViewBtn) channelViewBtn.addEventListener('click', () => switchPackView('channel'));
   if (genreViewBtn) genreViewBtn.addEventListener('click', () => switchPackView('genre'));
+  setupChannelStatsContextMenu();
+  applyChannelStatsVisibility();
 
   // Tab button listeners
   tabButtons.forEach(btn => {
@@ -435,6 +445,13 @@ async function init() {
   unmarkLastUsedBtn.addEventListener('click', () => {
     if (contextMenuTarget) {
       unmarkBeatAsLastUsed(contextMenuTarget.packId, contextMenuTarget.beatPath);
+    }
+    hideContextMenu();
+  });
+
+  markUsedBtn.addEventListener('click', () => {
+    if (contextMenuTarget) {
+      markBeatAsUsed(contextMenuTarget.beatPath);
     }
     hideContextMenu();
   });
@@ -772,18 +789,37 @@ function renderPackEmailInfo() {
 }
 
 function deleteCurrentPack() {
-  if (currentPackId && confirm('Are you sure you want to delete this pack?')) {
-    // Delete from the appropriate array based on current view
-    if (currentPackView === 'genre') {
-      genrePacks = genrePacks.filter(p => p.id !== currentPackId);
-    } else {
-      packs = packs.filter(p => p.id !== currentPackId);
+  if (!currentPackId) return;
+  const btn = deleteCurrentPackBtn;
+  // Two-click confirm — confirm() blocked by Electron
+  if (!btn || btn.dataset.confirmArmed !== '1') {
+    if (btn) {
+      btn.dataset.confirmArmed = '1';
+      const orig = btn.textContent;
+      btn.textContent = 'Confirm delete?';
+      btn.style.background = 'rgba(239,68,68,0.18)';
+      btn.style.color = '#fca5a5';
+      setTimeout(() => {
+        btn.dataset.confirmArmed = '';
+        btn.textContent = orig;
+        btn.style.background = '';
+        btn.style.color = '';
+      }, 3000);
     }
-    showPacksGrid();
-    renderPacks();
-    renderBeats(); // Update beats list to remove deleted pack tags
-    saveData();
+    return;
   }
+  btn.dataset.confirmArmed = '';
+  btn.style.background = '';
+  btn.style.color = '';
+  if (currentPackView === 'genre') {
+    genrePacks = genrePacks.filter(p => p.id !== currentPackId);
+  } else {
+    packs = packs.filter(p => p.id !== currentPackId);
+  }
+  showPacksGrid();
+  renderPacks();
+  renderBeats();
+  saveData();
 }
 
 function toggleCurrentPackHidden() {
@@ -1222,7 +1258,8 @@ function updateFolderDisplay() {
 
   // Show channel management only for "untagged" (Tagged Beats) tab
   if (currentFolderType === 'untagged') {
-    channelManagementEl.style.display = 'block';
+    channelManagementEl.style.display = channelStatsHidden ? 'none' : 'block';
+    applyChannelStatsVisibility();
     updateChannelStats();
 
     // Show channel management buttons in header
@@ -1246,6 +1283,69 @@ function updateFolderDisplay() {
       filterContainer.style.display = 'block';
     }
   }
+}
+
+function applyChannelStatsVisibility() {
+  if (!channelStatsEl || !channelManagementEl) return;
+
+  const isTaggedTab = currentFolderType === 'untagged';
+  channelManagementEl.style.display = isTaggedTab && !channelStatsHidden ? 'block' : 'none';
+  channelStatsEl.style.display = 'flex';
+
+  if (hideChannelStatsBtn) hideChannelStatsBtn.style.display = channelStatsHidden ? 'none' : 'flex';
+  if (showChannelStatsBtn) showChannelStatsBtn.style.display = channelStatsHidden ? 'flex' : 'none';
+}
+
+function setChannelStatsHidden(hidden) {
+  channelStatsHidden = hidden;
+  localStorage.setItem('channel-stats-hidden', hidden ? 'true' : 'false');
+  applyChannelStatsVisibility();
+  hideChannelStatsContextMenu();
+}
+
+function showChannelStatsContextMenu(e) {
+  if (!channelStatsContextMenu) return;
+
+  e.preventDefault();
+  e.stopPropagation();
+
+  applyChannelStatsVisibility();
+  channelStatsContextMenu.style.display = 'block';
+  channelStatsContextMenu.style.left = `${e.pageX}px`;
+  channelStatsContextMenu.style.top = `${e.pageY}px`;
+}
+
+function hideChannelStatsContextMenu() {
+  if (channelStatsContextMenu) {
+    channelStatsContextMenu.style.display = 'none';
+  }
+}
+
+function setupChannelStatsContextMenu() {
+  if (channelStatsEl) {
+    channelStatsEl.addEventListener('contextmenu', showChannelStatsContextMenu);
+  }
+
+  if (hideChannelStatsBtn) {
+    hideChannelStatsBtn.addEventListener('click', () => setChannelStatsHidden(true));
+  }
+
+  if (showChannelStatsBtn) {
+    showChannelStatsBtn.addEventListener('click', () => setChannelStatsHidden(false));
+  }
+
+  if (channelStatsContextMenu) {
+    channelStatsContextMenu.addEventListener('click', (e) => e.stopPropagation());
+  }
+
+  tabButtons.forEach(btn => {
+    if (btn.getAttribute('data-folder-type') === 'untagged') {
+      btn.addEventListener('contextmenu', showChannelStatsContextMenu);
+    }
+  });
+
+  document.addEventListener('click', hideChannelStatsContextMenu);
+  window.addEventListener('blur', hideChannelStatsContextMenu);
 }
 
 // Navigate to a specific path
@@ -1950,6 +2050,14 @@ function createPackBeatElement(beat, packId, index) {
     contentContainer.appendChild(usedForUploadBadge);
   }
 
+  // Add "Used" badge if manually marked
+  if (beat.used) {
+    const usedBadge = document.createElement('span');
+    usedBadge.className = 'used-badge';
+    usedBadge.textContent = 'Used';
+    contentContainer.appendChild(usedBadge);
+  }
+
   // Add marketing badge if beat has been marketed
   if (marketingState && marketingState.beatStatus[beat.path]) {
     const mktBadge = document.createElement('span');
@@ -2073,7 +2181,7 @@ function createPackBeatElement(beat, packId, index) {
   // Right-click context menu
   beatItemEl.addEventListener('contextmenu', (e) => {
     e.preventDefault();
-    showContextMenu(e.clientX, e.clientY, packId, beat.path, beat.lastUsed);
+    showContextMenu(e.clientX, e.clientY, packId, beat.path, beat.lastUsed, beat.used);
   });
 
   beatItemEl.appendChild(numberBadge);
@@ -2084,7 +2192,7 @@ function createPackBeatElement(beat, packId, index) {
 }
 
 // Context menu functions
-function showContextMenu(x, y, packId, beatPath, isLastUsed) {
+function showContextMenu(x, y, packId, beatPath, isLastUsed, isUsed) {
   contextMenuTarget = { packId, beatPath };
 
   // Show/hide menu items based on current state
@@ -2095,6 +2203,8 @@ function showContextMenu(x, y, packId, beatPath, isLastUsed) {
     markLastUsedBtn.style.display = 'block';
     unmarkLastUsedBtn.style.display = 'none';
   }
+
+  markUsedBtn.style.display = isUsed ? 'none' : 'block';
 
   beatContextMenu.style.display = 'block';
   beatContextMenu.style.left = `${x}px`;
@@ -2133,6 +2243,24 @@ function unmarkBeatAsLastUsed(packId, beatPath) {
       renderPackDetailBeats();
       saveData();
     }
+  }
+}
+
+function markBeatAsUsed(beatPath) {
+  let updated = false;
+
+  [...packs, ...genrePacks].forEach(pack => {
+    const beat = pack.beats.find(b => b.path === beatPath);
+    if (beat && !beat.used) {
+      beat.used = true;
+      updated = true;
+    }
+  });
+
+  if (updated) {
+    renderPackDetailBeats();
+    saveData();
+    console.log('[Beats] Marked beat as used:', beatPath);
   }
 }
 
@@ -2454,7 +2582,10 @@ async function saveData() {
       ...pack,
       beats: pack.beats.map(beat => ({
         name: beat.name,
-        path: beat.path
+        path: beat.path,
+        lastUsed: beat.lastUsed,
+        used: beat.used,
+        usedForUpload: beat.usedForUpload
         // Don't save file object
       }))
     }));
@@ -2463,7 +2594,10 @@ async function saveData() {
       ...pack,
       beats: pack.beats.map(beat => ({
         name: beat.name,
-        path: beat.path
+        path: beat.path,
+        lastUsed: beat.lastUsed,
+        used: beat.used,
+        usedForUpload: beat.usedForUpload
       }))
     }));
 
@@ -3086,19 +3220,33 @@ async function savePrompt() {
 async function clearImageCache() {
   if (!isElectron) return;
 
-  if (!confirm('Clear all cached 1:1 images? This will free up disk space but images will need to be converted again when used.')) {
+  // Two-click confirm — confirm()/alert() blocked by Electron
+  if (clearCacheBtn && clearCacheBtn.dataset.confirmArmed !== '1') {
+    clearCacheBtn.dataset.confirmArmed = '1';
+    const orig = clearCacheBtn.textContent;
+    clearCacheBtn.textContent = 'Clear cache? (confirm)';
+    clearCacheBtn.style.color = '#fca5a5';
+    setTimeout(() => {
+      clearCacheBtn.dataset.confirmArmed = '';
+      clearCacheBtn.textContent = orig;
+      clearCacheBtn.style.color = '';
+    }, 3000);
     return;
+  }
+  if (clearCacheBtn) {
+    clearCacheBtn.dataset.confirmArmed = '';
+    clearCacheBtn.style.color = '';
   }
 
   try {
     const result = await ipcRenderer.invoke('clear-image-cache');
     if (result.success) {
-      alert(` Cleared ${result.count} cached images!`);
+      showNotification?.(`Cleared ${result.count} cached images!`, 'success');
     } else {
-      alert(` Error: ${result.error}`);
+      showNotification?.(`Error: ${result.error}`, 'error');
     }
   } catch (error) {
-    alert(` Error clearing cache: ${error.message}`);
+    showNotification?.(`Error clearing cache: ${error.message}`, 'error');
   }
 }
 

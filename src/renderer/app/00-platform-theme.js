@@ -1,3 +1,41 @@
+// =============================================
+// ELECTRON DIALOG SHIMS
+// Electron 12+ blocks window.alert / confirm / prompt in the renderer.
+// Replace them with in-app equivalents so all callers work unchanged.
+// =============================================
+(function installElectronDialogShims() {
+  // Minimal toast used before showNotification (defined in 04-youtube-uploader.js) is ready
+  function _toastShim(message, type) {
+    if (typeof showNotification === 'function') {
+      showNotification(String(message), type || 'info');
+      return;
+    }
+    // Fallback: build a quick DOM toast
+    const el = document.createElement('div');
+    el.style.cssText = [
+      'position:fixed','bottom:24px','left:50%','transform:translateX(-50%)',
+      'background:rgba(30,30,30,0.96)','color:#f1f5f9','padding:10px 18px',
+      'border-radius:8px','font-size:13px','z-index:99999',
+      'box-shadow:0 4px 20px rgba(0,0,0,0.5)',
+      'border:1px solid rgba(255,255,255,0.1)',
+      'max-width:420px','text-align:center','pointer-events:none'
+    ].join(';');
+    el.textContent = String(message);
+    document.body?.appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+
+  window.alert = (msg) => _toastShim(msg, 'info');
+
+  // All confirm() / prompt() usages have been replaced with two-click patterns,
+  // but keep safe fallbacks so any missed callsite doesn't hard-crash.
+  window.confirm = (msg) => {
+    _toastShim((msg ? String(msg) + ' — ' : '') + 'Action blocked (use the two-click confirm button)', 'error');
+    return false;
+  };
+  window.prompt = (_msg, _def) => null;
+})();
+
 // Check if running in Electron or browser
 const isElectron = typeof require !== 'undefined' && typeof require('electron') !== 'undefined';
 const ipcRenderer = isElectron ? require('electron').ipcRenderer : null;

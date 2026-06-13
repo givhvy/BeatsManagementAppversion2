@@ -188,14 +188,30 @@ function bindBackgroundMusicEvents() {
   const deletePackBtn = document.getElementById('bgmusic-delete-current-pack-btn');
   if (deletePackBtn) {
     deletePackBtn.addEventListener('click', () => {
-      if (confirm('Are you sure you want to delete this pack?')) {
-        bgMusicState.packs = bgMusicState.packs.filter(p => p.id !== bgMusicState.currentPackId);
-        bgMusicState.currentPackId = null;
-        saveBackgroundMusicData();
-        document.getElementById('bgmusic-middle-panel').style.display = 'flex';
-        document.getElementById('bgmusic-right-panel').style.display = 'none';
-        renderBackgroundMusicPacks();
+      if (deletePackBtn.dataset.confirmArmed !== '1') {
+        deletePackBtn.dataset.confirmArmed = '1';
+        const orig = deletePackBtn.textContent;
+        deletePackBtn.textContent = 'Confirm delete?';
+        deletePackBtn.style.cssText += ';background:rgba(239,68,68,0.18);color:#fca5a5;border-color:rgba(239,68,68,0.5)';
+        setTimeout(() => {
+          deletePackBtn.dataset.confirmArmed = '';
+          deletePackBtn.textContent = orig;
+          deletePackBtn.style.background = '';
+          deletePackBtn.style.color = '';
+          deletePackBtn.style.borderColor = '';
+        }, 3000);
+        return;
       }
+      deletePackBtn.dataset.confirmArmed = '';
+      deletePackBtn.style.background = '';
+      deletePackBtn.style.color = '';
+      deletePackBtn.style.borderColor = '';
+      bgMusicState.packs = bgMusicState.packs.filter(p => p.id !== bgMusicState.currentPackId);
+      bgMusicState.currentPackId = null;
+      saveBackgroundMusicData();
+      document.getElementById('bgmusic-middle-panel').style.display = 'flex';
+      document.getElementById('bgmusic-right-panel').style.display = 'none';
+      renderBackgroundMusicPacks();
     });
   }
 

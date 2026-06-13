@@ -1,0 +1,50 @@
+{
+  "drumkitPacks": [
+    {
+      "id": "drumkit-pack-1777745688904",
+      "name": "Drum Kit 1",
+      "files": [
+        {
+          "path": "D:\\DrumKits\\Argent - Candles On The River - Dm.wav",
+          "name": "Argent - Candles On The River - Dm.wav"
+        }
+      ],
+      "hidden": false,
+      "thumbnail": "file:///D:/Downloads/ChatGPT Image May 2, 2026, 03_53_27 PM.png"
+    },
+    {
+      "id": "drumkit-pack-1778406987868",
+      "name": "New Pack",
+      "files": [],
+      "hidden": false,
+      "thumbnail": "file:///D:/Downloads/ChatGPT Image May 10, 2026, 05_00_14 PM.png"
+    }
+  ],
+  "drumkitFolders": {
+    "all": {
+      "path": "D:\\DrumKits",
+      "files": [
+        {
+          "name": "Argent - Candles On The River - Dm.wav",
+          "path": "D:\\DrumKits\\Argent - Candles On The River - Dm.wav"
+        }
+      ],
+      "basePath": "D:\\DrumKits",
+      "currentPath": "D:\\DrumKits"
+    },
+    "tagged": {
+      "path": "D:\\DrumKits\\tagged",
+      "files": [],
+      "basePath": "D:\\DrumKits\\tagged",
+      "currentPath": "D:\\DrumKits\\tagged"
+    },
+    "untagged": {
+      "path": "D:\\DrumKits\\untagged",
+      "files": [],
+      "basePath": "D:\\DrumKits\\untagged",
+      "currentPath": "D:\\DrumKits\\untagged"
+    }
+  },
+  "currentDrumkitFolderType": "all",
+  "drumkitInfos": {}
+}
