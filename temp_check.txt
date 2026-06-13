@@ -1,1 +1,0 @@
-console.log('Database path:', require('electron').app.getPath('userData'))
